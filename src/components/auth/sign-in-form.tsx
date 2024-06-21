@@ -14,22 +14,26 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
-import { login } from "../../app/auth/actions";
+import Cookies from 'js-cookie';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { useUser } from '@/hooks/use-user';
 
+import { createClient } from '../../../utils/supabase/client';
+import { login } from '../../app/auth/actions';
+
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
+  const supabase = createClient();
 
   const { checkSession } = useUser();
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isPending, setIsPending] = React.useState<boolean>(false);
   const [errors, setErrors] = React.useState<{ email?: string; password?: string; root?: string }>({});
-  const [email, setEmail] = React.useState<string>('sofia@devias.io');
-  const [password, setPassword] = React.useState<string>('Secret1');
+  const [email, setEmail] = React.useState<string>(''); // Initialize as an empty string
+  const [password, setPassword] = React.useState<string>(''); // Initialize as an empty string
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -48,19 +52,53 @@ export function SignInForm(): React.JSX.Element {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!validateForm()) {
+      console.log('1');
       return;
     }
 
     setIsPending(true);
-    const { error } = await authClient.signInWithPassword({ email, password });
 
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (data.user) {
+      Cookies.set('accessToken', data.session.access_token, { expires: 3 }); // Cookie expires in 3 days
+      router.push('/');
+    }
     if (error) {
+      setErrors((prev) => ({ ...prev, root: error.message }));
       setIsPending(false);
       return;
     }
+  };
 
-    await checkSession?.();
-    router.refresh();
+  const handleGoogleSignIn = async () => {
+    setIsPending(true);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) {
+      setErrors((prev) => ({ ...prev, root: error.message }));
+      setIsPending(false);
+      return;
+    }
+    Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+    router.push('/');
+  };
+
+  const handleFacebookSignIn = async () => {
+    setIsPending(true);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+    });
+    if (error) {
+      setErrors((prev) => ({ ...prev, root: error.message }));
+      setIsPending(false);
+      return;
+    }
+    Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+    router.push('/');
   };
 
   return (
@@ -93,11 +131,7 @@ export function SignInForm(): React.JSX.Element {
               onChange={(e) => setPassword(e.target.value)}
               endAdornment={
                 showPassword ? (
-                  <EyeIcon
-                    cursor="pointer"
-                    fontSize="var(--icon-fontSize-md)"
-                    onClick={() => setShowPassword(false)}
-                  />
+                  <EyeIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" onClick={() => setShowPassword(false)} />
                 ) : (
                   <EyeSlashIcon
                     cursor="pointer"
@@ -120,17 +154,16 @@ export function SignInForm(): React.JSX.Element {
           <Button disabled={isPending} type="submit" variant="contained">
             Sign in
           </Button>
+          <Button onClick={handleGoogleSignIn} disabled={isPending} variant="contained">
+            Google auth
+          </Button>
+          <Button onClick={handleFacebookSignIn} disabled={isPending} variant="contained">
+            Facebook auth
+          </Button>
         </Stack>
       </form>
       <Alert color="warning">
-        Text Here{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          
-        </Typography>{' '}
-       {' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
- 
-        </Typography>
+        Ensure your credentials are correct before logging in.
       </Alert>
     </Stack>
   );
