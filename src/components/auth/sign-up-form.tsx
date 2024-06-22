@@ -18,16 +18,11 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 
-
-
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { useUser } from '@/hooks/use-user';
 
-
-
 import { createClient } from '../../../utils/supabase/client';
-
 
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
@@ -89,32 +84,6 @@ export function SignUpForm(): React.JSX.Element {
     [checkSession, router, setError, supabase]
   );
 
-  const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
-    setIsPending(true);
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `http://localhost:3000/auth/callback`,
-      },
-    });
-
-    if (data?.session) {
-      // Store the session token in cookies
-      document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
-      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-    }
-
-    if (error) {
-      console.log('Google auth error', error);
-      setError('root', { type: 'server', message: error.message });
-      setIsPending(false);
-      return;
-    }
-
-    await checkSession?.();
-    router.refresh();
-  }, [checkSession, router, setError, supabase]);
   return (
     <Stack spacing={3}>
       <Stack spacing={1}>
@@ -194,9 +163,6 @@ export function SignUpForm(): React.JSX.Element {
             Sign up
           </Button>
         </Stack>
-        <Button onClick={handleGoogleSignIn} disabled={isPending} type="submit" variant="contained">
-          Googel auth
-        </Button>
       </form>
       <Alert color="warning">Created users are not persisted</Alert>
     </Stack>
