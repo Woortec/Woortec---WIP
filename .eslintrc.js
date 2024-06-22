@@ -25,6 +25,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
+            "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off",
         ignoreRestSiblings: true,
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
