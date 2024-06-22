@@ -25,16 +25,16 @@ export function SideNav(): React.JSX.Element {
   return (
     <Box
       sx={{
-        '--SideNav-background': 'var(--mui-palette-neutral-950)',
-        '--SideNav-color': 'var(--mui-palette-common-white)',
-        '--NavItem-color': 'var(--mui-palette-neutral-300)',
-        '--NavItem-hover-background': 'rgba(255, 255, 255, 0.04)',
-        '--NavItem-active-background': 'var(--mui-palette-primary-main)',
-        '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
-        '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
-        '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
-        '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
-        '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
+        '--SideNav-background': '#F4F5F7', // Light background color
+        '--SideNav-color': '#004D3E', // Darker shade for text to ensure readability
+        '--NavItem-color': '#004D3E', // Same as SideNav-color
+        '--NavItem-hover-background': '#00A28C1A', // Lighter shade of the main color
+        '--NavItem-active-background': '#00BFA6', // Main primary color
+        '--NavItem-active-color': '#FFFFFF', // White text for active items
+        '--NavItem-disabled-color': '#A0A4A8', // Neutral disabled color
+        '--NavItem-icon-color': '#008572', // Slightly darker shade for icons
+        '--NavItem-icon-active-color': '#FFFFFF', // White icon color for active items
+        '--NavItem-icon-disabled-color': '#A0A4A8', // Neutral disabled icon color
         bgcolor: 'var(--SideNav-background)',
         color: 'var(--SideNav-color)',
         display: { xs: 'none', lg: 'flex' },
@@ -57,8 +57,8 @@ export function SideNav(): React.JSX.Element {
         <Box
           sx={{
             alignItems: 'center',
-            backgroundColor: 'var(--mui-palette-neutral-950)',
-            border: '1px solid var(--mui-palette-neutral-700)',
+            backgroundColor: '#E0F7F3', // Very light shade of the primary color
+            border: '1px solid #00A28C', // Border with a complementary color
             borderRadius: '12px',
             cursor: 'pointer',
             display: 'flex',
@@ -66,7 +66,7 @@ export function SideNav(): React.JSX.Element {
           }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography color="var(--mui-palette-neutral-400)" variant="body2">
+            <Typography color="#004D3E" variant="body2">
               Workspace
             </Typography>
             <Typography color="inherit" variant="subtitle1">
@@ -76,17 +76,17 @@ export function SideNav(): React.JSX.Element {
           <CaretUpDownIcon />
         </Box>
       </Stack>
-      <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
+      <Divider sx={{ borderColor: '#00A28C' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
-      <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
+      <Divider sx={{ borderColor: '#00A28C' }} />
       <Stack spacing={2} sx={{ p: '12px' }}>
         <div>
-          <Typography color="var(--mui-palette-neutral-100)" variant="subtitle2">
+          <Typography color="#004D3E" variant="subtitle2">
             Need more? Woortec got you!
           </Typography>
-          <Typography color="var(--mui-palette-neutral-400)" variant="body2">
+          <Typography color="#004D3E" variant="body2">
             Check out our subscription plans.
           </Typography>
         </div>
@@ -103,7 +103,7 @@ export function SideNav(): React.JSX.Element {
           endIcon={<ArrowSquareUpRightIcon fontSize="var(--icon-fontSize-md)" />}
           fullWidth
           href="https://www.woortec.com/services"
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, bgcolor: '#00BFA6', color: 'white' }} // Main primary color for button
           target="_blank"
           variant="contained"
         >
@@ -162,7 +162,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           textDecoration: 'none',
           whiteSpace: 'nowrap',
           ...(disabled && {
-            bgcolor: 'var(--NavItem-disabled-background)',
+            bgcolor: '#F4F5F7', // Lighter background for disabled items
             color: 'var(--NavItem-disabled-color)',
             cursor: 'not-allowed',
           }),

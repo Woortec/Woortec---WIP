@@ -34,10 +34,16 @@ export const colorSchemes = {
       },
       neutral: { ...nevada },
       primary: {
-        ...neonBlue,
-        light: neonBlue[300],
-        main: neonBlue[400],
-        dark: neonBlue[500],
+        50: '#E0F7F3',
+        100: '#B3EDE1',
+        200: '#80E3CD',
+        300: '#4DD9B8',
+        400: '#26D0A9',
+        500: '#00BFA6', // Main primary color
+        600: '#00A28C',
+        700: '#008572',
+        800: '#006958',
+        900: '#004D3E',
         contrastText: 'var(--mui-palette-common-black)',
       },
       secondary: {
@@ -100,10 +106,16 @@ export const colorSchemes = {
       },
       neutral: { ...stormGrey },
       primary: {
-        ...neonBlue,
-        light: neonBlue[400],
-        main: neonBlue[500],
-        dark: neonBlue[600],
+        50: '#E0F7F3',
+        100: '#B3EDE1',
+        200: '#80E3CD',
+        300: '#4DD9B8',
+        400: '#26D0A9',
+        500: '#00BFA6', // Main primary color
+        600: '#00A28C',
+        700: '#008572',
+        800: '#006958',
+        900: '#004D3E',
         contrastText: 'var(--mui-palette-common-white)',
       },
       secondary: {
