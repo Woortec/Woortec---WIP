@@ -78,7 +78,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `https://app.woortec.com/dashboard`,
+        redirectTo: `http://app.woortec.com/auth/callback`,
       },
     });
 
