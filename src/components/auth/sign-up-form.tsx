@@ -13,27 +13,29 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
-
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { useUser } from '@/hooks/use-user';
 
-
-
 import { createClient } from '../../../utils/supabase/client';
-
 
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
   email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(6, { message: 'Password should be at least 6 characters' }),
+  password: zod.string()
+    .min(8, { message: 'Password should be at least 8 characters' })
+    .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
+    .regex(/\d/, { message: 'Password should have at least one number' }),
   terms: zod.boolean().refine((value) => value, 'You must accept the terms and conditions'),
 });
 
@@ -48,6 +50,12 @@ export function SignUpForm(): React.JSX.Element {
   const { checkSession } = useUser();
 
   const [isPending, setIsPending] = React.useState<boolean>(false);
+  const [showPassword, setShowPassword] = React.useState<boolean>(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const {
     control,
@@ -89,32 +97,6 @@ export function SignUpForm(): React.JSX.Element {
     [checkSession, router, setError, supabase]
   );
 
-  const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
-    setIsPending(true);
-
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `http://app.woortec.com/auth/callback`,
-      },
-    });
-
-    if (data?.session) {
-      // Store the session token in cookies
-      document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
-      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-    }
-
-    if (error) {
-      console.log('Google auth error', error);
-      setError('root', { type: 'server', message: error.message });
-      setIsPending(false);
-      return;
-    }
-
-    await checkSession?.();
-    router.refresh();
-  }, [checkSession, router, setError, supabase]);
   return (
     <Stack spacing={3}>
       <Stack spacing={1}>
@@ -143,10 +125,10 @@ export function SignUpForm(): React.JSX.Element {
             control={control}
             name="lastName"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.firstName)}>
+              <FormControl error={Boolean(errors.lastName)}>
                 <InputLabel>Last name</InputLabel>
                 <OutlinedInput {...field} label="Last name" />
-                {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
+                {errors.lastName ? <FormHelperText>{errors.lastName.message}</FormHelperText> : null}
               </FormControl>
             )}
           />
@@ -167,7 +149,23 @@ export function SignUpForm(): React.JSX.Element {
             render={({ field }) => (
               <FormControl error={Boolean(errors.password)}>
                 <InputLabel>Password</InputLabel>
-                <OutlinedInput {...field} label="Password" type="password" />
+                <OutlinedInput
+                  {...field}
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
                 {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
               </FormControl>
             )}
@@ -181,7 +179,10 @@ export function SignUpForm(): React.JSX.Element {
                   control={<Checkbox {...field} />}
                   label={
                     <React.Fragment>
-                      I have read the <Link>terms and conditions</Link>
+                      I have read the{' '}
+                      <Link href="https://www.woortec.com/terms-and-conditions" target="_blank" rel="noopener noreferrer">
+                        terms and conditions
+                      </Link>
                     </React.Fragment>
                   }
                 />
@@ -194,11 +195,8 @@ export function SignUpForm(): React.JSX.Element {
             Sign up
           </Button>
         </Stack>
-        <Button onClick={handleGoogleSignIn} disabled={isPending} type="submit" variant="contained">
-          Googel auth
-        </Button>
       </form>
-      <Alert color="warning">Created users are not persisted</Alert>
+      <Alert color="warning">After you sign-up, please confirm your email to sign-in</Alert>
     </Stack>
   );
 }
