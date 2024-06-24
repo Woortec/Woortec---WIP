@@ -74,8 +74,14 @@ export function SignInForm(): React.JSX.Element {
       setIsPending(false);
       return;
     }
-    Cookies.set('accessToken', (data as any).session.access_token, { expires: 3 });
-    router.push('/');
+
+    if (data?.session) {
+      Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+      router.push('/');
+    } else {
+      setErrors((prev) => ({ ...prev, root: 'Failed to sign in with Google' }));
+      setIsPending(false);
+    }
   };
 
   const handleFacebookSignIn = async () => {
@@ -86,8 +92,14 @@ export function SignInForm(): React.JSX.Element {
       setIsPending(false);
       return;
     }
-    Cookies.set('accessToken', (data as any).session.access_token, { expires: 3 });
-    router.push('/');
+
+    if (data?.session) {
+      Cookies.set('accessToken', data.session.access_token, { expires: 2 });
+      router.push('/');
+    } else {
+      setErrors((prev) => ({ ...prev, root: 'Failed to sign in with Facebook' }));
+      setIsPending(false);
+    }
   };
 
   return (
