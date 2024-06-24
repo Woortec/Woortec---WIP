@@ -68,38 +68,24 @@ export function SignInForm(): React.JSX.Element {
 
   const handleGoogleSignIn = async () => {
     setIsPending(true);
-    const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
     if (error) {
       setErrors((prev) => ({ ...prev, root: error.message }));
       setIsPending(false);
       return;
     }
-
-    if (data?.session) {
-      Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-      router.push('/');
-    } else {
-      setErrors((prev) => ({ ...prev, root: 'Failed to sign in with Google' }));
-      setIsPending(false);
-    }
+    // You can now rely on the OAuth flow to handle the redirect
   };
 
   const handleFacebookSignIn = async () => {
     setIsPending(true);
-    const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'facebook' });
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'facebook' });
     if (error) {
       setErrors((prev) => ({ ...prev, root: error.message }));
       setIsPending(false);
       return;
     }
-
-    if (data?.session) {
-      Cookies.set('accessToken', data.session.access_token, { expires: 2 });
-      router.push('/');
-    } else {
-      setErrors((prev) => ({ ...prev, root: 'Failed to sign in with Facebook' }));
-      setIsPending(false);
-    }
+    // You can now rely on the OAuth flow to handle the redirect
   };
 
   return (
