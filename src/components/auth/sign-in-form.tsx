@@ -79,7 +79,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `/`,
+        redirectTo: `/dashboard`,
       },
     });
 
@@ -107,7 +107,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `/`,
+        redirectTo: `/dashboard`,
       },
     });
 
