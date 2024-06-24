@@ -62,7 +62,7 @@ export function SignInForm(): React.JSX.Element {
 
     if (data.user) {
       Cookies.set('accessToken', data.session.access_token, { expires: 3 }); // Cookie expires in 3 days
-      router.push('/');
+      router.push('/dashboard');
     }
 
     if (error) {
@@ -78,7 +78,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `/dashboard`,
+        redirectTo: `http://localhost:3000/auth/callback`,
       },
     });
 
