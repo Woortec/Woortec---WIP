@@ -30,7 +30,7 @@ export async function loginWithProvider(provider) {
   const { error, data } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
-      redirectTo: `http://localhost:3000/auth/callback`,
+      redirectTo: `https://app.woorte.com/dashboard`,
     },
   });
 
