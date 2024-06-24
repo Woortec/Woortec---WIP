@@ -14,14 +14,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
+import { Google as GoogleIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 
 import { paths } from '@/paths';
-import { createClient } from '../../../utils/supabase/client';
 import { useUser } from '@/hooks/use-user';
-
-import GoogleIcon from '../core/GoogleIcon';
-import FacebookIcon from '../core/FacebookIcon';
+import { createClient } from '../../../utils/supabase/client';
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -33,6 +31,7 @@ export function SignInForm(): React.JSX.Element {
   const [errors, setErrors] = React.useState<{ email?: string; password?: string; root?: string }>({});
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
+  const [googleAuthError, setGoogleAuthError] = React.useState<string | null>(null);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -56,37 +55,49 @@ export function SignInForm(): React.JSX.Element {
 
     setIsPending(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (data?.session) {
-      Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (data.user) {
+      Cookies.set('accessToken', data.session.access_token, { expires: 3 }); // Cookie expires in 3 days
       router.push('/');
-    } else if (error) {
-      setErrors((prev) => ({ ...prev, root: error.message }));
-      setIsPending(false);
     }
-  };
 
-  const handleGoogleSignIn = async () => {
-    setIsPending(true);
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
     if (error) {
       setErrors((prev) => ({ ...prev, root: error.message }));
       setIsPending(false);
       return;
     }
-    // You can now rely on the OAuth flow to handle the redirect
   };
 
-  const handleFacebookSignIn = async () => {
+  const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'facebook' });
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `http://localhost:3000/auth/callback`,
+      },
+    });
+
+    if (data?.session) {
+      // Store the session token in cookies
+      document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
+      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+    }
+
     if (error) {
-      setErrors((prev) => ({ ...prev, root: error.message }));
+      console.log('Google auth error', error);
+      setGoogleAuthError(error.message);
       setIsPending(false);
       return;
     }
-    // You can now rely on the OAuth flow to handle the redirect
-  };
+
+    await checkSession?.();
+    router.refresh();
+  }, [checkSession, router, supabase]);
 
   return (
     <Stack spacing={4}>
@@ -141,18 +152,21 @@ export function SignInForm(): React.JSX.Element {
           <Button disabled={isPending} type="submit" variant="contained">
             Sign in
           </Button>
-          <Stack direction="row" spacing={2} justifyContent="center">
-            <Button onClick={handleGoogleSignIn} disabled={isPending} variant="outlined" style={{ borderRadius: '50%' }}>
-              <GoogleIcon />
-            </Button>
-            <Button onClick={handleFacebookSignIn} disabled={isPending} variant="outlined" style={{ borderRadius: '50%' }}>
-              <FacebookIcon />
-            </Button>
-          </Stack>
         </Stack>
       </form>
+      <Button
+        onClick={handleGoogleSignIn}
+        disabled={isPending}
+        type="button"
+        variant="contained"
+        startIcon={<GoogleIcon />}
+      >
+        Sign in with Google
+      </Button>
+      {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
       <Alert color="warning">
-        Ensure your credentials are correct before logging in.
+        Text Here <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>{' '}
+        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>
       </Alert>
     </Stack>
   );
