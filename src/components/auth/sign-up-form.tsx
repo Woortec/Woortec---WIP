@@ -28,7 +28,10 @@ const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
   email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(6, { message: 'Password should be at least 6 characters' }),
+  password: zod.string()
+    .min(8, { message: 'Password should be at least 8 characters' })
+    .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
+    .regex(/\d/, { message: 'Password should have at least one number' }),
   terms: zod.boolean().refine((value) => value, 'You must accept the terms and conditions'),
 });
 
@@ -112,10 +115,10 @@ export function SignUpForm(): React.JSX.Element {
             control={control}
             name="lastName"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.firstName)}>
+              <FormControl error={Boolean(errors.lastName)}>
                 <InputLabel>Last name</InputLabel>
                 <OutlinedInput {...field} label="Last name" />
-                {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
+                {errors.lastName ? <FormHelperText>{errors.lastName.message}</FormHelperText> : null}
               </FormControl>
             )}
           />
@@ -150,8 +153,11 @@ export function SignUpForm(): React.JSX.Element {
                   control={<Checkbox {...field} />}
                   label={
                     <React.Fragment>
-                      I have read the <Link>terms and conditions</Link>
-                    </React.Fragment>
+                    I have read the{' '}
+                    <Link href="https://www.woortec.com/terms-and-conditions" target="_blank" rel="noopener noreferrer">
+                      terms and conditions
+                    </Link>
+                  </React.Fragment>
                   }
                 />
                 {errors.terms ? <FormHelperText error>{errors.terms.message}</FormHelperText> : null}
@@ -164,7 +170,7 @@ export function SignUpForm(): React.JSX.Element {
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">Created users are not persisted</Alert>
+      <Alert color="warning">After you sign-up, please confirm your email to sign-in</Alert>
     </Stack>
   );
 }
