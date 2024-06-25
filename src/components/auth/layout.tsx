@@ -54,8 +54,8 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box
               component="img"
-              alt="Widgets"
-              src="/assets/auth-widgets.png"
+              alt="Woortec"
+              src="/assets/Woortec.png"
               sx={{ height: 'auto', width: '100%', maxWidth: '600px' }}
             />
           </Box>
