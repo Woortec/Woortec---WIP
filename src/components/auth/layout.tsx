@@ -1,8 +1,12 @@
+'use client';
 import * as React from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import RouterLink from 'next/link';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ReactGA from 'react-ga4';
 
 import { paths } from '@/paths';
 
@@ -48,7 +52,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
               </Box>
             </Typography>
             <Typography align="center" variant="subtitle1">
-             At Woortec, we organize the advertising investment process, with our integrated platform designed to simplify ad management, providing you with a centralized hub for all your campaigns.
+              At Woortec, we organize the advertising investment process, with our integrated platform designed to simplify ad management, providing you with a centralized hub for all your campaigns.
             </Typography>
           </Stack>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -63,4 +67,27 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       </Box>
     </Box>
   );
+}
+
+export default function App({ Component, pageProps }: { Component: any, pageProps: any }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      ReactGA.send({ hitType: 'pageview', page: url });
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // Initialize GA
+    if (process.env.NEXT_PUBLIC_GA_TRACKING_ID) {
+      ReactGA.initialize(process.env.NEXT_PUBLIC_GA_TRACKING_ID);
+    }
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
+  return <Component {...pageProps} />;
 }
