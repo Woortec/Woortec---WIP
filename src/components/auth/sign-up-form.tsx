@@ -68,7 +68,7 @@ export function SignUpForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -78,20 +78,29 @@ export function SignUpForm(): React.JSX.Element {
           },
         },
       });
-
       if (error) {
         console.log('error', error);
         setError('root', { type: 'server', message: error.message });
         setIsPending(false);
         return;
       }
+      if (data) {
+        const database = await supabase.from('user').insert([
+          {
+            email: data?.user?.user_metadata.email,
+            provider: data?.user?.app_metadata.provider,
+            uuid: data?.user?.user_metadata?.sub,
+            firstName: data?.user?.user_metadata?.firstName,
+            lastName: data?.user?.user_metadata?.lastName,
+          },
+        ]);
+      }
+
       alert('Please verify your email');
 
       // Refresh the auth state
       await checkSession?.();
 
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
       router.refresh();
     },
     [checkSession, router, setError, supabase]

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -77,15 +77,15 @@ export default function App({ Component, pageProps }: { Component: any, pageProp
       ReactGA.send({ hitType: 'pageview', page: url });
     };
 
-    router.events.on('routeChangeComplete', handleRouteChange);
-
-    // Initialize GA
-    if (process.env.NEXT_PUBLIC_GA_TRACKING_ID) {
+    if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GA_TRACKING_ID) {
       ReactGA.initialize(process.env.NEXT_PUBLIC_GA_TRACKING_ID);
+      router.events.on('routeChangeComplete', handleRouteChange);
     }
 
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
+      if (typeof window !== 'undefined') {
+        router.events.off('routeChangeComplete', handleRouteChange);
+      }
     };
   }, [router.events]);
 
