@@ -28,6 +28,7 @@ export default async function middleware(req: any) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
     }
 
+
     const response = NextResponse.next();
 
     // Set the Permissions-Policy header without the unrecognized 'ch-ua-form-factor'
