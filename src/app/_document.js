@@ -1,5 +1,3 @@
-// src/app/_document.js (or pages/_document.js if using pages directory)
-
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
@@ -15,7 +13,7 @@ class MyDocument extends Document {
                 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
+                })(window,document,'script','dataLayer','GTM-NXB5KPF3');
               `,
             }}
           />
@@ -25,7 +23,7 @@ class MyDocument extends Document {
           {/* Google Tag Manager (noscript) */}
           <noscript>
             <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID}`}
+              src="https://www.googletagmanager.com/ns.html?id=GTM-NXB5KPF3"
               height="0"
               width="0"
               style={{ display: 'none', visibility: 'hidden' }}
