@@ -3,7 +3,6 @@
 import * as React from 'react';
 import type { Viewport } from 'next';
 import { useEffect } from 'react';
-import insertGTM from '../../utils/insertGTM'; // Adjust the path as needed
 
 import '@/styles/global.css';
 
@@ -22,7 +21,6 @@ const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-NXB5KPF3';
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   useEffect(() => {
     if (GTM_ID) {
-      insertGTM(GTM_ID);
     }
   }, []);
 

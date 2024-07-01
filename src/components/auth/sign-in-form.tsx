@@ -20,20 +20,11 @@ import Cookies from 'js-cookie';
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
-import insertGTM from '../../../utils/insertGTM'; // Adjust the path as needed
-
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
   const supabase = createClient();
   const { checkSession } = useUser();
-
-  React.useEffect(() => {
-    if (GTM_ID) {
-      insertGTM(GTM_ID);
-    }
-  }, []);
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isPending, setIsPending] = React.useState<boolean>(false);
