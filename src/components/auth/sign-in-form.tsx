@@ -203,10 +203,6 @@ export function SignInForm(): React.JSX.Element {
         Sign in with Facebook
       </Button>
       {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
-      <Alert color="warning">
-        Text Here <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>
-      </Alert>
     </Stack>
   );
 }
