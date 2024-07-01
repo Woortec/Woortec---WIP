@@ -1,8 +1,7 @@
-'use client';
-
-import React, { useEffect } from 'react';
+'use client'
 
 const insertGTM = (gtmId) => {
+  // Insert the GTM script in the head
   const script = document.createElement('script');
   script.innerHTML = `
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -13,9 +12,10 @@ const insertGTM = (gtmId) => {
   `;
   document.head.appendChild(script);
 
+  // Insert the noscript in the body
   const noScript = document.createElement('noscript');
   noScript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
   document.body.appendChild(noScript);
 };
-    
+
 export default insertGTM;
