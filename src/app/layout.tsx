@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { Viewport } from 'next';
-import GTM from '../components/GTM';
 
 import '@/styles/global.css';
 
@@ -17,7 +16,6 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
     <html lang="en">
-      <GTM />
       <body>
         <LocalizationProvider>
           <UserProvider>
