@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -85,7 +83,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
       </Stack>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
-        {renderNavItems({ pathname, items: navItems })}
+        {pathname ? renderNavItems({ pathname, items: navItems }) : null}
       </Box>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Stack spacing={2} sx={{ p: '12px' }}>
@@ -94,7 +92,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
             Need more features?
           </Typography>
           <Typography color="var(--mui-palette-neutral-400)" variant="body2">
-            Check out our Subscrition Plan.
+            Check out our Subscription Plan.
           </Typography>
         </div>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
