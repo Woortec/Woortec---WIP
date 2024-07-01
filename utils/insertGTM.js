@@ -18,4 +18,6 @@ const insertGTM = (gtmId) => {
   document.body.appendChild(noScript);
 };
 
+insertGTM('GTM-NXB5KPF3');
+
 export default insertGTM;
