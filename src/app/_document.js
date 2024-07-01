@@ -1,4 +1,5 @@
-// src/app/_document.js (or pages/_document.js if using pages directory)
+// src/app/_document.tsx or src/pages/_document.tsx (if using TypeScript)
+// or _document.js if using JavaScript
 
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 
