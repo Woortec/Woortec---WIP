@@ -17,5 +17,5 @@ const insertGTM = (gtmId) => {
   noScript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
   document.body.appendChild(noScript);
 };
-
+    
 export default insertGTM;
