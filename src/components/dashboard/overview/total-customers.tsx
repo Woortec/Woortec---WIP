@@ -64,7 +64,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
               params: {
                 access_token: accessToken,
                 fields: 'impressions',
-                date_preset: 'previous_period',
+                date_preset: 'previous_30d',
               },
             });
 
