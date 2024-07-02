@@ -18,16 +18,6 @@ export default async function middleware(req: any) {
     if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next();
     }
-    if (
-      (isRootPath || isProtectedPath) &&
-      !user &&
-      pathname !== '/auth/sign-in' &&
-      pathname !== '/error' &&
-      pathname !== '/auth/callback' &&
-      pathname !== '/auth/sign-up'
-    ) {
-      return NextResponse.redirect(new URL('/auth/sign-in', req.url));
-    }
 
     return NextResponse.next();
   } catch (error) {

@@ -1,9 +1,8 @@
-import * as React from 'react';
-import type { Metadata } from 'next';
-import Grid from '@mui/material/Unstable_Grid2';
-import dayjs from 'dayjs';
+'use client';
 
-import { config } from '@/config';
+import * as React from 'react';
+import { useEffect } from 'react';
+import Grid from '@mui/material/Unstable_Grid2';
 import { Budget } from '@/components/dashboard/overview/budget';
 import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
 import { LatestProducts } from '@/components/dashboard/overview/latest-products';
@@ -12,10 +11,22 @@ import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
+import { handleLogin } from './facebookService'; // Ensure this path is correct
 
-export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
+const Page = () => {
+  useEffect(() => {
+    // Check if the user is already logged in
+    const token = localStorage.getItem('fbAccessToken');
+    if (token) {
+      // Verify the token or make API calls as needed
+      console.log('User already logged in');
+    }
+  }, []);
 
-export default function Page(): React.JSX.Element {
+  const handleLoginClick = () => {
+    handleLogin();
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid lg={3} sm={6} xs={12}>
@@ -42,6 +53,13 @@ export default function Page(): React.JSX.Element {
       <Grid lg={4} md={6} xs={12}>
         <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
       </Grid>
+      <Grid lg={12} xs={12}>
+        <button onClick={handleLoginClick} style={{ backgroundColor: '#4267B2', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          Connect with Facebook
+        </button>
+      </Grid>
     </Grid>
   );
-}
+};
+
+export default Page;
