@@ -1,41 +1,45 @@
 import React, { useEffect, useState } from 'react';
 
 const FacebookConnectButton = () => {
+  const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [userID, setUserID] = useState(null);
 
   useEffect(() => {
-    // Load the Facebook SDK
     const loadFacebookSDK = () => {
-      if (window.FB) {
-        initializeFacebookSDK();
-        return;
-      }
+      return new Promise((resolve) => {
+        if (window.FB) {
+          resolve();
+          return;
+        }
 
-      (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) { return; }
-        js = d.createElement(s); js.id = id;
+        window.fbAsyncInit = function () {
+          window.FB.init({
+            appId: '961870345497057', // Replace with your Facebook app ID
+            cookie: true,
+            xfbml: true,
+            version: 'v19.0',
+          });
+          resolve();
+        };
+
+        const id = 'facebook-jssdk';
+        const fjs = document.getElementsByTagName('script')[0];
+        if (document.getElementById(id)) { return; }
+        const js = document.createElement('script');
+        js.id = id;
         js.src = "https://connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
-        js.onload = initializeFacebookSDK;
-      }(document, 'script', 'facebook-jssdk'));
-    };
-
-    const initializeFacebookSDK = () => {
-      window.FB.init({
-        appId: 'your-app-id', // Replace with your Facebook app ID
-        cookie: true,
-        xfbml: true,
-        version: 'v12.0',
       });
     };
 
-    loadFacebookSDK();
+    loadFacebookSDK().then(() => {
+      setIsSdkLoaded(true);
+    });
 
     // Retrieve stored data
-    const storedAccessToken = getFacebookAccessToken();
-    const storedUserID = getFacebookUserID();
+    const storedAccessToken = localStorage.getItem('fbAccessToken');
+    const storedUserID = localStorage.getItem('fbUserID');
 
     if (storedAccessToken && storedUserID) {
       setAccessToken(storedAccessToken);
@@ -44,7 +48,7 @@ const FacebookConnectButton = () => {
   }, []);
 
   const handleFBLogin = () => {
-    if (!window.FB) {
+    if (!isSdkLoaded || !window.FB) {
       console.error('Facebook SDK not loaded yet');
       return;
     }
@@ -65,14 +69,6 @@ const FacebookConnectButton = () => {
         console.log('User cancelled login or did not fully authorize.');
       }
     }, { scope: 'public_profile,email,pages_manage_ads,pages_manage_metadata,pages_read_engagement,pages_read_user_content' });
-  };
-
-  const getFacebookAccessToken = () => {
-    return localStorage.getItem('fbAccessToken');
-  };
-
-  const getFacebookUserID = () => {
-    return localStorage.getItem('fbUserID');
   };
 
   return (
