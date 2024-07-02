@@ -16,6 +16,7 @@ export interface BudgetProps {
 
 export function Budget({ sx }: BudgetProps): React.JSX.Element {
   const [value, setValue] = useState('Loading...');
+  const [currency, setCurrency] = useState('$');
   const [trend, setTrend] = useState<'up' | 'down'>('up');
   const [diff, setDiff] = useState<number | null>(null);
 
@@ -34,6 +35,7 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
         const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
           params: {
             access_token: accessToken,
+            fields: 'id,account_id,currency',
           },
         });
 
@@ -50,6 +52,7 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
 
         for (const account of adAccounts) {
           const adAccountID = account.id;
+          const accountCurrency = account.currency;
 
           try {
             const budgetResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
@@ -64,7 +67,8 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
 
             if (budgetResponse.data.data && budgetResponse.data.data.length > 0 && budgetResponse.data.data[0].spend) {
               const spendData = budgetResponse.data.data[0].spend;
-              setValue(`$${spendData}`);
+              setValue(`${spendData}`);
+              setCurrency(accountCurrency);
               setDiff(10); // Placeholder for percentage difference
               setTrend('up'); // Placeholder for trend
               foundSpendData = true;
@@ -100,7 +104,7 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
               <Typography color="text.secondary" variant="overline">
                 Budget
               </Typography>
-              <Typography variant="h4">{value}</Typography>
+              <Typography variant="h4">{currency}{value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
               <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" />
