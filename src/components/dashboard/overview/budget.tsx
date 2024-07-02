@@ -10,6 +10,24 @@ import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { CurrencyDollar as CurrencyDollarIcon } from '@phosphor-icons/react/dist/ssr/CurrencyDollar';
 import axios from 'axios';
 
+const currencySymbols: { [key: string]: string } = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+  AUD: 'A$',
+  CAD: 'C$',
+  CHF: 'CHF',
+  CNY: '¥',
+  SEK: 'kr',
+  NZD: 'NZ$',
+  // Add more currency codes and symbols as needed
+};
+
+const getCurrencySymbol = (currencyCode: string): string => {
+  return currencySymbols[currencyCode] || currencyCode;
+};
+
 export interface BudgetProps {
   sx?: SxProps;
 }
@@ -94,6 +112,7 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
 
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
+  const currencySymbol = getCurrencySymbol(currency);
 
   return (
     <Card sx={sx}>
@@ -104,7 +123,7 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
               <Typography color="text.secondary" variant="overline">
                 Budget
               </Typography>
-              <Typography variant="h4">{currency}{value}</Typography>
+              <Typography variant="h4">{currencySymbol}{value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
               <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" />
