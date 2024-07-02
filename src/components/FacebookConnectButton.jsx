@@ -68,14 +68,19 @@ const FacebookConnectButton = () => {
       } else {
         console.log('User cancelled login or did not fully authorize.');
       }
-    }, { scope: 'public_profile,email,pages_manage_ads,pages_manage_metadata,pages_read_engagement,pages_read_user_content' });
+    }, { scope: 'public_profile,email,pages_manage_ads,pages_manage_metadata,pages_read_engagement,pages_read_user_content,ads_management,business_management,ads_read' });
   };
-
   return (
     <div>
       <button onClick={handleFBLogin}>
         Connect to Facebook
       </button>
+      {accessToken && userID && (
+        <div>
+          <p>Access Token: {accessToken}</p>
+          <p>User ID: {userID}</p>
+        </div>
+      )}
     </div>
   );
 };

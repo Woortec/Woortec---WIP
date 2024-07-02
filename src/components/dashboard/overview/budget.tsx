@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
@@ -37,6 +38,8 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
           },
         });
 
+        console.log('Ad Account Response:', response.data);
+
         if (!response.data.data || response.data.data.length === 0) {
           console.error('No ad accounts found');
           setValue('Error');
@@ -63,7 +66,6 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
 
         const spendData = budgetResponse.data.data[0].spend;
         setValue(`$${spendData}`);
-        // Set diff and trend based on actual data (Placeholder logic here)
         setDiff(10); // Placeholder for percentage difference
         setTrend('up'); // Placeholder for trend
       } catch (error) {
