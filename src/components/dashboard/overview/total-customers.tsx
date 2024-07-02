@@ -31,7 +31,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
       }
 
       try {
-        const response = await axios.get(`https://graph.facebook.com/v12.0/${userID}/adaccounts`, {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
           params: {
             access_token: accessToken,
           },
@@ -52,7 +52,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
           const adAccountID = account.id;
 
           try {
-            const impressionsResponse = await axios.get(`https://graph.facebook.com/v12.0/${adAccountID}/insights`, {
+            const currentPeriodResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
               params: {
                 access_token: accessToken,
                 fields: 'impressions',
@@ -60,13 +60,32 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
               },
             });
 
-            console.log(`Impressions Response for Account ${adAccountID}:`, impressionsResponse.data);
+            const previousPeriodResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'impressions',
+                date_preset: 'previous_period',
+              },
+            });
 
-            if (impressionsResponse.data.data && impressionsResponse.data.data.length > 0 && impressionsResponse.data.data[0].impressions) {
-              const impressionsData = impressionsResponse.data.data[0].impressions;
-              setValue(impressionsData);
-              setDiff(10); // Placeholder for percentage difference
-              setTrend('up'); // Placeholder for trend
+            console.log(`Impressions Response for Account ${adAccountID}:`, currentPeriodResponse.data, previousPeriodResponse.data);
+
+            if (
+              currentPeriodResponse.data.data &&
+              currentPeriodResponse.data.data.length > 0 &&
+              currentPeriodResponse.data.data[0].impressions &&
+              previousPeriodResponse.data.data &&
+              previousPeriodResponse.data.data.length > 0 &&
+              previousPeriodResponse.data.data[0].impressions
+            ) {
+              const currentImpressions = currentPeriodResponse.data.data[0].impressions;
+              const previousImpressions = previousPeriodResponse.data.data[0].impressions;
+              setValue(currentImpressions);
+
+              const difference = currentImpressions - previousImpressions;
+              const percentageChange = ((difference / previousImpressions) * 100).toFixed(2);
+              setDiff(Number(percentageChange));
+              setTrend(difference >= 0 ? 'up' : 'down');
               foundImpressionsData = true;
               break;
             }
@@ -106,7 +125,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
               <EyeIcon fontSize="var(--icon-fontSize-lg)" />
             </Avatar>
           </Stack>
-          {diff ? (
+          {diff !== null && (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
@@ -118,7 +137,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
                 Since last month
               </Typography>
             </Stack>
-          ) : null}
+          )}
         </Stack>
       </CardContent>
     </Card>
