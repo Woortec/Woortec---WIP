@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
@@ -28,25 +26,40 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
 
       if (!accessToken || !userID) {
         console.error('No access token or user ID found in local storage');
+        setValue('Error');
         return;
       }
 
       try {
-        const response = await axios.get(`https://graph.facebook.com/v12.0/${userID}/adaccounts`, {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
           params: {
             access_token: accessToken,
           },
         });
 
+        if (!response.data.data || response.data.data.length === 0) {
+          console.error('No ad accounts found');
+          setValue('Error');
+          return;
+        }
+
         const adAccountID = response.data.data[0].id;
 
-        const budgetResponse = await axios.get(`https://graph.facebook.com/v12.0/${adAccountID}/insights`, {
+        const budgetResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'spend',
             date_preset: 'last_30d',
           },
         });
+
+        console.log('Budget Response:', budgetResponse.data);
+
+        if (!budgetResponse.data.data || budgetResponse.data.data.length === 0 || !budgetResponse.data.data[0].spend) {
+          console.error('No spend data found');
+          setValue('Error');
+          return;
+        }
 
         const spendData = budgetResponse.data.data[0].spend;
         setValue(`$${spendData}`);
