@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Budget } from '@/components/dashboard/overview/budget';
 import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
@@ -10,56 +10,38 @@ import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
-import FacebookLoginButton from './FacebookLoginButton '; // Make sure to import your FacebookLoginButton component
+import FacebookConnectButton from '@/components/FacebookConnectButton';
 
-interface FbUserData {
-  name: string;
-  id: string;
-  // Add other fields as needed
-}
-
-const DashboardPage: React.FC = () => {
-  const [fbUserData, setFbUserData] = useState<FbUserData | null>(null);
-
-  useEffect(() => {
-    const storedFbUserData = localStorage.getItem('fbUserData');
-    if (storedFbUserData) {
-      setFbUserData(JSON.parse(storedFbUserData));
-    }
-  }, []);
-
+export default function Page(): React.JSX.Element {
   return (
-    <div>
-      <FacebookLoginButton />
-      {fbUserData && <div>Welcome, {fbUserData.name}</div>}
-      <Grid container spacing={3}>
-        <Grid lg={3} sm={6} xs={12}>
-          <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
-        </Grid>
-        <Grid lg={3} sm={6} xs={12}>
-          <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
-        </Grid>
-        <Grid lg={3} sm={6} xs={12}>
-          <TasksProgress sx={{ height: '100%' }} value={75.5} />
-        </Grid>
-        <Grid lg={3} sm={6} xs={12}>
-          <TotalProfit sx={{ height: '100%' }} value="$15k" />
-        </Grid>
-        <Grid lg={8} xs={12}>
-          <Sales
-            chartSeries={[
-              { name: 'This year', data: [18, 16, 5, 8, 3, 14, 14, 16, 17, 19, 18, 20] },
-              { name: 'Last year', data: [12, 11, 4, 6, 2, 9, 9, 10, 11, 12, 13, 13] },
-            ]}
-            sx={{ height: '100%' }}
-          />
-        </Grid>
-        <Grid lg={4} md={6} xs={12}>
-          <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid lg={3} sm={6} xs={12}>
+        <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
       </Grid>
-    </div>
+      <Grid lg={3} sm={6} xs={12}>
+        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
+      </Grid>
+      <Grid lg={3} sm={6} xs={12}>
+        <TasksProgress sx={{ height: '100%' }} value={75.5} />
+      </Grid>
+      <Grid lg={3} sm={6} xs={12}>
+        <TotalProfit sx={{ height: '100%' }} value="$15k" />
+      </Grid>
+      <Grid lg={8} xs={12}>
+        <Sales
+          chartSeries={[
+            { name: 'This year', data: [18, 16, 5, 8, 3, 14, 14, 16, 17, 19, 18, 20] },
+            { name: 'Last year', data: [12, 11, 4, 6, 2, 9, 9, 10, 11, 12, 13, 13] },
+          ]}
+          sx={{ height: '100%' }}
+        />
+      </Grid>
+      <Grid lg={4} md={6} xs={12}>
+        <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
+      </Grid>
+      <Grid lg={12} xs={12}>
+        <FacebookConnectButton />
+      </Grid>
+    </Grid>
   );
-};
-
-export default DashboardPage;
+}
