@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const FacebookConnectButton = () => {
+  const [accessToken, setAccessToken] = useState(null);
+  const [userID, setUserID] = useState(null);
+
   useEffect(() => {
     // Load the Facebook SDK
     const loadFacebookSDK = () => {
@@ -21,14 +24,23 @@ const FacebookConnectButton = () => {
 
     const initializeFacebookSDK = () => {
       window.FB.init({
-        appId: '961870345497057', // Replace with your Facebook app ID
+        appId: 'your-app-id', // Replace with your Facebook app ID
         cookie: true,
         xfbml: true,
-        version: 'v19.0',
+        version: 'v12.0',
       });
     };
 
     loadFacebookSDK();
+
+    // Retrieve stored data
+    const storedAccessToken = getFacebookAccessToken();
+    const storedUserID = getFacebookUserID();
+
+    if (storedAccessToken && storedUserID) {
+      setAccessToken(storedAccessToken);
+      setUserID(storedUserID);
+    }
   }, []);
 
   const handleFBLogin = () => {
@@ -45,17 +57,36 @@ const FacebookConnectButton = () => {
         localStorage.setItem('fbAccessToken', accessToken);
         localStorage.setItem('fbUserID', userID);
         console.log('Logged in successfully');
-        // You can now make API calls to your Facebook Marketing API
+
+        // Update state
+        setAccessToken(accessToken);
+        setUserID(userID);
       } else {
         console.log('User cancelled login or did not fully authorize.');
       }
     }, { scope: 'public_profile,email,pages_manage_ads,pages_manage_metadata,pages_read_engagement,pages_read_user_content' });
   };
 
+  const getFacebookAccessToken = () => {
+    return localStorage.getItem('fbAccessToken');
+  };
+
+  const getFacebookUserID = () => {
+    return localStorage.getItem('fbUserID');
+  };
+
   return (
-    <button onClick={handleFBLogin}>
-      Connect to Facebook
-    </button>
+    <div>
+      <button onClick={handleFBLogin}>
+        Connect to Facebook
+      </button>
+      {accessToken && userID && (
+        <div>
+          <p>Access Token: {accessToken}</p>
+          <p>User ID: {userID}</p>
+        </div>
+      )}
+    </div>
   );
 };
 
