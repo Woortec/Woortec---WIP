@@ -17,7 +17,7 @@ export default async function middleware(req: any) {
 
     if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next();
-    }
+    }3
 
     return NextResponse.next();
   } catch (error) {
