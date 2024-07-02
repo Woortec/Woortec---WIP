@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
@@ -46,30 +45,42 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
           return;
         }
 
-        const adAccountID = response.data.data[0].id;
+        const adAccounts = response.data.data;
+        let foundSpendData = false;
 
-        const budgetResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'spend',
-            date_preset: 'last_30d',
-          },
-        });
+        for (const account of adAccounts) {
+          const adAccountID = account.id;
 
-        console.log('Budget Response:', budgetResponse.data);
+          try {
+            const budgetResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'spend',
+                date_preset: 'last_30d',
+              },
+            });
 
-        if (!budgetResponse.data.data || budgetResponse.data.data.length === 0 || !budgetResponse.data.data[0].spend) {
-          console.error('No spend data found');
-          setValue('Error');
-          return;
+            console.log(`Budget Response for Account ${adAccountID}:`, budgetResponse.data);
+
+            if (budgetResponse.data.data && budgetResponse.data.data.length > 0 && budgetResponse.data.data[0].spend) {
+              const spendData = budgetResponse.data.data[0].spend;
+              setValue(`$${spendData}`);
+              setDiff(10); // Placeholder for percentage difference
+              setTrend('up'); // Placeholder for trend
+              foundSpendData = true;
+              break;
+            }
+          } catch (error) {
+            console.error(`Error fetching budget data for account ${adAccountID}`, error);
+          }
         }
 
-        const spendData = budgetResponse.data.data[0].spend;
-        setValue(`$${spendData}`);
-        setDiff(10); // Placeholder for percentage difference
-        setTrend('up'); // Placeholder for trend
+        if (!foundSpendData) {
+          console.error('No spend data found');
+          setValue('Error');
+        }
       } catch (error) {
-        console.error('Error fetching budget data', error);
+        console.error('Error fetching ad accounts', error);
         setValue('Error');
       }
     };
