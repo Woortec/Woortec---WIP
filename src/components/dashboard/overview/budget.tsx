@@ -21,6 +21,7 @@ const currencySymbols: { [key: string]: string } = {
   CNY: '¥',
   SEK: 'kr',
   NZD: 'NZ$',
+  PHP: '₱',
   // Add more currency codes and symbols as needed
 };
 

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -7,16 +7,87 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
+import axios from 'axios';
 
-export interface TotalCustomersProps {
-  diff?: number;
-  trend: 'up' | 'down';
+export interface TotalImpressionsProps {
   sx?: SxProps;
-  value: string;
 }
 
-export function TotalCustomers({ diff, trend, sx, value }: TotalCustomersProps): React.JSX.Element {
+export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Element {
+  const [value, setValue] = useState('Loading...');
+  const [trend, setTrend] = useState<'up' | 'down'>('up');
+  const [diff, setDiff] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchImpressions = async () => {
+      const accessToken = localStorage.getItem('fbAccessToken');
+      const userID = localStorage.getItem('fbUserID');
+
+      if (!accessToken || !userID) {
+        console.error('No access token or user ID found in local storage');
+        setValue('Error');
+        return;
+      }
+
+      try {
+        const response = await axios.get(`https://graph.facebook.com/v12.0/${userID}/adaccounts`, {
+          params: {
+            access_token: accessToken,
+          },
+        });
+
+        console.log('Ad Account Response:', response.data);
+
+        if (!response.data.data || response.data.data.length === 0) {
+          console.error('No ad accounts found');
+          setValue('Error');
+          return;
+        }
+
+        const adAccounts = response.data.data;
+        let foundImpressionsData = false;
+
+        for (const account of adAccounts) {
+          const adAccountID = account.id;
+
+          try {
+            const impressionsResponse = await axios.get(`https://graph.facebook.com/v12.0/${adAccountID}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'impressions',
+                date_preset: 'last_30d',
+              },
+            });
+
+            console.log(`Impressions Response for Account ${adAccountID}:`, impressionsResponse.data);
+
+            if (impressionsResponse.data.data && impressionsResponse.data.data.length > 0 && impressionsResponse.data.data[0].impressions) {
+              const impressionsData = impressionsResponse.data.data[0].impressions;
+              setValue(impressionsData);
+              setDiff(10); // Placeholder for percentage difference
+              setTrend('up'); // Placeholder for trend
+              foundImpressionsData = true;
+              break;
+            }
+          } catch (error) {
+            console.error(`Error fetching impressions data for account ${adAccountID}`, error);
+          }
+        }
+
+        if (!foundImpressionsData) {
+          console.error('No impressions data found');
+          setValue('Error');
+        }
+      } catch (error) {
+        console.error('Error fetching ad accounts', error);
+        setValue('Error');
+      }
+    };
+
+    fetchImpressions();
+  }, []);
+
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
@@ -27,12 +98,12 @@ export function TotalCustomers({ diff, trend, sx, value }: TotalCustomersProps):
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack spacing={1}>
               <Typography color="text.secondary" variant="overline">
-                Total Customers
+                Total Impressions
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '56px', width: '56px' }}>
-              <UsersIcon fontSize="var(--icon-fontSize-lg)" />
+              <EyeIcon fontSize="var(--icon-fontSize-lg)" />
             </Avatar>
           </Stack>
           {diff ? (
