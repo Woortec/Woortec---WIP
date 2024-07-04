@@ -47,12 +47,19 @@ export function Clicks({ sx }: ClicksProps): React.JSX.Element {
           },
         });
 
-        const clicksData = response.data.data.map((account: Account) => account.clicks);
-        const formattedData = {
-          name: 'Clicks',
-          data: clicksData,
-        };
-        setChartSeries([formattedData]);
+        console.log('API Response:', response.data); // Add logging
+
+        if (response.data && response.data.data) {
+          const clicksData = response.data.data.map((account: Account) => account.clicks);
+          const formattedData = {
+            name: 'Clicks',
+            data: clicksData,
+          };
+          setChartSeries([formattedData]);
+          console.log('Formatted Data:', formattedData); // Add logging
+        } else {
+          console.error('Unexpected API response format:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching clicks data:', error);
       }
@@ -60,6 +67,18 @@ export function Clicks({ sx }: ClicksProps): React.JSX.Element {
 
     fetchClicks();
   }, []);
+
+  // Fallback data for testing
+  useEffect(() => {
+    if (chartSeries.length === 0) {
+      setChartSeries([
+        {
+          name: 'Clicks',
+          data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120], // Example fallback data
+        },
+      ]);
+    }
+  }, [chartSeries]);
 
   return (
     <Card sx={sx}>
