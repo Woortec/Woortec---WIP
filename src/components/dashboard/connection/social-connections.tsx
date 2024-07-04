@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
@@ -66,6 +66,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
+  const [pageInsights, setPageInsights] = useState<{ likes: number, impressions: number } | null>(null);
 
   useEffect(() => {
     const initializeState = () => {
@@ -76,6 +77,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
+        fetchPageInsights(token, storedUserId);
       }
       if (storedAdAccount) {
         setSelectedAdAccount(JSON.parse(storedAdAccount));
@@ -86,16 +88,33 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       setIsSdkLoaded(true);
       initializeState();
     });
-    
-    initializeState(); // Ensure state is initialized on component mount
+
+    // Ensure state is initialized on component mount
+    initializeState();
   }, []);
 
   const fetchAdAccounts = (token: string) => {
-    (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
-      if (response && !response.error) {
-        setAdAccounts(response.data.map((account: any) => ({ id: account.id, name: account.name })));
-      }
-    });
+    if ((window as any).FB) {
+      (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+        if (response && !response.error) {
+          setAdAccounts(response.data.map((account: any) => ({ id: account.id, name: account.name })));
+        }
+      });
+    }
+  };
+
+  const fetchPageInsights = (token: string, userId: string) => {
+    if ((window as any).FB) {
+      (window as any).FB.api(`/${userId}/insights`, { access_token: token, metric: 'page_impressions,page_fan_adds' }, (response: any) => {
+        if (response && !response.error) {
+          const insights = {
+            likes: response.data.find((item: any) => item.name === 'page_fan_adds').values[0].value,
+            impressions: response.data.find((item: any) => item.name === 'page_impressions').values[0].value,
+          };
+          setPageInsights(insights);
+        }
+      });
+    }
   };
 
   const handleFacebookLogin = () => {
@@ -109,8 +128,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts
+        // Fetch ad accounts and page insights
         fetchAdAccounts(accessToken);
+        fetchPageInsights(accessToken, userId);
         // Open modal
         setModalOpen(true);
       } else {
@@ -136,7 +156,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   return (
-    <Stack spacing={2} direction="row" sx={sx}>
+    <Stack spacing={2} direction="column" sx={sx}>
       {selectedAdAccount ? (
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
@@ -161,6 +181,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         >
           Connect a Facebook Page
         </Button>
+      )}
+      {pageInsights ? (
+        <Card sx={{ padding: 2 }}>
+          <Typography variant="h6">Page Insights</Typography>
+          <Typography variant="body1">Likes: {pageInsights.likes}</Typography>
+          <Typography variant="body1">Impressions: {pageInsights.impressions}</Typography>
+        </Card>
+      ) : (
+        <CircularProgress />
       )}
       <AdAccountSelectionModal
         open={modalOpen}
