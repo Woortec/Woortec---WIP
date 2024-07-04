@@ -54,21 +54,33 @@ export function FetchAndDisplayTotalProfit({ sx }: { sx?: SxProps }): React.JSX.
           },
         });
 
-        const adAccountID = response.data.data[0].id;
+        const adAccounts = response.data.data;
 
-        const cpcResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'cpc',
-            date_preset: 'lifetime',
-          },
-        });
+        for (const account of adAccounts) {
+          try {
+            const cpcResponse = await axios.get(`https://graph.facebook.com/v19.0/${account.id}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'cpc',
+                date_preset: 'lifetime',
+              },
+            });
 
-        const cpcValue = cpcResponse.data.data[0].cpc;
+            const cpcValue = cpcResponse.data.data[0]?.cpc;
 
-        setCpc(`$${parseFloat(cpcValue).toFixed(2)}`);
+            if (cpcValue) {
+              setCpc(`$${parseFloat(cpcValue).toFixed(2)}`);
+              return; // Exit loop once valid CPC value is found
+            }
+          } catch (error) {
+            console.error(`Error fetching CPC for account ${account.id}:`, error);
+          }
+        }
+
+        // If no valid CPC value is found
+        setCpc('No data');
       } catch (error) {
-        console.error('Error fetching CPC:', error);
+        console.error('Error fetching ad accounts:', error);
         setCpc('Error');
       }
     };
