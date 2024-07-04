@@ -42,7 +42,7 @@ const Subscription = () => {
 
   const plans = [
     {
-      id: isYearly ? 'price_1PTGqcHow0UPMFTyHi3UH69t' : 'price_1PTGpiHow0UPMFTygPGXNkMw',
+      id: isYearly ? 'price_1P90eAHow0UPMFTyqjjSmILe' : 'price_1P90eAHow0UPMFTymffkim7t',
       name: 'Basic',
       price: isYearly ? '$99.95/year' : '$9.95/month',
       features: [
@@ -53,7 +53,7 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1PTGs0How0UPMFTyEoMy6lvb' : 'price_1PTGrCHow0UPMFTypEzCEk0o',
+      id: isYearly ? 'price_1P90fvHow0UPMFTyd5EhwbLb' : 'price_1P90fUHow0UPMFTySLCkN5zi',
       name: 'Essential',
       price: isYearly ? '$99.95/year' : '$9.95/month',
       features: [
@@ -66,7 +66,7 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1PTGsEHow0UPMFTy84qbnK8Q' : 'price_1PTGrcHow0UPMFTyapjtNGRq',
+      id: isYearly ? 'price_1P90ghHow0UPMFTyHnTjU8fC' : 'price_1P90gTHow0UPMFTysPFkXR95',
       name: 'Advanced',
       price: isYearly ? '$99.95/year' : '$9.95/month',
       features: [
