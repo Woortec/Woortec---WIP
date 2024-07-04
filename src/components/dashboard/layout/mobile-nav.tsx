@@ -27,7 +27,7 @@ export interface MobileNavProps {
 }
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
 
   return (
     <Drawer
@@ -109,7 +109,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
           component="a"
           endIcon={<ArrowSquareUpRightIcon fontSize="var(--icon-fontSize-md)" />}
           fullWidth
-          href="https://www.woortec.com/services"
+          href="https://www.app.woortec.com/dashboard/subscription"
           sx={{ mt: 2 }}
           target="_blank"
           variant="contained"
