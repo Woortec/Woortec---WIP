@@ -4,22 +4,23 @@ import * as React from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Controller, useForm } from 'react-hook-form';
+import Stripe from 'stripe';
 import { z as zod } from 'zod';
 
 import { paths } from '@/paths';
@@ -28,11 +29,16 @@ import { useUser } from '@/hooks/use-user';
 
 import { createClient } from '../../../utils/supabase/client';
 
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20',
+});
+console.log(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
   email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string()
+  password: zod
+    .string()
     .min(8, { message: 'Password should be at least 8 characters' })
     .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
     .regex(/\d/, { message: 'Password should have at least one number' }),
@@ -85,6 +91,12 @@ export function SignUpForm(): React.JSX.Element {
         return;
       }
       if (data) {
+        const customer = await stripe.customers.create({
+          email: values.email,
+          name: values.firstName + ' ' + values.lastName,
+        });
+
+        console.log(data?.user);
         const database = await supabase.from('user').insert([
           {
             email: data?.user?.user_metadata.email,
@@ -92,6 +104,7 @@ export function SignUpForm(): React.JSX.Element {
             uuid: data?.user?.user_metadata?.sub,
             firstName: data?.user?.user_metadata?.firstName,
             lastName: data?.user?.user_metadata?.lastName,
+            customerId: customer.id,
           },
         ]);
       }
@@ -189,7 +202,11 @@ export function SignUpForm(): React.JSX.Element {
                   label={
                     <React.Fragment>
                       I have read the{' '}
-                      <Link href="https://www.woortec.com/terms-and-conditions" target="_blank" rel="noopener noreferrer">
+                      <Link
+                        href="https://www.woortec.com/terms-and-conditions"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         terms and conditions
                       </Link>
                     </React.Fragment>

@@ -14,10 +14,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
-import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
+import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material'; // Import Facebook icon
 import Cookies from 'js-cookie';
-
-import GTM from '../GTM';
 
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
@@ -34,7 +32,7 @@ export function SignInForm(): React.JSX.Element {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [googleAuthError, setGoogleAuthError] = React.useState<string | null>(null);
-  const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null);
+  const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null); // State for Facebook auth error
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -64,7 +62,7 @@ export function SignInForm(): React.JSX.Element {
     });
 
     if (data.user) {
-      Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+      Cookies.set('accessToken', data.session.access_token, { expires: 3 }); // Cookie expires in 3 days
       router.push('/');
     }
 
@@ -86,6 +84,7 @@ export function SignInForm(): React.JSX.Element {
     });
 
     if (data?.session) {
+      // Store the session token in cookies
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
     }
@@ -101,6 +100,7 @@ export function SignInForm(): React.JSX.Element {
     router.refresh();
   }, [checkSession, router, supabase]);
 
+  // Handler for Facebook sign-in
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
 
@@ -112,6 +112,7 @@ export function SignInForm(): React.JSX.Element {
     });
 
     if (data?.session) {
+      // Store the session token in cookies
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
     }
@@ -129,7 +130,6 @@ export function SignInForm(): React.JSX.Element {
 
   return (
     <Stack spacing={4}>
-      <GTM gtmId="GTM-NXB5KPF3" />  {/* Add GTM component here */}
       <Stack spacing={1}>
         <Typography variant="h4">Sign in</Typography>
         <Typography color="text.secondary" variant="body2">
@@ -194,15 +194,19 @@ export function SignInForm(): React.JSX.Element {
       </Button>
       {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
       <Button
-        onClick={handleFacebookSignIn}
+        onClick={handleFacebookSignIn} // Facebook sign-in handler
         disabled={isPending}
         type="button"
         variant="contained"
-        startIcon={<FacebookIcon />}
+        startIcon={<FacebookIcon />} // Facebook icon
       >
-        Sign in with Facebook
+        Sign in with Faceboo
       </Button>
       {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
+      <Alert color="warning">
+        Text Here <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>{' '}
+        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>
+      </Alert>
     </Stack>
   );
 }
