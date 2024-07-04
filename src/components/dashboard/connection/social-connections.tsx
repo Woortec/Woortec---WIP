@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack } from '@mui/material';
-import { Facebook as FacebookIcon } from '@mui/icons-material';
+import { Button, Stack, Card, CardContent, Typography, IconButton } from '@mui/material';
+import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
 
@@ -65,6 +65,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [userId, setUserId] = useState<string | null>(null);
   const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadFacebookSDK().then(() => {
@@ -113,26 +114,42 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleAdAccountSelect = (accountId: string) => {
-    console.log('Selected Ad Account:', accountId);
-    // Handle the selected ad account
+    const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
+    setSelectedAdAccount(selectedAccount);
     setModalOpen(false);
+  };
+
+  const handleRemoveSelection = () => {
+    setSelectedAdAccount(null);
   };
 
   return (
     <Stack spacing={2} direction="row" sx={sx}>
-      <Button
-        variant="contained"
-        startIcon={<FacebookIcon />}
-        onClick={handleFacebookLogin}
-        sx={{
-          backgroundColor: '#1877F2',
-          '&:hover': {
-            backgroundColor: '#145BC0',
-          },
-        }}
-      >
-        Connect a Facebook Page
-      </Button>
+      {selectedAdAccount ? (
+        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
+          <FacebookIcon sx={{ marginRight: 1 }} />
+          <Typography variant="body1">
+            {selectedAdAccount.name} <br /> {selectedAdAccount.id}
+          </Typography>
+          <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
+            <CloseIcon />
+          </IconButton>
+        </Card>
+      ) : (
+        <Button
+          variant="contained"
+          startIcon={<FacebookIcon />}
+          onClick={handleFacebookLogin}
+          sx={{
+            backgroundColor: '#1877F2',
+            '&:hover': {
+              backgroundColor: '#145BC0',
+            },
+          }}
+        >
+          Connect a Facebook Page
+        </Button>
+      )}
       <AdAccountSelectionModal
         open={modalOpen}
         adAccounts={adAccounts}

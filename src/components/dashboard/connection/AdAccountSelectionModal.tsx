@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemText } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemText, Card, CardContent, Typography } from '@mui/material';
 
 interface AdAccountSelectionModalProps {
   open: boolean;
@@ -10,14 +10,24 @@ interface AdAccountSelectionModalProps {
 
 const AdAccountSelectionModal: React.FC<AdAccountSelectionModalProps> = ({ open, adAccounts, onClose, onSelect }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Select Ad Account</DialogTitle>
       <DialogContent>
         <List>
           {adAccounts.map((account) => (
-            <ListItem button key={account.id} onClick={() => onSelect(account.id)}>
-              <ListItemText primary={account.name} secondary={account.id} />
-            </ListItem>
+            <Card key={account.id} sx={{ marginBottom: 2 }}>
+              <CardContent>
+                <ListItem button onClick={() => onSelect(account.id)}>
+                  <ListItemText
+                    primary={<Typography variant="h6">{account.name}</Typography>}
+                    secondary={account.id}
+                  />
+                  <Button variant="contained" color="primary">
+                    Select
+                  </Button>
+                </ListItem>
+              </CardContent>
+            </Card>
           ))}
         </List>
       </DialogContent>
