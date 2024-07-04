@@ -82,8 +82,6 @@ export function Budget({ sx }: BudgetProps): React.JSX.Element {
               },
             });
 
-            console.log(`Budget Response for Account ${adAccountID}:`, budgetResponse.data);
-
             if (budgetResponse.data.data && budgetResponse.data.data.length > 0 && budgetResponse.data.data[0].spend) {
               const spendData = budgetResponse.data.data[0].spend;
               setValue(`${spendData}`);

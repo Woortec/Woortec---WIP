@@ -11,31 +11,36 @@ import { TotalImpressions } from '@/components/dashboard/overview/total-customer
 import { FetchAndDisplayTotalProfit } from '@/components/dashboard/overview/total-profit';
 import { FetchAndDisplayTraffic } from '@/components/dashboard/overview/traffic'; // Updated import
 import FacebookConnectButton from '@/components/FacebookConnectButton';
+import AdAccountSelector from '../../components/dashboard/overview/AdsAccountState/AdAccountSelector'; // Import the AdAccountSelector
+import { AdAccountProvider } from '../../components/dashboard/overview/AdsAccountState/AdAccountContext'; // Import the context provider
 
 export default function Page(): React.JSX.Element {
   return (
-    <Grid container spacing={3}>
-      <Grid lg={3} sm={6} xs={12}>
-        <Budget sx={{ height: '100%' }} />
+    <AdAccountProvider>
+      <AdAccountSelector /> {/* Add the AdAccountSelector at the top */}
+      <Grid container spacing={3}>
+        <Grid lg={3} sm={6} xs={12}>
+          <Budget sx={{ height: '100%' }} />
+        </Grid>
+        <Grid lg={3} sm={6} xs={12}>
+          <TotalImpressions sx={{ height: '100%' }} />
+        </Grid>
+        <Grid lg={3} sm={6} xs={12}>
+          <TasksProgress sx={{ height: '100%' }} />
+        </Grid>
+        <Grid lg={3} sm={6} xs={12}>
+          <FetchAndDisplayTotalProfit sx={{ height: '100%' }} />
+        </Grid>
+        <Grid lg={8} xs={12}>
+          <Clicks sx={{ height: '100%' }} /> {/* Updated component usage */}
+        </Grid>
+        <Grid lg={4} md={6} xs={12}>
+          <FetchAndDisplayTraffic sx={{ height: '100%' }} /> {/* Updated component usage */}
+        </Grid>
+        <Grid lg={12} xs={12}>
+          <FacebookConnectButton />
+        </Grid>
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
-        <TotalImpressions sx={{ height: '100%' }} />
-      </Grid>
-      <Grid lg={3} sm={6} xs={12}>
-        <TasksProgress sx={{ height: '100%' }} />
-      </Grid>
-      <Grid lg={3} sm={6} xs={12}>
-        <FetchAndDisplayTotalProfit sx={{ height: '100%' }} />
-      </Grid>
-      <Grid lg={8} xs={12}>
-        <Clicks sx={{ height: '100%' }} /> {/* Updated component usage */}
-      </Grid>
-      <Grid lg={4} md={6} xs={12}>
-        <FetchAndDisplayTraffic sx={{ height: '100%' }} /> {/* Updated component usage */}
-      </Grid>
-      <Grid lg={12} xs={12}>
-        <FacebookConnectButton />
-      </Grid>
-    </Grid>
+    </AdAccountProvider>
   );
 }
