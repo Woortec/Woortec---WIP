@@ -22,7 +22,7 @@ export default function Page(): React.JSX.Element {
         <TotalImpressions sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-      <TotalImpressions sx={{ height: '100%' }} />
+      <TasksProgress sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
         <TotalProfit sx={{ height: '100%' }} value="$15k" />

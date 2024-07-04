@@ -118,7 +118,7 @@ export function TotalImpressions({ sx }: TotalImpressionsProps): React.JSX.Eleme
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack spacing={1}>
               <Typography color="text.secondary" variant="overline">
-                Total Reach
+                Total Impressions
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
