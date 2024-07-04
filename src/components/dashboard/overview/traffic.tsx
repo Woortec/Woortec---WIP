@@ -13,11 +13,10 @@ import { Desktop as DesktopIcon } from '@phosphor-icons/react/dist/ssr/Desktop';
 import { DeviceTablet as DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { Phone as PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone';
 import type { ApexOptions } from 'apexcharts';
-import axios from 'axios';
 
 import { Chart } from '@/components/core/chart';
 
-const iconMapping = { desktop: DesktopIcon, tablet: DeviceTabletIcon, mobile: PhoneIcon } as Record<string, Icon>;
+const iconMapping = { Desktop: DesktopIcon, Tablet: DeviceTabletIcon, Phone: PhoneIcon } as Record<string, Icon>;
 
 export interface TrafficProps {
   chartSeries: number[];
@@ -71,74 +70,4 @@ function useChartOptions(labels: string[]): ApexOptions {
     theme: { mode: theme.palette.mode },
     tooltip: { fillSeriesColor: false },
   };
-}
-
-export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Element {
-  const [chartSeries, setChartSeries] = React.useState<number[]>([]);
-  const [labels, setLabels] = React.useState<string[]>([]);
-  const [error, setError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const fetchTrafficData = async () => {
-      const accessToken = localStorage.getItem('fbAccessToken');
-      const userID = localStorage.getItem('fbUserID');
-
-      if (!accessToken || !userID) {
-        console.error('No access token or user ID found in local storage');
-        setError('No access token or user ID found');
-        return;
-      }
-
-      try {
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
-          params: {
-            access_token: accessToken,
-          },
-        });
-
-        if (response.data.data.length === 0) {
-          console.error('No ad accounts found for this user');
-          setError('No ad accounts found');
-          return;
-        }
-
-        for (const account of response.data.data) {
-          try {
-            const trafficResponse = await axios.get(`https://graph.facebook.com/v19.0/${account.id}/insights`, {
-              params: {
-                access_token: accessToken,
-                fields: 'impression_device, impressions, clicks',
-                date_preset: 'lifetime',
-              },
-            });
-
-            const trafficData = trafficResponse.data.data;
-            if (trafficData.length > 0) {
-              const labels = trafficData.map((item: any) => item.impression_device);
-              const chartSeries = trafficData.map((item: any) => (item.clicks / item.impressions) * 100);
-
-              setLabels(labels);
-              setChartSeries(chartSeries);
-              return; // Exit loop and function on first valid data
-            }
-          } catch (error) {
-            console.error(`Error fetching traffic data for account ${account.id}:`, error);
-          }
-        }
-
-        setError('No valid traffic data found for any ad account');
-      } catch (error) {
-        console.error('Error fetching ad accounts:', error);
-        setError('Error fetching ad accounts');
-      }
-    };
-
-    fetchTrafficData();
-  }, []);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  return <Traffic chartSeries={chartSeries} labels={labels} sx={sx} />;
 }

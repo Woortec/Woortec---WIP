@@ -1,8 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -17,68 +15,13 @@ import type { ApexOptions } from 'apexcharts';
 
 import { Chart } from '@/components/core/chart';
 
-interface ClicksProps {
+export interface SalesProps {
+  chartSeries: { name: string; data: number[] }[];
   sx?: SxProps;
 }
 
-interface Account {
-  clicks: number;
-}
-
-export function Clicks({ sx }: ClicksProps): React.JSX.Element {
-  const [chartSeries, setChartSeries] = useState<{ name: string; data: number[] }[]>([]);
+export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
   const chartOptions = useChartOptions();
-
-  useEffect(() => {
-    const fetchClicks = async () => {
-      const accessToken = localStorage.getItem('fbAccessToken');
-      const userID = localStorage.getItem('fbUserID');
-
-      if (!accessToken || !userID) {
-        console.error('No access token or user ID found in local storage');
-        return;
-      }
-
-      try {
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
-          params: {
-            access_token: accessToken,
-            fields: 'clicks',
-          },
-        });
-
-        console.log('API Response:', response.data); // Add logging
-
-        if (response.data && response.data.data) {
-          const clicksData = response.data.data.map((account: Account) => account.clicks);
-          const formattedData = {
-            name: 'Clicks',
-            data: clicksData,
-          };
-          setChartSeries([formattedData]);
-          console.log('Formatted Data:', formattedData); // Add logging
-        } else {
-          console.error('Unexpected API response format:', response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching clicks data:', error);
-      }
-    };
-
-    fetchClicks();
-  }, []);
-
-  // Fallback data for testing
-  useEffect(() => {
-    if (chartSeries.length === 0) {
-      setChartSeries([
-        {
-          name: 'Clicks',
-          data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120], // Example fallback data
-        },
-      ]);
-    }
-  }, [chartSeries]);
 
   return (
     <Card sx={sx}>
@@ -88,7 +31,7 @@ export function Clicks({ sx }: ClicksProps): React.JSX.Element {
             Sync
           </Button>
         }
-        title="Clicks"
+        title="Sales"
       />
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
