@@ -76,6 +76,7 @@ function useChartOptions(labels: string[]): ApexOptions {
 export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Element {
   const [chartSeries, setChartSeries] = React.useState<number[]>([]);
   const [labels, setLabels] = React.useState<string[]>([]);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchTrafficData = async () => {
@@ -84,6 +85,7 @@ export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Elem
 
       if (!accessToken || !userID) {
         console.error('No access token or user ID found in local storage');
+        setError('No access token or user ID found');
         return;
       }
 
@@ -94,29 +96,49 @@ export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Elem
           },
         });
 
-        const adAccountID = response.data.data[0].id;
+        if (response.data.data.length === 0) {
+          console.error('No ad accounts found for this user');
+          setError('No ad accounts found');
+          return;
+        }
 
-        const trafficResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'impression_device, impressions, clicks',
-            date_preset: 'lifetime',
-          },
-        });
+        for (const account of response.data.data) {
+          try {
+            const trafficResponse = await axios.get(`https://graph.facebook.com/v19.0/${account.id}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'impression_device, impressions, clicks',
+                date_preset: 'lifetime',
+              },
+            });
 
-        const trafficData = trafficResponse.data.data;
-        const labels = trafficData.map((item: any) => item.impression_device);
-        const chartSeries = trafficData.map((item: any) => (item.clicks / item.impressions) * 100);
+            const trafficData = trafficResponse.data.data;
+            if (trafficData.length > 0) {
+              const labels = trafficData.map((item: any) => item.impression_device);
+              const chartSeries = trafficData.map((item: any) => (item.clicks / item.impressions) * 100);
 
-        setLabels(labels);
-        setChartSeries(chartSeries);
+              setLabels(labels);
+              setChartSeries(chartSeries);
+              return; // Exit loop and function on first valid data
+            }
+          } catch (error) {
+            console.error(`Error fetching traffic data for account ${account.id}:`, error);
+          }
+        }
+
+        setError('No valid traffic data found for any ad account');
       } catch (error) {
-        console.error('Error fetching traffic data:', error);
+        console.error('Error fetching ad accounts:', error);
+        setError('Error fetching ad accounts');
       }
     };
 
     fetchTrafficData();
   }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return <Traffic chartSeries={chartSeries} labels={labels} sx={sx} />;
 }
