@@ -20,7 +20,7 @@ import { navItems } from './config';
 import { navIcons } from './nav-icons';
 
 export function SideNav(): React.JSX.Element {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
 
   return (
     <Box
