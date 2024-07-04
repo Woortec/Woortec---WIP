@@ -126,7 +126,6 @@ export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Elem
           }
         }
 
-        setError('No valid traffic data found for any ad account');
       } catch (error) {
         console.error('Error fetching ad accounts:', error);
         setError('Error fetching ad accounts');
