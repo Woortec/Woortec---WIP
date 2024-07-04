@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import { useAdAccount } from './AdAccountContext';
 import axios from 'axios';
 
@@ -26,6 +28,7 @@ const AdAccountSelector = () => {
           },
         });
 
+        console.log('Ad Accounts Response:', response.data);
         setAdAccounts(response.data.data);
       } catch (error) {
         console.error('Error fetching ad accounts:', error);
@@ -36,21 +39,24 @@ const AdAccountSelector = () => {
   }, []);
 
   return (
-    <Select
-      value={selectedAdAccount}
-      onChange={(e) => setSelectedAdAccount(e.target.value)}
-      displayEmpty
-      inputProps={{ 'aria-label': 'Select Ad Account' }}
-    >
-      <MenuItem value="">
-        <em>Select Ad Account</em>
-      </MenuItem>
-      {adAccounts.map((account) => (
-        <MenuItem key={account.id} value={account.id}>
-          {account.name}
+    <FormControl fullWidth>
+      <InputLabel id="ad-account-select-label">Select Ad Account</InputLabel>
+      <Select
+        labelId="ad-account-select-label"
+        value={selectedAdAccount}
+        onChange={(e) => setSelectedAdAccount(e.target.value as string)}
+        label="Select Ad Account"
+      >
+        <MenuItem value="">
+          <em>Select Ad Account</em>
         </MenuItem>
-      ))}
-    </Select>
+        {adAccounts.map((account) => (
+          <MenuItem key={account.id} value={account.id}>
+            {account.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 
