@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
-import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
+import AdAccountSelectionModal from './AdAccountSelectionModal';
 
-const setItemWithExpiry = (key: string, value: string, ttl: number) => {
+const setItemWithExpiry = (key: string, value: any, ttl: number) => {
   const now = new Date();
   const item = {
     value: value,
@@ -76,7 +76,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
-        // fetchPageInsights(token, storedUserId); // You can use this function to fetch insights where needed
+        if (storedAdAccount) {
+          fetchAdAccountBudget(token, JSON.parse(storedAdAccount).id);
+        }
       }
       if (storedAdAccount) {
         setSelectedAdAccount(JSON.parse(storedAdAccount));
@@ -88,7 +90,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       initializeState();
     });
 
-    // Ensure state is initialized on component mount
     initializeState();
   }, []);
 
@@ -102,6 +103,22 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
+  const fetchAdAccountBudget = (token: string, accountId: string) => {
+    if ((window as any).FB) {
+      (window as any).FB.api(
+        `/${accountId}/insights`,
+        { access_token: token, fields: 'spend,account_currency' },
+        (response: any) => {
+          if (response && !response.error) {
+            const totalSpend = response.data.reduce((acc: number, item: any) => acc + parseFloat(item.spend), 0);
+            const currency = response.data[0].account_currency;
+            setItemWithExpiry('fbAdAccountBudget', JSON.stringify({ totalSpend, currency }), 30 * 60 * 1000);
+          }
+        }
+      );
+    }
+  };
+
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
@@ -110,16 +127,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         const userId = response.authResponse.userID;
         setAccessToken(accessToken);
         setUserId(userId);
-        // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts
         fetchAdAccounts(accessToken);
-        // fetchPageInsights(accessToken, userId); // You can use this function to fetch insights where needed
-        // Open modal
         setModalOpen(true);
-      } else {
-        // User cancelled login or did not fully authorize.
       }
     }, { scope: 'ads_management,pages_manage_ads,pages_read_engagement' });
   };
@@ -133,6 +144,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setSelectedAdAccount(selectedAccount);
     setItemWithExpiry('fbAdAccount', JSON.stringify(selectedAccount), 30 * 60 * 1000);
     setModalOpen(false);
+    if (selectedAccount && accessToken) {
+      fetchAdAccountBudget(accessToken, selectedAccount.id);
+    }
   };
 
   const handleRemoveSelection = () => {
@@ -141,7 +155,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   return (
-    <Stack spacing={2} direction="row" sx={sx}>
+    <Stack spacing={2} direction="column" sx={sx}>
       {selectedAdAccount ? (
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
