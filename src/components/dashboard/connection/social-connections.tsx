@@ -68,8 +68,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    loadFacebookSDK().then(() => {
-      setIsSdkLoaded(true);
+    const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccount');
@@ -81,7 +80,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       if (storedAdAccount) {
         setSelectedAdAccount(JSON.parse(storedAdAccount));
       }
+    };
+
+    loadFacebookSDK().then(() => {
+      setIsSdkLoaded(true);
+      initializeState();
     });
+    
+    initializeState(); // Ensure state is initialized on component mount
   }, []);
 
   const fetchAdAccounts = (token: string) => {
