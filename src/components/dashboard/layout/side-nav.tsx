@@ -102,7 +102,7 @@ export function SideNav(): React.JSX.Element {
           component="a"
           endIcon={<ArrowSquareUpRightIcon fontSize="var(--icon-fontSize-md)" />}
           fullWidth
-          href="https://www.woortec.com/services"
+          href="https://www.app.woortec.com/dashboard/subscription"
           sx={{ mt: 2, bgcolor: '#00BFA6', color: 'white' }} // Main primary color for button
           target="_blank"
           variant="contained"

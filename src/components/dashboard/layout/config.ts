@@ -3,4 +3,5 @@ import { paths } from '@/paths';
 
 export const navItems = [
   { key: 'overview', title: 'Overview', href: paths.dashboard.overview, icon: 'chart-pie' },
+  { key: 'connection', title: 'Social Connections', href: paths.dashboard.connection, icon: 'chart-pie' },
 ] satisfies NavItemConfig[];
