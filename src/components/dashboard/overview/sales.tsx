@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -15,13 +17,49 @@ import type { ApexOptions } from 'apexcharts';
 
 import { Chart } from '@/components/core/chart';
 
-export interface SalesProps {
-  chartSeries: { name: string; data: number[] }[];
+interface ClicksProps {
   sx?: SxProps;
 }
 
-export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
+interface Account {
+  clicks: number;
+}
+
+export function Clicks({ sx }: ClicksProps): React.JSX.Element {
+  const [chartSeries, setChartSeries] = useState<{ name: string; data: number[] }[]>([]);
   const chartOptions = useChartOptions();
+
+  useEffect(() => {
+    const fetchClicks = async () => {
+      const accessToken = localStorage.getItem('fbAccessToken');
+      const userID = localStorage.getItem('fbUserID');
+
+      if (!accessToken || !userID) {
+        console.error('No access token or user ID found in local storage');
+        return;
+      }
+
+      try {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
+          params: {
+            access_token: accessToken,
+            fields: 'clicks',
+          },
+        });
+
+        const clicksData = response.data.data.map((account: Account) => account.clicks);
+        const formattedData = {
+          name: 'Clicks',
+          data: clicksData,
+        };
+        setChartSeries([formattedData]);
+      } catch (error) {
+        console.error('Error fetching clicks data:', error);
+      }
+    };
+
+    fetchClicks();
+  }, []);
 
   return (
     <Card sx={sx}>
@@ -31,7 +69,7 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
             Sync
           </Button>
         }
-        title="Sales"
+        title="Clicks"
       />
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
