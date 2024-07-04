@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, CardContent, Typography, IconButton } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
@@ -72,10 +72,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       setIsSdkLoaded(true);
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
+      const storedAdAccount = getItemWithExpiry('fbAdAccount');
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
+      }
+      if (storedAdAccount) {
+        setSelectedAdAccount(JSON.parse(storedAdAccount));
       }
     });
   }, []);
@@ -116,11 +120,13 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
     setSelectedAdAccount(selectedAccount);
+    setItemWithExpiry('fbAdAccount', JSON.stringify(selectedAccount), 30 * 60 * 1000);
     setModalOpen(false);
   };
 
   const handleRemoveSelection = () => {
     setSelectedAdAccount(null);
+    localStorage.removeItem('fbAdAccount');
   };
 
   return (
