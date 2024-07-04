@@ -67,14 +67,14 @@ const BudgetContainer = () => {
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const accessToken = localStorage.getItem('facebookAccessToken');
-        const adAccountId = localStorage.getItem('facebookAdAccountId');
+        const accessToken = localStorage.getItem('fbAccessToken');
+        const adAccountId = localStorage.getItem('fbAdAccount');
 
         if (!accessToken || !adAccountId) {
           throw new Error('Missing access token or ad account ID');
         }
 
-        const response = await axios.get(`https://graph.facebook.com/v13.0/${adAccountId}/insights`, {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'spend',
@@ -85,7 +85,7 @@ const BudgetContainer = () => {
         console.log('Response data:', response.data); // Log response data for debugging
         const spend = parseFloat(response.data.data[0].spend);
 
-        const previousResponse = await axios.get(`https://graph.facebook.com/v13.0/${adAccountId}/insights`, {
+        const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'spend',
