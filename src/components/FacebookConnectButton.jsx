@@ -75,6 +75,12 @@ const FacebookConnectButton = () => {
       <button onClick={handleFBLogin}>
         Connect to Facebook
       </button>
+      {accessToken && userID && (
+        <div>
+          <p>Access Token: {accessToken}</p>
+          <p>User ID: {userID}</p>
+        </div>
+      )}
     </div>
   );
 };
