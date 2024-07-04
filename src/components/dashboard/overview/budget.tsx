@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -67,10 +67,14 @@ const BudgetContainer = () => {
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const accessToken = localStorage.getItem('fbAccessToken');
-        const adAccountId = localStorage.getItem('fbAdAccount');
+        const accessToken = localStorage.getItem('facebookAccessToken');
+        const adAccountId = localStorage.getItem('facebookAdAccountId');
 
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+        if (!accessToken || !adAccountId) {
+          throw new Error('Missing access token or ad account ID');
+        }
+
+        const response = await axios.get(`https://graph.facebook.com/v13.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'spend',
@@ -78,8 +82,10 @@ const BudgetContainer = () => {
           },
         });
 
+        console.log('Response data:', response.data); // Log response data for debugging
         const spend = parseFloat(response.data.data[0].spend);
-        const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+
+        const previousResponse = await axios.get(`https://graph.facebook.com/v13.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'spend',
@@ -87,6 +93,7 @@ const BudgetContainer = () => {
           },
         });
 
+        console.log('Previous response data:', previousResponse.data); // Log previous response data for debugging
         const previousSpend = parseFloat(previousResponse.data.data[0].spend) / 2; // Divide by 2 for the previous 30 days
 
         const diff = ((spend - previousSpend) / previousSpend) * 100;
@@ -99,6 +106,9 @@ const BudgetContainer = () => {
         });
       } catch (error) {
         console.error('Error fetching budget data:', error);
+        if (axios.isAxiosError(error) && error.response) {
+          console.error('Response data:', error.response.data); // Log detailed error response for debugging
+        }
       }
     };
 
