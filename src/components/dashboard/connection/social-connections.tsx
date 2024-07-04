@@ -1,5 +1,6 @@
 'use client';
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Button, Stack } from '@mui/material';
 import { Facebook as FacebookIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
@@ -33,19 +34,16 @@ const getTokenWithExpiry = (key: string) => {
   }
 };
 
-export interface ConnectProps {
-  sx?: SxProps;
-}
-
-export function Connect({ sx }: ConnectProps): React.JSX.Element {
-  useEffect(() => {
+const loadFacebookSDK = () => {
+  return new Promise<void>((resolve) => {
     (window as any).fbAsyncInit = function() {
       (window as any).FB.init({
-        appId: 'YOUR_APP_ID',
+        appId: '961870345497057',
         cookie: true,
         xfbml: true,
-        version: 'v13.0'
+        version: 'v19.0'
       });
+      resolve();
     };
 
     const script = document.createElement('script');
@@ -53,17 +51,31 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     script.async = true;
     script.defer = true;
     document.body.appendChild(script);
+  });
+};
 
-    const token = getTokenWithExpiry('fbAccessToken');
-    if (token) {
-      // Use the token to make API calls
-      (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
-        // Handle the response, e.g., connect the page to your app
-      });
-    }
+export interface ConnectProps {
+  sx?: SxProps;
+}
+
+export function Connect({ sx }: ConnectProps): React.JSX.Element {
+  const [isSdkLoaded, setIsSdkLoaded] = useState(false);
+
+  useEffect(() => {
+    loadFacebookSDK().then(() => {
+      setIsSdkLoaded(true);
+      const token = getTokenWithExpiry('fbAccessToken');
+      if (token) {
+        // Use the token to make API calls
+        (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
+          // Handle the response, e.g., connect the page to your app
+        });
+      }
+    });
   }, []);
 
   const handleFacebookLogin = () => {
+    if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
