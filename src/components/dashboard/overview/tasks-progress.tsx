@@ -34,21 +34,29 @@ export function TasksProgress({ sx }: TasksProgressProps): React.JSX.Element {
           },
         });
 
-        const adAccountID = response.data.data[0].id;
+        const adAccounts = response.data.data;
+        let totalClicks = 0;
 
-        const clicksResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'clicks',
-            date_preset: 'lifetime',
-          },
-        });
+        for (const account of adAccounts) {
+          try {
+            const clicksResponse = await axios.get(`https://graph.facebook.com/v19.0/${account.id}/insights`, {
+              params: {
+                access_token: accessToken,
+                fields: 'clicks',
+                date_preset: 'lifetime',
+              },
+            });
 
-        const totalClicks = clicksResponse.data.data.reduce((acc: number, item: any) => acc + parseInt(item.clicks, 10), 0);
+            const accountClicks = clicksResponse.data.data.reduce((acc: number, item: any) => acc + parseInt(item.clicks, 10), 0);
+            totalClicks += accountClicks;
+          } catch (error) {
+            console.error(`Error fetching clicks for account ${account.id}:`, error);
+          }
+        }
 
         setValue(totalClicks);
       } catch (error) {
-        console.error('Error fetching clicks:', error);
+        console.error('Error fetching ad accounts:', error);
         setValue('Error');
       }
     };
@@ -65,7 +73,7 @@ export function TasksProgress({ sx }: TasksProgressProps): React.JSX.Element {
               <Typography color="text.secondary" gutterBottom variant="overline">
                 Total Clicks
               </Typography>
-              <Typography variant="h4">{typeof value === 'number' ? `${value}%` : value}</Typography>
+              <Typography variant="h4">{typeof value === 'number' ? `${value}` : value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-warning-main)', height: '56px', width: '56px' }}>
               <ListBulletsIcon fontSize="var(--icon-fontSize-lg)" />
