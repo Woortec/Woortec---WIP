@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Stack } from '@mui/material';
 import { Facebook as FacebookIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
+import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
@@ -62,6 +63,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     loadFacebookSDK().then(() => {
@@ -71,14 +74,18 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
-        console.log('Retrieved from localStorage:', { token, storedUserId });
-        // Use the token to make API calls
-        (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
-          // Handle the response, e.g., connect the page to your app
-        });
+        fetchAdAccounts(token);
       }
     });
   }, []);
+
+  const fetchAdAccounts = (token: string) => {
+    (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+      if (response && !response.error) {
+        setAdAccounts(response.data.map((account: any) => ({ id: account.id, name: account.name })));
+      }
+    });
+  };
 
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
@@ -88,18 +95,27 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         const userId = response.authResponse.userID;
         setAccessToken(accessToken);
         setUserId(userId);
-        console.log('Storing to localStorage:', { accessToken, userId });
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Now you can make calls to the Facebook Marketing API
-        (window as any).FB.api('/me/accounts', { access_token: accessToken }, (response: any) => {
-          // Handle the response, e.g., connect the page to your app
-        });
+        // Fetch ad accounts
+        fetchAdAccounts(accessToken);
+        // Open modal
+        setModalOpen(true);
       } else {
         // User cancelled login or did not fully authorize.
       }
-    }, { scope: 'pages_manage_ads,pages_read_engagement' });
+    }, { scope: 'ads_management,pages_manage_ads,pages_read_engagement' });
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleAdAccountSelect = (accountId: string) => {
+    console.log('Selected Ad Account:', accountId);
+    // Handle the selected ad account
+    setModalOpen(false);
   };
 
   return (
@@ -117,6 +133,12 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       >
         Connect a Facebook Page
       </Button>
+      <AdAccountSelectionModal
+        open={modalOpen}
+        adAccounts={adAccounts}
+        onClose={handleModalClose}
+        onSelect={handleAdAccountSelect}
+      />
     </Stack>
   );
 }
