@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Receipt as ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
+import axios from 'axios';
 
 export interface TotalProfitProps {
   sx?: SxProps;
@@ -30,4 +31,50 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
       </CardContent>
     </Card>
   );
+}
+
+export function FetchAndDisplayTotalProfit({ sx }: { sx?: SxProps }): React.JSX.Element {
+  const [cpc, setCpc] = React.useState<string>('Loading...');
+
+  React.useEffect(() => {
+    const fetchCPC = async () => {
+      const accessToken = localStorage.getItem('fbAccessToken');
+      const userID = localStorage.getItem('fbUserID');
+
+      if (!accessToken || !userID) {
+        console.error('No access token or user ID found in local storage');
+        setCpc('Error');
+        return;
+      }
+
+      try {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
+          params: {
+            access_token: accessToken,
+          },
+        });
+
+        const adAccountID = response.data.data[0].id;
+
+        const cpcResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
+          params: {
+            access_token: accessToken,
+            fields: 'cpc',
+            date_preset: 'lifetime',
+          },
+        });
+
+        const cpcValue = cpcResponse.data.data[0].cpc;
+
+        setCpc(`$${parseFloat(cpcValue).toFixed(2)}`);
+      } catch (error) {
+        console.error('Error fetching CPC:', error);
+        setCpc('Error');
+      }
+    };
+
+    fetchCPC();
+  }, []);
+
+  return <TotalProfit sx={sx} value={cpc} />;
 }

@@ -13,10 +13,11 @@ import { Desktop as DesktopIcon } from '@phosphor-icons/react/dist/ssr/Desktop';
 import { DeviceTablet as DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { Phone as PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone';
 import type { ApexOptions } from 'apexcharts';
+import axios from 'axios';
 
 import { Chart } from '@/components/core/chart';
 
-const iconMapping = { Desktop: DesktopIcon, Tablet: DeviceTabletIcon, Phone: PhoneIcon } as Record<string, Icon>;
+const iconMapping = { desktop: DesktopIcon, tablet: DeviceTabletIcon, mobile: PhoneIcon } as Record<string, Icon>;
 
 export interface TrafficProps {
   chartSeries: number[];
@@ -70,4 +71,52 @@ function useChartOptions(labels: string[]): ApexOptions {
     theme: { mode: theme.palette.mode },
     tooltip: { fillSeriesColor: false },
   };
+}
+
+export function FetchAndDisplayTraffic({ sx }: { sx?: SxProps }): React.JSX.Element {
+  const [chartSeries, setChartSeries] = React.useState<number[]>([]);
+  const [labels, setLabels] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    const fetchTrafficData = async () => {
+      const accessToken = localStorage.getItem('fbAccessToken');
+      const userID = localStorage.getItem('fbUserID');
+
+      if (!accessToken || !userID) {
+        console.error('No access token or user ID found in local storage');
+        return;
+      }
+
+      try {
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${userID}/adaccounts`, {
+          params: {
+            access_token: accessToken,
+          },
+        });
+
+        const adAccountID = response.data.data[0].id;
+
+        const trafficResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountID}/insights`, {
+          params: {
+            access_token: accessToken,
+            fields: 'impression_device, impressions, clicks',
+            date_preset: 'lifetime',
+          },
+        });
+
+        const trafficData = trafficResponse.data.data;
+        const labels = trafficData.map((item: any) => item.impression_device);
+        const chartSeries = trafficData.map((item: any) => (item.clicks / item.impressions) * 100);
+
+        setLabels(labels);
+        setChartSeries(chartSeries);
+      } catch (error) {
+        console.error('Error fetching traffic data:', error);
+      }
+    };
+
+    fetchTrafficData();
+  }, []);
+
+  return <Traffic chartSeries={chartSeries} labels={labels} sx={sx} />;
 }

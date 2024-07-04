@@ -8,8 +8,8 @@ import { LatestProducts } from '@/components/dashboard/overview/latest-products'
 import { Clicks } from '@/components/dashboard/overview/sales'; // Updated import
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalImpressions } from '@/components/dashboard/overview/total-customers';
-import { TotalProfit } from '@/components/dashboard/overview/total-profit';
-import { Traffic } from '@/components/dashboard/overview/traffic';
+import { FetchAndDisplayTotalProfit } from '@/components/dashboard/overview/total-profit';
+import { FetchAndDisplayTraffic } from '@/components/dashboard/overview/traffic'; // Updated import
 import FacebookConnectButton from '@/components/FacebookConnectButton';
 
 export default function Page(): React.JSX.Element {
@@ -22,16 +22,16 @@ export default function Page(): React.JSX.Element {
         <TotalImpressions sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-      <TasksProgress sx={{ height: '100%' }} />
+        <TasksProgress sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalProfit sx={{ height: '100%' }} value="$15k" />
+        <FetchAndDisplayTotalProfit sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={8} xs={12}>
         <Clicks sx={{ height: '100%' }} /> {/* Updated component usage */}
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
+        <FetchAndDisplayTraffic sx={{ height: '100%' }} /> {/* Updated component usage */}
       </Grid>
       <Grid lg={12} xs={12}>
         <FacebookConnectButton />
