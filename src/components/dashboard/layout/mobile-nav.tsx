@@ -27,7 +27,7 @@ export interface MobileNavProps {
 }
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
 
   return (
     <Drawer
@@ -94,7 +94,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
             Need more features?
           </Typography>
           <Typography color="var(--mui-palette-neutral-400)" variant="body2">
-            Check out our Subscrition Plan.
+            Check out our Subscription Plan.
           </Typography>
         </div>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
