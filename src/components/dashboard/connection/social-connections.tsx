@@ -5,7 +5,7 @@ import { Button, Stack } from '@mui/material';
 import { Facebook as FacebookIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 
-const setTokenWithExpiry = (key: string, value: string, ttl: number) => {
+const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
   const item = {
     value: value,
@@ -14,7 +14,7 @@ const setTokenWithExpiry = (key: string, value: string, ttl: number) => {
   localStorage.setItem(key, JSON.stringify(item));
 };
 
-const getTokenWithExpiry = (key: string) => {
+const getItemWithExpiry = (key: string) => {
   const itemStr = localStorage.getItem(key);
   if (!itemStr) {
     return null;
@@ -60,12 +60,18 @@ export interface ConnectProps {
 
 export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     loadFacebookSDK().then(() => {
       setIsSdkLoaded(true);
-      const token = getTokenWithExpiry('fbAccessToken');
-      if (token) {
+      const token = getItemWithExpiry('fbAccessToken');
+      const storedUserId = getItemWithExpiry('fbUserId');
+      if (token && storedUserId) {
+        setAccessToken(token);
+        setUserId(storedUserId);
+        console.log('Retrieved from localStorage:', { token, storedUserId });
         // Use the token to make API calls
         (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
           // Handle the response, e.g., connect the page to your app
@@ -79,8 +85,13 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     (window as any).FB.login((response: any) => {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
-        // Store the token with a 30-minute expiry
-        setTokenWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
+        const userId = response.authResponse.userID;
+        setAccessToken(accessToken);
+        setUserId(userId);
+        console.log('Storing to localStorage:', { accessToken, userId });
+        // Store the token and user ID with a 30-minute expiry
+        setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
+        setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
         // Now you can make calls to the Facebook Marketing API
         (window as any).FB.api('/me/accounts', { access_token: accessToken }, (response: any) => {
           // Handle the response, e.g., connect the page to your app
