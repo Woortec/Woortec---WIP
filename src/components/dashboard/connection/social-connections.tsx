@@ -76,7 +76,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
-        // fetchPageInsights(token, storedUserId); // You can use this function to fetch insights where needed
       }
       if (storedAdAccount) {
         setSelectedAdAccount(JSON.parse(storedAdAccount));
@@ -97,6 +96,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
         if (response && !response.error) {
           setAdAccounts(response.data.map((account: any) => ({ id: account.id, name: account.name })));
+        } else {
+          console.error('Error fetching ad accounts:', response.error);
         }
       });
     }
@@ -115,11 +116,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
         // Fetch ad accounts
         fetchAdAccounts(accessToken);
-        // fetchPageInsights(accessToken, userId); // You can use this function to fetch insights where needed
         // Open modal
         setModalOpen(true);
       } else {
-        // User cancelled login or did not fully authorize.
+        console.error('User cancelled login or did not fully authorize.');
       }
     }, { scope: 'ads_management,pages_manage_ads,pages_read_engagement,ads_read' });
   };
@@ -131,7 +131,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
     setSelectedAdAccount(selectedAccount);
-    setItemWithExpiry('fbAdAccount', JSON.stringify(selectedAccount), 30 * 60 * 1000);
+    if (selectedAccount) {
+      setItemWithExpiry('fbAdAccount', JSON.stringify(selectedAccount), 30 * 60 * 1000);
+    }
     setModalOpen(false);
   };
 
