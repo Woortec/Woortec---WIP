@@ -1,14 +1,9 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemText, Card, CardContent, Typography } from '@mui/material';
 
-interface AdAccount {
-  id: string;
-  name: string;
-}
-
 interface AdAccountSelectionModalProps {
   open: boolean;
-  adAccounts: AdAccount[];
+  adAccounts: { id: string; name: string }[];
   onClose: () => void;
   onSelect: (accountId: string) => void;
 }
