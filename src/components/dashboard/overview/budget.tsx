@@ -100,7 +100,7 @@ const BudgetContainer = () => {
           params: {
             access_token: accessToken,
             fields: 'spend',
-            date_preset: 'last_60d',
+            date_preset: 'last_month',
           },
         });
 
@@ -110,7 +110,7 @@ const BudgetContainer = () => {
           throw new Error('No data found for the previous time period');
         }
 
-        const previousSpend = parseFloat(previousResponse.data.data[0].spend) / 2;
+        const previousSpend = parseFloat(previousResponse.data.data[0].spend);
 
         const diff = ((spend - previousSpend) / previousSpend) * 100;
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
