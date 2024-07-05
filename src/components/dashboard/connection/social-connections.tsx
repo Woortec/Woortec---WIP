@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
-import AdAccountSelectionModal from './AdAccountSelectionModal';
-import PageSelectionModal from './PageSelectionModal'; // Import the page selection modal component
+import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
@@ -65,11 +64,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
-  const [pages, setPages] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [pageModalOpen, setPageModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
-  const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     const initializeState = () => {
@@ -77,20 +73,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccount');
       const storedAdAccountName = getItemWithExpiry('fbAdAccountName');
-      const storedPageId = getItemWithExpiry('fbPageId');
-      const storedPageName = getItemWithExpiry('fbPageName');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPageId });
+      console.log('Initialize state:', { token, storedUserId, storedAdAccount });
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
-        fetchPages(token);
       }
       if (storedAdAccount && storedAdAccountName) {
         setSelectedAdAccount({ id: storedAdAccount, name: storedAdAccountName });
-      }
-      if (storedPageId && storedPageName) {
-        setSelectedPage({ id: storedPageId, name: storedPageName });
       }
     };
 
@@ -117,20 +107,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
-  const fetchPages = (token: string) => {
-    if ((window as any).FB) {
-      (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
-          console.log('Fetched pages:', pages);
-          setPages(pages);
-        } else {
-          console.error('Error fetching pages:', response.error);
-        }
-      });
-    }
-  };
-
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
@@ -143,12 +119,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts and pages
+        // Fetch ad accounts
         fetchAdAccounts(accessToken);
-        fetchPages(accessToken);
         // Open modal
         setModalOpen(true);
-        setPageModalOpen(true);
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
@@ -157,10 +131,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const handleModalClose = () => {
     setModalOpen(false);
-  };
-
-  const handlePageModalClose = () => {
-    setPageModalOpen(false);
   };
 
   const handleAdAccountSelect = (accountId: string) => {
@@ -174,40 +144,25 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setModalOpen(false);
   };
 
-  const handlePageSelect = (pageId: string) => {
-    const selectedPage = pages.find(page => page.id === pageId) || null;
-    console.log('Page selected:', selectedPage);
-    setSelectedPage(selectedPage);
-    if (selectedPage) {
-      setItemWithExpiry('fbPageId', selectedPage.id, 30 * 60 * 1000);
-      setItemWithExpiry('fbPageName', selectedPage.name, 30 * 60 * 1000);
-    }
-    setPageModalOpen(false);
-  };
-
   const handleRemoveSelection = () => {
     console.log('Removing selection');
     setSelectedAdAccount(null);
-    setSelectedPage(null);
     localStorage.removeItem('fbAdAccount');
     localStorage.removeItem('fbAdAccountName');
-    localStorage.removeItem('fbPageId');
-    localStorage.removeItem('fbPageName');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
     setAccessToken(null);
     setUserId(null);
     setAdAccounts([]);
-    setPages([]);
   };
 
   return (
     <Stack spacing={2} direction="row" sx={sx}>
-      {selectedAdAccount && selectedPage ? (
+      {selectedAdAccount ? (
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
           <Typography variant="body1">
-            {selectedPage.name} <br /> {selectedAdAccount.name}
+            {selectedAdAccount.name}
           </Typography>
           <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
             <CloseIcon />
@@ -233,12 +188,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         adAccounts={adAccounts}
         onClose={handleModalClose}
         onSelect={handleAdAccountSelect}
-      />
-      <PageSelectionModal
-        open={pageModalOpen}
-        pages={pages}
-        onClose={handlePageModalClose}
-        onSelect={handlePageSelect}
       />
     </Stack>
   );
