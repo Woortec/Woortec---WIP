@@ -44,11 +44,7 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
           params: {
             access_token: accessToken,
             fields: 'impressions',
-            time_range: JSON.stringify({
-              since: '2023-01-01',
-              until: '2023-12-31',
-            }),
-            time_increment: 'day',
+            date_preset: 'monthly',
           },
         });
 
