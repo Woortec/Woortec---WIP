@@ -74,30 +74,27 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedAdAccount, setSelectedAdAccount] = useState<AdAccount | null>(null);
 
   useEffect(() => {
-    const initializeState = () => {
-      const token = getItemWithExpiry('fbAccessToken');
-      const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccountId = getItemWithExpiry('fbAdAccount');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccountId });
-      if (token && storedUserId) {
-        setAccessToken(token);
-        setUserId(storedUserId);
-        fetchAdAccounts(token);
-      }
-      if (storedAdAccountId) {
-        const storedAdAccount = adAccounts.find((account: AdAccount) => account.id === storedAdAccountId);
-        setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
-      }
-    };
-
     loadFacebookSDK().then(() => {
       setIsSdkLoaded(true);
       initializeState();
     });
+  }, []);
 
-    // Ensure state is initialized on component mount
-    initializeState();
-  }, [adAccounts]); // Add adAccounts as a dependency to update selected ad account name when adAccounts are fetched
+  const initializeState = () => {
+    const token = getItemWithExpiry('fbAccessToken');
+    const storedUserId = getItemWithExpiry('fbUserId');
+    const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+    console.log('Initialize state:', { token, storedUserId, storedAdAccountId });
+    if (token && storedUserId) {
+      setAccessToken(token);
+      setUserId(storedUserId);
+      fetchAdAccounts(token);
+    }
+    if (storedAdAccountId) {
+      const storedAdAccount = adAccounts.find((account: AdAccount) => account.id === storedAdAccountId);
+      setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+    }
+  };
 
   const fetchAdAccounts = (token: string) => {
     if ((window as any).FB) {
