@@ -84,7 +84,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const token = getItemWithExpiry('fbAccessToken');
     const storedUserId = getItemWithExpiry('fbUserId');
     const storedAdAccountId = getItemWithExpiry('fbAdAccountId');
-    console.log('Initialize state:', { token, storedUserId, storedAdAccountId });
     if (token && storedUserId) {
       setAccessToken(token);
       setUserId(storedUserId);
@@ -95,18 +94,29 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const fetchAdAccounts = (token: string, storedAdAccountId?: string) => {
     if ((window as any).FB) {
       (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
-        console.log('Facebook API response:', response);
         if (response && !response.error) {
-          const accounts = response.data.map((account: any) => ({
-            id: account.id,
-            name: account.name || 'Unnamed Account',
-          }));
-          console.log('Fetched ad accounts:', accounts);
-          setAdAccounts(accounts);
-          if (storedAdAccountId) {
-            const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
-            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: 'Unnamed Account' });
-          }
+          const accountIds = response.data.map((account: any) => account.id);
+          Promise.all(
+            accountIds.map((accountId: string) =>
+              new Promise<AdAccount>((resolve, reject) => {
+                (window as any).FB.api(`/${accountId}`, { access_token: token }, (accountResponse: any) => {
+                  if (accountResponse && !accountResponse.error) {
+                    resolve({ id: accountId, name: accountResponse.name });
+                  } else {
+                    reject(accountResponse.error);
+                  }
+                });
+              })
+            )
+          )
+            .then((accounts) => {
+              setAdAccounts(accounts);
+              if (storedAdAccountId) {
+                const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
+                setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: 'Unnamed Account' });
+              }
+            })
+            .catch((error) => console.error('Error fetching ad account details:', error));
         } else {
           console.error('Error fetching ad accounts:', response.error);
         }
@@ -120,7 +130,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
         const userId = response.authResponse.userID;
-        console.log('Facebook login successful:', { accessToken, userId });
         setAccessToken(accessToken);
         setUserId(userId);
         // Store the token and user ID with a 30-minute expiry
@@ -142,7 +151,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
-    console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
       setItemWithExpiry('fbAdAccountId', selectedAccount.id, 30 * 60 * 1000);
@@ -151,7 +159,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleRemoveSelection = () => {
-    console.log('Removing selection');
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountId');
     localStorage.removeItem('fbAccessToken');
