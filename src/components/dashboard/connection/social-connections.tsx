@@ -79,7 +79,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchAdAccounts(token);
       }
       if (storedAdAccount) {
-        setSelectedAdAccount(JSON.parse(storedAdAccount));
+        setSelectedAdAccount({ id: storedAdAccount, name: '' });
       }
     };
 
@@ -137,7 +137,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', JSON.stringify(selectedAccount), 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
