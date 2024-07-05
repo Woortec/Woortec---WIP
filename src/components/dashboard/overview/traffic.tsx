@@ -44,7 +44,7 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
           params: {
             access_token: accessToken,
             fields: 'impressions',
-            date_preset: 'monthly',
+            date_preset: 'this_year',
           },
         });
 
