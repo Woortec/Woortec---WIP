@@ -50,12 +50,16 @@ export function Sales({ sx }: SalesProps): React.JSX.Element {
           },
         });
 
+        console.log('Raw Response Data:', response.data);
+
         if (response.data.data && response.data.data.length > 0) {
           const monthlySpend = response.data.data.reduce((acc: number[], curr: any) => {
             const month = new Date(curr.date_start).getMonth();
             acc[month] = (acc[month] || 0) + parseFloat(curr.spend);
             return acc;
           }, new Array(12).fill(0));
+
+          console.log('Processed Monthly Spend:', monthlySpend);
 
           setChartSeries([{ name: 'Ad Spend', data: monthlySpend }]);
         }
