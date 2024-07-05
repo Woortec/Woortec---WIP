@@ -95,13 +95,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const fetchAdAccounts = (token: string, storedAdAccountId?: string) => {
     if ((window as any).FB) {
       (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+        console.log('Facebook API response:', response);
         if (response && !response.error) {
-          const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
+          const accounts = response.data.map((account: any) => ({
+            id: account.id,
+            name: account.name || 'Unnamed Account',
+          }));
           console.log('Fetched ad accounts:', accounts);
           setAdAccounts(accounts);
           if (storedAdAccountId) {
             const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
-            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: 'Unknown' });
+            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: 'Unnamed Account' });
           }
         } else {
           console.error('Error fetching ad accounts:', response.error);

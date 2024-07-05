@@ -24,7 +24,7 @@ const AdAccountSelectionModal: React.FC<AdAccountSelectionModalProps> = ({ open,
               <CardContent>
                 <ListItem button onClick={() => onSelect(account.id)}>
                   <ListItemText
-                    primary={<Typography variant="h6">{account.name || 'Unnamed Account'}</Typography>}
+                    primary={<Typography variant="h6">{account.name}</Typography>}
                     secondary={account.id}
                   />
                   <Button variant="contained" color="primary">
