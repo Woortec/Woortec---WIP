@@ -46,7 +46,7 @@ export function Sales({ sx }: SalesProps): React.JSX.Element {
               since: '2023-01-01', // Fixed start date
               until: '2023-12-31', // Fixed end date
             }),
-            time_increment: 'month',
+            time_increment: 'monthly',
           },
         });
 
