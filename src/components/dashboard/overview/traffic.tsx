@@ -68,6 +68,8 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
         console.error('Error fetching total reach data:', error);
         if (axios.isAxiosError(error) && error.response) {
           console.error('Response data:', error.response.data);
+        } else {
+          console.error(error);
         }
       }
     };
@@ -116,8 +118,7 @@ function useChartOptions(labels: string[]): ApexOptions {
     yaxis: {
       labels: {
         formatter: (value) => `${value}`,
-        style: { colors: theme.palette.text.secondary },
-      },
+        style: { colors: theme.palette.text.secondary } },
     },
   };
 }
