@@ -72,14 +72,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccount');
+      const storedAdAccountName = getItemWithExpiry('fbAdAccountName');
       console.log('Initialize state:', { token, storedUserId, storedAdAccount });
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
       }
-      if (storedAdAccount) {
-        setSelectedAdAccount({ id: storedAdAccount, name: '' });
+      if (storedAdAccount && storedAdAccountName) {
+        setSelectedAdAccount({ id: storedAdAccount, name: storedAdAccountName });
       }
     };
 
@@ -138,6 +139,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
       setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccountName', selectedAccount.name, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
@@ -146,6 +148,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Removing selection');
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccount');
+    localStorage.removeItem('fbAdAccountName');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
     setAccessToken(null);
@@ -159,7 +162,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
           <Typography variant="body1">
-            {selectedAdAccount.name} <br /> {selectedAdAccount.id}
+            {selectedAdAccount.name}
           </Typography>
           <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
             <CloseIcon />
