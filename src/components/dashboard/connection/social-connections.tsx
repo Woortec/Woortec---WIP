@@ -125,7 +125,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
-    }, { scope: 'ads_management,pages_manage_ads,pages_read_engagement,ads_read' });
+    }, { scope: 'ads_management,ads_read,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
   };
 
   const handleModalClose = () => {
