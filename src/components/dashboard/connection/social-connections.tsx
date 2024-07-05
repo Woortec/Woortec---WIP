@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
@@ -59,27 +59,34 @@ export interface ConnectProps {
   sx?: SxProps;
 }
 
+// Define the type for ad account
+type AdAccount = {
+  id: string;
+  name: string;
+};
+
 export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
+  const [adAccounts, setAdAccounts] = useState<AdAccount[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
+  const [selectedAdAccount, setSelectedAdAccount] = useState<AdAccount | null>(null);
 
   useEffect(() => {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccount = getItemWithExpiry('fbAdAccount');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccount });
+      const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+      console.log('Initialize state:', { token, storedUserId, storedAdAccountId });
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
       }
-      if (storedAdAccount) {
-        setSelectedAdAccount({ id: storedAdAccount, name: '' });
+      if (storedAdAccountId) {
+        const storedAdAccount = adAccounts.find((account: AdAccount) => account.id === storedAdAccountId);
+        setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
       }
     };
 
@@ -90,7 +97,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
     // Ensure state is initialized on component mount
     initializeState();
-  }, []);
+  }, [adAccounts]); // Add adAccounts as a dependency to update selected ad account name when adAccounts are fetched
 
   const fetchAdAccounts = (token: string) => {
     if ((window as any).FB) {
@@ -99,6 +106,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
           console.log('Fetched ad accounts:', accounts);
           setAdAccounts(accounts);
+          const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+          if (storedAdAccountId) {
+            const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
+            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+          }
         } else {
           console.error('Error fetching ad accounts:', response.error);
         }
