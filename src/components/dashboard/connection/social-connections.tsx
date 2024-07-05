@@ -138,6 +138,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleRemoveSelection = () => {
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccount');
+    localStorage.removeItem('fbAccessToken');
+    localStorage.removeItem('fbUserId');
+    setAccessToken(null);
+    setUserId(null);
+    setAdAccounts([]);
   };
 
   return (
