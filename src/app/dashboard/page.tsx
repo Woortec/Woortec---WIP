@@ -8,10 +8,10 @@ import BudgetContainer from '@/components/dashboard/overview/budget'; // Use def
 import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
 import { LatestProducts } from '@/components/dashboard/overview/latest-products';
 import { Sales } from '@/components/dashboard/overview/sales';
-import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
-import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
-import { TotalProfit } from '@/components/dashboard/overview/total-profit';
-import { Traffic } from '@/components/dashboard/overview/traffic';
+import TotalCostPerMessageContainer  from '@/components/dashboard/overview/tasks-progress';
+import TotalImpressionsContainer from '@/components/dashboard/overview/total-customers'; // Adjusted import statement
+import  TotalProfitContainer  from '@/components/dashboard/overview/total-profit';
+import { FollowersByCountry } from '@/components/dashboard/overview/traffic';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -21,14 +21,14 @@ export default function Page(): React.JSX.Element {
       <Grid lg={3} sm={6} xs={12}>
         <BudgetContainer />
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
+      <Grid lg={3} sm={6} xs={12}>  
+        <TotalImpressionsContainer />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TasksProgress sx={{ height: '100%' }} value={75.5} />
+        <TotalCostPerMessageContainer/>
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalProfit sx={{ height: '100%' }} value="$15k" />
+        <TotalProfitContainer />
       </Grid>
       <Grid lg={8} xs={12}>
         <Sales
@@ -40,7 +40,7 @@ export default function Page(): React.JSX.Element {
         />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
+        <FollowersByCountry />
       </Grid>
     </Grid>
   );
