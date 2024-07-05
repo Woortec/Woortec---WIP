@@ -83,14 +83,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const initializeState = () => {
     const token = getItemWithExpiry('fbAccessToken');
     const storedUserId = getItemWithExpiry('fbUserId');
-    const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+    const storedAdAccountId = getItemWithExpiry('fbAdAccountId');
     console.log('Initialize state:', { token, storedUserId, storedAdAccountId });
     if (token && storedUserId) {
       setAccessToken(token);
       setUserId(storedUserId);
       fetchAdAccounts(token);
     }
-    if (storedAdAccountId) {
+    if (storedAdAccountId && adAccounts.length > 0) {
       const storedAdAccount = adAccounts.find((account: AdAccount) => account.id === storedAdAccountId);
       setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
     }
@@ -103,7 +103,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
           console.log('Fetched ad accounts:', accounts);
           setAdAccounts(accounts);
-          const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+          // Update the selected ad account name if it exists in localStorage
+          const storedAdAccountId = getItemWithExpiry('fbAdAccountId');
           if (storedAdAccountId) {
             const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
             setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
@@ -146,7 +147,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccountId', selectedAccount.id, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
@@ -154,7 +155,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleRemoveSelection = () => {
     console.log('Removing selection');
     setSelectedAdAccount(null);
-    localStorage.removeItem('fbAdAccount');
+    localStorage.removeItem('fbAdAccountId');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
     setAccessToken(null);
