@@ -1,14 +1,9 @@
 'use client';
 
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, CardActions, CardContent, CardHeader, Divider, CircularProgress } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
-import type { SxProps } from '@mui/material/styles';
+import type { SxProps } from '@mui/system';
 import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import type { ApexOptions } from 'apexcharts';
@@ -22,9 +17,10 @@ export interface SalesProps {
 
 export function Sales({ sx }: SalesProps): React.JSX.Element {
   const chartOptions = useChartOptions();
-  const [chartSeries, setChartSeries] = React.useState<{ name: string; data: number[] }[]>([]);
+  const [chartSeries, setChartSeries] = useState<{ name: string; data: number[] }[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchAdSpendData = async () => {
       try {
         const accessToken = getItemWithExpiry('fbAccessToken');
@@ -62,12 +58,16 @@ export function Sales({ sx }: SalesProps): React.JSX.Element {
           console.log('Processed Monthly Spend:', monthlySpend);
 
           setChartSeries([{ name: 'Ad Spend', data: monthlySpend }]);
+        } else {
+          console.log('No data found in the response:', response.data);
         }
       } catch (error) {
         console.error('Error fetching ad spend data:', error);
         if (axios.isAxiosError(error) && error.response) {
           console.error('Response data:', error.response.data);
         }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -85,7 +85,11 @@ export function Sales({ sx }: SalesProps): React.JSX.Element {
         title="Ad Spend"
       />
       <CardContent>
-        <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
+        )}
       </CardContent>
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
