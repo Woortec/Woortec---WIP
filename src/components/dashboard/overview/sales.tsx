@@ -12,16 +12,63 @@ import type { SxProps } from '@mui/material/styles';
 import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import type { ApexOptions } from 'apexcharts';
+import axios from 'axios';
 
 import { Chart } from '@/components/core/chart';
 
 export interface SalesProps {
-  chartSeries: { name: string; data: number[] }[];
   sx?: SxProps;
 }
 
-export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
+export function Sales({ sx }: SalesProps): React.JSX.Element {
   const chartOptions = useChartOptions();
+  const [chartSeries, setChartSeries] = React.useState<{ name: string; data: number[] }[]>([]);
+
+  React.useEffect(() => {
+    const fetchAdSpendData = async () => {
+      try {
+        const accessToken = getItemWithExpiry('fbAccessToken');
+        const adAccountId = getItemWithExpiry('fbAdAccount');
+
+        if (!accessToken) {
+          throw new Error('Missing access token');
+        }
+
+        if (!adAccountId) {
+          throw new Error('Missing ad account ID');
+        }
+
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+          params: {
+            access_token: accessToken,
+            fields: 'spend',
+            time_range: JSON.stringify({
+              since: '2023-01-01', // Fixed start date
+              until: '2023-12-31', // Fixed end date
+            }),
+            time_increment: 'month',
+          },
+        });
+
+        if (response.data.data && response.data.data.length > 0) {
+          const monthlySpend = response.data.data.reduce((acc: number[], curr: any) => {
+            const month = new Date(curr.date_start).getMonth();
+            acc[month] = (acc[month] || 0) + parseFloat(curr.spend);
+            return acc;
+          }, new Array(12).fill(0));
+
+          setChartSeries([{ name: 'Ad Spend', data: monthlySpend }]);
+        }
+      } catch (error) {
+        console.error('Error fetching ad spend data:', error);
+        if (axios.isAxiosError(error) && error.response) {
+          console.error('Response data:', error.response.data);
+        }
+      }
+    };
+
+    fetchAdSpendData();
+  }, []);
 
   return (
     <Card sx={sx}>
@@ -31,7 +78,7 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
             Sync
           </Button>
         }
-        title="Sales"
+        title="Ad Spend"
       />
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
@@ -78,4 +125,27 @@ function useChartOptions(): ApexOptions {
       },
     },
   };
+}
+
+// Utility function to get item from localStorage with expiry
+function getItemWithExpiry(key: string): string | null {
+  const itemStr = localStorage.getItem(key);
+  // If the item doesn't exist, return null
+  if (!itemStr) {
+    return null;
+  }
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    // Compare the expiry time of the item with the current time
+    if (now.getTime() > item.expiry) {
+      // If the item is expired, delete the item from storage and return null
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch (error) {
+    console.error('Error parsing item from localStorage', error);
+    return null;
+  }
 }
