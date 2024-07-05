@@ -88,26 +88,20 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     if (token && storedUserId) {
       setAccessToken(token);
       setUserId(storedUserId);
-      fetchAdAccounts(token);
-    }
-    if (storedAdAccountId && adAccounts.length > 0) {
-      const storedAdAccount = adAccounts.find((account: AdAccount) => account.id === storedAdAccountId);
-      setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+      fetchAdAccounts(token, storedAdAccountId);
     }
   };
 
-  const fetchAdAccounts = (token: string) => {
+  const fetchAdAccounts = (token: string, storedAdAccountId?: string) => {
     if ((window as any).FB) {
       (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
           console.log('Fetched ad accounts:', accounts);
           setAdAccounts(accounts);
-          // Update the selected ad account name if it exists in localStorage
-          const storedAdAccountId = getItemWithExpiry('fbAdAccountId');
           if (storedAdAccountId) {
             const storedAdAccount = accounts.find((account: AdAccount) => account.id === storedAdAccountId);
-            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+            setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: 'Unknown' });
           }
         } else {
           console.error('Error fetching ad accounts:', response.error);
