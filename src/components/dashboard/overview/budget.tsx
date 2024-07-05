@@ -1,5 +1,4 @@
-'use client'
-
+'use client';
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
@@ -67,12 +66,19 @@ const BudgetContainer = () => {
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const accessToken = localStorage.getItem('fbAccessToken');
-        const adAccountId = localStorage.getItem('fbAdAccount');
+        const accessToken = getItemWithExpiry('fbAccessToken');
+        const adAccountId = getItemWithExpiry('fbAdAccount');
 
-        if (!accessToken || !adAccountId) {
-          throw new Error('Missing access token or ad account ID');
+        if (!accessToken) {
+          throw new Error('Missing access token');
         }
+
+        if (!adAccountId) {
+          throw new Error('Missing ad account ID');
+        }
+
+        console.log('Access Token:', accessToken);
+        console.log('Ad Account ID:', adAccountId);
 
         const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
@@ -82,7 +88,12 @@ const BudgetContainer = () => {
           },
         });
 
-        console.log('Response data:', response.data); // Log response data for debugging
+        console.log('Response data:', response.data);
+
+        if (!response.data.data || response.data.data.length === 0) {
+          throw new Error('No data found for the given time period');
+        }
+
         const spend = parseFloat(response.data.data[0].spend);
 
         const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
@@ -93,8 +104,13 @@ const BudgetContainer = () => {
           },
         });
 
-        console.log('Previous response data:', previousResponse.data); // Log previous response data for debugging
-        const previousSpend = parseFloat(previousResponse.data.data[0].spend) / 2; // Divide by 2 for the previous 30 days
+        console.log('Previous response data:', previousResponse.data);
+
+        if (!previousResponse.data.data || previousResponse.data.data.length === 0) {
+          throw new Error('No data found for the previous time period');
+        }
+
+        const previousSpend = parseFloat(previousResponse.data.data[0].spend) / 2;
 
         const diff = ((spend - previousSpend) / previousSpend) * 100;
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
@@ -107,7 +123,7 @@ const BudgetContainer = () => {
       } catch (error) {
         console.error('Error fetching budget data:', error);
         if (axios.isAxiosError(error) && error.response) {
-          console.error('Response data:', error.response.data); // Log detailed error response for debugging
+          console.error('Response data:', error.response.data);
         }
       }
     };
@@ -119,3 +135,26 @@ const BudgetContainer = () => {
 };
 
 export default BudgetContainer;
+
+// Utility function to get item from localStorage with expiry
+function getItemWithExpiry(key: string): string | null {
+  const itemStr = localStorage.getItem(key);
+  // If the item doesn't exist, return null
+  if (!itemStr) {
+    return null;
+  }
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    // Compare the expiry time of the item with the current time
+    if (now.getTime() > item.expiry) {
+      // If the item is expired, delete the item from storage and return null
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch (error) {
+    console.error('Error parsing item from localStorage', error);
+    return null;
+  }
+}
