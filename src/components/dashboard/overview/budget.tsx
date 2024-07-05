@@ -42,7 +42,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
                 <Typography color={trendColor} variant="body2">
-                  {diff}%
+                  {diff.toFixed(2)}%
                 </Typography>
               </Stack>
               <Typography color="text.secondary" variant="caption">
@@ -57,10 +57,11 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
 }
 
 const BudgetContainer = () => {
-  const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down' }>({
+  const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down'; currency: string }>({
     value: '',
     diff: 0,
     trend: 'up',
+    currency: 'USD',
   });
 
   useEffect(() => {
@@ -79,6 +80,16 @@ const BudgetContainer = () => {
 
         console.log('Access Token:', accessToken);
         console.log('Ad Account ID:', adAccountId);
+
+        // Fetch the ad account details to get the currency
+        const accountDetailsResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}`, {
+          params: {
+            access_token: accessToken,
+            fields: 'currency',
+          },
+        });
+
+        const currency = accountDetailsResponse.data.currency;
 
         const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
@@ -115,10 +126,13 @@ const BudgetContainer = () => {
         const diff = ((spend - previousSpend) / previousSpend) * 100;
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
 
+        const formattedValue = new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(spend);
+
         setBudgetData({
-          value: `$${spend.toFixed(2)}`,
+          value: formattedValue,
           diff: Math.abs(diff),
           trend: trend,
+          currency: currency,
         });
       } catch (error) {
         console.error('Error fetching budget data:', error);
