@@ -11,7 +11,7 @@ import { Sales } from '@/components/dashboard/overview/sales';
 import TotalCostPerMessageContainer  from '@/components/dashboard/overview/tasks-progress';
 import TotalImpressionsContainer from '@/components/dashboard/overview/total-customers'; // Adjusted import statement
 import  TotalProfitContainer  from '@/components/dashboard/overview/total-profit';
-import { FollowersByCountry } from '@/components/dashboard/overview/traffic';
+import { TotalReach } from '@/components/dashboard/overview/traffic';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -34,7 +34,7 @@ export default function Page(): React.JSX.Element {
         <Sales />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <FollowersByCountry />
+        <TotalReach />
       </Grid>
     </Grid>
   );

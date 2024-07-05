@@ -8,94 +8,88 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import type { Icon } from '@phosphor-icons/react';
-import { Globe as GlobeIcon } from '@phosphor-icons/react';
 import axios from 'axios';
 import type { ApexOptions } from 'apexcharts';
 
 import { Chart } from '@/components/core/chart';
 
-const iconMapping = { Globe: GlobeIcon } as Record<string, Icon>;
-
-export interface FollowersByCountryProps {
+export interface TotalReachProps {
   sx?: SxProps;
 }
 
-export function FollowersByCountry({ sx }: FollowersByCountryProps): React.JSX.Element {
+export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
   const [chartSeries, setChartSeries] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const chartOptions = useChartOptions(labels);
 
   useEffect(() => {
-    const fetchFollowersByCountry = async () => {
+    const fetchTotalReach = async () => {
       try {
         const accessToken = getItemWithExpiry('fbAccessToken');
-        const pageId = getItemWithExpiry('fbPageId');
+        const adAccountId = getItemWithExpiry('fbAdAccount');
 
         if (!accessToken) {
           throw new Error('Missing access token');
         }
 
-        if (!pageId) {
-          throw new Error('Missing page ID');
+        if (!adAccountId) {
+          throw new Error('Missing ad account ID');
         }
 
         console.log('Access Token:', accessToken);
-        console.log('Page ID:', pageId);
+        console.log('Ad Account ID:', adAccountId);
 
-        // Fetch the followers by country for the Facebook page
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${pageId}/insights`, {
+        // Fetch the total reach for the ad account
+        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
-            metric: 'page_fans_country',
-            period: 'lifetime',
+            fields: 'impressions',
+            time_range: JSON.stringify({
+              since: '2023-01-01',
+              until: '2023-12-31',
+            }),
+            time_increment: 'day',
           },
         });
 
         console.log('Response data:', response.data);
 
         if (!response.data.data || response.data.data.length === 0) {
-          throw new Error('No data found for the given page ID');
+          throw new Error('No data found for the given ad account ID');
         }
 
-        const countryData: Record<string, number> = response.data.data[0].values[0].value;
-        const labels = Object.keys(countryData);
-        const chartSeries = Object.values(countryData).map((value: number) => value);
+        const reachData = response.data.data;
+        const labels = reachData.map((dataPoint: any) => dataPoint.date_stop);
+        const chartSeries = reachData.map((dataPoint: any) => dataPoint.impressions);
 
         setLabels(labels);
         setChartSeries(chartSeries);
       } catch (error) {
-        console.error('Error fetching followers by country data:', error);
+        console.error('Error fetching total reach data:', error);
         if (axios.isAxiosError(error) && error.response) {
           console.error('Response data:', error.response.data);
         }
       }
     };
 
-    fetchFollowersByCountry();
+    fetchTotalReach();
   }, []);
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Followers by Country" />
+      <CardHeader title="Total Reach" />
       <CardContent>
         <Stack spacing={2}>
-          <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />
+          <Chart height={300} options={chartOptions} series={[{ name: 'Reach', data: chartSeries }]} type="line" width="100%" />
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-            {chartSeries.map((item, index) => {
-              const label = labels[index];
-              const Icon = iconMapping['Globe'];
-
-              return (
-                <Stack key={label} spacing={1} sx={{ alignItems: 'center' }}>
-                  {Icon ? <Icon fontSize="var(--icon-fontSize-lg)" /> : null}
-                  <Typography variant="h6">{label}</Typography>
-                  <Typography color="text.secondary" variant="subtitle2">
-                    {item}
-                  </Typography>
-                </Stack>
-              );
-            })}
+            {chartSeries.map((item, index) => (
+              <Stack key={labels[index]} spacing={1} sx={{ alignItems: 'center' }}>
+                <Typography variant="h6">{labels[index]}</Typography>
+                <Typography color="text.secondary" variant="subtitle2">
+                  {item}
+                </Typography>
+              </Stack>
+            ))}
           </Stack>
         </Stack>
       </CardContent>
@@ -108,15 +102,23 @@ function useChartOptions(labels: string[]): ApexOptions {
 
   return {
     chart: { background: 'transparent' },
-    colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.warning.main],
+    colors: [theme.palette.primary.main],
     dataLabels: { enabled: false },
     labels,
     legend: { show: false },
-    plotOptions: { pie: { expandOnClick: false } },
-    states: { active: { filter: { type: 'none' } }, hover: { filter: { type: 'none' } } },
-    stroke: { width: 0 },
+    stroke: { width: 2 },
     theme: { mode: theme.palette.mode },
     tooltip: { fillSeriesColor: false },
+    xaxis: {
+      categories: labels,
+      labels: { style: { colors: theme.palette.text.secondary } },
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => `${value}`,
+        style: { colors: theme.palette.text.secondary },
+      },
+    },
   };
 }
 
