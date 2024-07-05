@@ -71,16 +71,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccountId = getItemWithExpiry('fbAdAccountId');
-      const storedAdAccountName = getItemWithExpiry('fbAdAccountName');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccountId, storedAdAccountName });
+      const storedAdAccount = getItemWithExpiry('fbAdAccount');
+      console.log('Initialize state:', { token, storedUserId, storedAdAccount });
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
       }
-      if (storedAdAccountId && storedAdAccountName) {
-        setSelectedAdAccount({ id: storedAdAccountId, name: storedAdAccountName });
+      if (storedAdAccount) {
+        setSelectedAdAccount({ id: storedAdAccount, name: '' });
       }
     };
 
@@ -138,8 +137,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccountId', selectedAccount.id, 30 * 60 * 1000);
-      setItemWithExpiry('fbAdAccountName', selectedAccount.name, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
@@ -147,8 +145,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleRemoveSelection = () => {
     console.log('Removing selection');
     setSelectedAdAccount(null);
-    localStorage.removeItem('fbAdAccountId');
-    localStorage.removeItem('fbAdAccountName');
+    localStorage.removeItem('fbAdAccount');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
     setAccessToken(null);
