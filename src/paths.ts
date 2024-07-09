@@ -14,6 +14,8 @@ export const paths = {
     // You might also want to add sub-paths for analysis and optimization
     analysis: '/dashboard/strategies/analysis',
     optimization: '/dashboard/strategies/optimization',
+    launching: '/dashboard/strategies/launching',
+    expresslaunching: '/dashboard/strategies/expresslaunching',
     
   },
   errors: { notFound: '/errors/not-found' },

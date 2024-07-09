@@ -1,10 +1,6 @@
-// src/file-saver.d.ts
-declare module 'file-saver' {
-  export function saveAs(data: Blob | string, filename?: string, options?: any): void;
-}
+'use client';
 
-// src/app/dashboard/strategies/analysis/index.tsx
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Head from 'next/head';
 import Layout from '@/app/components/Layout';
 import {
@@ -18,6 +14,8 @@ import {
   TableRow,
   Paper,
   Typography,
+  FormControlLabel,
+  Checkbox,
   Box,
   Button,
 } from '@mui/material';
@@ -26,6 +24,8 @@ import { saveAs } from 'file-saver';
 interface PlanInput {
   planRequestDate: string;
   amountToInvest: number;
+  messagesOk: boolean;
+  goal: string;
 }
 
 interface WeeklyPlan {
@@ -59,7 +59,7 @@ function roundUpAds(investment: number): number {
 }
 
 function calculatePlan(input: PlanInput): WeeklyPlan[] {
-  const percentages = [0.10, 0.15, 0.15, 0.20, 0.20, 0.20];
+  const percentages = [0.06, 0.10, 0.10, 0.16, 0.16, 0.21, 0.21];
   const levels: WeeklyPlan[] = [];
   const startDate = new Date(input.planRequestDate);
   startDate.setDate(startDate.getDate() + (7 - startDate.getDay()) % 7);
@@ -71,7 +71,7 @@ function calculatePlan(input: PlanInput): WeeklyPlan[] {
     const investAmount = input.amountToInvest * investPercentage;
     const numberOfAds = roundUpAds(investAmount);
     const dailyBudgetPerAd = (investAmount / 7) / numberOfAds;
-    const calculatedIncrease = i > 0 ? ((levels[i-1].investAmount - investAmount) / levels[i-1].investAmount) * -100 : 0;
+    const calculatedIncrease = i > 0 ? -(levels[i-1].investAmount - investAmount) / levels[i-1].investAmount : 0;
 
     levels.push({
       weekNumber,
@@ -90,20 +90,22 @@ function calculatePlan(input: PlanInput): WeeklyPlan[] {
   return levels;
 }
 
-const Analysis = () => {
+const Launching = () => {
   const [planInput, setPlanInput] = useState<PlanInput>({
     planRequestDate: new Date().toISOString().split('T')[0],
     amountToInvest: 250,
+    messagesOk: false,
+    goal: 'LANDING_PAGE_VIEWS',
   });
 
   const planOutput = calculatePlan(planInput);
   const tableRef = useRef<HTMLTableElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     setPlanInput({
       ...planInput,
-      [name]: type === 'number' ? parseFloat(value) : value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -128,7 +130,7 @@ const Analysis = () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'analysis.png';
+            a.download = 'launching.png';
             a.click();
             URL.revokeObjectURL(url);
           }
@@ -150,23 +152,33 @@ const Analysis = () => {
       ['INVEST', ...planOutput.map(level => `$${level.investAmount.toFixed(2)}`)],
       ['Nº Ads', ...planOutput.map(level => level.numberOfAds)],
       ['DAILY BUDGET/AD', ...planOutput.map(level => `$${level.dailyBudgetPerAd.toFixed(2)}`)],
-      ['CALCULATED INCREASE', ...planOutput.map(level => `${level.calculatedIncrease.toFixed(2)}%`)]
+      ['CALCULATED INCREASE', ...planOutput.map(level => `${(level.calculatedIncrease * 100).toFixed(2)}%`)]
     ];
     
     const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, 'analysis.csv');
+    saveAs(blob, 'launching.csv');
   };
 
   return (
     <Layout>
       <Head>
-        <title>Analysis</title>
+        <title>Launching</title>
       </Head>
       <Container>
-        <Typography variant="h4" component="h4" gutterBottom>ANALYSIS</Typography>
-        <Typography variant="body1" gutterBottom>Performance Analysis</Typography>
-        <Box component="form" noValidate autoComplete="off" sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h4">LAUNCHING</Typography>
+        <Typography variant="body1">Audience Targeting, Launch & Campaign Setup</Typography>
+        <Box component="form" noValidate autoComplete="off">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={planInput.messagesOk}
+                onChange={handleInputChange}
+                name="messagesOk"
+              />
+            }
+            label="Receive Messages?"
+          />
           <TextField
             fullWidth
             margin="normal"
@@ -182,7 +194,7 @@ const Analysis = () => {
             fullWidth
             margin="normal"
             variant="outlined"
-            label="Amount to Invest"
+            label="Approx. Amount to Invest"
             type="number"
             name="amountToInvest"
             value={planInput.amountToInvest}
@@ -197,7 +209,7 @@ const Analysis = () => {
             Download as CSV
           </Button>
         </Box>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{ marginTop: 20 }}>
           <Table ref={tableRef}>
             <TableHead>
               <TableRow>
@@ -247,7 +259,7 @@ const Analysis = () => {
               <TableRow>
                 <TableCell>CALCULATED INCREASE</TableCell>
                 {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.calculatedIncrease.toFixed(2)}%</TableCell>
+                  <TableCell key={index}>{(level.calculatedIncrease * 100).toFixed(2)}%</TableCell>
                 ))}
               </TableRow>
             </TableBody>
@@ -258,4 +270,4 @@ const Analysis = () => {
   );
 };
 
-export default Analysis;
+export default Launching;
