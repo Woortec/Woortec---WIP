@@ -1,5 +1,6 @@
+
 // src/app/dashboard/strategies/analysis/index.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Layout from '@/app/components/Layout';
 import {
@@ -14,7 +15,9 @@ import {
   Paper,
   Typography,
   Box,
+  Button,
 } from '@mui/material';
+import { saveAs } from 'file-saver';
 
 interface PlanInput {
   planRequestDate: string;
@@ -90,6 +93,7 @@ const Analysis = () => {
   });
 
   const planOutput = calculatePlan(planInput);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -97,6 +101,57 @@ const Analysis = () => {
       ...planInput,
       [name]: type === 'number' ? parseFloat(value) : value,
     });
+  };
+
+  const downloadPNG = () => {
+    if (tableRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = tableRef.current.clientWidth;
+      canvas.height = tableRef.current.clientHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#000000';
+        Array.from(tableRef.current.rows).forEach((row, rowIndex) => {
+          Array.from(row.cells).forEach((cell, cellIndex) => {
+            ctx.fillText(cell.innerText, cellIndex * 100 + 10, rowIndex * 20 + 20);
+          });
+        });
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'analysis.png';
+            a.click();
+            URL.revokeObjectURL(url);
+          }
+        });
+      }
+    }
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      'META ADS',
+      ...planOutput.map((_, index) => `LEVEL ${Math.ceil((index + 1) / 2)}`)
+    ];
+    
+    const rows = [
+      ['Years Week', ...planOutput.map(level => level.weekNumber)],
+      ['Starting Day', ...planOutput.map(level => level.startingDay)],
+      ['Plans Week', ...planOutput.map(level => level.plansWeek)],
+      ['INVEST', ...planOutput.map(level => `$${level.investAmount.toFixed(2)}`)],
+      ['Nº Ads', ...planOutput.map(level => level.numberOfAds)],
+      ['DAILY BUDGET/AD', ...planOutput.map(level => `$${level.dailyBudgetPerAd.toFixed(2)}`)],
+      ['CALCULATED INCREASE', ...planOutput.map(level => `${level.calculatedIncrease.toFixed(2)}%`)]
+    ];
+    
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'analysis.csv');
   };
 
   return (
@@ -130,8 +185,16 @@ const Analysis = () => {
             onChange={handleInputChange}
           />
         </Box>
+        <Box sx={{ mb: 2 }}>
+          <Button variant="contained" color="primary" onClick={downloadPNG} sx={{ mr: 2 }}>
+            Download as PNG
+          </Button>
+          <Button variant="contained" color="secondary" onClick={downloadCSV}>
+            Download as CSV
+          </Button>
+        </Box>
         <TableContainer component={Paper}>
-          <Table>
+          <Table ref={tableRef}>
             <TableHead>
               <TableRow>
                 <TableCell>META ADS</TableCell>
