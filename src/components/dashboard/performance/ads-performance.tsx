@@ -1,9 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
-import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
-import type { SxProps } from '@mui/system';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Card, Typography, CircularProgress } from '@mui/material';
+import axios from 'axios';
+
+interface SpendData {
+  date: string;
+  spend: number;
+}
+
+interface ApiResponseItem {
+  date_start: string;
+  spend: string;
+}
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
@@ -34,151 +44,73 @@ const getItemWithExpiry = (key: string) => {
   }
 };
 
-const loadFacebookSDK = () => {
-  return new Promise<void>((resolve) => {
-    (window as any).fbAsyncInit = function() {
-      (window as any).FB.init({
-        appId: '961870345497057',
-        cookie: true,
-        xfbml: true,
-        version: 'v19.0'
-      });
-      resolve();
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://connect.facebook.net/en_US/sdk.js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-  });
-};
-
-export interface ConnectProps {
-  sx?: SxProps;
-}
-
-export function Connect({ sx }: ConnectProps): React.JSX.Element {
-  const [isSdkLoaded, setIsSdkLoaded] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
+const AccountPerformance = () => {
+  const [data, setData] = useState<SpendData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const initializeState = () => {
-      const token = getItemWithExpiry('fbAccessToken');
-      const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccount = getItemWithExpiry('fbAdAccount');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccount });
-      if (token && storedUserId) {
-        setAccessToken(token);
-        setUserId(storedUserId);
-        fetchAdAccounts(token);
-      }
-      if (storedAdAccount) {
-        setSelectedAdAccount({ id: storedAdAccount, name: '' });
-      }
-    };
+    const token = getItemWithExpiry('fbAccessToken');
+    const storedAdAccount = getItemWithExpiry('fbAdAccount');
 
-    loadFacebookSDK().then(() => {
-      setIsSdkLoaded(true);
-      initializeState();
-    });
-
-    // Ensure state is initialized on component mount
-    initializeState();
+    if (token && storedAdAccount) {
+      fetchData(token, storedAdAccount);
+    } else {
+      console.error('Access token or ad account is missing');
+    }
   }, []);
 
-  const fetchAdAccounts = (token: string) => {
-    if ((window as any).FB) {
-      (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
-          console.log('Fetched ad accounts:', accounts);
-          setAdAccounts(accounts);
-        } else {
-          console.error('Error fetching ad accounts:', response.error);
-        }
+  const fetchData = async (token: string, adAccount: string): Promise<void> => {
+    try {
+      const response = await axios.get<{ data: ApiResponseItem[] }>(`https://graph.facebook.com/v19.0/${adAccount}/insights`, {
+        params: {
+          access_token: token,
+          fields: 'spend,date_start,date_stop',
+          time_range: JSON.stringify({ since: '2023-01-01', until: '2023-12-31' }),
+        },
       });
+
+      console.log('API Response:', response.data);
+
+      const spendData: SpendData[] = response.data.data.map((item: ApiResponseItem) => ({
+        date: item.date_start,
+        spend: parseFloat(item.spend),
+      }));
+
+      console.log('Processed Data:', spendData);
+
+      setData(spendData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
     }
-  };
-
-  const handleFacebookLogin = () => {
-    if (!isSdkLoaded) return;
-    (window as any).FB.login((response: any) => {
-      if (response.authResponse) {
-        const accessToken = response.authResponse.accessToken;
-        const userId = response.authResponse.userID;
-        console.log('Facebook login successful:', { accessToken, userId });
-        setAccessToken(accessToken);
-        setUserId(userId);
-        // Store the token and user ID with a 30-minute expiry
-        setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
-        setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts
-        fetchAdAccounts(accessToken);
-        // Open modal
-        setModalOpen(true);
-      } else {
-        console.error('User cancelled login or did not fully authorize.');
-      }
-    }, { scope: 'ads_management,ads_read,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
-
-  const handleAdAccountSelect = (accountId: string) => {
-    const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
-    console.log('Ad account selected:', selectedAccount);
-    setSelectedAdAccount(selectedAccount);
-    if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
-    }
-    setModalOpen(false);
-  };
-
-  const handleRemoveSelection = () => {
-    console.log('Removing selection');
-    setSelectedAdAccount(null);
-    localStorage.removeItem('fbAdAccount');
-    localStorage.removeItem('fbAccessToken');
-    localStorage.removeItem('fbUserId');
-    setAccessToken(null);
-    setUserId(null);
-    setAdAccounts([]);
   };
 
   return (
-    <Stack spacing={2} direction="row" sx={sx}>
-      {selectedAdAccount ? (
-        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
-          <FacebookIcon sx={{ marginRight: 1 }} />
-          <Typography variant="body1">
-            {selectedAdAccount.name} <br /> {selectedAdAccount.id}
-          </Typography>
-          <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
-            <CloseIcon />
-          </IconButton>
-        </Card>
+    <Card sx={{ padding: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        Amount Spent Per Day
+      </Typography>
+      {loading ? (
+        <CircularProgress />
       ) : (
-        <Button
-          variant="contained"
-          startIcon={<FacebookIcon />}
-          onClick={handleFacebookLogin}
-          sx={{
-            backgroundColor: '#1877F2',
-            '&:hover': {
-              backgroundColor: '#145BC0',
-            },
-          }}
-        >
-          Connect a Facebook Page
-        </Button>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={data}
+            margin={{
+              top: 20, right: 30, left: 20, bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="spend" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
       )}
-    </Stack>
+    </Card>
   );
-}
+};
+
+export default AccountPerformance;

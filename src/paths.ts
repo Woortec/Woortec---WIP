@@ -9,7 +9,11 @@ export const paths = {
     settings: '/dashboard/settings',
     subscription: '/dashboard/subscription',
     connection: '/dashboard/connection',
-    performance: '/dashboard/performance'
+    performance: '/dashboard/performance',
+    strategies: '/dashboard/strategies',
+    // You might also want to add sub-paths for analysis and optimization
+    analysis: '/dashboard/strategies/analysis',
+    optimization: '/dashboard/strategies/optimization',
     
   },
   errors: { notFound: '/errors/not-found' },
