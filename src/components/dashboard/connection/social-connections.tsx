@@ -64,22 +64,29 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
+  const [pages, setPages] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
+  const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccount');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccount });
+      const storedPage = getItemWithExpiry('fbPage');
+      console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(token);
+        fetchPages(token);
       }
       if (storedAdAccount) {
         setSelectedAdAccount({ id: storedAdAccount, name: '' });
+      }
+      if (storedPage) {
+        setSelectedPage({ id: storedPage, name: '' });
       }
     };
 
@@ -106,6 +113,20 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
+  const fetchPages = (token: string) => {
+    if ((window as any).FB) {
+      (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
+        if (response && !response.error) {
+          const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
+          console.log('Fetched pages:', pages);
+          setPages(pages);
+        } else {
+          console.error('Error fetching pages:', response.error);
+        }
+      });
+    }
+  };
+
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
@@ -118,8 +139,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts
+        // Fetch ad accounts and pages
         fetchAdAccounts(accessToken);
+        fetchPages(accessToken);
         // Open modal
         setModalOpen(true);
       } else {
@@ -142,15 +164,27 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setModalOpen(false);
   };
 
+  const handlePageSelect = (pageId: string) => {
+    const selectedPage = pages.find(page => page.id === pageId) || null;
+    console.log('Page selected:', selectedPage);
+    setSelectedPage(selectedPage);
+    if (selectedPage) {
+      setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
+    }
+  };
+
   const handleRemoveSelection = () => {
     console.log('Removing selection');
     setSelectedAdAccount(null);
+    setSelectedPage(null);
     localStorage.removeItem('fbAdAccount');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
+    localStorage.removeItem('fbPage');
     setAccessToken(null);
     setUserId(null);
     setAdAccounts([]);
+    setPages([]);
   };
 
   return (
@@ -178,6 +212,29 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           }}
         >
           Connect a Facebook Page
+        </Button>
+      )}
+      {selectedPage ? (
+        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
+          <Typography variant="body1">
+            {selectedPage.name} <br /> {selectedPage.id}
+          </Typography>
+          <IconButton onClick={() => setSelectedPage(null)} sx={{ marginLeft: 'auto' }}>
+            <CloseIcon />
+          </IconButton>
+        </Card>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => fetchPages(accessToken || '')}
+          sx={{
+            backgroundColor: '#1877F2',
+            '&:hover': {
+              backgroundColor: '#145BC0',
+            },
+          }}
+        >
+          Select a Page
         </Button>
       )}
       <AdAccountSelectionModal

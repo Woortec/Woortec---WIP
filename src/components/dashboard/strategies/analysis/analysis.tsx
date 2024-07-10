@@ -1,9 +1,4 @@
-'use client';
-
-// src/file-saver.d.ts
-declare module 'file-saver' {
-  export function saveAs(data: Blob | string, filename?: string, options?: any): void;
-}
+'use client'
 
 // src/app/dashboard/strategies/analysis/index.tsx
 import React, { useState, useRef } from 'react';
@@ -24,6 +19,7 @@ import {
   Button,
 } from '@mui/material';
 import { saveAs } from 'file-saver';
+import axios from 'axios'; // Add axios for making HTTP requests
 
 interface PlanInput {
   planRequestDate: string;
@@ -160,6 +156,16 @@ const Analysis = () => {
     saveAs(blob, 'analysis.csv');
   };
 
+  const createCampaign = async () => {
+    try {
+      const response = await axios.post('/api/create-campaign', { planOutput });
+      alert('Campaign created successfully!');
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      alert('Failed to create campaign.');
+    }
+  };
+
   return (
     <Layout>
       <Head>
@@ -195,8 +201,11 @@ const Analysis = () => {
           <Button variant="contained" color="primary" onClick={downloadPNG} sx={{ mr: 2 }}>
             Download as PNG
           </Button>
-          <Button variant="contained" color="secondary" onClick={downloadCSV}>
+          <Button variant="contained" color="secondary" onClick={downloadCSV} sx={{ mr: 2 }}>
             Download as CSV
+          </Button>
+          <Button variant="contained" color="success" onClick={createCampaign}>
+            Create Campaign
           </Button>
         </Box>
         <TableContainer component={Paper}>
