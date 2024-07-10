@@ -94,6 +94,10 @@ const Analysis = () => {
     amountToInvest: 250,
   });
 
+  const [adMessage, setAdMessage] = useState('');
+  const [adLink, setAdLink] = useState('');
+  const [adImageUrl, setAdImageUrl] = useState('');
+
   const planOutput = calculatePlan(planInput);
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -103,6 +107,13 @@ const Analysis = () => {
       ...planInput,
       [name]: type === 'number' ? parseFloat(value) : value,
     });
+  };
+
+  const handleAdContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === 'adMessage') setAdMessage(value);
+    if (name === 'adLink') setAdLink(value);
+    if (name === 'adImageUrl') setAdImageUrl(value);
   };
 
   const downloadPNG = () => {
@@ -157,8 +168,25 @@ const Analysis = () => {
   };
 
   const createCampaign = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+    const fbPage = localStorage.getItem('fbPage');
+
+    if (!accessToken || !userId || !fbPage) {
+      alert('Missing required information to create a campaign.');
+      return;
+    }
+
     try {
-      const response = await axios.post('/api/create-campaign', { planOutput });
+      const response = await axios.post('/api/create-campaign', {
+        planOutput,
+        accessToken,
+        userId,
+        fbPage,
+        adMessage,
+        adLink,
+        adImageUrl
+      });
       alert('Campaign created successfully!');
     } catch (error) {
       console.error('Error creating campaign:', error);
@@ -195,6 +223,36 @@ const Analysis = () => {
             name="amountToInvest"
             value={planInput.amountToInvest}
             onChange={handleInputChange}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            label="Ad Message"
+            type="text"
+            name="adMessage"
+            value={adMessage}
+            onChange={handleAdContentChange}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            label="Ad Link"
+            type="text"
+            name="adLink"
+            value={adLink}
+            onChange={handleAdContentChange}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            label="Ad Image URL"
+            type="text"
+            name="adImageUrl"
+            value={adImageUrl}
+            onChange={handleAdContentChange}
           />
         </Box>
         <Box sx={{ mb: 2 }}>
