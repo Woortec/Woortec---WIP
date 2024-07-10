@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
