@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Grid, CircularProgress } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import '../../../../src/index.css';
 
 // Register Chart.js components
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -55,7 +56,7 @@ const BasicPackage: React.FC = () => {
           {
             params: {
               access_token: accessToken,
-              fields: 'name,adset_id,campaign_id,created_time,spend,cost_per_click,cost_per_inline_post_engagement,cost_per_message',
+              fields: 'name,adset_id,spend,cost_per_click,cost_per_inline_post_engagement,cost_per_message',
               date_preset: 'last_30d',
             },
           }
