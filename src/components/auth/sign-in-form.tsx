@@ -79,7 +79,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `https://app.woortec.com/auth/callback`,
+        redirectTo: `https://uvhvgcrczfdfvoujarga.supabase.co/auth/v1/callback`,
       },
     });
 
@@ -105,7 +105,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `https://app.woortec.com/auth/callback`,
+        redirectTo: `https://uvhvgcrczfdfvoujarga.supabase.co/auth/v1/callback`,
       },
     });
 
