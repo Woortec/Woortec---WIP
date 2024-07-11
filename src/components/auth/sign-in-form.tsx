@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
-import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material'; // Import Facebook icon
+import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 
 import { paths } from '@/paths';
@@ -32,7 +32,7 @@ export function SignInForm(): React.JSX.Element {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const [googleAuthError, setGoogleAuthError] = React.useState<string | null>(null);
-  const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null); // State for Facebook auth error
+  const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -62,7 +62,7 @@ export function SignInForm(): React.JSX.Element {
     });
 
     if (data.user) {
-      Cookies.set('accessToken', data.session.access_token, { expires: 3 }); // Cookie expires in 3 days
+      Cookies.set('accessToken', data.session.access_token, { expires: 3 });
       router.push('/');
     }
 
@@ -79,12 +79,11 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `http://app.woortec.com/auth/callback`,
+        redirectTo: `https://app.woortec.com/auth/callback`,
       },
     });
 
     if (data?.session) {
-      // Store the session token in cookies
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
     }
@@ -100,19 +99,17 @@ export function SignInForm(): React.JSX.Element {
     router.refresh();
   }, [checkSession, router, supabase]);
 
-  // Handler for Facebook sign-in
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `http://app.woortec.com/auth/callback`,
+        redirectTo: `https://app.woortec.com/auth/callback`,
       },
     });
 
     if (data?.session) {
-      // Store the session token in cookies
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
     }
@@ -194,15 +191,15 @@ export function SignInForm(): React.JSX.Element {
       </Button>
       {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
       <Button
-        onClick={handleFacebookSignIn} // Facebook sign-in handler
+        onClick={handleFacebookSignIn}
         disabled={isPending}
         type="button"
         variant="contained"
-        startIcon={<FacebookIcon />} // Facebook icon
+        startIcon={<FacebookIcon />}
       >
-        Sign in with Faceboo
+        Sign in with Facebook
       </Button>
-      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
+      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
       <Alert color="warning">
         Text Here <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>{' '}
         <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>
