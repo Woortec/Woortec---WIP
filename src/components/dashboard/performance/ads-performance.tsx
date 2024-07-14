@@ -23,12 +23,58 @@ const getItemWithExpiry = (key: string) => {
   return item.value;
 };
 
+interface AdSet {
+  id: string;
+  name: string;
+}
+
+interface Insight {
+  adset_id: string;
+  cpm: number;
+  cpc: number;
+  reach: number;
+  spend: number;
+}
+
 const BasicPackage: React.FC = () => {
-  const [adInsights, setAdInsights] = useState<any[]>([]);
+  const [adData, setAdData] = useState<(Insight & { name: string })[]>([]);
+  const [currency, setCurrency] = useState<string>('USD');
   const [loading, setLoading] = useState(true);
 
+  // Define default thresholds in USD
+  const thresholds = {
+    cpm: 0.99,
+    cpc: 0.09,
+    reach: 700, // per dollar spent
+    spend: 50 // per week
+  };
+
+  // Conversion rates (example rates, should be fetched from an API for real applications)
+  const conversionRates: { [key: string]: number } = {
+    USD: 1,
+    PHP: 50,
+    EUR: 0.85,
+    GBP: 0.75
+  };
+
+  // Convert thresholds based on currency
+  const convertThresholds = (currency: string) => {
+    const rate = conversionRates[currency] || 1;
+    return {
+      cpm: thresholds.cpm * rate,
+      cpc: thresholds.cpc * rate,
+      reach: thresholds.reach,
+      spend: thresholds.spend * rate
+    };
+  };
+
+  const calculateExpectedSpend = (currency: string) => {
+    const rate = conversionRates[currency] || 1;
+    return thresholds.spend * 4 * rate; // 4 weeks for the last 30 days
+  };
+
   useEffect(() => {
-    const fetchAdInsights = async () => {
+    const fetchAdData = async () => {
       const accessToken = getItemWithExpiry('fbAccessToken');
       const adAccountId = getItemWithExpiry('fbAdAccount');
 
@@ -39,62 +85,98 @@ const BasicPackage: React.FC = () => {
       }
 
       try {
-        console.log('Fetching ad insights...');
-        const response = await axios.get(
-          `https://graph.facebook.com/v19.0/${adAccountId}/insights`,
+        // Fetch the ad account details to get the currency
+        const accountResponse = await axios.get(
+          `https://graph.facebook.com/v19.0/${adAccountId}`,
           {
             params: {
               access_token: accessToken,
-              fields: 'spend,impressions,reach,cpm,cpc',
-              date_preset: 'this_year',
+              fields: 'currency',
+            },
+          }
+        );
+        const adCurrency = accountResponse.data.currency;
+        setCurrency(adCurrency);
+
+        const convertedThresholds = convertThresholds(adCurrency);
+
+        console.log('Fetching ad set data...');
+        const response = await axios.get(
+          `https://graph.facebook.com/v19.0/${adAccountId}/adsets`,
+          {
+            params: {
+              access_token: accessToken,
+              fields: 'id,name',
             },
           }
         );
 
-        console.log('Response data:', response.data);
-        const insights = response.data.data;
-        setAdInsights(insights);
+        const adSetIds = response.data.data.map((adSet: AdSet) => adSet.id);
+        const adSetNames = response.data.data.reduce((acc: { [key: string]: string }, adSet: AdSet) => {
+          acc[adSet.id] = adSet.name;
+          return acc;
+        }, {});
+
+        const insightsResponse = await axios.get(
+          `https://graph.facebook.com/v19.0/${adAccountId}/insights`,
+          {
+            params: {
+              access_token: accessToken,
+              fields: 'adset_id,cpm,cpc,reach,spend',
+              date_preset: 'last_30d',
+              level: 'adset'
+            },
+          }
+        );
+
+        const insights = insightsResponse.data.data.map((insight: Insight) => ({
+          ...insight,
+          name: adSetNames[insight.adset_id],
+        }));
+
+        console.log(insights); // Debugging: log insights data to verify accuracy
+
+        setAdData(insights);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching ad insights:', error);
+        console.error('Error fetching ad set data:', error);
         setLoading(false);
       }
     };
 
-    fetchAdInsights();
+    fetchAdData();
   }, []);
 
-  const calculateReach = (spend: number) => spend * 700;
-
-  const calculateExpectedSpend = (timeFrame: string) => {
-    const weeks = timeFrame === 'this_year' ? 52 : 1;
-    return 50 * weeks;
-  };
-
-  const calculateAverage = (insights: any[], field: string) => {
-    const total = insights.reduce((acc, insight) => acc + (parseFloat(insight[field]) || 0), 0);
-    return insights.length ? total / insights.length : 0;
-  };
-
   const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
-    return lowerIsBetter ? (value <= threshold ? 'green' : 'red') : (value >= threshold ? 'green' : 'red');
+    return lowerIsBetter ? (value <= threshold ? 'lightgreen' : 'lightcoral') : (value >= threshold ? 'lightgreen' : 'lightcoral');
+  };
+
+  const formatValue = (value: number, isCurrency: boolean = true) => {
+    return isCurrency ? `${Math.round(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}` : value.toLocaleString();
   };
 
   const getComment = (metric: string, value: number, threshold: number, lowerIsBetter: boolean) => {
-    const higher = lowerIsBetter ? `Your ${metric} is higher than the average. Consider optimizing your ad content to reduce costs.` :
-      `Your ${metric} is lower than the expected level. Consider increasing your investment or refining your audience targeting.`;
-    const lower = lowerIsBetter ? `Great job! Your ${metric} is below the average, indicating efficient ad spend.` :
-      `Your ${metric} is performing well above the benchmark, ensuring your ads are seen by a broad audience.`;
-
-    return lowerIsBetter ? (value <= threshold ? lower : higher) : (value >= threshold ? lower : higher);
+    const aboveThreshold = lowerIsBetter ? value > threshold : value < threshold;
+    switch (metric) {
+      case 'CPC':
+        return aboveThreshold ? 'Your CPC is higher than the average. Consider optimizing your ad content to reduce costs.' :
+          'Great job! Your CPC is below the average, indicating efficient ad spend.';
+      case 'CPM':
+        return aboveThreshold ? 'Your CPM is above the desired level. Try experimenting with different ad formats and refining your audience segmentation to boost performance.' :
+          'Excellent! Your CPM is below the industry standard, showing good ad placement efficiency.';
+      case 'Reach':
+        return aboveThreshold ? 'Your reach is performing well above the benchmark, ensuring your ads are seen by a broad audience.' :
+          'Your reach is below the expected level. Increasing your investment or refining your audience targeting could help.';
+      case 'Spent':
+        return aboveThreshold ? 'Your spending aligns with our recommendations, showing robust campaign funding.' :
+          'Your spending is less than advised. Adjust your budget for better results.';
+      default:
+        return '';
+    }
   };
 
-  const metrics = [
-    { name: 'CPC', value: calculateAverage(adInsights, 'cpc'), threshold: 0.09, lowerIsBetter: true },
-    { name: 'CPM', value: calculateAverage(adInsights, 'cpm'), threshold: 0.99, lowerIsBetter: true },
-    { name: 'Reach', value: calculateReach(calculateAverage(adInsights, 'spend')), threshold: 700, lowerIsBetter: false },
-    { name: 'Spent', value: calculateAverage(adInsights, 'spend'), threshold: calculateExpectedSpend('this_year'), lowerIsBetter: false }
-  ];
+  const convertedThresholds = convertThresholds(currency);
+  const expectedSpend = calculateExpectedSpend(currency);
 
   return (
     <Box p={3}>
@@ -114,24 +196,44 @@ const BasicPackage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell><strong>Metric</strong></TableCell>
-                  <TableCell align="center"><strong>Higher</strong></TableCell>
-                  <TableCell align="center"><strong>Lower</strong></TableCell>
-                  <TableCell align="center"><strong>Info</strong></TableCell>
+                  <TableCell><strong>AD SET NAMES</strong></TableCell>
+                  <TableCell align="center"><strong>CPC</strong></TableCell>
+                  <TableCell align="center"><strong>CPM</strong></TableCell>
+                  <TableCell align="center"><strong>REACH</strong></TableCell>
+                  <TableCell align="center"><strong>SPENT</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {metrics.map(metric => (
-                  <TableRow key={metric.name}>
-                    <TableCell>{metric.name}</TableCell>
-                    <TableCell align="center" style={{ backgroundColor: getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'red' ? 'lightcoral' : 'white' }}>
-                      {getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'red' && `${metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}`}
+                {adData.map(ad => (
+                  <TableRow key={ad.adset_id}>
+                    <TableCell>{ad.name}</TableCell>
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.cpc, convertedThresholds.cpc, true) }}>
+                      {formatValue(ad.cpc)}
+                      <Tooltip title={getComment('CPC', ad.cpc, convertedThresholds.cpc, true)} arrow>
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
-                    <TableCell align="center" style={{ backgroundColor: getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'green' ? 'lightgreen' : 'white' }}>
-                      {getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'green' && `${metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}`}
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.cpm, convertedThresholds.cpm, true) }}>
+                      {formatValue(ad.cpm)}
+                      <Tooltip title={getComment('CPM', ad.cpm, convertedThresholds.cpm, true)} arrow>
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
-                    <TableCell align="center">
-                      <Tooltip title={getComment(metric.name, metric.value, metric.threshold, metric.lowerIsBetter)} arrow>
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.reach, ad.spend * convertedThresholds.reach, false) }}>
+                      {formatValue(ad.reach, false)}
+                      <Tooltip title={getComment('Reach', ad.reach, ad.spend * convertedThresholds.reach, false)} arrow>
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.spend, expectedSpend, false) }}>
+                      {formatValue(ad.spend)}
+                      <Tooltip title={getComment('Spent', ad.spend, expectedSpend, false)} arrow>
                         <IconButton>
                           <InfoIcon />
                         </IconButton>
