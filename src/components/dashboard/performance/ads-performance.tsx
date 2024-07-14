@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton } from '@mui/material';
+import { Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton, TextField } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 
 // Register Chart.js components
@@ -23,6 +23,15 @@ const getItemWithExpiry = (key: string) => {
   return item.value;
 };
 
+const setItemWithExpiry = (key: string, value: any, expiry: number) => {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + expiry
+  };
+  localStorage.setItem(key, JSON.stringify(item));
+};
+
 interface AdSet {
   id: string;
   name: string;
@@ -32,7 +41,7 @@ interface Insight {
   adset_id: string;
   cpm: number;
   cpc: number;
-  reach: number;
+  impressions: number;
   spend: number;
 }
 
@@ -40,12 +49,16 @@ const BasicPackage: React.FC = () => {
   const [adData, setAdData] = useState<(Insight & { name: string })[]>([]);
   const [currency, setCurrency] = useState<string>('USD');
   const [loading, setLoading] = useState(true);
+  const [budget, setBudget] = useState<number>(() => {
+    const savedBudget = getItemWithExpiry('budget');
+    return savedBudget !== null ? savedBudget : 200; // Default budget is $200 per month
+  });
 
   // Define default thresholds in USD
   const thresholds = {
     cpm: 0.99,
     cpc: 0.09,
-    reach: 700, // per dollar spent
+    impressions: 19, // per dollar spent
     spend: 50 // per week
   };
 
@@ -63,14 +76,13 @@ const BasicPackage: React.FC = () => {
     return {
       cpm: thresholds.cpm * rate,
       cpc: thresholds.cpc * rate,
-      reach: thresholds.reach,
+      impressions: thresholds.impressions,
       spend: thresholds.spend * rate
     };
   };
 
-  const calculateExpectedSpend = (currency: string) => {
-    const rate = conversionRates[currency] || 1;
-    return thresholds.spend * 4 * rate; // 4 weeks for the last 30 days
+  const calculateExpectedSpend = (budget: number, currency: string) => {
+    return budget; // Budget is user-defined in the user's currency
   };
 
   useEffect(() => {
@@ -98,8 +110,6 @@ const BasicPackage: React.FC = () => {
         const adCurrency = accountResponse.data.currency;
         setCurrency(adCurrency);
 
-        const convertedThresholds = convertThresholds(adCurrency);
-
         console.log('Fetching ad set data...');
         const response = await axios.get(
           `https://graph.facebook.com/v19.0/${adAccountId}/adsets`,
@@ -122,7 +132,7 @@ const BasicPackage: React.FC = () => {
           {
             params: {
               access_token: accessToken,
-              fields: 'adset_id,cpm,cpc,reach,spend',
+              fields: 'adset_id,cpm,cpc,impressions,spend',
               date_preset: 'last_30d',
               level: 'adset'
             },
@@ -147,6 +157,16 @@ const BasicPackage: React.FC = () => {
     fetchAdData();
   }, []);
 
+  useEffect(() => {
+    setItemWithExpiry('budget', budget, 24 * 60 * 60 * 1000); // Save budget to localStorage with 1 day expiry
+  }, [budget]);
+
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newBudget = Number(e.target.value);
+    setBudget(newBudget);
+    setItemWithExpiry('budget', newBudget, 24 * 60 * 60 * 1000); // Save budget to localStorage with 1 day expiry
+  };
+
   const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
     return lowerIsBetter ? (value <= threshold ? 'lightgreen' : 'lightcoral') : (value >= threshold ? 'lightgreen' : 'lightcoral');
   };
@@ -164,25 +184,44 @@ const BasicPackage: React.FC = () => {
       case 'CPM':
         return aboveThreshold ? 'Your CPM is above the desired level. Try experimenting with different ad formats and refining your audience segmentation to boost performance.' :
           'Excellent! Your CPM is below the industry standard, showing good ad placement efficiency.';
-      case 'Reach':
-        return aboveThreshold ? 'Your reach is performing well above the benchmark, ensuring your ads are seen by a broad audience.' :
-          'Your reach is below the expected level. Increasing your investment or refining your audience targeting could help.';
-      case 'Spent':
-        return aboveThreshold ? 'Your spending aligns with our recommendations, showing robust campaign funding.' :
-          'Your spending is less than advised. Adjust your budget for better results.';
       default:
         return '';
     }
   };
 
+  const getImpressionsComment = (impressions: number, expectedImpressions: number) => {
+    return impressions >= expectedImpressions ? 
+      'Your impressions are performing well above the benchmark, ensuring your ads are seen by a broad audience.' :
+      'Your impressions are below the expected level. Increasing your investment or refining your audience targeting could help.';
+  };
+
+  const calculateSpentColor = (spend: number, expectedSpend: number) => {
+    return spend >= expectedSpend ? 'lightgreen' : 'lightcoral';
+  };
+
+  const calculateSpentComment = (spend: number, expectedSpend: number) => {
+    return spend >= expectedSpend ? 
+      'Your spending aligns with our recommendations, showing robust campaign funding.' : 
+      'Your spending is less than advised. Adjust your budget for better results.';
+  };
+
   const convertedThresholds = convertThresholds(currency);
-  const expectedSpend = calculateExpectedSpend(currency);
+  const expectedSpend = calculateExpectedSpend(budget, currency);
 
   return (
     <Box p={3}>
       <Typography variant="h4" align="center" gutterBottom>
         Facebook Ads
       </Typography>
+      <Box display="flex" justifyContent="center" alignItems="center" marginBottom={3}>
+        <TextField
+          label={`Monthly Budget (${currency})`}
+          variant="outlined"
+          type="number"
+          value={budget}
+          onChange={handleBudgetChange}
+        />
+      </Box>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
           <CircularProgress />
@@ -199,7 +238,7 @@ const BasicPackage: React.FC = () => {
                   <TableCell><strong>AD SET NAMES</strong></TableCell>
                   <TableCell align="center"><strong>CPC</strong></TableCell>
                   <TableCell align="center"><strong>CPM</strong></TableCell>
-                  <TableCell align="center"><strong>REACH</strong></TableCell>
+                  <TableCell align="center"><strong>IMPRESSIONS</strong></TableCell>
                   <TableCell align="center"><strong>SPENT</strong></TableCell>
                 </TableRow>
               </TableHead>
@@ -223,17 +262,17 @@ const BasicPackage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     </TableCell>
-                    <TableCell align="center" style={{ backgroundColor: getColor(ad.reach, ad.spend * convertedThresholds.reach, false) }}>
-                      {formatValue(ad.reach, false)}
-                      <Tooltip title={getComment('Reach', ad.reach, ad.spend * convertedThresholds.reach, false)} arrow>
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.impressions, ad.spend * thresholds.impressions, false) }}>
+                      {formatValue(ad.impressions, false)}
+                      <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * thresholds.impressions)} arrow>
                         <IconButton>
                           <InfoIcon />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
-                    <TableCell align="center" style={{ backgroundColor: getColor(ad.spend, expectedSpend, false) }}>
+                    <TableCell align="center" style={{ backgroundColor: calculateSpentColor(ad.spend, expectedSpend) }}>
                       {formatValue(ad.spend)}
-                      <Tooltip title={getComment('Spent', ad.spend, expectedSpend, false)} arrow>
+                      <Tooltip title={calculateSpentComment(ad.spend, expectedSpend)} arrow>
                         <IconButton>
                           <InfoIcon />
                         </IconButton>
