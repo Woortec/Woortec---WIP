@@ -11,25 +11,30 @@ Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Cha
 
 // Helper function to get item with expiry from local storage
 const getItemWithExpiry = (key: string) => {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
+  if (typeof window !== 'undefined') {
+    const itemStr = localStorage.getItem(key);
+    if (!itemStr) {
+      return null;
+    }
+    const item = JSON.parse(itemStr);
+    if (Date.now() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
   }
-  const item = JSON.parse(itemStr);
-  if (Date.now() > item.expiry) {
-    localStorage.removeItem(key);
-    return null;
-  }
-  return item.value;
+  return null;
 };
 
 const setItemWithExpiry = (key: string, value: any, expiry: number) => {
-  const now = new Date();
-  const item = {
-    value: value,
-    expiry: now.getTime() + expiry
-  };
-  localStorage.setItem(key, JSON.stringify(item));
+  if (typeof window !== 'undefined') {
+    const now = new Date();
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiry
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+  }
 };
 
 interface AdSet {
@@ -50,8 +55,11 @@ const BasicPackage: React.FC = () => {
   const [currency, setCurrency] = useState<string>('USD');
   const [loading, setLoading] = useState(true);
   const [budget, setBudget] = useState<number>(() => {
-    const savedBudget = getItemWithExpiry('budget');
-    return savedBudget !== null ? savedBudget : 200; // Default budget is $200 per month
+    if (typeof window !== 'undefined') {
+      const savedBudget = getItemWithExpiry('budget');
+      return savedBudget !== null ? savedBudget : 200; // Default budget is $200 per month
+    }
+    return 200;
   });
 
   // Define default thresholds in USD
@@ -262,7 +270,7 @@ const BasicPackage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                     </TableCell>
-                    <TableCell align="center" style={{ backgroundColor: getColor(ad.impressions, ad.spend * thresholds.impressions, false) }}>
+                    <TableCell align="center" style={{ backgroundColor: getColor(ad.impressions, ad.spend * convertedThresholds.impressions, false) }}>
                       {formatValue(ad.impressions, false)}
                       <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * thresholds.impressions)} arrow>
                         <IconButton>
