@@ -2,11 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, List, ListItem, ListItemText, Card, CardContent, Divider } from '@mui/material';
+import { Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, IconButton } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 
 // Register Chart.js components
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js';
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, ChartTooltip, Legend);
 
 // Helper function to get item with expiry from local storage
 const getItemWithExpiry = (key: string) => {
@@ -114,33 +115,33 @@ const BasicPackage: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell><strong>Metric</strong></TableCell>
-                  <TableCell align="right"><strong>Value</strong></TableCell>
+                  <TableCell align="center"><strong>Higher</strong></TableCell>
+                  <TableCell align="center"><strong>Lower</strong></TableCell>
+                  <TableCell align="center"><strong>Info</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {metrics.map(metric => (
                   <TableRow key={metric.name}>
                     <TableCell>{metric.name}</TableCell>
-                    <TableCell align="right" style={{ color: getColor(metric.value, metric.threshold, metric.lowerIsBetter) }}>
-                      {metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                    <TableCell align="center" style={{ backgroundColor: getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'red' ? 'lightcoral' : 'white' }}>
+                      {getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'red' && `${metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}`}
+                    </TableCell>
+                    <TableCell align="center" style={{ backgroundColor: getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'green' ? 'lightgreen' : 'white' }}>
+                      {getColor(metric.value, metric.threshold, metric.lowerIsBetter) === 'green' && `${metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}`}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Tooltip title={getComment(metric.name, metric.value, metric.threshold, metric.lowerIsBetter)} arrow>
+                        <IconButton>
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Comments</Typography>
-              <List>
-                {metrics.map(metric => (
-                  <ListItem key={metric.name}>
-                    <ListItemText primary={`${metric.name}: ${getComment(metric.name, metric.value, metric.threshold, metric.lowerIsBetter)}`} />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
         </Box>
       )}
     </Box>
