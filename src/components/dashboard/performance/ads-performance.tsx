@@ -2,12 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Grid, CircularProgress } from '@mui/material';
-import { Line } from 'react-chartjs-2';
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import '../../../../src/index.css';
+import { Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, List, ListItem, ListItemText, Card, CardContent, Divider } from '@mui/material';
 
 // Register Chart.js components
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 // Helper function to get item with expiry from local storage
@@ -25,22 +23,11 @@ const getItemWithExpiry = (key: string) => {
 };
 
 const BasicPackage: React.FC = () => {
-  const [adData, setAdData] = useState<any[]>([]);
+  const [adInsights, setAdInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [chartData, setChartData] = useState<any>({
-    labels: [],
-    datasets: [
-      {
-        label: 'Amount spent (PHP)',
-        data: [],
-        borderColor: 'blue',
-        backgroundColor: 'rgba(0, 0, 255, 0.1)',
-      },
-    ],
-  });
 
   useEffect(() => {
-    const fetchAdData = async () => {
+    const fetchAdInsights = async () => {
       const accessToken = getItemWithExpiry('fbAccessToken');
       const adAccountId = getItemWithExpiry('fbAdAccount');
 
@@ -51,106 +38,110 @@ const BasicPackage: React.FC = () => {
       }
 
       try {
+        console.log('Fetching ad insights...');
         const response = await axios.get(
-          `https://graph.facebook.com/v13.0/${adAccountId}/ads`,
+          `https://graph.facebook.com/v19.0/${adAccountId}/insights`,
           {
             params: {
               access_token: accessToken,
-              fields: 'name,adset_id,spend,cost_per_click,cost_per_inline_post_engagement,cost_per_message',
-              date_preset: 'last_30d',
+              fields: 'spend,impressions,reach,cpm,cpc',
+              date_preset: 'this_year',
             },
           }
         );
 
-        const ads = response.data.data;
-
-        const labels = ads.map((ad: any) => ad.name);
-        const spendData = ads.map((ad: any) => ad.spend);
-
-        setAdData(ads);
-        setChartData({
-          labels,
-          datasets: [
-            {
-              label: 'Amount spent (PHP)',
-              data: spendData,
-              borderColor: 'blue',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-            },
-          ],
-        });
-
+        console.log('Response data:', response.data);
+        const insights = response.data.data;
+        setAdInsights(insights);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching ad data:', error);
+        console.error('Error fetching ad insights:', error);
         setLoading(false);
       }
     };
 
-    fetchAdData();
+    fetchAdInsights();
   }, []);
+
+  const calculateReach = (spend: number) => spend * 700;
+
+  const calculateExpectedSpend = (timeFrame: string) => {
+    const weeks = timeFrame === 'this_year' ? 52 : 1;
+    return 50 * weeks;
+  };
+
+  const calculateAverage = (insights: any[], field: string) => {
+    const total = insights.reduce((acc, insight) => acc + (parseFloat(insight[field]) || 0), 0);
+    return insights.length ? total / insights.length : 0;
+  };
+
+  const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
+    return lowerIsBetter ? (value <= threshold ? 'green' : 'red') : (value >= threshold ? 'green' : 'red');
+  };
+
+  const getComment = (metric: string, value: number, threshold: number, lowerIsBetter: boolean) => {
+    const higher = lowerIsBetter ? `Your ${metric} is higher than the average. Consider optimizing your ad content to reduce costs.` :
+      `Your ${metric} is lower than the expected level. Consider increasing your investment or refining your audience targeting.`;
+    const lower = lowerIsBetter ? `Great job! Your ${metric} is below the average, indicating efficient ad spend.` :
+      `Your ${metric} is performing well above the benchmark, ensuring your ads are seen by a broad audience.`;
+
+    return lowerIsBetter ? (value <= threshold ? lower : higher) : (value >= threshold ? lower : higher);
+  };
+
+  const metrics = [
+    { name: 'CPC', value: calculateAverage(adInsights, 'cpc'), threshold: 0.09, lowerIsBetter: true },
+    { name: 'CPM', value: calculateAverage(adInsights, 'cpm'), threshold: 0.99, lowerIsBetter: true },
+    { name: 'Reach', value: calculateReach(calculateAverage(adInsights, 'spend')), threshold: 700, lowerIsBetter: false },
+    { name: 'Spent', value: calculateAverage(adInsights, 'spend'), threshold: calculateExpectedSpend('this_year'), lowerIsBetter: false }
+  ];
 
   return (
     <Box p={3}>
       <Typography variant="h4" align="center" gutterBottom>
-        BASIC PACKAGE
+        Facebook Ads
       </Typography>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
           <CircularProgress />
         </Box>
       ) : (
-        <>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Typography variant="subtitle1">How Many Ads were run?</Typography>
-                <Typography variant="h6">{adData.length}</Typography>
-                {/* You can calculate percentage change based on historical data */}
-                <Typography variant="body2" color="error">-66.4%</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Typography variant="subtitle1">How Much was spent?</Typography>
-                <Typography variant="h6">₱{adData.reduce((sum, ad) => sum + parseFloat(ad.spend || 0), 0).toFixed(2)}</Typography>
-                {/* You can calculate percentage change based on historical data */}
-                <Typography variant="body2" color="error">-59.0%</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box textAlign="center">
-                <Typography variant="subtitle1">Which is the budget remaining?</Typography>
-                <Typography variant="h6">0</Typography>
-              </Box>
-            </Grid>
-          </Grid>
-          <TableContainer component={Paper} sx={{ marginY: 3 }}>
+        <Box>
+          <Typography variant="h6" align="center" gutterBottom>
+            Ad Performance Data
+          </Typography>
+          <TableContainer component={Paper} style={{ marginBottom: '2rem' }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Ad Set Name</TableCell>
-                  <TableCell>Cost Per Click</TableCell>
-                  <TableCell>Ad Name</TableCell>
-                  <TableCell>Cost Per Message</TableCell>
+                  <TableCell><strong>Metric</strong></TableCell>
+                  <TableCell align="right"><strong>Value</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {adData.map((ad, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{ad.adset_id}</TableCell>
-                    <TableCell>{ad.cost_per_click ? ad.cost_per_click.toFixed(2) : 'N/A'}</TableCell>
-                    <TableCell>{ad.name}</TableCell>
-                    <TableCell>{ad.cost_per_message ? ad.cost_per_message.toFixed(2) : 'N/A'}</TableCell>
+                {metrics.map(metric => (
+                  <TableRow key={metric.name}>
+                    <TableCell>{metric.name}</TableCell>
+                    <TableCell align="right" style={{ color: getColor(metric.value, metric.threshold, metric.lowerIsBetter) }}>
+                      {metric.name === 'Reach' ? metric.value.toLocaleString() : `$${metric.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-          <Box>
-            <Line data={chartData} />
-          </Box>
-        </>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Comments</Typography>
+              <List>
+                {metrics.map(metric => (
+                  <ListItem key={metric.name}>
+                    <ListItemText primary={`${metric.name}: ${getComment(metric.name, metric.value, metric.threshold, metric.lowerIsBetter)}`} />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Box>
       )}
     </Box>
   );
