@@ -7,4 +7,5 @@ export const navItems = [
   { key: 'connection', title: 'Social Connections', href: paths.dashboard.connection, icon: 'chart-pie' },
   { key: 'strategies', title: 'Ads Strategies', href: paths.dashboard.strategies, icon: 'chart-pie' },
   { key: 'subscription', title: 'Subscription', href: paths.dashboard.subscription, icon: 'chart-pie' },
+  { key: 'campaign', title: 'Campaign Setup', href: paths.dashboard.campaign, icon: 'chart-pie' },
 ] satisfies NavItemConfig[];

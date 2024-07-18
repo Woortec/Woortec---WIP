@@ -96,7 +96,6 @@ const Analysis = () => {
 
   const [adMessage, setAdMessage] = useState('');
   const [adLink, setAdLink] = useState('');
-  const [adImageUrl, setAdImageUrl] = useState('');
 
   const planOutput = calculatePlan(planInput);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -113,7 +112,6 @@ const Analysis = () => {
     const { name, value } = e.target;
     if (name === 'adMessage') setAdMessage(value);
     if (name === 'adLink') setAdLink(value);
-    if (name === 'adImageUrl') setAdImageUrl(value);
   };
 
   const downloadPNG = () => {
@@ -184,8 +182,7 @@ const Analysis = () => {
         userId,
         fbPage,
         adMessage,
-        adLink,
-        adImageUrl
+        adLink
       });
       alert('Campaign created successfully!');
     } catch (error) {
@@ -242,16 +239,6 @@ const Analysis = () => {
             type="text"
             name="adLink"
             value={adLink}
-            onChange={handleAdContentChange}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            label="Ad Image URL"
-            type="text"
-            name="adImageUrl"
-            value={adImageUrl}
             onChange={handleAdContentChange}
           />
         </Box>
