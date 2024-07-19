@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { createClient } from '../utils/supabase/server';
 
@@ -28,7 +27,6 @@ export default async function middleware(req: any) {
     ) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
     }
-
 
     const response = NextResponse.next();
 

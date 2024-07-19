@@ -1,5 +1,5 @@
 import React from 'react';// Adjust the import path as necessary
-import Results from '../../../../components/dashboard/campaign/results';
+import Results from '../../../../components/dashboard/adsstrategies/results';
 
 function App() {
   return (

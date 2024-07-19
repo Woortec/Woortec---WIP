@@ -11,10 +11,10 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
     useEffect(() => {
       const campaignDetails = localStorage.getItem('campaignDetails');
       const preparingStartTime = localStorage.getItem('preparingStartTime');
-      const isProtectedRoute = pathname?.includes('/dashboard/campaign/preparing') || pathname?.includes('/dashboard/campaign/results');
+      const isProtectedRoute = pathname?.includes('/dashboard/adsstrategies/preparing');
 
       if (isProtectedRoute && (!campaignDetails || !preparingStartTime)) {
-        router.replace('/dashboard/campaign');
+        router.replace('/dashboard/adsstrategies');
       }
     }, [router, pathname]);
 

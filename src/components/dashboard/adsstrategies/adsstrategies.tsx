@@ -16,7 +16,7 @@ function CampaignSetup() {
     const preparingStartTime = localStorage.getItem('preparingStartTime');
 
     if (campaignDetails && preparingStartTime) {
-      router.push('/dashboard/preparing');
+      router.push('/dashboard/adsstrategies/preparing');
     }
   }, [router]);
 
@@ -32,7 +32,7 @@ function CampaignSetup() {
     // Save campaignDetails to localStorage or send to the server
     localStorage.setItem('campaignDetails', JSON.stringify(campaignDetails));
     localStorage.setItem('preparingStartTime', new Date().toString());
-    router.push('/dashboard/preparing');
+    router.push('/dashboard/adsstrategies/preparing');
   };
 
   return (

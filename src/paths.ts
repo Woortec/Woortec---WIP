@@ -16,7 +16,7 @@ export const paths = {
     optimization: '/dashboard/strategies/optimization',
     launching: '/dashboard/strategies/launching',
     expresslaunching: '/dashboard/strategies/expresslaunching',
-    campaign: '/dashboard/campaign',
+    adsstrategies: '/dashboard/adsstrategies',
     analysistable: '/dashboard/strategies/analysis',
     
   },

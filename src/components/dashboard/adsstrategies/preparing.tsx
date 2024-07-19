@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import withAuth from '../../../components/withAuth';
+import withAuth from '../../withAuth';
 import '../../../../src/styles.css';
 
 const Preparing: React.FC = () => {
@@ -12,7 +12,7 @@ const Preparing: React.FC = () => {
   useEffect(() => {
     const savedTime = localStorage.getItem('preparingStartTime');
     if (!savedTime) {
-      router.push('/dashboard/campaign');
+      router.push('/dashboard/adsstrategies');
       return;
     }
 
@@ -20,11 +20,11 @@ const Preparing: React.FC = () => {
     const checkTime = () => {
       const currentTime = new Date();
       const diff = currentTime.getTime() - startTime.getTime();
-      const remainingTime = 3600000 - diff; // 1 hour in milliseconds
+      const remainingTime = 60000 - diff; // 1 hour in milliseconds
 
       if (remainingTime <= 0) {
         localStorage.removeItem('preparingStartTime');
-        router.push('/dashboard/results');
+        router.push('/dashboard/adsstrategies/results');
       } else {
         setTimeLeft(remainingTime);
       }

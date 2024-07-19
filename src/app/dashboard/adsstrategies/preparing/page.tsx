@@ -1,5 +1,5 @@
 import React from 'react';
-import Preparing  from '../../../../components/dashboard/campaign/preparing';  // Adjust the import path as necessary
+import Preparing  from '../../../../components/dashboard/adsstrategies/preparing';  // Adjust the import path as necessary
 
 function App() {
   return (
