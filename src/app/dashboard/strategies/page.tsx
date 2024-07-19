@@ -1,3 +1,5 @@
+// src/app/dashboard/strategies/index.tsx
+
 'use client';
 
 import React, { useState } from 'react';

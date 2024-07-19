@@ -1,6 +1,5 @@
+// src/app/dashboard/strategies/analysis/analysis.tsx
 'use client'
-
-// src/app/dashboard/strategies/analysis/index.tsx
 import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Layout from '@/app/components/Layout';
@@ -19,7 +18,7 @@ import {
   Button,
 } from '@mui/material';
 import { saveAs } from 'file-saver';
-import axios from 'axios'; // Add axios for making HTTP requests
+import axios from 'axios';
 
 interface PlanInput {
   planRequestDate: string;
@@ -96,9 +95,10 @@ const Analysis = () => {
 
   const [adMessage, setAdMessage] = useState('');
   const [adLink, setAdLink] = useState('');
+  const [showTable, setShowTable] = useState(false);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   const planOutput = calculatePlan(planInput);
-  const tableRef = useRef<HTMLTableElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -191,6 +191,10 @@ const Analysis = () => {
     }
   };
 
+  const createStrategy = () => {
+    setShowTable(true);
+  };
+
   return (
     <Layout>
       <Head>
@@ -199,116 +203,126 @@ const Analysis = () => {
       <Container>
         <Typography variant="h4" component="h4" gutterBottom>ANALYSIS</Typography>
         <Typography variant="body1" gutterBottom>Performance Analysis</Typography>
-        <Box component="form" noValidate autoComplete="off" sx={{ mb: 4 }}>
-          <TextField
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            label="Plan Request Date"
-            type="date"
-            name="planRequestDate"
-            value={planInput.planRequestDate}
-            onChange={handleInputChange}
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            label="Amount to Invest"
-            type="number"
-            name="amountToInvest"
-            value={planInput.amountToInvest}
-            onChange={handleInputChange}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            label="Ad Message"
-            type="text"
-            name="adMessage"
-            value={adMessage}
-            onChange={handleAdContentChange}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            label="Ad Link"
-            type="text"
-            name="adLink"
-            value={adLink}
-            onChange={handleAdContentChange}
-          />
-        </Box>
-        <Box sx={{ mb: 2 }}>
-          <Button variant="contained" color="primary" onClick={downloadPNG} sx={{ mr: 2 }}>
-            Download as PNG
-          </Button>
-          <Button variant="contained" color="secondary" onClick={downloadCSV} sx={{ mr: 2 }}>
-            Download as CSV
-          </Button>
-          <Button variant="contained" color="success" onClick={createCampaign}>
-            Create Campaign
-          </Button>
-        </Box>
-        <TableContainer component={Paper}>
-          <Table ref={tableRef}>
-            <TableHead>
-              <TableRow>
-                <TableCell>META ADS</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>LEVEL {Math.ceil((index + 1) / 2)}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>Years Week</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.weekNumber}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>Starting Day</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.startingDay}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>Plans Week</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.plansWeek}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>INVEST</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>${level.investAmount.toFixed(2)}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>Nº Ads</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.numberOfAds}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>DAILY BUDGET/AD</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>${level.dailyBudgetPerAd.toFixed(2)}</TableCell>
-                ))}
-              </TableRow>
-              <TableRow>
-                <TableCell>CALCULATED INCREASE</TableCell>
-                {planOutput.map((level, index) => (
-                  <TableCell key={index}>{level.calculatedIncrease.toFixed(2)}%</TableCell>
-                ))}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {!showTable ? (
+          <Box component="form" noValidate autoComplete="off" sx={{ mb: 4 }}>
+            <TextField
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              label="Plan Request Date"
+              type="date"
+              name="planRequestDate"
+              value={planInput.planRequestDate}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              label="Amount to Invest"
+              type="number"
+              name="amountToInvest"
+              value={planInput.amountToInvest}
+              onChange={handleInputChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              label="Ad Message"
+              type="text"
+              name="adMessage"
+              value={adMessage}
+              onChange={handleAdContentChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              label="Ad Link"
+              type="text"
+              name="adLink"
+              value={adLink}
+              onChange={handleAdContentChange}
+            />
+            <Box sx={{ mb: 2 }}>
+              <Button variant="contained" color="primary" onClick={createStrategy}>
+                Request Strategy
+              </Button>
+            </Box>
+          </Box>
+        ) : (
+          <>
+            <Box sx={{ mb: 2 }}>
+              <Button variant="contained" color="primary" onClick={downloadPNG}>
+                Download PNG
+              </Button>
+              <Button variant="contained" color="primary" onClick={downloadCSV}>
+                Download CSV
+              </Button>
+              <Button variant="contained" color="primary" onClick={createCampaign}>
+                Create Campaign
+              </Button>
+            </Box>
+            <TableContainer component={Paper} ref={tableRef}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>META ADS</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>LEVEL {Math.ceil((index + 1) / 2)}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Years Week</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>{level.weekNumber}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Starting Day</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>{level.startingDay}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Plans Week</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>{level.plansWeek}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>INVEST</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>${level.investAmount.toFixed(2)}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Nº Ads</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>{level.numberOfAds}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>DAILY BUDGET/AD</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>${level.dailyBudgetPerAd.toFixed(2)}</TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>CALCULATED INCREASE</TableCell>
+                    {planOutput.map((level, index) => (
+                      <TableCell key={index}>{level.calculatedIncrease.toFixed(2)}%</TableCell>
+                    ))}
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
       </Container>
     </Layout>
   );
