@@ -11,7 +11,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/dashboard/adsstrategies" element={<CampaignSetup />} />
+          <Route path="/dashboard/CampaignSetup" element={<CampaignSetup />} />
           <Route path="/dashboard/preparing" element={<Preparing />} />
           <Route path="/dashboard/results" element={<Results />} />
         </Routes>
