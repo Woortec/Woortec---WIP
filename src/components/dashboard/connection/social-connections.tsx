@@ -145,12 +145,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(accessToken);
         // Open modal
         setModalOpen(true);
-
+  
+        // Assume the adAccountId is stored somewhere after fetching ad accounts
+        const adAccountId = 'your_ad_account_id'; // Replace with actual ad account ID
+        const userEmail = 'user@example.com'; // Replace with actual user's email
+  
         // Trigger data fetch and send to Klaviyo
         axios.post('/api/sync-facebook-data', {
           token: accessToken,
           userId: userId,
-          email: 'USER_EMAIL' // Replace with the user's email
+          email: userEmail,
+          adAccountId: adAccountId
         }).then(response => {
           console.log('Data synced to Klaviyo:', response.data);
         }).catch(error => {
@@ -161,10 +166,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       }
     }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
   };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
+  
 
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
@@ -198,6 +200,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setAdAccounts([]);
     setPages([]);
   };
+
+  function handleModalClose(): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <Stack spacing={2} direction="row" sx={sx}>
