@@ -165,6 +165,31 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
               // Ensure email is set
               if (email) {
                 setUserEmail(email);
+                // Create profile on Klaviyo
+                axios.post('/api/createProfile', {
+                  email,
+                }).then(() => {
+                  // Wait for 10 seconds before updating the profile
+                  setTimeout(() => {
+                    if (selectedAdAccount && userEmail && accessToken && userId) {
+                      // Trigger data fetch and send to Klaviyo
+                      axios.post('/api/updateProfile', {
+                        token: accessToken,
+                        userId: userId,
+                        email: userEmail,
+                        adAccountId: selectedAdAccount.id
+                      }).then(response => {
+                        console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
+                      }).catch(error => {
+                        console.error('Error updating profile in Klaviyo:', error);
+                      });
+                    } else {
+                      console.error('Missing required parameters for updating profile');
+                    }
+                  }, 10000); // 10 seconds delay
+                }).catch(error => {
+                  console.error('Error creating profile in Klaviyo:', error);
+                });
                 // Open modal
                 setModalOpen(true);
               } else {
@@ -187,25 +212,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
     }
     setModalOpen(false);
-
-    if (selectedAccount && userEmail && accessToken && userId) {
-      // Add a 5-second delay before sending data to Klaviyo
-      setTimeout(() => {
-        // Trigger data fetch and send to Klaviyo
-        axios.post('/api/sync-facebook-data', {
-          token: accessToken,
-          userId: userId,
-          email: userEmail,
-          adAccountId: selectedAccount.id
-        }).then(response => {
-          console.log('Data synced to Klaviyo:', response.data);
-        }).catch(error => {
-          console.error('Error syncing data to Klaviyo:', error);
-        });
-      }, 5000); // 5 seconds delay
-    } else {
-      console.error('Missing required parameters: token, email, or adAccountId');
-    }
   };
 
   const handlePageSelect = (pageId: string) => {
