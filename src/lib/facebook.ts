@@ -6,9 +6,11 @@ export const fetchFacebookAdData = async (accessToken: string, adAccountId: stri
     const response = await axios.get(url, {
       params: {
         access_token: accessToken,
-        fields: 'impressions,clicks,likes',
+        fields: 'impressions,clicks,spend,ctr,cpc,reach',
       },
     });
+
+    console.log('Facebook response:', response.data);
     return response.data.data; // The insights data is usually nested under 'data'
   } catch (error) {
     console.error('Error fetching data from Facebook:', error);

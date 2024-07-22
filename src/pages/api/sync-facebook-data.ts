@@ -2,8 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { fetchFacebookAdData } from '../../lib/facebook';
 import { sendToKlaviyo } from '../../lib/klaviyo';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { token, userId, email, adAccountId } = req.body; // Include adAccountId in the request body
+const syncFacebookData = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { token, userId, email, adAccountId } = req.body;
 
   if (!token || !email || !adAccountId) {
     return res.status(400).json({ error: 'Missing required parameters: token, email, or adAccountId' });
@@ -25,7 +29,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const properties = {
       impressions: adData[0].impressions,
       clicks: adData[0].clicks,
-      likes: adData[0].likes,
+      spend: adData[0].spend,
+      ctr: adData[0].ctr,
+      cpc: adData[0].cpc,
+      reach: adData[0].reach,
     };
 
     console.log(`Sending data to Klaviyo for email: ${email}, properties: ${JSON.stringify(properties)}`);
@@ -54,3 +61,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 };
+
+export default syncFacebookData;
