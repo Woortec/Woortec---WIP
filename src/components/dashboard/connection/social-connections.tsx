@@ -164,29 +164,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             fetchUserEmail(accessToken).then((email) => {
               // Open modal
               setModalOpen(true);
-
-              // Ensure selectedAdAccount is not null
-              const adAccountId = adAccounts.length > 0 ? adAccounts[0].id : ''; // Replace with the actual logic to get ad account ID
-
-              if (!adAccountId || !email || !accessToken) {
-                console.error('Missing required parameters: token, email, or adAccountId');
-                return;
-              }
-
-              // Add a 10-second delay before sending data to Klaviyo
-              setTimeout(() => {
-                // Trigger data fetch and send to Klaviyo
-                axios.post('/api/sync-facebook-data', {
-                  token: accessToken,
-                  userId: userId,
-                  email: email,
-                  adAccountId: adAccountId
-                }).then(response => {
-                  console.log('Data synced to Klaviyo:', response.data);
-                }).catch(error => {
-                  console.error('Error syncing data to Klaviyo:', error);
-                });
-              }, 15000); // 10 seconds delay
             });
           });
         });
@@ -204,6 +181,25 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
     }
     setModalOpen(false);
+
+    if (selectedAccount && userEmail && accessToken && userId) {
+      // Add a 5-second delay before sending data to Klaviyo
+      setTimeout(() => {
+        // Trigger data fetch and send to Klaviyo
+        axios.post('/api/sync-facebook-data', {
+          token: accessToken,
+          userId: userId,
+          email: userEmail,
+          adAccountId: selectedAccount.id
+        }).then(response => {
+          console.log('Data synced to Klaviyo:', response.data);
+        }).catch(error => {
+          console.error('Error syncing data to Klaviyo:', error);
+        });
+      }, 5000); // 5 seconds delay
+    } else {
+      console.error('Missing required parameters: token, email, or adAccountId');
+    }
   };
 
   const handlePageSelect = (pageId: string) => {
