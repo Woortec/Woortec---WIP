@@ -24,11 +24,13 @@ interface WeeklyPlan {
   weekNumber: string;
   startingDay: string;
   plansWeek: string;
-  invest: number;
+  investPercentage: number;
+  investAmount: number;
   numberOfAds: number;
+  dailyBudgetPerAd: number;
+  calculatedIncrease: number;
   toMessages: number;
   toLink: number;
-  dailyBudgetPerAd: number;
 }
 
 function getWeekNumber(date: Date): string {
@@ -37,21 +39,14 @@ function getWeekNumber(date: Date): string {
   return 'W' + Math.ceil((diff + ((start.getDay() + 1) % 7)) / 7);
 }
 
-function getStartingDay(weekNumber: number, year: number): string {
-  const firstDayOfYear = new Date(year, 0, 1);
-  const days = (weekNumber - 1) * 7;
-  const startDate = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + days - firstDayOfYear.getDay() + 1));
-  return startDate.toISOString().split('T')[0];
-}
-
 function roundUpAds(investment: number): number {
   if (investment <= 7) return Math.ceil(investment / 5);
   if (investment <= 20) return Math.ceil(investment / 8);
   return Math.ceil(investment / 10);
 }
 
-function calculatePlan(input: PlanInput): WeeklyPlan[] {
-  const percentages = [0.14, 0.15, 0.15, 0.30, 0.30];
+function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
+  const percentages = [0.06, 0.10, 0.10, 0.16, 0.16, 0.21, 0.21];
   const levels: WeeklyPlan[] = [];
   const startDate = new Date(input.planRequestDate);
   startDate.setDate(startDate.getDate() + (7 - startDate.getDay()) % 7);
@@ -59,21 +54,23 @@ function calculatePlan(input: PlanInput): WeeklyPlan[] {
   for (let i = 0; i < percentages.length; i++) {
     const weekNumber = getWeekNumber(startDate);
     const startingDay = startDate.toISOString().split('T')[0];
-    const invest = input.amountToInvest * percentages[i];
-    const numberOfAds = roundUpAds(invest);
-    const toMessages = Math.floor(numberOfAds / 2);
-    const toLink = Math.ceil(numberOfAds / 2);
-    const dailyBudgetPerAd = (invest / 7) / numberOfAds;
+    const investPercentage = percentages[i];
+    const investAmount = input.amountToInvest * investPercentage;
+    const numberOfAds = roundUpAds(investAmount);
+    const dailyBudgetPerAd = (investAmount / 7) / numberOfAds;
+    const calculatedIncrease = i > 0 ? ((levels[i-1].investAmount - investAmount) / levels[i-1].investAmount) * -100 : 0;
 
     levels.push({
       weekNumber,
       startingDay,
       plansWeek: `W${i + 1}`,
-      invest,
+      investPercentage,
+      investAmount,
       numberOfAds,
-      toMessages,
-      toLink,
       dailyBudgetPerAd,
+      calculatedIncrease,
+      toMessages: answerMessages === 'yes' ? 1 : 0,
+      toLink: 1,
     });
 
     startDate.setDate(startDate.getDate() + 7);
@@ -94,7 +91,7 @@ const Results: React.FC = () => {
         planRequestDate: details.startDate,
         amountToInvest: parseFloat(details.budget),
       };
-      const calculatedPlan = calculatePlan(planInput);
+      const calculatedPlan = calculatePlan(planInput, details.answerMessages);
       setPlanOutput(calculatedPlan);
     }
   }, []);
@@ -144,25 +141,13 @@ const Results: React.FC = () => {
             <TableRow>
               <TableCell>INVEST</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>${level.invest.toFixed(2)}</TableCell>
+                <TableCell key={index}>${level.investAmount.toFixed(2)}</TableCell>
               ))}
             </TableRow>
             <TableRow>
               <TableCell>Nº Ads</TableCell>
               {planOutput.map((level, index) => (
                 <TableCell key={index}>{level.numberOfAds}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Messages</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toMessages}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Link</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toLink}</TableCell>
               ))}
             </TableRow>
             <TableRow>

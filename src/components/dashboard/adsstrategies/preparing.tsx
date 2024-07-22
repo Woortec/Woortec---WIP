@@ -20,7 +20,7 @@ const Preparing: React.FC = () => {
     const checkTime = () => {
       const currentTime = new Date();
       const diff = currentTime.getTime() - startTime.getTime();
-      const remainingTime = 60000 - diff; // 1 hour in milliseconds
+      const remainingTime = 5000 - diff; // 1 hour in milliseconds
 
       if (remainingTime <= 0) {
         localStorage.removeItem('preparingStartTime');

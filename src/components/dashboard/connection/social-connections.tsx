@@ -5,6 +5,7 @@ import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
+import axios from 'axios';
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
@@ -144,6 +145,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(accessToken);
         // Open modal
         setModalOpen(true);
+
+        // Trigger data fetch and send to Klaviyo
+        axios.post('/api/sync-facebook-data', {
+          token: accessToken,
+          userId: userId,
+          email: 'USER_EMAIL' // Replace with the user's email
+        }).then(response => {
+          console.log('Data synced to Klaviyo:', response.data);
+        }).catch(error => {
+          console.error('Error syncing data to Klaviyo:', error);
+        });
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
