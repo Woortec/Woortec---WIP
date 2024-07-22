@@ -128,23 +128,23 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     });
   };
 
-  const fetchUserEmail = (token: string) => {
+  const fetchPageContactEmail = (pageId: string, token: string) => {
     return new Promise<string>((resolve, reject) => {
       if ((window as any).FB) {
-        (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
+        (window as any).FB.api(`/${pageId}?fields=contact_email`, { access_token: token }, (response: any) => {
           console.log('Raw response:', response); // Log the raw response
           if (response && !response.error) {
-            const email = response.email;
-            if (email) {
-              console.log('Fetched user email:', email);
-              setUserEmail(email);
-              resolve(email);
+            const contactEmail = response.contact_email;
+            if (contactEmail) {
+              console.log('Fetched page contact email:', contactEmail);
+              setUserEmail(contactEmail);
+              resolve(contactEmail);
             } else {
-              console.error('Email field is missing in the response:', response);
-              reject('Email field is missing in the response');
+              console.error('Contact email field is missing in the response:', response);
+              reject('Contact email field is missing in the response');
             }
           } else {
-            console.error('Error fetching user email:', response.error);
+            console.error('Error fetching page contact email:', response.error);
             reject(response.error);
           }
         });
@@ -164,46 +164,49 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts, pages, and user email
+        // Fetch ad accounts and pages
         fetchAdAccounts(accessToken).then(() => {
           fetchPages(accessToken).then(() => {
-            fetchUserEmail(accessToken).then((email) => {
-              // Ensure email is set
-              if (email) {
-                setUserEmail(email);
-                // Create profile on Klaviyo
-                axios.post('/api/createProfile', {
-                  email,
-                }).then(() => {
-                  // Wait for 10 seconds before updating the profile
-                  setTimeout(() => {
-                    if (selectedAdAccount && userEmail && accessToken && userId) {
-                      // Trigger data fetch and send to Klaviyo
-                      axios.post('/api/updateProfile', {
-                        token: accessToken,
-                        userId: userId,
-                        email: userEmail,
-                        adAccountId: selectedAdAccount.id
-                      }).then(response => {
-                        console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
-                      }).catch(error => {
-                        console.error('Error updating profile in Klaviyo:', error);
-                      });
-                    } else {
-                      console.error('Missing required parameters for updating profile');
-                    }
-                  }, 10000); // 10 seconds delay
-                }).catch(error => {
-                  console.error('Error creating profile in Klaviyo:', error);
-                });
-                // Open modal
-                setModalOpen(true);
-              } else {
-                console.error('Failed to fetch user email');
-              }
-            }).catch((error) => {
-              console.error('Failed to fetch user email:', error);
-            });
+            if (selectedPage) {
+              fetchPageContactEmail(selectedPage.id, accessToken).then((email) => {
+                if (email) {
+                  setUserEmail(email);
+                  // Create profile on Klaviyo
+                  axios.post('/api/createProfile', {
+                    email,
+                  }).then(() => {
+                    // Wait for 10 seconds before updating the profile
+                    setTimeout(() => {
+                      if (selectedAdAccount && userEmail && accessToken && userId) {
+                        // Trigger data fetch and send to Klaviyo
+                        axios.post('/api/updateProfile', {
+                          token: accessToken,
+                          userId: userId,
+                          email: userEmail,
+                          adAccountId: selectedAdAccount.id
+                        }).then(response => {
+                          console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
+                        }).catch(error => {
+                          console.error('Error updating profile in Klaviyo:', error);
+                        });
+                      } else {
+                        console.error('Missing required parameters for updating profile');
+                      }
+                    }, 10000); // 10 seconds delay
+                  }).catch(error => {
+                    console.error('Error creating profile in Klaviyo:', error);
+                  });
+                  // Open modal
+                  setModalOpen(true);
+                } else {
+                  console.error('Failed to fetch page contact email');
+                }
+              }).catch((error) => {
+                console.error('Failed to fetch page contact email:', error);
+              });
+            } else {
+              console.error('No page selected');
+            }
           }).catch((error) => {
             console.error('Failed to fetch pages:', error);
           });
@@ -213,7 +216,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
-    }, { scope: 'email,ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
+    }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights,email' });
   };
 
   const handleAdAccountSelect = (accountId: string) => {
