@@ -43,7 +43,7 @@ const loadFacebookSDK = () => {
         appId: '961870345497057',
         cookie: true,
         xfbml: true,
-        version: 'v19.0'
+        version: 'v20.0'
       });
       resolve();
     };
@@ -69,6 +69,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     loadFacebookSDK().then(() => {
@@ -127,6 +128,24 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     });
   };
 
+  const fetchUserEmail = (token: string) => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).FB) {
+        (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
+          if (response && !response.error) {
+            const email = response.email;
+            console.log('Fetched user email:', email);
+            setUserEmail(email);
+            resolve();
+          } else {
+            console.error('Error fetching user email:', response.error);
+            reject(response.error);
+          }
+        });
+      }
+    });
+  };
+
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
@@ -139,33 +158,34 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts and pages
+        // Fetch ad accounts, pages, and user email
         fetchAdAccounts(accessToken).then(() => {
           fetchPages(accessToken).then(() => {
-            // Open modal
-            setModalOpen(true);
+            fetchUserEmail(accessToken).then(() => {
+              // Open modal
+              setModalOpen(true);
 
-            // Assume the adAccountId is stored somewhere after fetching ad accounts
-            const adAccountId = 'your_ad_account_id'; // Replace with actual ad account ID
-            const userEmail = 'user@example.com'; // Replace with actual user's email
+              // Assume the adAccountId is stored somewhere after fetching ad accounts
+              const adAccountId = selectedAdAccount ? selectedAdAccount.id : ''; // Replace with actual ad account ID
 
-            // Trigger data fetch and send to Klaviyo
-            axios.post('/api/sync-facebook-data', {
-              token: accessToken,
-              userId: userId,
-              email: userEmail,
-              adAccountId: adAccountId
-            }).then(response => {
-              console.log('Data synced to Klaviyo:', response.data);
-            }).catch(error => {
-              console.error('Error syncing data to Klaviyo:', error);
+              // Trigger data fetch and send to Klaviyo
+              axios.post('/api/sync-facebook-data', {
+                token: accessToken,
+                userId: userId,
+                email: userEmail,
+                adAccountId: adAccountId
+              }).then(response => {
+                console.log('Data synced to Klaviyo:', response.data);
+              }).catch(error => {
+                console.error('Error syncing data to Klaviyo:', error);
+              });
             });
           });
         });
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
-    }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
+    }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights,email' });
   };
 
   const handleAdAccountSelect = (accountId: string) => {
