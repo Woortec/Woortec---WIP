@@ -132,11 +132,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     return new Promise<string>((resolve, reject) => {
       if ((window as any).FB) {
         (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
+          console.log('Raw response:', response); // Log the raw response
           if (response && !response.error) {
             const email = response.email;
-            console.log('Fetched user email:', email);
-            setUserEmail(email);
-            resolve(email);
+            if (email) {
+              console.log('Fetched user email:', email);
+              setUserEmail(email);
+              resolve(email);
+            } else {
+              console.error('Email field is missing in the response:', response);
+              reject('Email field is missing in the response');
+            }
           } else {
             console.error('Error fetching user email:', response.error);
             reject(response.error);
@@ -207,7 +213,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
-    }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights,email' });
+    }, { scope: 'email,ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
   };
 
   const handleAdAccountSelect = (accountId: string) => {
