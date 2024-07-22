@@ -5,6 +5,7 @@ import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
+import PageSelectionModal from './PageSelectionModal'; // Import the page selection modal component
 import axios from 'axios';
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
@@ -67,6 +68,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
   const [pages, setPages] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pageModalOpen, setPageModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -128,23 +130,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     });
   };
 
-  const fetchPageContactEmail = (pageId: string, token: string) => {
+  const fetchUserEmail = (token: string) => {
     return new Promise<string>((resolve, reject) => {
       if ((window as any).FB) {
-        (window as any).FB.api(`/${pageId}?fields=contact_email`, { access_token: token }, (response: any) => {
-          console.log('Raw response:', response); // Log the raw response
+        (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
           if (response && !response.error) {
-            const contactEmail = response.contact_email;
-            if (contactEmail) {
-              console.log('Fetched page contact email:', contactEmail);
-              setUserEmail(contactEmail);
-              resolve(contactEmail);
-            } else {
-              console.error('Contact email field is missing in the response:', response);
-              reject('Contact email field is missing in the response');
-            }
+            const email = response.email;
+            console.log('Fetched user email:', email);
+            setUserEmail(email);
+            resolve(email);
           } else {
-            console.error('Error fetching page contact email:', response.error);
+            console.error('Error fetching user email:', response.error);
             reject(response.error);
           }
         });
@@ -164,54 +160,45 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        // Fetch ad accounts and pages
+        // Fetch ad accounts, pages, and user email
         fetchAdAccounts(accessToken).then(() => {
           fetchPages(accessToken).then(() => {
-            if (selectedPage) {
-              fetchPageContactEmail(selectedPage.id, accessToken).then((email) => {
-                if (email) {
-                  setUserEmail(email);
-                  // Create profile on Klaviyo
-                  axios.post('/api/createProfile', {
-                    email,
-                  }).then(() => {
-                    // Wait for 10 seconds before updating the profile
-                    setTimeout(() => {
-                      if (selectedAdAccount && userEmail && accessToken && userId) {
-                        // Trigger data fetch and send to Klaviyo
-                        axios.post('/api/updateProfile', {
-                          token: accessToken,
-                          userId: userId,
-                          email: userEmail,
-                          adAccountId: selectedAdAccount.id
-                        }).then(response => {
-                          console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
-                        }).catch(error => {
-                          console.error('Error updating profile in Klaviyo:', error);
-                        });
-                      } else {
-                        console.error('Missing required parameters for updating profile');
-                      }
-                    }, 10000); // 10 seconds delay
-                  }).catch(error => {
-                    console.error('Error creating profile in Klaviyo:', error);
-                  });
-                  // Open modal
-                  setModalOpen(true);
-                } else {
-                  console.error('Failed to fetch page contact email');
-                }
-              }).catch((error) => {
-                console.error('Failed to fetch page contact email:', error);
-              });
-            } else {
-              console.error('No page selected');
-            }
-          }).catch((error) => {
-            console.error('Failed to fetch pages:', error);
+            fetchUserEmail(accessToken).then((email) => {
+              // Ensure email is set
+              if (email) {
+                setUserEmail(email);
+                // Create profile on Klaviyo
+                axios.post('/api/createProfile', {
+                  email,
+                }).then(() => {
+                  // Wait for 10 seconds before updating the profile
+                  setTimeout(() => {
+                    if (selectedAdAccount && userEmail && accessToken && userId) {
+                      // Trigger data fetch and send to Klaviyo
+                      axios.post('/api/updateProfile', {
+                        token: accessToken,
+                        userId: userId,
+                        email: userEmail,
+                        adAccountId: selectedAdAccount.id
+                      }).then(response => {
+                        console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
+                      }).catch(error => {
+                        console.error('Error updating profile in Klaviyo:', error);
+                      });
+                    } else {
+                      console.error('Missing required parameters for updating profile');
+                    }
+                  }, 10000); // 10 seconds delay
+                }).catch(error => {
+                  console.error('Error creating profile in Klaviyo:', error);
+                });
+                // Open modal
+                setModalOpen(true);
+              } else {
+                console.error('Failed to fetch user email');
+              }
+            });
           });
-        }).catch((error) => {
-          console.error('Failed to fetch ad accounts:', error);
         });
       } else {
         console.error('User cancelled login or did not fully authorize.');
@@ -236,6 +223,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     if (selectedPage) {
       setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
     }
+    setPageModalOpen(false);
   };
 
   const handleRemoveSelection = () => {
@@ -254,6 +242,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   function handleModalClose(): void {
     setModalOpen(false);
+  }
+
+  function handlePageModalClose(): void {
+    setPageModalOpen(false);
   }
 
   return (
@@ -296,7 +288,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       ) : (
         <Button
           variant="contained"
-          onClick={() => fetchPages(accessToken || '')}
+          onClick={() => setPageModalOpen(true)}
           sx={{
             backgroundColor: '#1877F2',
             '&:hover': {
@@ -313,6 +305,12 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         adAccounts={adAccounts}
         onClose={handleModalClose}
         onSelect={handleAdAccountSelect}
+      />
+      <PageSelectionModal
+        open={pageModalOpen}
+        pages={pages}
+        onClose={handlePageModalClose}
+        onSelect={handlePageSelect}
       />
     </Stack>
   );
