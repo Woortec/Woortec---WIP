@@ -5,6 +5,11 @@ const LIST_ID = 'XSsStF'; // Replace with your actual Klaviyo list ID
 const REVISION = '2024-07-15'; // Use the latest date of revision according to Klaviyo's API
 
 export const subscribeProfile = async (email: string) => {
+  console.log('Klaviyo API Key:', KLAVIYO_API_KEY); // Add debug log for API key
+  if (!KLAVIYO_API_KEY) {
+    throw new Error('Klaviyo API key is not set');
+  }
+
   const url = 'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs';
 
   const options = {
