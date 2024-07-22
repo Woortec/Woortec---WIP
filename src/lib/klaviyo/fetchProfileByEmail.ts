@@ -11,7 +11,7 @@ export const fetchProfileByEmail = async (email: string) => {
     headers: {
       accept: 'application/json',
       Authorization: `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-      revision: '2023-07-15', // Use the latest date of revision according to Klaviyo's API documentation
+      revision: '2024-07-15', // Use the latest date of revision according to Klaviyo's API documentation
     },
   };
 

@@ -288,7 +288,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       ) : (
         <Button
           variant="contained"
-          onClick={() => setPageModalOpen(true)}
+          onClick={() => {
+            fetchPages(accessToken || '');
+            setPageModalOpen(true);
+          }}
           sx={{
             backgroundColor: '#1877F2',
             '&:hover': {

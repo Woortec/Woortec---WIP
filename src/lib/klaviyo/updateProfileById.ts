@@ -10,7 +10,7 @@ export const updateProfileById = async (profileId: string, customFields: any) =>
     url: url,
     headers: {
       accept: 'application/json',
-      revision: '2023-07-15', // Use the latest date of revision according to Klaviyo's API documentation
+      revision: '2024-07-15', // Use the latest date of revision according to Klaviyo's API documentation
       'content-type': 'application/json',
       Authorization: `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
     },
