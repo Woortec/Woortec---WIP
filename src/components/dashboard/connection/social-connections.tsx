@@ -43,7 +43,7 @@ const loadFacebookSDK = () => {
         appId: '961870345497057',
         cookie: true,
         xfbml: true,
-        version: 'v20.0'
+        version: 'v19.0'
       });
       resolve();
     };
@@ -129,14 +129,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const fetchUserEmail = (token: string) => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       if ((window as any).FB) {
         (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
           if (response && !response.error) {
             const email = response.email;
             console.log('Fetched user email:', email);
             setUserEmail(email);
-            resolve();
+            resolve(email);
           } else {
             console.error('Error fetching user email:', response.error);
             reject(response.error);
@@ -161,18 +161,23 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Fetch ad accounts, pages, and user email
         fetchAdAccounts(accessToken).then(() => {
           fetchPages(accessToken).then(() => {
-            fetchUserEmail(accessToken).then(() => {
+            fetchUserEmail(accessToken).then((email) => {
               // Open modal
               setModalOpen(true);
 
-              // Assume the adAccountId is stored somewhere after fetching ad accounts
-              const adAccountId = selectedAdAccount ? selectedAdAccount.id : ''; // Replace with actual ad account ID
+              // Ensure selectedAdAccount is not null
+              const adAccountId = adAccounts.length > 0 ? adAccounts[0].id : ''; // Replace with the actual logic to get ad account ID
+
+              if (!adAccountId || !email || !accessToken) {
+                console.error('Missing required parameters: token, email, or adAccountId');
+                return;
+              }
 
               // Trigger data fetch and send to Klaviyo
               axios.post('/api/sync-facebook-data', {
                 token: accessToken,
                 userId: userId,
-                email: userEmail,
+                email: email,
                 adAccountId: adAccountId
               }).then(response => {
                 console.log('Data synced to Klaviyo:', response.data);
