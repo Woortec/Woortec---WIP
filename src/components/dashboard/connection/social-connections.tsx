@@ -162,8 +162,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchAdAccounts(accessToken).then(() => {
           fetchPages(accessToken).then(() => {
             fetchUserEmail(accessToken).then((email) => {
-              // Open modal
-              setModalOpen(true);
+              // Ensure email is set
+              if (email) {
+                setUserEmail(email);
+                // Open modal
+                setModalOpen(true);
+              } else {
+                console.error('Failed to fetch user email');
+              }
             });
           });
         });
