@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { fetchFacebookAdData } from '../../lib/facebook';
 import { subscribeProfile } from '../../lib/klaviyo';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
@@ -19,17 +18,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
   console.log(`Processing request for userId: ${userId}, email: ${email}, adAccountId: ${adAccountId}`);
 
   try {
-    const adData = await fetchFacebookAdData(token, adAccountId);
-
-    if (!adData || adData.length === 0) {
-      console.error('No ad data received from Facebook');
-      res.status(500).json({ error: 'No ad data received from Facebook' });
-      return;
-    }
-
+    // Directly subscribe the profile to Klaviyo
     await subscribeProfile(email);
 
-    res.status(200).json({ message: 'Data fetched and sent to Klaviyo successfully' });
+    res.status(200).json({ message: 'Profile subscribed to Klaviyo successfully' });
   } catch (error) {
     const err = error as any;
     console.error('Error occurred:', err);
