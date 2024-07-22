@@ -195,8 +195,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
               } else {
                 console.error('Failed to fetch user email');
               }
+            }).catch((error) => {
+              console.error('Failed to fetch user email:', error);
             });
+          }).catch((error) => {
+            console.error('Failed to fetch pages:', error);
           });
+        }).catch((error) => {
+          console.error('Failed to fetch ad accounts:', error);
         });
       } else {
         console.error('User cancelled login or did not fully authorize.');
