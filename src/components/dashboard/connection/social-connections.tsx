@@ -71,7 +71,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    const initializeState = () => {
+    loadFacebookSDK().then(() => {
+      setIsSdkLoaded(true);
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccount');
@@ -80,52 +81,50 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
-        fetchAdAccounts(token);
-        fetchPages(token);
+        if (storedAdAccount) {
+          setSelectedAdAccount({ id: storedAdAccount, name: '' });
+        }
+        if (storedPage) {
+          setSelectedPage({ id: storedPage, name: '' });
+        }
       }
-      if (storedAdAccount) {
-        setSelectedAdAccount({ id: storedAdAccount, name: '' });
-      }
-      if (storedPage) {
-        setSelectedPage({ id: storedPage, name: '' });
-      }
-    };
-
-    loadFacebookSDK().then(() => {
-      setIsSdkLoaded(true);
-      initializeState();
     });
-
-    // Ensure state is initialized on component mount
-    initializeState();
   }, []);
 
   const fetchAdAccounts = (token: string) => {
-    if ((window as any).FB) {
-      (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
-          console.log('Fetched ad accounts:', accounts);
-          setAdAccounts(accounts);
-        } else {
-          console.error('Error fetching ad accounts:', response.error);
-        }
-      });
-    }
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).FB) {
+        (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+          if (response && !response.error) {
+            const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
+            console.log('Fetched ad accounts:', accounts);
+            setAdAccounts(accounts);
+            resolve();
+          } else {
+            console.error('Error fetching ad accounts:', response.error);
+            reject(response.error);
+          }
+        });
+      }
+    });
   };
 
   const fetchPages = (token: string) => {
-    if ((window as any).FB) {
-      (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
-          console.log('Fetched pages:', pages);
-          setPages(pages);
-        } else {
-          console.error('Error fetching pages:', response.error);
-        }
-      });
-    }
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).FB) {
+        (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
+          if (response && !response.error) {
+            const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
+            console.log('Fetched pages:', pages);
+            setPages(pages);
+            resolve();
+          } else {
+            console.error('Error fetching pages:', response.error);
+            reject(response.error);
+          }
+        });
+      }
+    });
   };
 
   const handleFacebookLogin = () => {
@@ -141,33 +140,33 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
         // Fetch ad accounts and pages
-        fetchAdAccounts(accessToken);
-        fetchPages(accessToken);
-        // Open modal
-        setModalOpen(true);
+        fetchAdAccounts(accessToken).then(() => {
+          fetchPages(accessToken).then(() => {
+            // Open modal
+            setModalOpen(true);
 
-        // Assume the adAccountId is stored somewhere after fetching ad accounts
-        const adAccountId = 'your_ad_account_id'; // Replace with actual ad account ID
-        const userEmail = 'user@example.com'; // Replace with actual user's email
+            // Assume the adAccountId is stored somewhere after fetching ad accounts
+            const adAccountId = 'your_ad_account_id'; // Replace with actual ad account ID
+            const userEmail = 'user@example.com'; // Replace with actual user's email
 
-        // Trigger data fetch and send to Klaviyo
-        axios.post('/api/sync-facebook-data', {
-          token: accessToken,
-          userId: userId,
-          email: userEmail,
-          adAccountId: adAccountId
-        }).then(response => {
-          console.log('Data synced to Klaviyo:', response.data);
-        }).catch(error => {
-          console.error('Error syncing data to Klaviyo:', error);
+            // Trigger data fetch and send to Klaviyo
+            axios.post('/api/sync-facebook-data', {
+              token: accessToken,
+              userId: userId,
+              email: userEmail,
+              adAccountId: adAccountId
+            }).then(response => {
+              console.log('Data synced to Klaviyo:', response.data);
+            }).catch(error => {
+              console.error('Error syncing data to Klaviyo:', error);
+            });
+          });
         });
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
     }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
   };
-
-  
 
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find(account => account.id === accountId) || null;
@@ -203,7 +202,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   function handleModalClose(): void {
-    throw new Error('Function not implemented.');
+    setModalOpen(false);
   }
 
   return (
