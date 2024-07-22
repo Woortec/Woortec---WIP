@@ -173,7 +173,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 return;
               }
 
-              // Add a 5-second delay before sending data to Klaviyo
+              // Add a 10-second delay before sending data to Klaviyo
               setTimeout(() => {
                 // Trigger data fetch and send to Klaviyo
                 axios.post('/api/sync-facebook-data', {
@@ -186,7 +186,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 }).catch(error => {
                   console.error('Error syncing data to Klaviyo:', error);
                 });
-              }, 5000); // 5 seconds delay
+              }, 15000); // 10 seconds delay
             });
           });
         });
