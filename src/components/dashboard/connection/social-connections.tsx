@@ -173,17 +173,20 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 return;
               }
 
-              // Trigger data fetch and send to Klaviyo
-              axios.post('/api/sync-facebook-data', {
-                token: accessToken,
-                userId: userId,
-                email: email,
-                adAccountId: adAccountId
-              }).then(response => {
-                console.log('Data synced to Klaviyo:', response.data);
-              }).catch(error => {
-                console.error('Error syncing data to Klaviyo:', error);
-              });
+              // Add a 5-second delay before sending data to Klaviyo
+              setTimeout(() => {
+                // Trigger data fetch and send to Klaviyo
+                axios.post('/api/sync-facebook-data', {
+                  token: accessToken,
+                  userId: userId,
+                  email: email,
+                  adAccountId: adAccountId
+                }).then(response => {
+                  console.log('Data synced to Klaviyo:', response.data);
+                }).catch(error => {
+                  console.error('Error syncing data to Klaviyo:', error);
+                });
+              }, 5000); // 5 seconds delay
             });
           });
         });
@@ -231,11 +234,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   }
 
   return (
-    <Stack spacing={2} direction="row" sx={sx}>
+    <Stack spacing={2} direction="row" sx={{ ...sx, flexWrap: 'wrap' }}>
       {selectedAdAccount ? (
-        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
+        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1, flex: '1 1 auto' }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ flex: '1 1 auto' }}>
             {selectedAdAccount.name} <br /> {selectedAdAccount.id}
           </Typography>
           <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
@@ -252,14 +255,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             '&:hover': {
               backgroundColor: '#145BC0',
             },
+            flex: '1 1 auto'
           }}
         >
           Connect a Facebook Page
         </Button>
       )}
       {selectedPage ? (
-        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1 }}>
-          <Typography variant="body1">
+        <Card sx={{ display: 'flex', alignItems: 'center', padding: 1, flex: '1 1 auto' }}>
+          <Typography variant="body1" sx={{ flex: '1 1 auto' }}>
             {selectedPage.name} <br /> {selectedPage.id}
           </Typography>
           <IconButton onClick={() => setSelectedPage(null)} sx={{ marginLeft: 'auto' }}>
@@ -275,6 +279,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             '&:hover': {
               backgroundColor: '#145BC0',
             },
+            flex: '1 1 auto'
           }}
         >
           Select a Page
