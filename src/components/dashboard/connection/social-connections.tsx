@@ -7,7 +7,7 @@ import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
 import PageSelectionModal from './PageSelectionModal'; // Import the page selection modal component
 
-const setItemWithExpiry = (key: string, value: string, ttl: number) => {
+const setItemWithExpiry = (key: string, value: any, ttl: number) => {
   const now = new Date();
   const item = {
     value: value,
@@ -83,10 +83,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setAccessToken(token);
         setUserId(storedUserId);
         if (storedAdAccount) {
-          setSelectedAdAccount({ id: storedAdAccount, name: '' });
+          setSelectedAdAccount(storedAdAccount);
         }
         if (storedPage) {
-          setSelectedPage({ id: storedPage, name: '' });
+          setSelectedPage(storedPage);
         }
       }
     });
@@ -95,7 +95,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const fetchAdAccounts = (token: string) => {
     return new Promise<void>((resolve, reject) => {
       if ((window as any).FB) {
-        (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+        (window as any).FB.api('/me/adaccounts?fields=name', { access_token: token }, (response: any) => {
           if (response && !response.error) {
             const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
             console.log('Fetched ad accounts:', accounts);
@@ -113,7 +113,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const fetchPages = (token: string) => {
     return new Promise<void>((resolve, reject) => {
       if ((window as any).FB) {
-        (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
+        (window as any).FB.api('/me/accounts?fields=name', { access_token: token }, (response: any) => {
           if (response && !response.error) {
             const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
             console.log('Fetched pages:', pages);
@@ -158,7 +158,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccount', selectedAccount, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
@@ -168,7 +168,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Page selected:', selectedPage);
     setSelectedPage(selectedPage);
     if (selectedPage) {
-      setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbPage', selectedPage, 30 * 60 * 1000);
     }
     setPageModalOpen(false);
   };
@@ -199,10 +199,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const storedAdAccount = getItemWithExpiry('fbAdAccount');
     const storedPage = getItemWithExpiry('fbPage');
     if (storedAdAccount) {
-      setSelectedAdAccount({ id: storedAdAccount, name: '' });
+      setSelectedAdAccount(storedAdAccount);
     }
     if (storedPage) {
-      setSelectedPage({ id: storedPage, name: '' });
+      setSelectedPage(storedPage);
     }
   }, []);
 
