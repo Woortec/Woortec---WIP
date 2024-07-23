@@ -195,6 +195,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setPageModalOpen(false);
   }
 
+  useEffect(() => {
+    const storedAdAccount = getItemWithExpiry('fbAdAccount');
+    const storedPage = getItemWithExpiry('fbPage');
+    if (storedAdAccount) {
+      setSelectedAdAccount({ id: storedAdAccount, name: '' });
+    }
+    if (storedPage) {
+      setSelectedPage({ id: storedPage, name: '' });
+    }
+  }, []);
+
   return (
     <Stack spacing={2} direction="row" sx={{ ...sx, flexWrap: 'wrap' }}>
       {selectedAdAccount ? (
