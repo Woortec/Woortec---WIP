@@ -1,3 +1,5 @@
+// pages/sign-in-form.tsx
+
 'use client'
 
 import * as React from 'react';
@@ -16,7 +18,6 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import { subscribeProfile } from '@/lib/klaviyo/subscribeProfile';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
@@ -50,12 +51,25 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleProfileSubscription = async (email: string) => {
+  const handleKlaviyoSubscription = async (email: string) => {
     try {
-      await subscribeProfile(email);
-      console.log('Profile subscribed in Klaviyo for email:', email);
+      const response = await fetch('/api/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Failed to subscribe profile in Klaviyo:', result.error);
+      } else {
+        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
+      }
     } catch (error) {
-      console.error('Failed to subscribe profile in Klaviyo:', error);
+      console.error('Error during Klaviyo subscription:', error);
     }
   };
 
@@ -81,7 +95,8 @@ export function SignInForm(): React.JSX.Element {
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-        await handleProfileSubscription(data.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.user.email); // Subscribe profile in Klaviyo
+        await checkSession?.();
         router.push('/');
       }
     } catch (error) {
@@ -112,7 +127,7 @@ export function SignInForm(): React.JSX.Element {
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-        await handleProfileSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
       }
 
       await checkSession?.();
@@ -145,7 +160,7 @@ export function SignInForm(): React.JSX.Element {
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-        await handleProfileSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
       }
 
       await checkSession?.();
