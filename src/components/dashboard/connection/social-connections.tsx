@@ -212,7 +212,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1, flex: '1 1 auto' }}>
           <FacebookIcon sx={{ marginRight: 1 }} />
           <Typography variant="body1" sx={{ flex: '1 1 auto' }}>
-            {selectedAdAccount.name} <br /> {selectedAdAccount.id}
+            {selectedAdAccount.name}
           </Typography>
           <IconButton onClick={handleRemoveSelection} sx={{ marginLeft: 'auto' }}>
             <CloseIcon />
@@ -237,7 +237,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       {selectedPage ? (
         <Card sx={{ display: 'flex', alignItems: 'center', padding: 1, flex: '1 1 auto' }}>
           <Typography variant="body1" sx={{ flex: '1 1 auto' }}>
-            {selectedPage.name} <br /> {selectedPage.id}
+            {selectedPage.name}
           </Typography>
           <IconButton onClick={() => setSelectedPage(null)} sx={{ marginLeft: 'auto' }}>
             <CloseIcon />

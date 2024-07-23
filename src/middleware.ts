@@ -25,7 +25,7 @@ export default async function middleware(req: any) {
       pathname !== '/auth/callback' &&
       pathname !== '/auth/sign-up'
     ) {
-      return NextResponse.redirect(new URL('/auth/sign-in', req.url));
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
 
