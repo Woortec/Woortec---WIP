@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -16,12 +14,15 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import axios from 'axios'; // Add axios for making HTTP requests
 
 import GTM from '../GTM';
-
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
+
+const KLAVIYO_API_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
+const KLAVIYO_LIST_ID = 'XSsStF';
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -50,6 +51,26 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
+  const createKlaviyoProfile = async (email: string) => {
+    try {
+      const response = await axios.post(
+        `https://a.klaviyo.com/api/v2/list/${KLAVIYO_LIST_ID}/members`,
+        {
+          profiles: [{ email }],
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+          },
+        }
+      );
+      console.log('Profile created in Klaviyo for email:', email);
+    } catch (error) {
+      console.error('Failed to create profile in Klaviyo:', error);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!validateForm()) {
@@ -65,6 +86,7 @@ export function SignInForm(): React.JSX.Element {
 
     if (data.user) {
       Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+      await createKlaviyoProfile(data.user.email); // Create Klaviyo profile
       router.push('/');
     }
 
@@ -88,6 +110,7 @@ export function SignInForm(): React.JSX.Element {
     if (data?.session) {
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+      await createKlaviyoProfile(data.session.user.email); // Create Klaviyo profile
     }
 
     if (error) {
@@ -114,6 +137,7 @@ export function SignInForm(): React.JSX.Element {
     if (data?.session) {
       document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
       document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+      await createKlaviyoProfile(data.session.user.email); // Create Klaviyo profile
     }
 
     if (error) {
