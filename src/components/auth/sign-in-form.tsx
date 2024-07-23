@@ -17,6 +17,8 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 
+import GTM from '../GTM';
+
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
@@ -79,7 +81,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `https://uvhvgcrczfdfvoujarga.supabase.co/auth/v1/callback`,
+        redirectTo: `http://app.woortec.com/auth/callback`,
       },
     });
 
@@ -105,7 +107,7 @@ export function SignInForm(): React.JSX.Element {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `https://uvhvgcrczfdfvoujarga.supabase.co/auth/v1/callback`,
+        redirectTo: `http://app.woortec.com/auth/callback`,
       },
     });
 
@@ -127,6 +129,7 @@ export function SignInForm(): React.JSX.Element {
 
   return (
     <Stack spacing={4}>
+      <GTM gtmId="GTM-NXB5KPF3" />  {/* Add GTM component here */}
       <Stack spacing={1}>
         <Typography variant="h4">Sign in</Typography>
         <Typography color="text.secondary" variant="body2">
@@ -199,11 +202,7 @@ export function SignInForm(): React.JSX.Element {
       >
         Sign in with Facebook
       </Button>
-      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
-      <Alert color="warning">
-        Text Here <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit"></Typography>
-      </Alert>
+      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
     </Stack>
   );
 }
