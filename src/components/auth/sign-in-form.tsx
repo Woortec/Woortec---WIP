@@ -159,7 +159,7 @@ export function SignInForm(): React.JSX.Element {
 
   return (
     <Stack spacing={4}>
-      <GTM gtmId="GTM-NXB5KPF3" />  {/* Add GTM component here */}
+      <GTM gtmId="GTM-NXB5KPF3" /> {/* Add GTM component here */}
       <Stack spacing={1}>
         <Typography variant="h4">Sign in</Typography>
         <Typography color="text.secondary" variant="body2">
@@ -232,7 +232,7 @@ export function SignInForm(): React.JSX.Element {
       >
         Sign in with Facebook
       </Button>
-      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
+      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
     </Stack>
   );
 }
