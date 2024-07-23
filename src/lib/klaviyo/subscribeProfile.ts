@@ -43,6 +43,7 @@ export const subscribeProfile = async (email: string) => {
 
   try {
     const response = await axios.request(options);
+    console.log('Response from Klaviyo:', response.data);
     return response.data;
   } catch (error) {
     const err = error as any;
