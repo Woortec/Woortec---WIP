@@ -44,7 +44,7 @@ const loadFacebookSDK = () => {
         appId: '961870345497057',
         cookie: true,
         xfbml: true,
-        version: 'v19.0'
+        version: 'v20.0'
       });
       resolve();
     };
@@ -160,17 +160,25 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         // Store the token and user ID with a 30-minute expiry
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
+
         // Fetch ad accounts, pages, and user email
-        fetchAdAccounts(accessToken).then(() => {
-          fetchPages(accessToken).then(() => {
-            fetchUserEmail(accessToken).then((email) => {
-              // Ensure email is set
-              if (email) {
-                setUserEmail(email);
-                // Create profile on Klaviyo
-                axios.post('/api/createProfile', {
-                  email,
-                }).then(() => {
+        fetchAdAccounts(accessToken)
+          .then(() => fetchPages(accessToken))
+          .then(() => fetchUserEmail(accessToken))
+          .then((email) => {
+            if (email) {
+              setUserEmail(email);
+              // Store selected ad account and page even if Klaviyo operations fail
+              if (selectedAdAccount) {
+                setItemWithExpiry('fbAdAccount', selectedAdAccount.id, 30 * 60 * 1000);
+              }
+              if (selectedPage) {
+                setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
+              }
+
+              // Create profile on Klaviyo
+              axios.post('/api/createProfile', { email })
+                .then(() => {
                   // Wait for 10 seconds before updating the profile
                   setTimeout(() => {
                     if (selectedAdAccount && userEmail && accessToken && userId) {
@@ -192,14 +200,13 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 }).catch(error => {
                   console.error('Error creating profile in Klaviyo:', error);
                 });
-                // Open modal
-                setModalOpen(true);
-              } else {
-                console.error('Failed to fetch user email');
-              }
-            });
+
+              // Open modal
+              setModalOpen(true);
+            } else {
+              console.error('Failed to fetch user email');
+            }
           });
-        });
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
