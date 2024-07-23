@@ -25,7 +25,6 @@ export const subscribeProfile = async (email: string) => {
       data: {
         type: 'profile-subscription-bulk-create-job',
         attributes: {
-          custom_source: 'Facebook Sync',
           profiles: {
             data: [
               {
