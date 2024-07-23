@@ -6,7 +6,6 @@ import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-materia
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal'; // Import the modal component
 import PageSelectionModal from './PageSelectionModal'; // Import the page selection modal component
-import axios from 'axios';
 
 const setItemWithExpiry = (key: string, value: string, ttl: number) => {
   const now = new Date();
@@ -71,7 +70,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [pageModalOpen, setPageModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     loadFacebookSDK().then(() => {
@@ -130,24 +128,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     });
   };
 
-  const fetchUserEmail = (token: string) => {
-    return new Promise<string>((resolve, reject) => {
-      if ((window as any).FB) {
-        (window as any).FB.api('/me?fields=email', { access_token: token }, (response: any) => {
-          if (response && !response.error) {
-            const email = response.email;
-            console.log('Fetched user email:', email);
-            setUserEmail(email);
-            resolve(email);
-          } else {
-            console.error('Error fetching user email:', response.error);
-            reject(response.error);
-          }
-        });
-      }
-    });
-  };
-
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
     (window as any).FB.login((response: any) => {
@@ -161,52 +141,12 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
 
-        // Fetch ad accounts, pages, and user email
-        fetchAdAccounts(accessToken)
-          .then(() => fetchPages(accessToken))
-          .then(() => fetchUserEmail(accessToken))
-          .then((email) => {
-            if (email) {
-              setUserEmail(email);
-              // Store selected ad account and page even if Klaviyo operations fail
-              if (selectedAdAccount) {
-                setItemWithExpiry('fbAdAccount', selectedAdAccount.id, 30 * 60 * 1000);
-              }
-              if (selectedPage) {
-                setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
-              }
-
-              // Create profile on Klaviyo
-              axios.post('/api/createProfile', { email })
-                .then(() => {
-                  // Wait for 10 seconds before updating the profile
-                  setTimeout(() => {
-                    if (selectedAdAccount && userEmail && accessToken && userId) {
-                      // Trigger data fetch and send to Klaviyo
-                      axios.post('/api/updateProfile', {
-                        token: accessToken,
-                        userId: userId,
-                        email: userEmail,
-                        adAccountId: selectedAdAccount.id
-                      }).then(response => {
-                        console.log('Profile updated with custom fields in Klaviyo successfully:', response.data);
-                      }).catch(error => {
-                        console.error('Error updating profile in Klaviyo:', error);
-                      });
-                    } else {
-                      console.error('Missing required parameters for updating profile');
-                    }
-                  }, 10000); // 10 seconds delay
-                }).catch(error => {
-                  console.error('Error creating profile in Klaviyo:', error);
-                });
-
-              // Open modal
-              setModalOpen(true);
-            } else {
-              console.error('Failed to fetch user email');
-            }
+        // Fetch ad accounts and pages
+        fetchAdAccounts(accessToken).then(() => {
+          fetchPages(accessToken).then(() => {
+            setModalOpen(true);
           });
+        });
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
