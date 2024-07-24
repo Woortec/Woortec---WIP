@@ -50,6 +50,7 @@ export function SignInForm(): React.JSX.Element {
   };
 
   const handleKlaviyoSubscription = async (email: string, password?: string) => {
+    console.log(`Subscribing email: ${email} to Klaviyo`);
     try {
       const response = await fetch('/api/sign-in', {
         method: 'POST',
@@ -106,6 +107,7 @@ export function SignInForm(): React.JSX.Element {
 
   const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
+    console.log('Starting Google sign-in process');
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -123,11 +125,18 @@ export function SignInForm(): React.JSX.Element {
       }
 
       if (data?.session) {
+        console.log('Google sign-in successful, session data:', data.session);
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+
+        console.log('Subscribing to Klaviyo');
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
         await checkSession?.();
         router.push('/');
+      } else {
+        console.log('No session data received after Google sign-in');
+        setGoogleAuthError('Failed to get session data after Google sign-in.');
+        setIsPending(false);
       }
     } catch (error) {
       console.error('Error during Google sign-in:', error);
@@ -138,6 +147,7 @@ export function SignInForm(): React.JSX.Element {
 
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
+    console.log('Starting Facebook sign-in process');
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -155,11 +165,18 @@ export function SignInForm(): React.JSX.Element {
       }
 
       if (data?.session) {
+        console.log('Facebook sign-in successful, session data:', data.session);
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+
+        console.log('Subscribing to Klaviyo');
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
         await checkSession?.();
         router.push('/');
+      } else {
+        console.log('No session data received after Facebook sign-in');
+        setFacebookAuthError('Failed to get session data after Facebook sign-in.');
+        setIsPending(false);
       }
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
