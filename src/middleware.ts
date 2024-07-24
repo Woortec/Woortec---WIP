@@ -23,7 +23,7 @@ export default async function middleware(req: any) {
       !user &&
       pathname !== '/auth/sign-in' &&
       pathname !== '/error' &&
-      pathname !== '/api/callback' &&
+      pathname !== '/auth/callback' &&
       pathname !== '/auth/sign-up'
     ) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
