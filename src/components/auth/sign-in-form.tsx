@@ -110,16 +110,32 @@ export function SignInForm(): React.JSX.Element {
     console.log('Starting Google sign-in process');
 
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `http://app.woortec.com/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
       if (error) {
         console.log('Google auth error', error);
         setGoogleAuthError(error.message);
+        setIsPending(false);
+      }
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+      setGoogleAuthError('An unexpected error occurred. Please try again.');
+      setIsPending(false);
+    }
+  }, [supabase]);
+
+  React.useEffect(() => {
+    const handleAuthCallback = async () => {
+      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+
+      if (error) {
+        console.error('Error getting session from URL:', error);
+        setGoogleAuthError('Failed to get session data after Google sign-in.');
         setIsPending(false);
         return;
       }
@@ -133,27 +149,23 @@ export function SignInForm(): React.JSX.Element {
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
         await checkSession?.();
         router.push('/');
-      } else {
-        console.log('No session data received after Google sign-in');
-        setGoogleAuthError('Failed to get session data after Google sign-in.');
-        setIsPending(false);
       }
-    } catch (error) {
-      console.error('Error during Google sign-in:', error);
-      setGoogleAuthError('An unexpected error occurred. Please try again.');
-      setIsPending(false);
+    };
+
+    if (window.location.pathname === '/auth/callback') {
+      handleAuthCallback();
     }
-  }, [checkSession, router, supabase]);
+  }, [supabase, checkSession, router]);
 
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
     console.log('Starting Facebook sign-in process');
 
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `http://app.woortec.com/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -161,29 +173,13 @@ export function SignInForm(): React.JSX.Element {
         console.log('Facebook auth error', error);
         setFacebookAuthError(error.message);
         setIsPending(false);
-        return;
-      }
-
-      if (data?.session) {
-        console.log('Facebook sign-in successful, session data:', data.session);
-        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
-        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-
-        console.log('Subscribing to Klaviyo');
-        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
-        await checkSession?.();
-        router.push('/');
-      } else {
-        console.log('No session data received after Facebook sign-in');
-        setFacebookAuthError('Failed to get session data after Facebook sign-in.');
-        setIsPending(false);
       }
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
       setFacebookAuthError('An unexpected error occurred. Please try again.');
       setIsPending(false);
     }
-  }, [checkSession, router, supabase]);
+  }, [supabase]);
 
   return (
     <Stack spacing={4}>
