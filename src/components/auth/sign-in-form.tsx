@@ -127,7 +127,7 @@ export function SignInForm(): React.JSX.Element {
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
         await checkSession?.();
-        router.refresh();
+        router.push('/');
       }
     } catch (error) {
       console.error('Error during Google sign-in:', error);
@@ -159,7 +159,7 @@ export function SignInForm(): React.JSX.Element {
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
         await checkSession?.();
-        router.refresh();
+        router.push('/');
       }
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
