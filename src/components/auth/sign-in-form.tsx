@@ -1,4 +1,6 @@
-'use client';
+// pages/sign-in-form.tsx
+
+'use client'
 
 import * as React from 'react';
 import RouterLink from 'next/link';
@@ -49,6 +51,28 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleKlaviyoSubscription = async (email: string) => {
+    try {
+      const response = await fetch('/api/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Failed to subscribe profile in Klaviyo:', result.error);
+      } else {
+        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
+      }
+    } catch (error) {
+      console.error('Error during Klaviyo subscription:', error);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!validateForm()) {
@@ -71,13 +95,7 @@ export function SignInForm(): React.JSX.Element {
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-        await fetch('/api/klaviyo-subscribe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: data.user.email }),
-        });
+        await handleKlaviyoSubscription(data.user.email); // Subscribe profile in Klaviyo
         await checkSession?.();
         router.push('/');
       }
@@ -90,13 +108,12 @@ export function SignInForm(): React.JSX.Element {
 
   const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
-    console.log('Starting Google sign-in process');
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/api/auth-callback`,
+          redirectTo: `http://app.woortec.com/auth/callback`,
         },
       });
 
@@ -104,23 +121,32 @@ export function SignInForm(): React.JSX.Element {
         console.log('Google auth error', error);
         setGoogleAuthError(error.message);
         setIsPending(false);
+        return;
       }
+
+      if (data?.session) {
+        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
+        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+      }
+
+      await checkSession?.();
+      router.refresh();
     } catch (error) {
       console.error('Error during Google sign-in:', error);
       setGoogleAuthError('An unexpected error occurred. Please try again.');
       setIsPending(false);
     }
-  }, [supabase]);
+  }, [checkSession, router, supabase]);
 
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
-    console.log('Starting Facebook sign-in process');
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/api/auth-callback`,
+          redirectTo: `http://app.woortec.com/auth/callback`,
         },
       });
 
@@ -128,13 +154,23 @@ export function SignInForm(): React.JSX.Element {
         console.log('Facebook auth error', error);
         setFacebookAuthError(error.message);
         setIsPending(false);
+        return;
       }
+
+      if (data?.session) {
+        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
+        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+      }
+
+      await checkSession?.();
+      router.refresh();
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
       setFacebookAuthError('An unexpected error occurred. Please try again.');
       setIsPending(false);
     }
-  }, [supabase]);
+  }, [checkSession, router, supabase]);
 
   return (
     <Stack spacing={4}>

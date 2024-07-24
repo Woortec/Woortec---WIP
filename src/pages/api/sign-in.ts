@@ -1,5 +1,4 @@
 // pages/api/sign-in.ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '../../../utils/supabase/client';
 import { subscribeProfile } from '@/lib/klaviyo/subscribeProfile';
@@ -25,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (data.user) {
       try {
         console.log(`User signed in successfully: ${data.user.email}`);
-        await subscribeProfile(data.user.email, password); // Include password if available
+        await subscribeProfile(data.user.email);
         console.log(`Profile subscribed in Klaviyo for email: ${data.user.email}`);
         return res.status(200).json({ message: 'Signed in and profile subscribed' });
       } catch (err: any) {

@@ -1,74 +1,79 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+
 import { createClient } from '../../../../utils/supabase/client';
-import axios from 'axios';
 
-const supabase = createClient();
+const Page = () => {
+  const supabase = createClient();
+  const router = useRouter();
+  const [insert, setInsert] = useState(true);
 
-const KLAVIYO_API_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
-const KLAVIYO_API_URL = 'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs';
-const LIST_ID = 'XSsStF'; // Replace with your actual list ID
-const REVISION = '2024-07-15'; // Use the latest date of revision according to Klaviyo's API
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const { data: sessionData, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-
-    if (error) {
-      console.error('Error getting session from URL:', error);
-      return res.redirect('/?error=auth_callback_failed');
-    }
-
-    if (sessionData?.session) {
-      const user = sessionData.session.user;
-      const email = user.email;
-
-      console.log('Google sign-in successful, session data:', sessionData.session);
-
-      const options = {
-        method: 'POST',
-        url: KLAVIYO_API_URL,
-        headers: {
-          accept: 'application/json',
-          revision: REVISION,
-          'content-type': 'application/json',
-          Authorization: `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
-        },
-        data: {
-          data: {
-            type: 'profile-subscription-bulk-create-job',
-            attributes: {
-              custom_source: 'Google Sync',
-              profiles: {
-                data: [
-                  {
-                    type: 'profile',
-                    attributes: {
-                      email: email,
-                    },
-                  },
-                ],
-              },
-              historical_import: false,
-            },
-            relationships: { list: { data: { type: 'list', id: LIST_ID } } },
-          },
-        },
-      };
-
+  useEffect(() => {
+    const handleAuth = async () => {
       try {
-        const response = await axios.request(options);
-        console.log('Response from Klaviyo:', response.data);
-      } catch (error) {
-        const err = error as any;
-        console.error('Error subscribing profile in Klaviyo:', err.response ? err.response.data : err.message);
-      }
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const accessToken = hashParams.get('access_token');
 
-      return res.redirect(`/dashboard`);
-    } else {
-      return res.redirect('/?error=no_session');
+        if (accessToken) {
+          Cookies.set('accessToken', accessToken, { expires: 3 });
+          const { data: sessionData } = await supabase.auth.getSession();
+
+          if (sessionData?.session?.user) {
+            const user = sessionData.session.user;
+            const { email, full_name: fullName, sub: uuid } = user.user_metadata;
+            const provider = user.app_metadata.provider;
+            const { data: existingUser, error: checkError } = await supabase
+              .from('user')
+              .select('*')
+              .eq('email', email);
+
+            console.log('Data length', existingUser?.length);
+
+            if (existingUser?.length == 0) {
+              if (insert) {
+                const { data, error: insertError } = await supabase.from('user').insert([
+                  {
+                    email,
+                    provider,
+                    uuid,
+                    firstName: fullName,
+                    lastName: fullName,
+                  },
+                ]);
+                console.log('Calling');
+                console.log(2);
+                setInsert(false);
+              }
+              // if (data) {
+              //   setInsert(false);
+              //   console.log(1);
+              //   router.push('/');
+              //   console.log(data);
+              // }
+            } else {
+              router.push('/');
+            }
+          }
+        } else {
+          router.push('/');
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+    handleAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!insert) {
+      router.push('/');
     }
-  } catch (error) {
-    console.error('Error during authentication handling:', error);
-    return res.redirect('/?error=auth_callback_error');
-  }
-}
+  });
+
+  return <div>Loading...</div>;
+};
+
+export default Page;
