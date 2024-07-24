@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           data: {
             type: 'profile-subscription-bulk-create-job',
             attributes: {
-              custom_source: 'Facebook Sync',
+              custom_source: 'Google Sync',
               profiles: {
                 data: [
                   {
