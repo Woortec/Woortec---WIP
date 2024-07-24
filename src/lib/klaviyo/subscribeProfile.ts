@@ -5,7 +5,7 @@ const KLAVIYO_API_URL = 'https://a.klaviyo.com/api/profile-subscription-bulk-cre
 const LIST_ID = 'XSsStF'; // Replace with your actual list ID
 const REVISION = '2024-07-15'; // Use the latest date of revision according to Klaviyo's API
 
-export const subscribeProfile = async (email: string) => {
+export async function subscribeProfile(email: string, password?: string) {
   if (!KLAVIYO_API_KEY) {
     throw new Error('Klaviyo API key is not set');
   }
@@ -50,4 +50,4 @@ export const subscribeProfile = async (email: string) => {
     console.error('Error subscribing profile in Klaviyo:', err.response ? err.response.data : err.message);
     throw err;
   }
-};
+}

@@ -1,5 +1,3 @@
-// pages/sign-in-form.tsx
-
 'use client'
 
 import * as React from 'react';
@@ -51,7 +49,7 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleKlaviyoSubscription = async (email: string) => {
+  const handleKlaviyoSubscription = async (email: string, password?: string) => {
     try {
       const response = await fetch('/api/sign-in', {
         method: 'POST',
@@ -95,7 +93,7 @@ export function SignInForm(): React.JSX.Element {
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-        await handleKlaviyoSubscription(data.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.user.email, password); // Subscribe profile in Klaviyo
         await checkSession?.();
         router.push('/');
       }
@@ -127,11 +125,10 @@ export function SignInForm(): React.JSX.Element {
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
+        await checkSession?.();
+        router.refresh();
       }
-
-      await checkSession?.();
-      router.refresh();
     } catch (error) {
       console.error('Error during Google sign-in:', error);
       setGoogleAuthError('An unexpected error occurred. Please try again.');
@@ -160,11 +157,10 @@ export function SignInForm(): React.JSX.Element {
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
+        await checkSession?.();
+        router.refresh();
       }
-
-      await checkSession?.();
-      router.refresh();
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
       setFacebookAuthError('An unexpected error occurred. Please try again.');
