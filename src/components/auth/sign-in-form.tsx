@@ -58,7 +58,7 @@ export function SignInForm(): React.JSX.Element {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
 
       const result = await response.json();
@@ -128,10 +128,9 @@ export function SignInForm(): React.JSX.Element {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await checkSession?.();
+        router.refresh();
       }
-
-      await checkSession?.();
-      router.refresh();
     } catch (error) {
       console.error('Error during Google sign-in:', error);
       setGoogleAuthError('An unexpected error occurred. Please try again.');
@@ -161,10 +160,9 @@ export function SignInForm(): React.JSX.Element {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
         await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+        await checkSession?.();
+        router.refresh();
       }
-
-      await checkSession?.();
-      router.refresh();
     } catch (error) {
       console.error('Error during Facebook sign-in:', error);
       setFacebookAuthError('An unexpected error occurred. Please try again.');
