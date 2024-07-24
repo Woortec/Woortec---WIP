@@ -4,12 +4,34 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { createClient } from '../../../../utils/supabase/client';
-import { subscribeProfile } from '../../../lib/klaviyo/subscribeProfile';
 
 const Page = () => {
   const supabase = createClient();
   const router = useRouter();
   const [insert, setInsert] = useState(true);
+
+  const handleKlaviyoSubscription = async (email: string) => {
+    console.log(`Subscribing email: ${email} to Klaviyo`);
+    try {
+      const response = await fetch('/api/klaviyo-subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Failed to subscribe profile in Klaviyo:', result.error);
+      } else {
+        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
+      }
+    } catch (error) {
+      console.error('Error during Klaviyo subscription:', error);
+    }
+  };
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -19,58 +41,35 @@ const Page = () => {
 
         if (accessToken) {
           Cookies.set('accessToken', accessToken, { expires: 3 });
-
-          // Get session data from Supabase
-          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
-          if (sessionError) {
-            console.error('Error getting session:', sessionError);
-            router.push('/');
-            return;
-          }
+          const { data: sessionData } = await supabase.auth.getSession();
 
           if (sessionData?.session?.user) {
             const user = sessionData.session.user;
             const { email, full_name: fullName, sub: uuid } = user.user_metadata;
             const provider = user.app_metadata.provider;
-
-            // Insert user data if not exists
             const { data: existingUser, error: checkError } = await supabase
               .from('user')
               .select('*')
               .eq('email', email);
 
-            if (checkError) {
-              console.error('Error checking user existence:', checkError);
-              router.push('/');
-              return;
-            }
+            console.log('Data length', existingUser?.length);
 
-            if (existingUser?.length === 0 && insert) {
-              const { data: insertData, error: insertError } = await supabase.from('user').insert([
-                {
-                  email,
-                  provider,
-                  uuid,
-                  firstName: fullName,
-                  lastName: fullName,
-                },
-              ]);
-
-              if (insertError) {
-                console.error('Error inserting user:', insertError);
-                router.push('/');
-                return;
+            if (existingUser?.length == 0) {
+              if (insert) {
+                const { data, error: insertError } = await supabase.from('user').insert([
+                  {
+                    email,
+                    provider,
+                    uuid,
+                    firstName: fullName,
+                    lastName: fullName,
+                  },
+                ]);
+                console.log('Calling');
+                setInsert(false);
+                await handleKlaviyoSubscription(email);
               }
-
-              console.log('User inserted:', insertData);
-              setInsert(false);
             }
-
-            // Subscribe user to Klaviyo
-            await subscribeProfile(email);
-
-            // Redirect to home page after processing
             router.push('/');
           } else {
             router.push('/');
@@ -79,19 +78,12 @@ const Page = () => {
           router.push('/');
         }
       } catch (error) {
-        console.error('Error during authentication handling:', error);
+        console.log('error', error);
         router.push('/');
       }
     };
-
     handleAuth();
-  }, [supabase, router]);
-
-  useEffect(() => {
-    if (!insert) {
-      router.push('/');
-    }
-  }, [insert, router]);
+  }, []);
 
   return <div>Loading...</div>;
 };
