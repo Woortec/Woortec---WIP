@@ -1,91 +1,74 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '../../../../utils/supabase/client';
+import axios from 'axios';
 
-const Page = () => {
-  const supabase = createClient();
-  const router = useRouter();
-  const [insert, setInsert] = useState(true);
+const supabase = createClient();
 
-  const handleKlaviyoSubscription = async (email: string) => {
-    console.log(`Subscribing email: ${email} to Klaviyo`);
-    try {
-      const response = await fetch('/api/klaviyo-subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
+const KLAVIYO_API_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
+const KLAVIYO_API_URL = 'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs';
+const LIST_ID = 'XSsStF'; // Replace with your actual list ID
+const REVISION = '2024-07-15'; // Use the latest date of revision according to Klaviyo's API
 
-      const result = await response.json();
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const { data: sessionData, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
 
-      if (!response.ok) {
-        console.error('Failed to subscribe profile in Klaviyo:', result.error);
-      } else {
-        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
-      }
-    } catch (error) {
-      console.error('Error during Klaviyo subscription:', error);
+    if (error) {
+      console.error('Error getting session from URL:', error);
+      return res.redirect('/?error=auth_callback_failed');
     }
-  };
 
-  useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const hashParams = new URLSearchParams(window.location.hash.slice(1));
-        const accessToken = hashParams.get('access_token');
+    if (sessionData?.session) {
+      const user = sessionData.session.user;
+      const email = user.email;
 
-        if (accessToken) {
-          Cookies.set('accessToken', accessToken, { expires: 3 });
-          const { data: sessionData } = await supabase.auth.getSession();
+      console.log('Google sign-in successful, session data:', sessionData.session);
 
-          if (sessionData?.session?.user) {
-            const user = sessionData.session.user;
-            const { email, full_name: fullName, sub: uuid } = user.user_metadata;
-            const provider = user.app_metadata.provider;
-            const { data: existingUser, error: checkError } = await supabase
-              .from('user')
-              .select('*')
-              .eq('email', email);
-
-            console.log('Data length', existingUser?.length);
-
-            if (existingUser?.length == 0) {
-              if (insert) {
-                const { data, error: insertError } = await supabase.from('user').insert([
+      const options = {
+        method: 'POST',
+        url: KLAVIYO_API_URL,
+        headers: {
+          accept: 'application/json',
+          revision: REVISION,
+          'content-type': 'application/json',
+          Authorization: `Klaviyo-API-Key ${KLAVIYO_API_KEY}`,
+        },
+        data: {
+          data: {
+            type: 'profile-subscription-bulk-create-job',
+            attributes: {
+              custom_source: 'Facebook Sync',
+              profiles: {
+                data: [
                   {
-                    email,
-                    provider,
-                    uuid,
-                    firstName: fullName,
-                    lastName: fullName,
+                    type: 'profile',
+                    attributes: {
+                      email: email,
+                    },
                   },
-                ]);
-                console.log('Calling');
-                setInsert(false);
-                await handleKlaviyoSubscription(email);
-              }
-            }
-            router.push('/');
-          } else {
-            router.push('/');
-          }
-        } else {
-          router.push('/');
-        }
+                ],
+              },
+              historical_import: false,
+            },
+            relationships: { list: { data: { type: 'list', id: LIST_ID } } },
+          },
+        },
+      };
+
+      try {
+        const response = await axios.request(options);
+        console.log('Response from Klaviyo:', response.data);
       } catch (error) {
-        console.log('error', error);
-        router.push('/');
+        const err = error as any;
+        console.error('Error subscribing profile in Klaviyo:', err.response ? err.response.data : err.message);
       }
-    };
-    handleAuth();
-  }, []);
 
-  return <div>Loading...</div>;
-};
-
-export default Page;
+      return res.redirect(`/dashboard`);
+    } else {
+      return res.redirect('/?error=no_session');
+    }
+  } catch (error) {
+    console.error('Error during authentication handling:', error);
+    return res.redirect('/?error=auth_callback_error');
+  }
+}

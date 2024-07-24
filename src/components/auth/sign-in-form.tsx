@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import * as React from 'react';
 import RouterLink from 'next/link';
@@ -49,29 +49,6 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleKlaviyoSubscription = async (email: string, password?: string) => {
-    console.log(`Subscribing email: ${email} to Klaviyo`);
-    try {
-      const response = await fetch('/api/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error('Failed to subscribe profile in Klaviyo:', result.error);
-      } else {
-        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
-      }
-    } catch (error) {
-      console.error('Error during Klaviyo subscription:', error);
-    }
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!validateForm()) {
@@ -94,7 +71,13 @@ export function SignInForm(): React.JSX.Element {
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-        await handleKlaviyoSubscription(data.user.email, password); // Subscribe profile in Klaviyo
+        await fetch('/api/klaviyo-subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: data.user.email }),
+        });
         await checkSession?.();
         router.push('/');
       }
@@ -113,7 +96,7 @@ export function SignInForm(): React.JSX.Element {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/api/auth-callback`,
         },
       });
 
@@ -129,34 +112,6 @@ export function SignInForm(): React.JSX.Element {
     }
   }, [supabase]);
 
-  React.useEffect(() => {
-    const handleAuthCallback = async () => {
-      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-
-      if (error) {
-        console.error('Error getting session from URL:', error);
-        setGoogleAuthError('Failed to get session data after Google sign-in.');
-        setIsPending(false);
-        return;
-      }
-
-      if (data?.session) {
-        console.log('Google sign-in successful, session data:', data.session);
-        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
-        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-
-        console.log('Subscribing to Klaviyo');
-        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
-        await checkSession?.();
-        router.push('/');
-      }
-    };
-
-    if (window.location.pathname === '/auth/callback') {
-      handleAuthCallback();
-    }
-  }, [supabase, checkSession, router]);
-
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
     console.log('Starting Facebook sign-in process');
@@ -165,7 +120,7 @@ export function SignInForm(): React.JSX.Element {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/api/auth-callback`,
         },
       });
 
