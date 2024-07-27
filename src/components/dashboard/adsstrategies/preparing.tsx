@@ -1,3 +1,5 @@
+/// src/components/dashboard/adsstrategies/preparing.tsx
+
 'use client'
 
 import React, { useEffect, useState } from 'react';
@@ -24,7 +26,7 @@ const Preparing: React.FC = () => {
 
       if (remainingTime <= 0) {
         localStorage.removeItem('preparingStartTime');
-        router.push('/dashboard/adsstrategies/results');
+        router.push('/dashboard/adsstrategies/expresslaunching');
       } else {
         setTimeLeft(remainingTime);
       }

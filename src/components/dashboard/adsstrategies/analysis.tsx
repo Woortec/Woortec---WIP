@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import withAuth from '../../withAuth';
@@ -39,48 +39,43 @@ function getWeekNumber(date: Date): string {
   return 'W' + Math.ceil((diff + ((start.getDay() + 1) % 7)) / 7);
 }
 
-function calculateNumAds(investAmount: number, currency: string): number {
-  const conversionRate = 0.01662; // Updated conversion rate PHP to USD
-
-  let amountInUSD = investAmount;
-  if (currency !== 'USD') {
-    amountInUSD = investAmount * conversionRate;
-  }
-
+function calculateNumAds(investAmount: number, conversionRate: number, currency: string): number {
+  const amountInUSD = currency === 'USD' ? investAmount : investAmount * conversionRate;
   let numAds;
-  if (amountInUSD < 100) {
-    numAds = Math.ceil(amountInUSD / 3);
-  } else if (amountInUSD <= 400) {
-    numAds = Math.ceil(amountInUSD / 6);
+
+  if (currency === 'USD') {
+    numAds = amountInUSD < 100 ? amountInUSD / 3 : amountInUSD <= 400 ? amountInUSD / 6 : amountInUSD / 8;
   } else {
-    numAds = Math.ceil(amountInUSD / 8);
+    const convertedAmount = investAmount * 0.01662;
+    numAds = convertedAmount < 100 ? convertedAmount / 3 : convertedAmount <= 400 ? convertedAmount / 6 : convertedAmount / 8;
   }
 
   return Math.ceil(numAds / 7);
 }
 
 function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
-  const Launchingpercentages = [0.06, 0.10, 0.10, 0.16, 0.16, 0.21, 0.21];
+  const percentages = [0.10, 0.15, 0.15, 0.20, 0.20, 0.20]; // Adjusted percentages to match provided example
   const levels: WeeklyPlan[] = [];
   const startDate = new Date(input.planRequestDate);
   startDate.setDate(startDate.getDate() + (7 - startDate.getDay()) % 7);
   const currency = "PHP"; // Assuming currency is PHP; replace with actual currency input if available
 
-  for (let i = 0; i < Launchingpercentages.length; i++) {
+  for (let i = 0; i < percentages.length; i++) {
     const weekNumber = getWeekNumber(startDate);
     const startingDay = startDate.toISOString().split('T')[0];
-    const investPercentage = Launchingpercentages[i];  
+    const investPercentage = percentages[i];
     let investAmount = Math.round(input.amountToInvest * investPercentage);
-    const numberOfAds = calculateNumAds(investAmount, currency);
+    const conversionRate = 0.01662; // Assuming a static conversion rate from PHP to USD
+    const numberOfAds = calculateNumAds(investAmount, conversionRate, currency);
 
-    // Applying the daily budget formula  
-    const dailyBudgetPerAd = ((investAmount / 7) / numberOfAds) < 1 ? 1 : ((investAmount / 7) / numberOfAds);
-    
+    // Applying the daily budget formula
+    const dailyBudgetPerAd = ((investAmount / 7) / numberOfAds) < 1 ? 1 * 0.01662 : (investAmount / 7) / numberOfAds;
+
     // Apply the toLink formula
     const toLink = answerMessages === 'yes' ? (numberOfAds > 8 ? Math.max(0, numberOfAds - 2) : Math.max(0, numberOfAds - 1)) : numberOfAds;
 
     // Apply the toMessages formula
-    const toMessages = answerMessages === 'yes' ? 2 : 1;
+    const toMessages = answerMessages === 'yes' ? 1 : 0;
 
     const calculatedIncrease = i > 0 ? ((levels[i - 1].investAmount - investAmount) / levels[i - 1].investAmount) * -100 : 0;
 
@@ -103,9 +98,7 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
   return levels;
 }
 
-
-
-const Results: React.FC = () => {
+const Analysis: React.FC = () => {
   const [campaignDetails, setCampaignDetails] = useState<any>(null);
   const [planOutput, setPlanOutput] = useState<WeeklyPlan[]>([]);
 
@@ -139,53 +132,58 @@ const Results: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>META ADS</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>LEVEL {Math.ceil((index + 1) / 2)}</TableCell>
-              ))}
+              <TableCell rowSpan={2}>META ADS</TableCell>
+              <TableCell colSpan={2} align="center">LEVEL 1</TableCell>
+              <TableCell colSpan={3} align="center">LEVEL 2</TableCell>
+              <TableCell colSpan={1} align="center">LEVEL 3</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Plans Week</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.plansWeek}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Starting Day</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.startingDay}</TableCell>
+                <TableCell key={index} align="center">{level.weekNumber}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
+              <TableCell>Starting Day</TableCell>
+              {planOutput.map((level, index) => (
+                <TableCell key={index} align="center">{level.startingDay}</TableCell>
+              ))}
+            </TableRow>
+            <TableRow>
+              <TableCell>Plans Week</TableCell>
+              {planOutput.map((level, index) => (
+                <TableCell key={index} align="center">{level.plansWeek}</TableCell>
+              ))}
+            </TableRow>
+            <TableRow>
               <TableCell>INVEST / PHP</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.investAmount.toFixed(2)}</TableCell>
+                <TableCell key={index} align="center">{level.investAmount.toFixed(2)}</TableCell>
               ))}
             </TableRow>
             <TableRow>
               <TableCell>Nº Ads</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.numberOfAds}</TableCell>
+                <TableCell key={index} align="center">{level.numberOfAds}</TableCell>
               ))}
             </TableRow>
             <TableRow>
               <TableCell>To Messages</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toMessages}</TableCell>
+                <TableCell key={index} align="center">{level.toMessages}</TableCell>
               ))}
             </TableRow>
             <TableRow>
               <TableCell>To Link</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toLink}</TableCell>
+                <TableCell key={index} align="center">{level.toLink}</TableCell>
               ))}
             </TableRow>
             <TableRow>
               <TableCell>DAILY BUDGET / AD</TableCell>
               {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.dailyBudgetPerAd.toFixed(2)}</TableCell>
+                <TableCell key={index} align="center">{level.dailyBudgetPerAd.toFixed(2)}</TableCell>
               ))}
             </TableRow>
           </TableBody>
@@ -195,4 +193,4 @@ const Results: React.FC = () => {
   );
 }
 
-export default withAuth(Results);
+export default withAuth(Analysis);

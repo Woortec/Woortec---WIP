@@ -78,7 +78,7 @@ function CampaignSetup() {
           />
         </div>
         <div>
-          <label>How much do you want to invest? (in Euros)</label>
+          <label>How much do you want to invest?</label>
           <input 
             type="number" 
             value={budget} 

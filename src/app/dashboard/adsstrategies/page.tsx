@@ -5,6 +5,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CampaignSetup from '../../../components/dashboard/adsstrategies/adsstrategies';  // Adjust the import path as necessary
 import Preparing from '../../../components/dashboard/adsstrategies/preparing';
 import Results from '../../../components/dashboard/adsstrategies/results';
+import ExpressLaunching from '../../../components/dashboard/adsstrategies/express-launching';
+import Analysis from '@/components/dashboard/adsstrategies/analysis';
+import Optimization from '@/components/dashboard/adsstrategies/optimization';
 
 function App() {
   const [isClient, setIsClient] = useState(false);
@@ -24,6 +27,9 @@ function App() {
           <Route path="/dashboard/adsstrategies" element={<CampaignSetup />} />
           <Route path="/dashboard/preparing" element={<Preparing />} />
           <Route path="/dashboard/results" element={<Results />} />
+          <Route path="/dashboard/expresslaunching" element={<ExpressLaunching />} />
+          <Route path="/dashboard/analysis" element={<Analysis />} />
+          <Route path="/dashboard/optimization" element={<Optimization />} />
         </Routes>
       </div>
     </Router>

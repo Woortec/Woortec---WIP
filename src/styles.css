@@ -81,3 +81,44 @@ body {
     background-color: #f4f4f4;
   }
   
+  .container {
+    padding: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  thead th[colspan] {
+    text-align: center;
+  }
+  
+  thead th[rowspan] {
+    vertical-align: middle;
+  }
+  
+  tbody td {
+    vertical-align: middle;
+  }
+  
+  .META_ADS, .LEVEL_1, .LEVEL_2 {
+    background-color: #FFFFCC;
+    font-weight: bold;
+  }
+  
+  .INVEST, .DAILY_BUDGET {
+    background-color: #FFFF99;
+  }
+  
