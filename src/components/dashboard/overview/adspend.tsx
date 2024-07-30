@@ -2,93 +2,139 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, CircularProgress } from '@mui/material';
-import { alpha, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/system';
 import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import type { ApexOptions } from 'apexcharts';
+import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
-
-import { Chart } from '@/components/core/chart';
+import dayjs from 'dayjs';
+import { DateRangePicker } from './DateRangePicker';
 
 export interface SalesProps {
   sx?: SxProps;
+  timeRange: string;
 }
 
-export function Sales({ sx }: SalesProps): React.JSX.Element {
-  const chartOptions = useChartOptions();
-  const [chartSeries, setChartSeries] = useState<{ name: string; data: number[] }[]>([]);
+interface TimeRange {
+  since: string;
+  until: string;
+}
+
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+    fill: boolean;
+  }[];
+}
+
+const getTimeRanges = (): { [key: string]: TimeRange } => {
+  const today = dayjs();
+  return {
+    day: {
+      since: today.subtract(1, 'day').format('YYYY-MM-DD'),
+      until: today.format('YYYY-MM-DD'),
+    },
+    week: {
+      since: today.subtract(1, 'week').format('YYYY-MM-DD'),
+      until: today.format('YYYY-MM-DD'),
+    },
+    month: {
+      since: today.subtract(1, 'month').format('YYYY-MM-DD'),
+      until: today.format('YYYY-MM-DD'),
+    },
+    year: {
+      since: today.startOf('year').format('YYYY-MM-DD'),
+      until: today.format('YYYY-MM-DD'),
+    },
+  };
+};
+
+export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
+  const theme = useTheme();
+  const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
+  const timeRanges = getTimeRanges();
+
+  const fetchAdSpendData = async (range: string) => {
+    try {
+      const accessToken = getItemWithExpiry('fbAccessToken');
+      const adAccountId = getItemWithExpiry('fbAdAccount');
+
+      if (!accessToken) {
+        throw new Error('Missing access token');
+      }
+
+      if (!adAccountId) {
+        throw new Error('Missing ad account ID');
+      }
+
+      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+        params: {
+          access_token: accessToken,
+          fields: 'spend',
+          time_range: JSON.stringify(timeRanges[range]),
+          time_increment: range === 'year' ? 'monthly' : 'daily',
+        },
+      });
+
+      console.log('Raw Response Data:', response.data);
+
+      if (response.data.data && response.data.data.length > 0) {
+        const labels = response.data.data.map((item: any) => item.date_start);
+        const data = response.data.data.map((item: any) => parseFloat(item.spend));
+        const formattedData: ChartData = {
+          labels,
+          datasets: [{
+            label: 'Ad Spend',
+            data,
+            borderColor: theme.palette.primary.main,
+            backgroundColor: theme.palette.primary.light,
+            fill: true,
+          }],
+        };
+        setChartData(formattedData);
+      } else {
+        console.log('No data found in the response:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching ad spend data:', error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Response data:', error.response.data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAdSpendData = async () => {
-      try {
-        const accessToken = getItemWithExpiry('fbAccessToken');
-        const adAccountId = getItemWithExpiry('fbAdAccount');
-
-        if (!accessToken) {
-          throw new Error('Missing access token');
-        }
-
-        if (!adAccountId) {
-          throw new Error('Missing ad account ID');
-        }
-
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'spend',
-            time_range: JSON.stringify({
-              since: '2023-01-01', // Fixed start date
-              until: '2023-12-31', // Fixed end date
-            }),
-            time_increment: 'monthly',
-          },
-        });
-
-        console.log('Raw Response Data:', response.data);
-
-        if (response.data.data && response.data.data.length > 0) {
-          const monthlySpend = response.data.data.reduce((acc: number[], curr: any) => {
-            const month = new Date(curr.date_start).getMonth();
-            acc[month] = (acc[month] || 0) + parseFloat(curr.spend);
-            return acc;
-          }, new Array(12).fill(0));
-
-          console.log('Processed Monthly Spend:', monthlySpend);
-
-          setChartSeries([{ name: 'Ad Spend', data: monthlySpend }]);
-        } else {
-          console.log('No data found in the response:', response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching ad spend data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-          console.error('Response data:', error.response.data);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAdSpendData();
-  }, []);
+    fetchAdSpendData(timeRange);
+  }, [timeRange]);
 
   return (
     <Card sx={sx}>
       <CardHeader
+        title="Ad Spend"
         action={
-          <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
+          <Button
+            color="inherit"
+            size="small"
+            startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
+            onClick={() => fetchAdSpendData(timeRange)}
+          >
             Sync
           </Button>
         }
-        title="Ad Spend"
       />
       <CardContent>
         {loading ? (
           <CircularProgress />
         ) : (
-          <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
+          <Bar data={chartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }}}} height={350} />
         )}
       </CardContent>
       <Divider />
@@ -99,40 +145,6 @@ export function Sales({ sx }: SalesProps): React.JSX.Element {
       </CardActions>
     </Card>
   );
-}
-
-function useChartOptions(): ApexOptions {
-  const theme = useTheme();
-
-  return {
-    chart: { background: 'transparent', stacked: false, toolbar: { show: false } },
-    colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.25)],
-    dataLabels: { enabled: false },
-    fill: { opacity: 1, type: 'solid' },
-    grid: {
-      borderColor: theme.palette.divider,
-      strokeDashArray: 2,
-      xaxis: { lines: { show: false } },
-      yaxis: { lines: { show: true } },
-    },
-    legend: { show: false },
-    plotOptions: { bar: { columnWidth: '40px' } },
-    stroke: { colors: ['transparent'], show: true, width: 2 },
-    theme: { mode: theme.palette.mode },
-    xaxis: {
-      axisBorder: { color: theme.palette.divider, show: true },
-      axisTicks: { color: theme.palette.divider, show: true },
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      labels: { offsetY: 5, style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      labels: {
-        formatter: (value) => (value > 0 ? `${value}K` : `${value}`),
-        offsetX: -10,
-        style: { colors: theme.palette.text.secondary },
-      },
-    },
-  };
 }
 
 // Utility function to get item from localStorage with expiry

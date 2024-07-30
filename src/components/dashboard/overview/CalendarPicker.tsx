@@ -1,49 +1,41 @@
-// components/CalendarPicker.tsx
+// DatePickerComponent.tsx
 'use client';
 
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import React from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Card, CardContent, TextField, IconButton, Box } from '@mui/material';
+import { CalendarToday as CalendarTodayIcon } from '@mui/icons-material';
+import { useDate } from './date/DateContext';
 
-export interface CalendarPickerProps {
-  onDateChange: (dateRange: [Date | null, Date | null]) => void;
-}
-
-const CalendarPicker = ({ onDateChange }: CalendarPickerProps): React.JSX.Element => {
-  const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
-
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newStartDate = event.target.value;
-    setStartDate(newStartDate);
-    onDateChange([new Date(newStartDate), new Date(endDate)]);
-  };
-
-  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newEndDate = event.target.value;
-    setEndDate(newEndDate);
-    onDateChange([new Date(startDate), new Date(newEndDate)]);
-  };
+const DatePickerComponent = () => {
+  const { startDate, endDate, setStartDate, setEndDate } = useDate();
 
   return (
-    <Box>
-      <TextField
-        label="Start Date"
-        type="date"
-        value={startDate}
-        onChange={handleStartDateChange}
-        InputLabelProps={{ shrink: true }}
-      />
-      <Box sx={{ mx: 2 }}> to </Box>
-      <TextField
-        label="End Date"
-        type="date"
-        value={endDate}
-        onChange={handleEndDateChange}
-        InputLabelProps={{ shrink: true }}
-      />
-    </Box>
+    <Card sx={{ display: 'flex', height: 59, alignItems: 'center', padding: '0 8px' }}>
+      <CalendarTodayIcon sx={{ color: 'grey' }} />
+      <CardContent sx={{ display: 'flex', alignItems: 'center', padding: '10 8px', flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <DatePicker
+            selected={startDate}
+            onChange={(date: Date | null) => setStartDate(date)}
+            customInput={<TextField variant="outlined" size="small" sx={{ marginRight: 1 }} />}
+            dateFormat="dd MMM yyyy"
+          />
+          <span style={{ margin: '0 8px', color: 'grey' }}>↔</span>
+          <DatePicker
+            selected={endDate}
+            onChange={(date: Date | null) => setEndDate(date)}
+            customInput={<TextField variant="outlined" size="small" sx={{ marginLeft: 1 }} />}
+            dateFormat="dd MMM yyyy"
+          />
+        </Box>
+        <IconButton sx={{ marginLeft: '8px' }}>
+          <CalendarTodayIcon />
+        </IconButton>
+      </CardContent>
+    </Card>
   );
 };
 
-export default CalendarPicker;
+export default DatePickerComponent;

@@ -1,3 +1,4 @@
+// TotalProfitContainer.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -5,10 +6,11 @@ import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
-import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Receipt as ReceiptIcon } from '@phosphor-icons/react';
 import axios from 'axios';
+import { useDate } from './date/DateContext';
+import type { SxProps } from '@mui/system';
 
 export interface TotalProfitProps {
   sx?: SxProps;
@@ -17,7 +19,7 @@ export interface TotalProfitProps {
 
 export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element {
   return (
-    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}> {/* Setting a fixed height */}
+    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
       <CardContent>
         <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
           <Stack spacing={1}>
@@ -37,6 +39,7 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
 
 const TotalProfitContainer = () => {
   const [totalAds, setTotalAds] = useState('');
+  const { startDate, endDate } = useDate();
 
   useEffect(() => {
     const fetchTotalAds = async () => {
@@ -52,18 +55,13 @@ const TotalProfitContainer = () => {
           throw new Error('Missing ad account ID');
         }
 
-        console.log('Access Token:', accessToken);
-        console.log('Ad Account ID:', adAccountId);
-
-        // Fetch the total number of active ads for the Facebook ad account
         const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/ads`, {
           params: {
             access_token: accessToken,
             fields: 'status',
+            time_range: { since: startDate?.toISOString().split('T')[0], until: endDate?.toISOString().split('T')[0] },
           },
         });
-
-        console.log('Response data:', response.data);
 
         const activeAdsCount = response.data.data.filter((ad: any) => ad.status === 'ACTIVE').length;
 
@@ -77,26 +75,22 @@ const TotalProfitContainer = () => {
     };
 
     fetchTotalAds();
-  }, []);
+  }, [startDate, endDate]);
 
   return <TotalProfit value={totalAds} />;
 };
 
 export default TotalProfitContainer;
 
-// Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {
   const itemStr = localStorage.getItem(key);
-  // If the item doesn't exist, return null
   if (!itemStr) {
     return null;
   }
   try {
     const item = JSON.parse(itemStr);
     const now = new Date();
-    // Compare the expiry time of the item with the current time
     if (now.getTime() > item.expiry) {
-      // If the item is expired, delete the item from storage and return null
       localStorage.removeItem(key);
       return null;
     }

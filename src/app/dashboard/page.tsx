@@ -1,4 +1,6 @@
-import * as React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import { config } from '@/config';
 import BudgetContainer from '@/components/dashboard/overview/budget';
@@ -7,31 +9,43 @@ import TotalCostPerMessageContainer from '@/components/dashboard/overview/cpm';
 import TotalImpressionsContainer from '@/components/dashboard/overview/impressions';
 import TotalProfitContainer from '@/components/dashboard/overview/adsrunning';
 import { TotalReach } from '@/components/dashboard/overview/reach';
-import './styles.css'; // Import your CSS file
+import { DateRangePicker } from '@/components/dashboard/overview/DateRangePicker';
+import './styles.css';
+import { DateProvider } from '@/components/dashboard/overview/date/DateContext';
+import DatePickerComponent from '@/components/dashboard/overview/CalendarPicker';
 
-export const metadata = { title: `Overview | Dashboard | ${config.site.name}` };
 
 export default function Page(): React.JSX.Element {
+  const [timeRange, setTimeRange] = useState<string>('year');
+
   return (
+    <DateProvider>
     <Grid container spacing={2}>
       <Grid lg={3} sm={6} xs={12}>
-        <BudgetContainer/>
+        <BudgetContainer />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalImpressionsContainer/>
+        <TotalImpressionsContainer />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalCostPerMessageContainer/>
+        <TotalCostPerMessageContainer />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalProfitContainer/>
+        <TotalProfitContainer />
       </Grid>
       <Grid lg={8} xs={12}>
-        <Sales sx={{ height: '570px' }} /> {/* Inline style */}
+        <DateRangePicker timeRange={timeRange} setTimeRange={setTimeRange} />
+      </Grid>
+      <Grid lg={4} xs={12}>
+        <DatePickerComponent/>
+      </Grid>
+      <Grid lg={8} xs={12}>
+        <Sales timeRange={timeRange} sx={{ height: '570px' }} />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <TotalReach sx={{ height: '570px' }} /> {/* Inline style */}
+        <TotalReach sx={{ height: '570px' }} />
       </Grid>
     </Grid>
+    </DateProvider>
   );
 }
