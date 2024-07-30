@@ -17,7 +17,7 @@ export interface TotalProfitProps {
 
 export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element {
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}> {/* Setting a fixed height */}
       <CardContent>
         <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
           <Stack spacing={1}>

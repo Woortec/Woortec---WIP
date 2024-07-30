@@ -22,7 +22,7 @@ export function TotalCostPerMessage({ diff, trend, sx, value }: TotalCostPerMess
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}> {/* Setting a fixed height */}
       <CardContent>
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>

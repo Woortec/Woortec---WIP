@@ -110,7 +110,7 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
   }, []);
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, height: '570px', overflow: 'hidden' }}> {/* Setting a fixed height */}
       <CardHeader title="Total Reach" />
       <CardContent>
         <Stack spacing={2}>
@@ -130,7 +130,6 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
     </Card>
   );
 }
-
 // Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {
   const itemStr = localStorage.getItem(key);

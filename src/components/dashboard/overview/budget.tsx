@@ -23,7 +23,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}> {/* Setting a fixed height */}
       <CardContent>
         <Stack spacing={3}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
@@ -145,7 +145,7 @@ const BudgetContainer = () => {
     fetchBudget();
   }, []);
 
-  return <Budget {...budgetData} />;
+  return <Budget {...budgetData} sx={{ height: '150px' }} />; // Apply fixed height to the container as well
 };
 
 export default BudgetContainer;
