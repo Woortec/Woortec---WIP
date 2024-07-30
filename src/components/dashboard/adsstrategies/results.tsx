@@ -39,21 +39,14 @@ function getWeekNumber(date: Date): string {
   return 'W' + Math.ceil((diff + ((start.getDay() + 1) % 7)) / 7);
 }
 
-function calculateNumAds(investAmount: number, currency: string): number {
-  const conversionRate = 0.01662; // Updated conversion rate PHP to USD
-
-  let amountInUSD = investAmount;
-  if (currency !== 'USD') {
-    amountInUSD = investAmount * conversionRate;
-  }
-
+function calculateNumAds(investAmount: number): number {
   let numAds;
-  if (amountInUSD < 100) {
-    numAds = Math.ceil(amountInUSD / 3);
-  } else if (amountInUSD <= 400) {
-    numAds = Math.ceil(amountInUSD / 6);
+  if (investAmount < 100) {
+    numAds = Math.ceil(investAmount / 3);
+  } else if (investAmount <= 400) {
+    numAds = Math.ceil(investAmount / 6);
   } else {
-    numAds = Math.ceil(amountInUSD / 8);
+    numAds = Math.ceil(investAmount / 8);
   }
 
   return Math.ceil(numAds / 7);
@@ -64,14 +57,13 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
   const levels: WeeklyPlan[] = [];
   const startDate = new Date(input.planRequestDate);
   startDate.setDate(startDate.getDate() + (7 - startDate.getDay()) % 7);
-  const currency = "PHP"; // Assuming currency is PHP; replace with actual currency input if available
 
   for (let i = 0; i < Launchingpercentages.length; i++) {
     const weekNumber = getWeekNumber(startDate);
     const startingDay = startDate.toISOString().split('T')[0];
-    const investPercentage = Launchingpercentages[i];  
+    const investPercentage = Launchingpercentages[i];
     let investAmount = Math.round(input.amountToInvest * investPercentage);
-    const numberOfAds = calculateNumAds(investAmount, currency);
+    const numberOfAds = calculateNumAds(investAmount);
 
     // Applying the daily budget formula  
     const dailyBudgetPerAd = ((investAmount / 7) / numberOfAds) < 1 ? 1 : ((investAmount / 7) / numberOfAds);
@@ -80,7 +72,7 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
     const toLink = answerMessages === 'yes' ? (numberOfAds > 8 ? Math.max(0, numberOfAds - 2) : Math.max(0, numberOfAds - 1)) : numberOfAds;
 
     // Apply the toMessages formula
-    const toMessages = answerMessages === 'yes' ? 2 : 1;
+    const toMessages = numberOfAds - toLink;
 
     const calculatedIncrease = i > 0 ? ((levels[i - 1].investAmount - investAmount) / levels[i - 1].investAmount) * -100 : 0;
 
@@ -102,8 +94,6 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
 
   return levels;
 }
-
-
 
 const Results: React.FC = () => {
   const [campaignDetails, setCampaignDetails] = useState<any>(null);
@@ -133,7 +123,7 @@ const Results: React.FC = () => {
         <Typography variant="body1"><strong>Objective:</strong> {campaignDetails.objective}</Typography>
         <Typography variant="body1"><strong>Start Date:</strong> {campaignDetails.startDate}</Typography>
         <Typography variant="body1"><strong>Ad Link:</strong> {campaignDetails.adLink}</Typography>
-        <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} PHP</Typography>
+        <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} USD</Typography>
       </Box>
       <TableContainer component={Paper}>
         <Table>
@@ -159,7 +149,7 @@ const Results: React.FC = () => {
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell>INVEST / PHP</TableCell>
+              <TableCell>INVEST / USD</TableCell>
               {planOutput.map((level, index) => (
                 <TableCell key={index}>{level.investAmount.toFixed(2)}</TableCell>
               ))}

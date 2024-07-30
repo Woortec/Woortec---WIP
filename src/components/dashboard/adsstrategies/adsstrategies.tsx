@@ -33,7 +33,7 @@ function CampaignSetup() {
     console.log(campaignDetails);
     localStorage.setItem('campaignDetails', JSON.stringify(campaignDetails));
     localStorage.setItem('preparingStartTime', new Date().toString());
-    router.push('/dashboard/adsstrategies/preparing');
+    router.push('/dashboard/adsstrategies/results');
   };
 
   return (
