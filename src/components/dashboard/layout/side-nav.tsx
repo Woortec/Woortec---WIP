@@ -39,14 +39,14 @@ export function SideNav(): React.JSX.Element {
         color: 'var(--SideNav-color)',
         display: { xs: 'none', lg: 'flex' },
         flexDirection: 'column',
-        height: '82%',
-        left: 33,
+        height: '98%',
+        left: 19,
         maxWidth: '100%',
         borderRadius: '12px',
         position: 'fixed',
         scrollbarWidth: 'none',
         top: 8,
-        width: '320px', // Adjust width to be smaller
+        width: '365px', // Adjust width to be smaller
         zIndex: 'var(--SideNav-zIndex)',
         '&::-webkit-scrollbar': { display: 'none' },
         borderRight: '1px solid #E0E0E0', // Add border on the right for separation
@@ -155,7 +155,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
         <Box sx={{ flex: '1 1 auto' }}>
           <Typography
             component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '28px' }}
+            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '45px' }}
           >
             {title}
           </Typography>

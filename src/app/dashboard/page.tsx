@@ -5,19 +5,17 @@ import dayjs from 'dayjs';
 
 import { config } from '@/config';
 import BudgetContainer from '@/components/dashboard/overview/budget'; // Use default import for BudgetContainer
-import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
-import { LatestProducts } from '@/components/dashboard/overview/latest-products';
-import { Sales } from '@/components/dashboard/overview/sales';
-import TotalCostPerMessageContainer  from '@/components/dashboard/overview/tasks-progress';
-import TotalImpressionsContainer from '@/components/dashboard/overview/total-customers'; // Adjusted import statement
-import  TotalProfitContainer  from '@/components/dashboard/overview/total-profit';
-import { TotalReach } from '@/components/dashboard/overview/traffic';
+import { Sales } from '@/components/dashboard/overview/adspend';
+import TotalCostPerMessageContainer  from '@/components/dashboard/overview/cpm';
+import TotalImpressionsContainer from '@/components/dashboard/overview/impressions'; // Adjusted import statement
+import  TotalProfitContainer  from '@/components/dashboard/overview/adsrunning';
+import { TotalReach } from '@/components/dashboard/overview/reach';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid lg={3} sm={6} xs={12}>
         <BudgetContainer />
       </Grid>

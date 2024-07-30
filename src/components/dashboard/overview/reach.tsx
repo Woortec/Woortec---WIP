@@ -5,22 +5,48 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material/styles';
-import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-import type { ApexOptions } from 'apexcharts';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { SxProps } from '@mui/material';
 
-import { Chart } from '@/components/core/chart';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export interface TotalReachProps {
   sx?: SxProps;
 }
 
 export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
-  const [chartSeries, setChartSeries] = useState<number[]>([]);
-  const [labels, setLabels] = useState<string[]>([]);
-  const chartOptions = useChartOptions(labels);
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Reach',
+        data: [],
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        fill: false,
+      },
+    ],
+  });
 
   useEffect(() => {
     const fetchTotalReach = async () => {
@@ -56,10 +82,20 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
 
         const reachData = response.data.data;
         const labels = reachData.map((dataPoint: any) => dataPoint.date_stop);
-        const chartSeries = reachData.map((dataPoint: any) => dataPoint.impressions);
+        const data = reachData.map((dataPoint: any) => dataPoint.impressions);
 
-        setLabels(labels);
-        setChartSeries(chartSeries);
+        setChartData({
+          labels: labels,
+          datasets: [
+            {
+              label: 'Reach',
+              data: data,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              fill: false,
+            },
+          ],
+        });
       } catch (error) {
         console.error('Error fetching total reach data:', error);
         if (axios.isAxiosError(error) && error.response) {
@@ -78,11 +114,11 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
       <CardHeader title="Total Reach" />
       <CardContent>
         <Stack spacing={2}>
-          <Chart height={300} options={chartOptions} series={[{ name: 'Reach', data: chartSeries }]} type="line" width="100%" />
+          <Line data={chartData} />
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-            {chartSeries.map((item, index) => (
-              <Stack key={labels[index]} spacing={1} sx={{ alignItems: 'center' }}>
-                <Typography variant="h6">{labels[index]}</Typography>
+            {chartData.datasets[0].data.map((item, index) => (
+              <Stack key={chartData.labels[index]} spacing={1} sx={{ alignItems: 'center' }}>
+                <Typography variant="h6">{chartData.labels[index]}</Typography>
                 <Typography color="text.secondary" variant="subtitle2">
                   {item}
                 </Typography>
@@ -93,30 +129,6 @@ export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
       </CardContent>
     </Card>
   );
-}
-
-function useChartOptions(labels: string[]): ApexOptions {
-  const theme = useTheme();
-
-  return {
-    chart: { background: 'transparent' },
-    colors: [theme.palette.primary.main],
-    dataLabels: { enabled: false },
-    labels,
-    legend: { show: false },
-    stroke: { width: 2 },
-    theme: { mode: theme.palette.mode },
-    tooltip: { fillSeriesColor: false },
-    xaxis: {
-      categories: labels,
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      labels: {
-        formatter: (value) => `${value}`,
-        style: { colors: theme.palette.text.secondary } },
-    },
-  };
 }
 
 // Utility function to get item from localStorage with expiry
