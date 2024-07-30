@@ -73,6 +73,13 @@ const getTimeRanges = (): { [key: string]: TimeRange } => {
   };
 };
 
+const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+const getMonthName = (dateString: string): string => {
+  const date = dayjs(dateString);
+  return monthNames[date.month()];
+};
+
 export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
@@ -104,7 +111,7 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
       console.log('Raw Response Data:', response.data);
 
       if (response.data.data && response.data.data.length > 0) {
-        const labels = response.data.data.map((item: any) => item.date_start);
+        const labels = response.data.data.map((item: any) => getMonthName(item.date_start));
         const data = response.data.data.map((item: any) => parseFloat(item.spend));
         const formattedData: ChartData = {
           labels,
