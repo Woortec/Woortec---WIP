@@ -1,14 +1,34 @@
+// Sales.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, CircularProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/system';
-import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
-import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
+import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react';
+import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { DateRangePicker } from './DateRangePicker';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export interface SalesProps {
   sx?: SxProps;
@@ -149,16 +169,13 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
 // Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {
   const itemStr = localStorage.getItem(key);
-  // If the item doesn't exist, return null
   if (!itemStr) {
     return null;
   }
   try {
     const item = JSON.parse(itemStr);
     const now = new Date();
-    // Compare the expiry time of the item with the current time
     if (now.getTime() > item.expiry) {
-      // If the item is expired, delete the item from storage and return null
       localStorage.removeItem(key);
       return null;
     }
