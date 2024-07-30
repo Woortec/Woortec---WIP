@@ -8,14 +8,12 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
-import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
-import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
-
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
+import { SearchBar } from './SearchBar';
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
@@ -27,53 +25,42 @@ export function MainNav(): React.JSX.Element {
       <Box
         component="header"
         sx={{
-          borderBottom: '1px solid var(--mui-palette-divider)',
-          backgroundColor: '#00BFA6',
+          borderBottom: '1px solid #E0E0E0',
+          backgroundColor: '#F5F5F5',
+          borderRadius: '30px', // Adjusted border radius
           position: 'sticky',
-          top: 0,
+          top: 8,
           zIndex: 'var(--mui-zIndex-appBar)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          minHeight: '64px',
+          width: '85%', // Adjust the width
+          margin: '0 auto', // Center align the nav bar
+          px: 2,
         }}
       >
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
-        >
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <IconButton
-              onClick={(): void => {
-                setOpenNav(true);
-              }}
-              sx={{ display: { lg: 'none' } }}
-            >
-              <ListIcon />
+         <SearchBar />
+       {/* Include the new SearchBar component */}
+        <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+          <Tooltip title="Contacts">
+            <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
+              <UsersIcon />
             </IconButton>
-            <Tooltip title="Search">
-              <IconButton>
-                <MagnifyingGlassIcon />
+          </Tooltip>
+          <Tooltip title="Notifications">
+            <Badge badgeContent={4} color="success" variant="dot">
+              <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
+                <BellIcon />
               </IconButton>
-            </Tooltip>
-          </Stack>
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Contacts">
-              <IconButton>
-                <UsersIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton>
-                  <BellIcon />
-                </IconButton>
-              </Badge>
-            </Tooltip>
-            <Avatar
-              onClick={userPopover.handleOpen}
-              ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
-              sx={{ cursor: 'pointer' }}
-            />
-          </Stack>
+            </Badge>
+          </Tooltip>
+          <Avatar
+            onClick={userPopover.handleOpen}
+            ref={userPopover.anchorRef}
+            src="/assets/avatar.png"
+            sx={{ cursor: 'pointer' }}
+          />
         </Stack>
       </Box>
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />

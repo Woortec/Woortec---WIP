@@ -25,48 +25,48 @@ export function SideNav(): React.JSX.Element {
   return (
     <Box
       sx={{
-        '--SideNav-background': '#F4F5F7', // Light background color
-        '--SideNav-color': '#004D3E', // Darker shade for text to ensure readability
-        '--NavItem-color': '#004D3E', // Same as SideNav-color
-        '--NavItem-hover-background': '#00A28C1A', // Lighter shade of the main color
-        '--NavItem-active-background': '#00BFA6', // Main primary color
-        '--NavItem-active-color': '#FFFFFF', // White text for active items
+        '--SideNav-background': '#FFFFFF', // White background color
+        '--SideNav-color': '#333333', // Darker shade for text
+        '--NavItem-color': '#333333', // Same as SideNav-color
+        '--NavItem-hover-background': '#F0F0F0', // Light grey for hover
+        '--NavItem-active-background': '#E0E0E0', // Slightly darker grey for active
+        '--NavItem-active-color': '#333333', // Same as text color
         '--NavItem-disabled-color': '#A0A4A8', // Neutral disabled color
-        '--NavItem-icon-color': '#008572', // Slightly darker shade for icons
-        '--NavItem-icon-active-color': '#FFFFFF', // White icon color for active items
+        '--NavItem-icon-color': '#333333', // Same as text color
+        '--NavItem-icon-active-color': '#333333', // Same as text color for active items
         '--NavItem-icon-disabled-color': '#A0A4A8', // Neutral disabled icon color
         bgcolor: 'var(--SideNav-background)',
         color: 'var(--SideNav-color)',
         display: { xs: 'none', lg: 'flex' },
         flexDirection: 'column',
-        height: '100%',
-        left: 0,
+        height: '82%',
+        left: 33,
         maxWidth: '100%',
+        borderRadius: '12px',
         position: 'fixed',
         scrollbarWidth: 'none',
-        top: 0,
-        width: 'var(--SideNav-width)',
+        top: 8,
+        width: '320px', // Adjust width to be smaller
         zIndex: 'var(--SideNav-zIndex)',
         '&::-webkit-scrollbar': { display: 'none' },
+        borderRight: '1px solid #E0E0E0', // Add border on the right for separation
       }}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
+        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex', justifyContent: 'center' }}>
+          <Logo color="light" height={70} width={122} />
         </Box>
         <Box
           sx={{
             alignItems: 'center',
-            backgroundColor: '#E0F7F3', // Very light shade of the primary color
-            border: '1px solid #00A28C', // Border with a complementary color
-            borderRadius: '12px',
+            borderRadius: '8px',
             cursor: 'pointer',
             display: 'flex',
             p: '4px 12px',
           }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography color="#004D3E" variant="body2">
+            <Typography color="#333333" variant="body2">
               Workspace
             </Typography>
             <Typography color="inherit" variant="subtitle1">
@@ -76,39 +76,13 @@ export function SideNav(): React.JSX.Element {
           <CaretUpDownIcon />
         </Box>
       </Stack>
-      <Divider sx={{ borderColor: '#00A28C' }} />
+      <Divider sx={{ borderColor: '#E0E0E0' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
-      <Divider sx={{ borderColor: '#00A28C' }} />
       <Stack spacing={2} sx={{ p: '12px' }}>
         <div>
-          <Typography color="#004D3E" variant="subtitle2">
-            Need more? Woortec got you!
-          </Typography>
-          <Typography color="#004D3E" variant="body2">
-            Check out our subscription plans.
-          </Typography>
         </div>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box
-            component="img"
-            alt="Pro version"
-            src="/assets/devias-kit-pro.png"
-            sx={{ height: 'auto', width: '160px' }}
-          />
-        </Box>
-        <Button
-          component="a"
-          endIcon={<ArrowSquareUpRightIcon fontSize="var(--icon-fontSize-md)" />}
-          fullWidth
-          href="https://www.app.woortec.com/dashboard/subscription"
-          sx={{ mt: 2, bgcolor: '#00BFA6', color: 'white' }} // Main primary color for button
-          target="_blank"
-          variant="contained"
-        >
-          Subscribe Here
-        </Button>
       </Stack>
     </Box>
   );
@@ -151,7 +125,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           : { role: 'button' })}
         sx={{
           alignItems: 'center',
-          borderRadius: 1,
+          borderRadius: '4px',
           color: 'var(--NavItem-color)',
           cursor: 'pointer',
           display: 'flex',

@@ -23,33 +23,27 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ ...sx, padding: '16px', borderRadius: '8px' }}>
       <CardContent>
-        <Stack spacing={3}>
-          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-            <Stack spacing={1}>
-              <Typography color="text.secondary" variant="overline">
-                Budget
-              </Typography>
-              <Typography variant="h4">{value}</Typography>
-            </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" />
+        <Stack spacing={2}>
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }} spacing={2}>
+            <Avatar sx={{ backgroundColor: '#00c853', height: '40px', width: '40px' }}>
+              <CurrencyDollarIcon fontSize="24px" />
             </Avatar>
-          </Stack>
-          {diff ? (
-            <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography color={trendColor} variant="body2">
-                  {diff.toFixed(2)}%
-                </Typography>
-              </Stack>
-              <Typography color="text.secondary" variant="caption">
+            <Stack direction="row" spacing={1}>
+              <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                <TrendIcon color={trendColor} fontSize="20px" />
+
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 Since last month
               </Typography>
             </Stack>
-          ) : null}
+          </Stack>
+          <Typography variant="h5">{value}</Typography>
+          <Typography color="text.secondary" variant="caption">
+            BUDGET
+          </Typography>
         </Stack>
       </CardContent>
     </Card>
@@ -126,7 +120,7 @@ const BudgetContainer = () => {
         const diff = ((spend - previousSpend) / previousSpend) * 100;
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
 
-        const formattedValue = new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(spend);
+        const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(spend);
 
         setBudgetData({
           value: formattedValue,
