@@ -1,4 +1,3 @@
-// Sales.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -48,6 +47,7 @@ interface ChartData {
     borderColor: string;
     backgroundColor: string;
     fill: boolean;
+    barThickness: number; // Added barThickness property
   }[];
 }
 
@@ -111,9 +111,10 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
           datasets: [{
             label: 'Ad Spend',
             data,
-            borderColor: theme.palette.primary.main,
-            backgroundColor: theme.palette.primary.light,
+            borderColor: '#486A75',
+            backgroundColor: '#486A75',
             fill: true,
+            barThickness: 10, // Set bar thickness
           }],
         };
         setChartData(formattedData);

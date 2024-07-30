@@ -9,6 +9,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon, ArrowUp as ArrowUpIcon, ListBullets as ListBulletsIcon } from '@phosphor-icons/react';
 import axios from 'axios';
+import { ChatText } from '@phosphor-icons/react';
 
 export interface TotalCostPerMessageProps {
   diff?: number;
@@ -32,9 +33,9 @@ export function TotalCostPerMessage({ diff, trend, sx, value }: TotalCostPerMess
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <ListBulletsIcon fontSize="var(--icon-fontSize-lg)" />
-            </Avatar>
+            <Avatar sx={{ backgroundColor: '#FFC456', height: '56px', width: '56px' }}>
+  <ChatText fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+</Avatar>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>

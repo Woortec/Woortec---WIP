@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Receipt as ReceiptIcon } from '@phosphor-icons/react';
+import { ArrowUDownRight } from '@phosphor-icons/react';
 import axios from 'axios';
 import { useDate } from './date/DateContext';
 import type { SxProps } from '@mui/system';
@@ -28,8 +28,8 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
             </Typography>
             <Typography variant="h4">{value}</Typography>
           </Stack>
-          <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-            <ReceiptIcon fontSize="var(--icon-fontSize-lg)" />
+          <Avatar sx={{ backgroundColor: '#D3346E', height: '56px', width: '56px' }}>
+          <ArrowUDownRight fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
           </Avatar>
         </Stack>
       </CardContent>

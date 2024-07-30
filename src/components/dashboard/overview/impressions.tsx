@@ -9,7 +9,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { Target } from '@phosphor-icons/react';
 import axios from 'axios';
 
 export interface TotalImpressionsProps {
@@ -34,9 +34,9 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '56px', width: '56px' }}>
-              <UsersIcon fontSize="var(--icon-fontSize-lg)" />
-            </Avatar>
+            <Avatar sx={{ backgroundColor: '#E86A6D', height: '56px', width: '56px' }}>
+  <Target fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+</Avatar>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>

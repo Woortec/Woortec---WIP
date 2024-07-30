@@ -33,9 +33,10 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" />
-            </Avatar>
+            <Avatar sx={{ backgroundColor: '#02B194', height: '56px', width: '56px' }}>
+  <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+</Avatar>
+
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
