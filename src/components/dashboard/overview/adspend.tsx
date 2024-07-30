@@ -121,7 +121,7 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
             borderColor: '#486A75',
             backgroundColor: '#486A75',
             fill: true,
-            barThickness: 10, // Set bar thickness
+            barThickness: 20, // Set bar thickness
           }],
         };
         setChartData(formattedData);
