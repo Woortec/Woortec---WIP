@@ -9,7 +9,6 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/Arr
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { DateRangePicker } from './DateRangePicker';
 
 export interface SalesProps {
   sx?: SxProps;
