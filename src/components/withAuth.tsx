@@ -11,7 +11,14 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
     useEffect(() => {
       const campaignDetails = localStorage.getItem('campaignDetails');
       const preparingStartTime = localStorage.getItem('preparingStartTime');
-      const isProtectedRoute = pathname?.includes('/dashboard/adsstrategies/preparing');
+      const protectedRoutes = [
+        '/dashboard/adsstrategies/preparing',
+        '/dashboard/adsstrategies/expresslaunching',
+        '/dashboard/adsstrategies/analysis',
+        '/dashboard/adsstrategies/optimization',
+        // add more protected routes here
+      ];
+      const isProtectedRoute = protectedRoutes.some(route => pathname?.includes(route));
 
       if (isProtectedRoute && (!campaignDetails || !preparingStartTime)) {
         router.replace('/dashboard/adsstrategies');

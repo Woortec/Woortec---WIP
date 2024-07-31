@@ -26,7 +26,7 @@ const Preparing: React.FC = () => {
 
       if (remainingTime <= 0) {
         localStorage.removeItem('preparingStartTime');
-        router.push('/dashboard/adsstrategies/expresslaunching');
+        router.push('/dashboard/adsstrategies/launching');
       } else {
         setTimeLeft(remainingTime);
       }
