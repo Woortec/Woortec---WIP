@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import withAuth from '../../withAuth';
-import '../../../../src/styles.css';
+import styles from './styles/Preparing.module.css';
 
 const Preparing: React.FC = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ const Preparing: React.FC = () => {
     const checkTime = () => {
       const currentTime = new Date();
       const diff = currentTime.getTime() - startTime.getTime();
-      const remainingTime = 5000 - diff; // 1 hour in milliseconds
+      const remainingTime = 5 * 60 * 1000 - diff; // 5 minutes in milliseconds
 
       if (remainingTime <= 0) {
         localStorage.removeItem('preparingStartTime');
@@ -45,12 +45,29 @@ const Preparing: React.FC = () => {
     return `${minutes}m ${seconds}s`;
   };
 
+  const progressPercentage = timeLeft !== null ? (300000 - timeLeft) / 3000 : 0;
+
   return (
-    <div className="container">
-      <h1>We are preparing your strategy</h1>
-      <p>Please come back in an hour for the result.</p>
-      {timeLeft !== null && <p className="timer">Time left: {formatTimeLeft(timeLeft)}</p>}
-    </div>
+    <main className={styles.container}>
+      <h1 className={styles.title}>Campaign Setup: Strategy Name</h1>
+      <p className={styles.description}>
+      We are now processing your ad strategy, taking into account your unique business goals and target audience. Our expert team is dedicated to helping you achieve maximum ROI with minimal effort. With Woortec, you can rest assured that your social media advertising is in good hands.
+      </p>
+      <img 
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/4a2f3184d4ef958bd3dd1edf677862e462bba610f55e2c8d33b65ced3cfe5732?apiKey=415fe05812414bd2983a5d3a1f882fdf&&apiKey=415fe05812414bd2983a5d3a1f882fdf" 
+        alt="Campaign setup processing illustration" 
+        className={styles.processingImage} 
+      />
+      <p className={styles.processingText}>Processing Your Campaign Setup</p>
+      {timeLeft !== null && (
+        <>
+          <p className={styles.processingText}>Time left: {formatTimeLeft(timeLeft)}</p>
+          <div className={styles.progressContainer}>
+            <div className={styles.progressBar} style={{ width: `${progressPercentage}%` }}></div>
+          </div>
+        </>
+      )}
+    </main>
   );
 }
 

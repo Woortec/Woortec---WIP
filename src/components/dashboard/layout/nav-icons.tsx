@@ -9,13 +9,14 @@ import { TrendUp } from '@phosphor-icons/react';
 import { Broadcast  } from '@phosphor-icons/react';
 import { Lightbulb } from '@phosphor-icons/react';
 import { ShoppingBag } from '@phosphor-icons/react';
+import { UserGear } from '@phosphor-icons/react';
 
 export const navIcons = {
   'strategy': Strategy,
   'chart-bar': ChartBar,
   'trendup': TrendUp,
   'broadcast': Broadcast,
-  'lightbulb': Lightbulb,
+  'usergear': UserGear,
   'shoppingbag': ShoppingBag,
   user: UserIcon,
   users: UsersIcon,

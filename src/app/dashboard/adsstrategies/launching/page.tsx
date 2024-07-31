@@ -1,10 +1,10 @@
 import React from 'react';// Adjust the import path as necessary
-import Results from '../../../../components/dashboard/adsstrategies/results';
+import Launching from '../../../../components/dashboard/adsstrategies/launching';
 
 function App() {
   return (
     <div className="App">
-      <Results />
+      <Launching />
     </div>
   );
 }

@@ -1,18 +1,14 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import withAuth from '../../withAuth';
+import styles from './styles/Results.module.css';
+import TableCellBox from './TableCellBox';
 import '../../../../src/styles.css';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Typography,
   Box,
+  Paper,
 } from '@mui/material';
 
 interface PlanInput {
@@ -65,15 +61,9 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
     let investAmount = Math.round(input.amountToInvest * investPercentage);
     const numberOfAds = calculateNumAds(investAmount);
 
-    // Applying the daily budget formula  
     const dailyBudgetPerAd = ((investAmount / 7) / numberOfAds) < 1 ? 1 : ((investAmount / 7) / numberOfAds);
-    
-    // Apply the toLink formula
     const toLink = answerMessages === 'yes' ? (numberOfAds > 8 ? Math.max(0, numberOfAds - 2) : Math.max(0, numberOfAds - 1)) : numberOfAds;
-
-    // Apply the toMessages formula
     const toMessages = numberOfAds - toLink;
-
     const calculatedIncrease = i > 0 ? ((levels[i - 1].investAmount - investAmount) / levels[i - 1].investAmount) * -100 : 0;
 
     levels.push({
@@ -95,7 +85,7 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
   return levels;
 }
 
-const Results: React.FC = () => {
+const Launching: React.FC = () => {
   const [campaignDetails, setCampaignDetails] = useState<any>(null);
   const [planOutput, setPlanOutput] = useState<WeeklyPlan[]>([]);
 
@@ -116,73 +106,72 @@ const Results: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  const getHeaderClass = (index: number) => {
+    const level = Math.ceil((index + 1) / 2);
+    switch (level) {
+      case 1: return styles.levelHeader1;
+      case 2: return styles.levelHeader2;
+      case 3: return styles.levelHeader3;
+      case 4: return styles.levelHeader4;
+      default: return '';
+    }
+  };
+
   return (
-    <div className="container">
-      <Typography variant="h4" component="h4" gutterBottom>Campaign Results</Typography>
-      <Box sx={{ mb: 2 }}>
+    <div className={styles.container}>
+            <Paper className={styles.tableContainer}>
+      <div className={styles.header}>
+        <Typography variant="h4" component="h4" gutterBottom className={styles.title}>Personalized Strategy</Typography>
+      </div>
+      <Box className={styles.expressLaunching}>
+        <Typography variant="body1">Launching</Typography>
+      </Box>
+      <Box className={styles.audienceTargeting}>
+        <Typography variant="body1">Audience Targeting, Launch & Campaign Setup</Typography>
+      </Box>
+      <Box className={styles.detailsBox}>
         <Typography variant="body1"><strong>Objective:</strong> {campaignDetails.objective}</Typography>
         <Typography variant="body1"><strong>Start Date:</strong> {campaignDetails.startDate}</Typography>
         <Typography variant="body1"><strong>Ad Link:</strong> {campaignDetails.adLink}</Typography>
         <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} USD</Typography>
       </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>META ADS</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>LEVEL {Math.ceil((index + 1) / 2)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Plans Week</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.plansWeek}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Starting Day</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.startingDay}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>INVEST / USD</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.investAmount.toFixed(2)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Nº Ads</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.numberOfAds}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Messages</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toMessages}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Link</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.toLink}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>DAILY BUDGET / AD</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.dailyBudgetPerAd.toFixed(2)}</TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <div className={styles.table}>
+          <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={`${styles.levelHeader} ${getHeaderClass(index)}`}>LEVEL {Math.ceil((index + 1) / 2)}</TableCellBox>
+          ))}
+          <TableCellBox>Starting Day</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.startingDay}>{level.startingDay}</TableCellBox>
+          ))}
+          <TableCellBox>Week Plans</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.planWeek}>{level.plansWeek}</TableCellBox>
+          ))}
+          <TableCellBox>Invest Amount / $</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.invest}>{level.investAmount.toFixed(2)}</TableCellBox>
+          ))}
+          <TableCellBox>Number of Ads</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.numAds}>{level.numberOfAds}</TableCellBox>
+          ))}
+          <TableCellBox>To Messages</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.toMessages}>{level.toMessages}</TableCellBox>
+          ))}
+          <TableCellBox>To Link</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.toLink}>{level.toLink}</TableCellBox>
+          ))}
+          <TableCellBox>Daily Budget / Ad</TableCellBox>
+          {planOutput.map((level, index) => (
+            <TableCellBox key={index} className={styles.dailyBudget}>{level.dailyBudgetPerAd.toFixed(2)}</TableCellBox>
+          ))}
+        </div>
+      </Paper>
     </div>
   );
 }
 
-export default withAuth(Results);
+export default withAuth(Launching);

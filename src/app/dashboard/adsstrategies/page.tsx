@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CampaignSetup from '../../../components/dashboard/adsstrategies/adsstrategies';  // Adjust the import path as necessary
 import Preparing from '../../../components/dashboard/adsstrategies/preparing';
-import Results from '../../../components/dashboard/adsstrategies/results';
+import Launching from '../../../components/dashboard/adsstrategies/launching';
 import ExpressLaunching from '../../../components/dashboard/adsstrategies/express-launching';
 import Analysis from '@/components/dashboard/adsstrategies/analysis';
 import Optimization from '@/components/dashboard/adsstrategies/optimization';
@@ -26,7 +26,7 @@ function App() {
         <Routes>
           <Route path="/dashboard/adsstrategies" element={<CampaignSetup />} />
           <Route path="/dashboard/preparing" element={<Preparing />} />
-          <Route path="/dashboard/results" element={<Results />} />
+          <Route path="/dashboard/Launching" element={<Launching />} />
           <Route path="/dashboard/expresslaunching" element={<ExpressLaunching />} />
           <Route path="/dashboard/analysis" element={<Analysis />} />
           <Route path="/dashboard/optimization" element={<Optimization />} />
