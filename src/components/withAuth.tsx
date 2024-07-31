@@ -16,6 +16,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
         '/dashboard/adsstrategies/expresslaunching',
         '/dashboard/adsstrategies/analysis',
         '/dashboard/adsstrategies/optimization',
+        '/dashboard/adsstrategies/launching'
         // add more protected routes here
       ];
       const isProtectedRoute = protectedRoutes.some(route => pathname?.includes(route));
