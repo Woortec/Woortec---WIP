@@ -168,7 +168,6 @@ const Analysis: React.FC = () => {
     }
   };
 
-
   return (
     <div className={styles.container}>
       <Paper className={styles.tableContainer}>
@@ -220,6 +219,9 @@ const Analysis: React.FC = () => {
           {planOutput.map((level, index) => (
             <TableCellBox key={`dailyBudget-${index}`} className={styles.dailyBudget}>{level.dailyBudgetPerAd.toFixed(2)}</TableCellBox>
           ))}
+        </div>
+        <div className={styles.blurOverlay}>
+          <Typography variant="h5" component="h5" gutterBottom className={styles.blurText}>We are working on the next 3 weeks strategy for you</Typography>
         </div>
         <Box className={styles.createCampaignButtonBox}>
           <Button

@@ -14,7 +14,7 @@ const Preparing: React.FC = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => prev - 1);
-    }, 1000);
+    }, 10);
 
     if (countdown === 0) {
       clearInterval(timer);

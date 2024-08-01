@@ -194,3 +194,31 @@
   justify-content: center;
   text-align: center;
 }
+
+.blurOverlay {
+  position: absolute;
+  top: 32%;
+  right: 0;
+  bottom: 0;
+  width: 45%; /* Adjust the width to cover the last three columns */
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2em;
+  color: #555;
+  pointer-events: none;
+}
+
+.blurText {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.TableCellBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
