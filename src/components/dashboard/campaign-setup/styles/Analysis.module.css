@@ -187,3 +187,10 @@
 .createCampaignButton:hover {
   background-color: #2563eb;
 }
+
+.TableCellBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
