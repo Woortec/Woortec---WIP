@@ -1,33 +1,4 @@
-// Helper functions
-
-export const getItemWithExpiry = (key: string) => {
-    if (typeof window !== 'undefined') {
-      const itemStr = localStorage.getItem(key);
-      if (!itemStr) {
-        return null;
-      }
-      const item = JSON.parse(itemStr);
-      if (Date.now() > item.expiry) {
-        localStorage.removeItem(key);
-        return null;
-      }
-      return item.value;
-    }
-    return null;
-  };
-  
-  export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
-    if (typeof window !== 'undefined') {
-      const now = new Date();
-      const item = {
-        value: value,
-        expiry: now.getTime() + expiry
-      };
-      localStorage.setItem(key, JSON.stringify(item));
-    }
-  };
-  
-  export const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
+export const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
     return lowerIsBetter ? (value <= threshold ? 'lightgreen' : 'lightcoral') : (value >= threshold ? 'lightgreen' : 'lightcoral');
   };
   
@@ -65,20 +36,21 @@ export const getItemWithExpiry = (key: string) => {
       'Your spending is less than advised. Adjust your budget for better results.';
   };
   
-  export const convertThresholds = (currency: string) => {
-    const conversionRates: { [key: string]: number } = {
-      USD: 1,
-      PHP: 50,
-      EUR: 0.85,
-      GBP: 0.75
-    };
-    const thresholds = {
-      cpm: 0.99,
-      cpc: 0.09,
-      impressions: 19,
-      spend: 50
-    };
+  const conversionRates: { [key: string]: number } = {
+    USD: 1,
+    PHP: 50,
+    EUR: 0.85,
+    GBP: 0.75
+  };
   
+  const thresholds = {
+    cpm: 0.99,
+    cpc: 0.09,
+    impressions: 19,
+    spend: 50
+  };
+  
+  export const convertThresholds = (currency: string) => {
     const rate = conversionRates[currency] || 1;
     return {
       cpm: thresholds.cpm * rate,
@@ -89,6 +61,6 @@ export const getItemWithExpiry = (key: string) => {
   };
   
   export const calculateExpectedSpend = (budget: number, currency: string) => {
-    return budget; // Budget is user-defined in the user's currency
+    return budget;
   };
   

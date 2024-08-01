@@ -1,0 +1,91 @@
+.tableHeader {
+    border-radius: 8px;
+    background-color: #526067;
+    display: flex;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 988px;
+    font-size: 12px;
+    color: #f2f4f5;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 991px) {
+    .tableHeader {
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .tableHeaderCell {
+    font-family: Poppins, sans-serif;
+    padding: 12px 16px;
+  }
+  
+  @media (max-width: 991px) {
+    .tableHeaderCell {
+      padding: 0 20px;
+    }
+  }
+  
+  .tableRow {
+    border-radius: 8px;
+    display: flex;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 988px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  @media (max-width: 991px) {
+    .tableRow {
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .tableCell {
+    background-color: #fff;
+    border-color: #dae0e3;
+    border-bottom-width: 1px;
+    display: flex;
+    padding: 16px;
+    align-items: center;
+  }
+  
+  .tableCellFirst {
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .tableCellLast {
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .adSetName {
+    font-family: Poppins, sans-serif;
+    border-radius: 4px;
+    background-color: rgba(237, 249, 237, 0);
+    color: #1c252a;
+    padding: 4px 8px;
+  }
+  
+  .metricValue {
+    font-family: Poppins, sans-serif;
+    border-radius: 4px;
+    background-color: rgba(237, 249, 237, 0);
+    padding: 4px 8px;
+  }
+  
+  .goodMetric {
+    color: #09a610;
+  }
+  
+  .averageMetric {
+    color: #222;
+  }
+  
+  .badMetric {
+    color: #c70e0e;
+  }
+  
