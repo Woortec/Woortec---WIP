@@ -176,8 +176,8 @@ const ExpressLaunching: React.FC = () => {
               <TableCellBox className={styles.headerCell}>{headerLabels[rowIndex]}</TableCellBox>
               {planOutput.slice(0, 5).map((level, index) => (
                 <TableCellBox key={`${key}-${index}`} className={styles[key]}>
-                  {typeof level[key] === 'number' ? level[key].toFixed(2) : level[key]}
-                </TableCellBox>
+                  {(typeof level[key] === 'number' && (level[key] as number).toFixed(2)) || level[key]}
+                </TableCellBox> 
               ))}
             </React.Fragment>
           ))}
