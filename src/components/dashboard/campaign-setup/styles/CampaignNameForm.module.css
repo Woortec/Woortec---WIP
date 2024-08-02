@@ -2,10 +2,10 @@
   border-radius: 16px;
   background-color: #fff;
   display: flex;
-  max-width: 1400px; /* Adjusted max-width */
+  max-width: 1400px;
   flex-direction: column;
-  padding: 50px 60px; /* Adjusted padding */
-  margin: 8px auto; /* Centered with top and bottom margin */
+  padding: 50px 60px;
+  margin: 8px auto;
 }
 
 @media (max-width: 991px) {
@@ -16,7 +16,7 @@
 
 .title {
   color: var(--Layout-800, #222);
-  font: 700 28px Poppins, sans-serif; /* Increased font size */
+  font: 700 28px Poppins, sans-serif;
   text-align: left;
 }
 
@@ -29,7 +29,7 @@
 .description {
   color: #526067;
   margin-top: 16px;
-  font: 500 18px/32px Montserrat, -apple-system, Roboto, Helvetica, sans-serif; /* Increased font size and line-height */
+  font: 500 18px/32px Montserrat, -apple-system, Roboto, Helvetica, sans-serif;
   text-align: left;
 }
 
@@ -45,7 +45,7 @@
   display: flex;
   margin-top: 32px;
   flex-direction: column;
-  padding: 60px; /* Adjusted padding */
+  padding: 60px;
 }
 
 @media (max-width: 991px) {
@@ -57,7 +57,7 @@
 
 .formContent {
   display: flex;
-  gap: 40px; /* Increased gap */
+  gap: 40px;
 }
 
 @media (max-width: 991px) {
@@ -86,10 +86,10 @@
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  font-size: 16px; /* Increased font size */
+  font-size: 16px;
   color: var(--Layout-800, #222);
   font-weight: 600;
-  margin-bottom: 24px; /* Added margin bottom */
+  margin-bottom: 24px;
 }
 
 @media (max-width: 991px) {
@@ -100,7 +100,7 @@
 
 .question {
   font-family: Poppins, sans-serif;
-  font-size: 18px; /* Increased font size */
+  font-size: 18px;
 }
 
 .optionsGroup {
@@ -133,14 +133,14 @@
 .checkbox {
   border-radius: 8px;
   background-color: #fff;
-  width: 20px; /* Increased size */
-  height: 20px; /* Increased size */
+  width: 20px;
+  height: 20px;
   border: 1px solid #486a75;
 }
 
 .optionLabel {
   font-family: Poppins, sans-serif;
-  font-size: 16px; /* Increased font size */
+  font-size: 16px;
 }
 
 .selectWrapper {
@@ -151,8 +151,8 @@
   gap: 20px;
   font-weight: 400;
   justify-content: space-between;
-  padding: 16px; /* Increased padding */
-  font-size: 16px; /* Increased font size */
+  padding: 16px;
+  font-size: 16px;
 }
 
 .selectLabel {
@@ -163,20 +163,20 @@
   aspect-ratio: 1;
   object-fit: auto;
   object-position: center;
-  width: 20px; /* Increased size */
+  width: 20px;
 }
 
 .submitButton {
   border-radius: 8px;
   background-color: #486a75;
   align-self: end;
-  margin-top: 50px; /* Adjusted margin */
-  width: 220px; /* Increased width */
+  margin-top: 50px;
+  width: 220px;
   max-width: 100%;
   color: #fff;
   white-space: nowrap;
-  padding: 16px; /* Increased padding */
-  font: 500 18px Poppins, sans-serif; /* Increased font size */
+  padding: 16px;
+  font: 500 18px Poppins, sans-serif;
   cursor: pointer;
   transition: background-color 0.3s;
 }

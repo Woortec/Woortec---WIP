@@ -1,18 +1,14 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import withAuth from '../../withAuth';
+import styles from './styles/ExpressLaunching.module.css';
+import TableCellBox from './TableCellBox';
 import '../../../../src/styles.css';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Typography,
   Box,
+  Paper,
 } from '@mui/material';
 
 interface PlanInput {
@@ -65,15 +61,9 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
     let investAmount = Math.round(input.amountToInvest * investPercentage);
     const numberOfAds = calculateNumAds(investAmount);
 
-    // Applying the daily budget formula  
     const dailyBudgetPerAd = ((investAmount / 7) / numberOfAds) < 1 ? 1 : ((investAmount / 7) / numberOfAds);
-    
-    // Apply the toLink formula
     const toLink = answerMessages === 'yes' ? (numberOfAds > 8 ? Math.max(0, numberOfAds - 2) : Math.max(0, numberOfAds - 1)) : numberOfAds;
-
-    // Apply the toMessages formula
     const toMessages = numberOfAds - toLink;
-
     const calculatedIncrease = i > 0 ? ((levels[i - 1].investAmount - investAmount) / levels[i - 1].investAmount) * -100 : 0;
 
     levels.push({
@@ -116,73 +106,86 @@ const ExpressLaunching: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  const getHeaderClass = (index: number) => {
+    switch (index) {
+      case 0: return styles.levelHeader1; // LEVEL 1
+      case 1:
+      case 2: return styles.levelHeader2; // LEVEL 2
+      case 3:
+      case 4: return styles.levelHeader3; // LEVEL 3
+      default: return '';
+    }
+  };
+
+  const getHeaderText = (index: number) => {
+    switch (index) {
+      case 0: return 'LEVEL 1'; // LEVEL 1
+      case 1:
+      case 2: return 'LEVEL 2'; // LEVEL 2
+      case 3:
+      case 4: return 'LEVEL 3'; // LEVEL 3
+      default: return '';
+    }
+  };
+
+  const headerKeys: (keyof WeeklyPlan)[] = [
+    'startingDay',
+    'plansWeek',
+    'investAmount',
+    'numberOfAds',
+    'toMessages',
+    'toLink',
+    'dailyBudgetPerAd',
+  ];
+
+  const headerLabels = [
+    'Starting Day',
+    'Week Plans',
+    'Invest Amount / $',
+    'Number of Ads',
+    'To Messages',
+    'To Link',
+    'Daily Budget / Ad',
+  ];
+
   return (
-    <div className="container">
-      <Typography variant="h4" component="h4" gutterBottom>Campaign Results</Typography>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="body1"><strong>Objective:</strong> {campaignDetails.objective}</Typography>
-        <Typography variant="body1"><strong>Start Date:</strong> {campaignDetails.startDate}</Typography>
-        <Typography variant="body1"><strong>Ad Link:</strong> {campaignDetails.adLink}</Typography>
-        <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} USD</Typography>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>META ADS</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>LEVEL {Math.ceil((index + 1) / 2)}</TableCell>
+    <div className={styles.container}>
+      <Paper className={styles.tableContainer}>
+        <div className={styles.header}>
+          <Typography variant="h4" component="h4" gutterBottom className={styles.title}>Personalized Ads Strategy</Typography>
+        </div>
+        <Box className={styles.expressLaunching}>
+          <Typography variant="body1">Express Launching</Typography>
+        </Box>
+        <Box className={styles.audienceTargeting}>
+          <Typography variant="body1">Audience Targeting, Launch & Campaign Setup</Typography>
+        </Box>
+        <Box className={styles.detailsBox}>
+          <Typography variant="body1"><strong>Objective:</strong> {campaignDetails.objective}</Typography>
+          <Typography variant="body1"><strong>Start Date:</strong> {campaignDetails.startDate}</Typography>
+          <Typography variant="body1"><strong>Ad Link:</strong> {campaignDetails.adLink}</Typography>
+          <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} USD</Typography>
+        </Box>
+        <div className={styles.table}>
+          <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
+          {[0, 1, 2, 3, 4].map((index) => (
+            <TableCellBox key={index} className={`${styles.levelHeader} ${getHeaderClass(index)}`}>{getHeaderText(index)}</TableCellBox>
+          ))}
+          {headerKeys.map((key, rowIndex) => (
+            <React.Fragment key={`row-${rowIndex}`}>
+              <TableCellBox className={styles.headerCell}>{headerLabels[rowIndex]}</TableCellBox>
+              {planOutput.slice(0, 5).map((level, index) => (
+                <TableCellBox key={`${key}-${index}`} className={styles[key]}>
+                  {typeof level[key] === 'number' ? level[key].toFixed(2) : level[key]}
+                </TableCellBox>
               ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Plans Week</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.plansWeek}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Starting Day</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.startingDay}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>INVEST / USD</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.investAmount.toFixed(2)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>Nº Ads</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{Math.round(level.numberOfAds)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Messages</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{Math.round(level.toMessages)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>To Link</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{Math.round(level.toLink)}</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell>DAILY BUDGET / AD</TableCell>
-              {planOutput.map((level, index) => (
-                <TableCell key={index}>{level.dailyBudgetPerAd.toFixed(2)}</TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </React.Fragment>
+          ))}
+        </div>
+      </Paper>
     </div>
   );
 }
 
-export default withAuth(ExpressLaunching);
+export default ExpressLaunching;
+  

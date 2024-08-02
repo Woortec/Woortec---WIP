@@ -1,12 +1,12 @@
 import React from 'react';
-import CampaignForm from '../../../components/dashboard/campaign-setup/CampaignForm';
+import CampaignForm from '@/components/dashboard/campaign-setup/CampaignForm';
 
-function CampaignSetupPage() {
+const Campaign: React.FC = () => {
   return (
-    <div className="App">
+    <div>
       <CampaignForm />
     </div>
   );
-}
+};
 
-export default CampaignSetupPage;
+export default Campaign;
