@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Image, X } from '@phosphor-icons/react';
 import styles from './styles/PhotoUploadForm.module.css';
 import ProgressBar from './ProgressBar';
 
@@ -19,20 +20,29 @@ const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void }> 
 
   return (
     <div className={styles.container}>
-      <ProgressBar step={2} />
       <h2 className={styles.title}>Campaign Setup: Strategy Name</h2>
-      <p className={styles.description}>Introducing woorctec - the ultimate social media ads product...</p>
+      <p className={styles.description}>
+        Introducing woorctec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woorctec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.
+      </p>
+      <ProgressBar step={2} />
       <form onSubmit={handleSubmit} className={styles.formContainer}>
         <div className={styles.formContent}>
           <label className={styles.imageUploadLabel}>
+            <Image size={32} weight="fill" />
             Drag your image(s) to start uploading
             <input type="file" accept="image/*" onChange={handleChange} className={styles.input} required />
+            <span>OR</span>
+            <button type="button" className={styles.uploadButton}>
+              Upload from your Desktop
+            </button>
           </label>
           {image && (
             <div className={styles.imagePreview}>
               <p>{image.name}</p>
               <p>{(image.size / 1024).toFixed(2)} KB</p>
-              <button type="button" onClick={() => setImage(null)} className={styles.removeImageButton}>Remove</button>
+              <button type="button" onClick={() => setImage(null)} className={styles.removeImageButton}>
+                <X size={16} />
+              </button>
             </div>
           )}
         </div>

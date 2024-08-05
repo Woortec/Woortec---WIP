@@ -87,3 +87,28 @@ export const fetchAdData = async () => {
     return { adData: [], currency: 'USD' };
   }
 };
+
+export const fetchAdSetDetail = async (adSetId: string) => {
+  const accessToken = getItemWithExpiry('fbAccessToken');
+
+  if (!accessToken) {
+    console.error('Access token not found');
+    return null;
+  }
+
+  try {
+    const response = await axios.get(
+      `https://graph.facebook.com/v19.0/${adSetId}`,
+      {
+        params: {
+          access_token: accessToken,
+          fields: 'id,name,cpm,cpc,impressions,spend', // Add any other fields you want
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching ad set detail:', error);
+    return null;
+  }
+};

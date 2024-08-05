@@ -5,8 +5,7 @@
   max-width: 1400px;
   flex-direction: column;
   padding: 50px 60px;
-  margin: 8px auto;
-  height: 100%;
+  margin: 20px auto;
   box-sizing: border-box;
 }
 
@@ -17,15 +16,16 @@
 }
 
 .title {
-  color: var(--Layout-800, #222);
+  color: #222;
   font: 700 28px Poppins, sans-serif;
   text-align: center;
 }
 
-@media (max-width: 991px) {
-  .title {
-    max-width: 100%;
-  }
+.description {
+  color: #526067;
+  margin-top: 16px;
+  font: 500 18px/32px Montserrat, sans-serif;
+  text-align: center;
 }
 
 .formContainer {
@@ -34,6 +34,9 @@
   display: flex;
   flex-direction: column;
   padding: 60px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   flex-grow: 1;
   justify-content: center;
 }
@@ -47,152 +50,88 @@
 
 .formContent {
   display: flex;
-  gap: 40px;
-  justify-content: center;
-}
-
-@media (max-width: 991px) {
-  .formContent {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-  }
-}
-
-.questionGroup {
-  display: flex;
-  flex-grow: 1;
   flex-direction: column;
-  font-size: 16px;
-  color: var(--Layout-800, #222);
-  font-weight: 600;
-  margin-bottom: 24px;
+  align-items: center;
+  gap: 20px;
 }
 
-@media (max-width: 991px) {
-  .questionGroup {
-    margin-top: 40px;
-  }
-}
-
-.question {
-  font-family: Poppins, sans-serif;
-  font-size: 18px;
-}
-
-.input {
-  padding: 10px;
+.imageUploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
   width: 100%;
+  max-width: 500px;
+}
+
+.imageUploadLabel input {
+  display: none;
+}
+
+.imagePreview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.removeImageButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4d;
+}
+
+.uploadButton {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 .buttonContainer {
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
+  width: 100%;
 }
 
-.backButton, .submitButton {
+.backButton,
+.submitButton {
   border-radius: 8px;
-  background-color: #486a75;
   color: #fff;
   white-space: nowrap;
   padding: 16px;
   font: 500 18px Poppins, sans-serif;
   cursor: pointer;
   transition: background-color 0.3s;
-  width: 100px;
+  width: 120px;
+}
+
+.backButton {
+  background-color: #6c757d;
 }
 
 .submitButton {
-  background-color: #3b82f6;
+  background-color: #007bff;
 }
 
 .submitButton:hover {
-  background-color: #2563eb;
+  background-color: #0056b3;
 }
 
 .backButton:hover {
-  background-color: #3b5361;
-}
-
-.progress {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  text-align: center;
-  padding: 10px;
-  color: #000;
-  position: relative;
-}
-
-.stepNumber {
-  background-color: #e0e0e0;
-  color: #000;
-  border-radius: 50%;
-  padding: 10px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.stepLabel {
-  font-size: 14px;
-}
-
-.step.completed .stepNumber {
-  background-color: #007bff;
-  color: white;
-}
-
-.step.active .stepNumber {
-  background-color: #007bff;
-  color: white;
-}
-
-.step:before,
-.step:after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  height: 2px;
-  background-color: #e0e0e0;
-  z-index: -1;
-}
-
-.step:before {
-  left: -50%;
-}
-
-.step:after {
-  right: -50%;
-}
-
-.step:first-child:before {
-  display: none;
-}
-
-.step:last-child:after {
-  display: none;
-}
-
-.step.completed:after {
-  background-color: #007bff;
-}
-
-.step.active:after {
-  background-color: #007bff;
+  background-color: #5a6268;
 }

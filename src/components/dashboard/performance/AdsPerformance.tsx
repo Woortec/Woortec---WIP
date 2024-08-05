@@ -1,5 +1,6 @@
 'use client'
 
+// AdsPerformance.tsx
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import BudgetInput from './BudgetInput';
@@ -72,29 +73,29 @@ const AdsPerformance: React.FC = () => {
         </Box>
         <Box className={styles.summaryItem}>
           <Box className={`${styles.iconWrapper} ${styles.successIcon}`}>
-          <img src="/assets/editor_choice.png" alt="Warning Icon" />
+            <img src="/assets/editor_choice.png" alt="Success Icon" />
           </Box>
           <Box className={styles.summaryContent}>
             <Typography className={styles.summaryLabel}>Success Ads</Typography>
             <Typography className={styles.summaryValue}>{successAds}</Typography>
           </Box>
         </Box>
-              <Box className={styles.legend}>
-        <Box className={styles.legendItems}>
-          <Box className={styles.legendItem}>
-            <Box className={`${styles.legendDot} ${styles.legendDotGood}`} />
-            <Typography className={styles.legendText}>Good</Typography>
-          </Box>
-          <Box className={styles.legendItem}>
-            <Box className={`${styles.legendDot} ${styles.legendDotAverage}`} />
-            <Typography className={styles.legendText}>Average</Typography>
-          </Box>
-          <Box className={styles.legendItem}>
-            <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
-            <Typography className={styles.legendText}>Bad</Typography>
+        <Box className={styles.legend}>
+          <Box className={styles.legendItems}>
+            <Box className={styles.legendItem}>
+              <Box className={`${styles.legendDot} ${styles.legendDotGood}`} />
+              <Typography className={styles.legendText}>Good</Typography>
+            </Box>
+            <Box className={styles.legendItem}>
+              <Box className={`${styles.legendDot} ${styles.legendDotAverage}`} />
+              <Typography className={styles.legendText}>Average</Typography>
+            </Box>
+            <Box className={styles.legendItem}>
+              <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
+              <Typography className={styles.legendText}>Bad</Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
       </Box>
       <Box display="flex" justifyContent="center" alignItems="center" marginBottom={3}>
       </Box>

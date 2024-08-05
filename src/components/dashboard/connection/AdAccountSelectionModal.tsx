@@ -31,7 +31,7 @@ const AdAccountSelectionModal: React.FC<AdAccountSelectionModalProps> = ({ open,
           ))}
         </List>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className="dialogActions">
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>

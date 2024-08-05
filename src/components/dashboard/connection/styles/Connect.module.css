@@ -1,0 +1,57 @@
+/* Connect.module.css */
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
+  }
+  
+  .cardIcon {
+    margin-right: 1rem;
+  }
+  
+  .cardContent {
+    flex-grow: 1;
+  }
+  
+  .removeButton {
+    margin-left: auto;
+  }
+  
+  .button {
+    background-color: #1877F2;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .button:hover {
+    background-color: #145BC0;
+  }
+  
+  .modalContent {
+    padding: 20px;
+    background: white;
+    margin: 50px auto;
+    max-width: 400px;
+    position: relative;
+  }
+  
+  .closeButton {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+  
+  .dialogActions {
+    justify-content: flex-end;
+  }
+  

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, List, ListItem, ListItemText, Typography, IconButton } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
+import styles from './styles/Connect.module.css';
 
 interface PageSelectionModalProps {
   open: boolean;
@@ -12,11 +13,11 @@ interface PageSelectionModalProps {
 const PageSelectionModal: React.FC<PageSelectionModalProps> = ({ open, pages, onClose, onSelect }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <div style={{ padding: '20px', background: 'white', margin: '50px auto', maxWidth: '400px' }}>
+      <div className={styles.modalContent}>
         <Typography variant="h6" gutterBottom>
           Select a Page
         </Typography>
-        <IconButton onClick={onClose} style={{ position: 'absolute', right: '10px', top: '10px' }}>
+        <IconButton onClick={onClose} className={styles.closeButton}>
           <CloseIcon />
         </IconButton>
         <List>
