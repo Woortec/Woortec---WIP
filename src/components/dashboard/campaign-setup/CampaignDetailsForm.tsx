@@ -30,7 +30,7 @@ const CampaignDetailsForm: React.FC<{ nextStep: () => void }> = ({ nextStep }) =
         <div className={styles.formContent}>
           <div className={styles.column}>
             <div className={styles.questionGroup}>
-              <label className={styles.question}>Objective:</label>
+              <label className={styles.question}>What is your Objective?</label>
               <input
                 type="text"
                 name="objective"
@@ -54,7 +54,7 @@ const CampaignDetailsForm: React.FC<{ nextStep: () => void }> = ({ nextStep }) =
           </div>
           <div className={styles.column}>
             <div className={styles.questionGroup}>
-              <label className={styles.question}>Budget:</label>
+              <label className={styles.question}>How much are you willing to Invest?</label>
               <input
                 type="number"
                 name="budget"
@@ -65,20 +65,38 @@ const CampaignDetailsForm: React.FC<{ nextStep: () => void }> = ({ nextStep }) =
               />
             </div>
             <div className={styles.questionGroup}>
-              <label className={styles.question}>Ad Message:</label>
+  <label className={styles.question}>Are you able to answer images?</label>
+  <div>
+    <label>
+      <input
+        type="radio"
+        name="adMessage"
+        value="yes"
+        checked={formDetails.adMessage === 'yes'}
+        onChange={handleChange}
+        className={styles.input}
+        required
+      />
+      Yes
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="adMessage"
+        value="no"
+        checked={formDetails.adMessage === 'no'}
+        onChange={handleChange}
+        className={styles.input}
+        required
+      />
+      No
+    </label>
+  </div>
+</div>
+            <div className={styles.questionGroup}>
+              <label className={styles.question}>Where do you want to direct the traffic</label>
               <input
                 type="text"
-                name="adMessage"
-                value={formDetails.adMessage}
-                onChange={handleChange}
-                className={styles.input}
-                required
-              />
-            </div>
-            <div className={styles.questionGroup}>
-              <label className={styles.question}>Ad Link:</label>
-              <input
-                type="url"
                 name="adLink"
                 value={formDetails.adLink}
                 onChange={handleChange}
