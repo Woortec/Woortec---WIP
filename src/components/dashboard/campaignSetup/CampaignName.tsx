@@ -10,6 +10,8 @@ const CampaignName: React.FC<CampaignNameProps> = ({ onSetName }) => {
   const [labelTwo, setLabelTwo] = useState('');
 
   const handleSubmit = () => {
+    console.log('Label One:', labelOne);  // Debugging log
+    console.log('Label Two:', labelTwo);  // Debugging log
     onSetName(labelOne, labelTwo);
   };
 

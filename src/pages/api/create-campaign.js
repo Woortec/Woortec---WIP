@@ -58,8 +58,6 @@ export default async function handler(req, res) {
       accessToken: [accessToken],
       adAccountId: [adAccountId],
       pageId: [pageId],
-      adMessage: [adMessage],
-      adLink: [adLink],
       labelOne: [labelOne],
       labelTwo: [labelTwo],
     } = fields;
@@ -72,6 +70,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid planOutput format' });
     }
 
+    // Fetch adLink from planOutput.campaignDetails
+    const adLink = planOutput.campaignDetails?.adLink;
+    if (!adLink) {
+      return res.status(400).json({ error: 'Missing adLink in campaignDetails of planOutput' });
+    }
+
     // Ensure only one file is handled
     const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
 
@@ -80,7 +84,7 @@ export default async function handler(req, res) {
     console.log('Received files:', files);
     console.log('Received image:', imageFile);
 
-    if (!accessToken || !adAccountId || !pageId || !adMessage || !adLink || !planOutput || !imageFile) {
+    if (!accessToken || !adAccountId || !pageId || !planOutput || !imageFile) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -148,7 +152,6 @@ export default async function handler(req, res) {
         object_story_spec: {
           page_id: pageId,
           link_data: {
-            message: adMessage,
             link: adLink,
             image_hash: imageHash,
           },
@@ -156,9 +159,9 @@ export default async function handler(req, res) {
         degrees_of_freedom_spec: {
           creative_features_spec: {
             standard_enhancements: {
-              enroll_status: 'OPT_OUT',
-            },
-          },
+              enroll_status: 'OPT_OUT'
+            }
+          }
         },
         access_token: accessToken,
       };

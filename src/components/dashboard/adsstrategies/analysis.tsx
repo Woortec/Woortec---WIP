@@ -11,6 +11,7 @@ import {
   Paper,
   Button,
 } from '@mui/material';
+import axios from 'axios';
 
 interface PlanInput {
   planRequestDate: string;
@@ -93,6 +94,10 @@ const Analysis: React.FC = () => {
 
   useEffect(() => {
     const details = JSON.parse(localStorage.getItem('campaignDetails') || '{}');
+    const adLink = localStorage.getItem('adLink'); // Fetch adLink from localStorage
+    if (adLink) {
+      details.adLink = adLink; // Add adLink to campaignDetails
+    }
     setCampaignDetails(details);
     if (details.startDate && details.budget) {
       const planInput = {
@@ -130,6 +135,31 @@ const Analysis: React.FC = () => {
         setPlanOutput(planOutput);
       };
       reader.readAsText(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const adAccountId = localStorage.getItem('adAccountId');
+    const pageId = localStorage.getItem('pageId');
+
+    if (!accessToken || !adAccountId || !pageId) {
+      alert('Missing credentials in localStorage.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('/api/upload-campaign', {
+        accessToken,
+        adAccountId,
+        pageId,
+        planOutput: JSON.stringify({ campaignDetails, planOutput }),  // Send planOutput as a JSON string
+      });
+      console.log('Campaign uploaded successfully:', response.data);
+      alert('Campaign uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading campaign:', error);
+      alert('Failed to upload campaign.');
     }
   };
 
@@ -176,6 +206,16 @@ const Analysis: React.FC = () => {
       <Paper className={styles.tableContainer}>
         <div className={styles.header}>
           <Typography variant="h4" component="h4" gutterBottom className={styles.title}>Personalized Ads Strategy</Typography>
+          <div className={styles.actions}>
+            <Button onClick={handleExport} className={styles.exportButton}>Export Campaign</Button>
+            <Button onClick={handleUpload} className={styles.uploadButton}>Upload to Facebook</Button>
+            <input
+              accept="application/json"
+              type="file"
+              onChange={handleImport}
+              className={styles.importInput}
+            />
+          </div>
         </div>
         <Box className={styles.expressLaunching}>
           <Typography variant="body1">Analysis</Typography>
@@ -189,62 +229,55 @@ const Analysis: React.FC = () => {
           <Typography variant="body1"><strong>Ad Link:</strong> {campaignDetails.adLink}</Typography>
           <Typography variant="body1"><strong>Budget:</strong> {campaignDetails.budget} USD</Typography>
         </Box>
-        <div className={styles.table}>
-          <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={index} className={`${styles.levelHeader} ${getHeaderClass(index)}`}>{getHeaderText(index)}</TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>Starting Day</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`startingDay-${index}`} className={`${styles.startingDay} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.startingDay}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>Week Plans</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`planWeek-${index}`} className={`${styles.planWeek} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.plansWeek}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>Invest Amount / $</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`invest-${index}`} className={`${styles.invest} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.investAmount.toFixed(2)}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>Number of Ads</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`numAds-${index}`} className={`${styles.numAds} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.numberOfAds}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>To Messages</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`toMessages-${index}`} className={`${styles.toMessages} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.toMessages}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>To Link</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`toLink-${index}`} className={`${styles.toLink} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.toLink}
-            </TableCellBox>
-          ))}
-          <TableCellBox className={styles.headerCell}>Daily Budget / Ad</TableCellBox>
-          {planOutput.map((level, index) => (
-            <TableCellBox key={`dailyBudget-${index}`} className={`${styles.dailyBudget} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
-              {level.dailyBudgetPerAd.toFixed(2)}
-            </TableCellBox>
-          ))}
-        </div>
-        <div className={styles.actions}>
-          <Button onClick={handleExport} className={styles.exportButton}>Export Campaign</Button>
-          <input
-            accept="application/json"
-            type="file"
-            onChange={handleImport}
-            className={styles.importInput}
-          />
+        <div className={styles.scrollContainer}>
+          <div className={styles.table}>
+            <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={index} className={`${styles.levelHeader} ${getHeaderClass(index)}`}>{getHeaderText(index)}</TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>Starting Day</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`startingDay-${index}`} className={`${styles.startingDay} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.startingDay}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>Week Plans</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`planWeek-${index}`} className={`${styles.planWeek} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.plansWeek}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>Invest Amount / $</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`invest-${index}`} className={`${styles.invest} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.investAmount.toFixed(2)}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>Number of Ads</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`numAds-${index}`} className={`${styles.numAds} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.numberOfAds}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>To Messages</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`toMessages-${index}`} className={`${styles.toMessages} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.toMessages}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>To Link</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`toLink-${index}`} className={`${styles.toLink} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.toLink}
+              </TableCellBox>
+            ))}
+            <TableCellBox className={styles.headerCell}>Daily Budget / Ad</TableCellBox>
+            {planOutput.map((level, index) => (
+              <TableCellBox key={`dailyBudget-${index}`} className={`${styles.dailyBudget} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+                {level.dailyBudgetPerAd.toFixed(2)}
+              </TableCellBox>
+            ))}
+          </div>
         </div>
         {!isSubscribed && (
           <div className={styles.subscribeOverlay}>
