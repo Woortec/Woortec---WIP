@@ -1,0 +1,18 @@
+.container {
+    text-align: center;
+    margin: 20px;
+  }
+  
+  .fileInput {
+    margin-top: 10px;
+  }
+  
+  .imagePreview {
+    margin-top: 20px;
+  }
+  
+  .imagePreview img {
+    max-width: 100%;
+    height: auto;
+  }
+  

@@ -84,6 +84,19 @@
   max-width: 500px;
 }
 
+.imageDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 10px;
+}
+
+.previewImage {
+  max-height: 500px;
+  max-width: 480px;
+  object-fit: cover;
+}
+
 .removeImageButton {
   background: none;
   border: none;

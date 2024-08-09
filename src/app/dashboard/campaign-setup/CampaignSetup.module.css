@@ -1,0 +1,40 @@
+.container {
+    text-align: center;
+    margin: 20px;
+  }
+  
+  .stepper {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .step {
+    padding: 10px;
+    border-bottom: 2px solid lightgray;
+  }
+  
+  .activeStep {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+  }
+  
+  .stepContent {
+    margin: 20px;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+  

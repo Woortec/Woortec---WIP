@@ -5,10 +5,13 @@ import ProgressBar from './ProgressBar';
 
 const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void }> = ({ nextStep, prevStep }) => {
   const [image, setImage] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setImage(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -38,9 +41,10 @@ const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void }> 
           </label>
           {image && (
             <div className={styles.imagePreview}>
-              <p>{image.name}</p>
-              <p>{(image.size / 1024).toFixed(2)} KB</p>
-              <button type="button" onClick={() => setImage(null)} className={styles.removeImageButton}>
+              <img src={imagePreviewUrl as string} alt="Preview" className={styles.previewImage} />
+              <div className={styles.imageDetails}>
+              </div>
+              <button type="button" onClick={() => { setImage(null); setImagePreviewUrl(null); }} className={styles.removeImageButton}>
                 <X size={16} />
               </button>
             </div>

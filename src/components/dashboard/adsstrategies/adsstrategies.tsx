@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './styles/CampaignSetup.module.css';  // Import the CSS module
+import styles from './styles/CampaignSetup.module.css';
 
 function CampaignSetup() {
   const [objective, setObjective] = useState('');
@@ -19,6 +19,12 @@ function CampaignSetup() {
     if (campaignDetails && preparingStartTime) {
       router.push('/dashboard/adsstrategies/preparing');
     }
+
+    // Calculate the next Monday date
+    const today = new Date();
+    const nextMonday = new Date(today);
+    nextMonday.setDate(today.getDate() + ((8 - today.getDay()) % 7));
+    setStartDate(nextMonday.toISOString().split('T')[0]);
   }, [router]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -60,16 +66,6 @@ function CampaignSetup() {
             </option>
             <option value="Ensure you have a landing page">Ensure you have a landing page</option>
           </select>
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>When do you want to start?</label>
-          <input 
-            type="date" 
-            value={startDate} 
-            onChange={(e) => setStartDate(e.target.value)} 
-            required 
-            className={styles.selectWrapper}
-          />
         </div>
         <div className={styles.formGroup}>
           <label className={styles.formLabel}>What's the ad link?</label>

@@ -18,7 +18,8 @@ export const paths = {
     expresslaunching: '/dashboard/strategies/expresslaunching',
     adsstrategies: '/dashboard/adsstrategies',
     analysistable: '/dashboard/strategies/analysis',
-    campaign: '/dashboard/campaign'
+    campaign: '/dashboard/campaign',
+    CampaignSetup: '/dashboard/campaign-setup'
     
   },
   errors: { notFound: '/errors/not-found' },

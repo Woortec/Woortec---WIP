@@ -9,6 +9,7 @@ import {
   Typography,
   Box,
   Paper,
+  Button,
 } from '@mui/material';
 
 interface PlanInput {
@@ -88,6 +89,7 @@ function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
 const Analysis: React.FC = () => {
   const [campaignDetails, setCampaignDetails] = useState<any>(null);
   const [planOutput, setPlanOutput] = useState<WeeklyPlan[]>([]);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   useEffect(() => {
     const details = JSON.parse(localStorage.getItem('campaignDetails') || '{}');
@@ -101,6 +103,35 @@ const Analysis: React.FC = () => {
       setPlanOutput(calculatedPlan);
     }
   }, []);
+
+  const handleSubscribe = () => {
+    setIsSubscribed(true);
+  };
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify({ campaignDetails, planOutput }, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'campaign-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const { campaignDetails, planOutput } = JSON.parse(content);
+        setCampaignDetails(campaignDetails);
+        setPlanOutput(planOutput);
+      };
+      reader.readAsText(file);
+    }
+  };
 
   if (!campaignDetails) {
     return <div>Loading...</div>;
@@ -165,33 +196,61 @@ const Analysis: React.FC = () => {
           ))}
           <TableCellBox className={styles.headerCell}>Starting Day</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`startingDay-${index}`} className={styles.startingDay}>{level.startingDay}</TableCellBox>
+            <TableCellBox key={`startingDay-${index}`} className={`${styles.startingDay} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.startingDay}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>Week Plans</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`planWeek-${index}`} className={styles.planWeek}>{level.plansWeek}</TableCellBox>
+            <TableCellBox key={`planWeek-${index}`} className={`${styles.planWeek} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.plansWeek}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>Invest Amount / $</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`invest-${index}`} className={styles.invest}>{level.investAmount.toFixed(2)}</TableCellBox>
+            <TableCellBox key={`invest-${index}`} className={`${styles.invest} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.investAmount.toFixed(2)}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>Number of Ads</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`numAds-${index}`} className={styles.numAds}>{level.numberOfAds}</TableCellBox>
+            <TableCellBox key={`numAds-${index}`} className={`${styles.numAds} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.numberOfAds}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>To Messages</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`toMessages-${index}`} className={styles.toMessages}>{level.toMessages}</TableCellBox>
+            <TableCellBox key={`toMessages-${index}`} className={`${styles.toMessages} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.toMessages}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>To Link</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`toLink-${index}`} className={styles.toLink}>{level.toLink}</TableCellBox>
+            <TableCellBox key={`toLink-${index}`} className={`${styles.toLink} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.toLink}
+            </TableCellBox>
           ))}
           <TableCellBox className={styles.headerCell}>Daily Budget / Ad</TableCellBox>
           {planOutput.map((level, index) => (
-            <TableCellBox key={`dailyBudget-${index}`} className={styles.dailyBudget}>{level.dailyBudgetPerAd.toFixed(2)}</TableCellBox>
+            <TableCellBox key={`dailyBudget-${index}`} className={`${styles.dailyBudget} ${index >= 4 && !isSubscribed ? styles.blurEffect : ''}`}>
+              {level.dailyBudgetPerAd.toFixed(2)}
+            </TableCellBox>
           ))}
         </div>
+        <div className={styles.actions}>
+          <Button onClick={handleExport} className={styles.exportButton}>Export Campaign</Button>
+          <input
+            accept="application/json"
+            type="file"
+            onChange={handleImport}
+            className={styles.importInput}
+          />
+        </div>
+        {!isSubscribed && (
+          <div className={styles.subscribeOverlay}>
+            <Button className={styles.subscribeButton} onClick={handleSubscribe}>Subscribe to View All Details</Button>
+          </div>
+        )}
       </Paper>
     </div>
   );
