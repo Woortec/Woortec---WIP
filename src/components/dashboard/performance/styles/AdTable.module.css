@@ -141,3 +141,8 @@
   font-size: 14px;
   color: #333;
 }
+.adCreative {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}

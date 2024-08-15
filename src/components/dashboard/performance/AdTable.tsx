@@ -1,3 +1,5 @@
+// AdTable.tsx
+
 import React, { useState } from 'react';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
