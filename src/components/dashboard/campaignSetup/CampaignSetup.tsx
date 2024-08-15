@@ -130,7 +130,7 @@ const CampaignSetup: React.FC = () => {
         </div>
       ) : (
         <div className={styles.stepContent}>
-          {StepComponent && <StepComponent {...stepProps} />}
+{StepComponent && <StepComponent {...(stepProps as any)} />}
           <div className={styles.buttons}>
             <button onClick={handleBack} disabled={activeStep === 0}>
               Back
