@@ -1,60 +1,104 @@
 'use client';
 
-import React from 'react';
-import { ToggleButton, ToggleButtonGroup, Card, CardContent, Box } from '@mui/material';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { CalendarToday as CalendarTodayIcon } from '@mui/icons-material';
+import styles from './date/style/DatePickerComponent.module.css';
 
-interface DateRangePickerProps {
-  timeRange: string;
-  setTimeRange: (newRange: string) => void;
+interface DatePickerComponentProps {
+  startDate: Date | null;
+  endDate: Date | null;
+  setStartDate: Dispatch<SetStateAction<Date | null>>;
+  setEndDate: Dispatch<SetStateAction<Date | null>>;
 }
 
-export const DateRangePicker: React.FC<DateRangePickerProps> = ({ timeRange, setTimeRange }) => {
+const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+}: DatePickerComponentProps) => {
+  const [preset, setPreset] = useState<string>('day');
+
+  const handlePresetChange = (newPreset: string) => {
+    setPreset(newPreset);
+    const today = new Date();
+
+    switch (newPreset) {
+      case 'day':
+        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29));
+        setEndDate(today);
+        break;
+      case 'week':
+        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
+        setEndDate(today);
+        break;
+      case 'month':
+        setStartDate(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
+        setEndDate(today);
+        break;
+      case 'year':
+        setStartDate(new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()));
+        setEndDate(today);
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <Card sx={{ padding: 1, borderRadius: '15px', height: 59, boxShadow: 'none', border: '1px solid #E0E0E0' }}>
-      <CardContent sx={{ padding: 0 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-          <ToggleButtonGroup
-            value={timeRange}
-            exclusive
-            onChange={(_e, newRange) => {
-              if (newRange !== null) {
-                setTimeRange(newRange);
-              }
-            }}
-            aria-label="Time Range"
-            sx={{
-              '& .MuiToggleButton-root': {
-                border: 'none',
-                borderRadius: '10px',
-                padding: '8px 16px',
-                textTransform: 'none',
-                fontSize: '16px',
-                fontWeight: 'normal',
-                color: '#5f6368',
-                '&.Mui-selected': {
-                  backgroundColor: '#E0E0E0',
-                  color: '#486A75',
-                  fontWeight: 'bold',
-                },
-                '&:hover': {
-                  backgroundColor: '#F1F3F4',
-                },
-                '&.MuiToggleButtonGroup-grouped:not(:last-of-type)': {
-                  marginRight: 1,
-                },
-              },
-              justifyContent: 'space-between',
-              width: '100%',
-              maxWidth: '600px',
-            }}
+    <div className={styles.card}>
+      <div className={styles.toggleButtonGroup}>
+        {['day', 'week', 'month', 'year'].map((label) => (
+          <button
+            key={label}
+            className={`${styles.toggleButton} ${preset === label ? styles.selected : ''}`}
+            onClick={() => handlePresetChange(label)}
           >
-            <ToggleButton value="day" aria-label="Day">Day</ToggleButton>
-            <ToggleButton value="week" aria-label="Week">Week</ToggleButton>
-            <ToggleButton value="month" aria-label="Month">Month</ToggleButton>
-            <ToggleButton value="year" aria-label="Year">Year</ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </CardContent>
-    </Card>
+            {label.charAt(0).toUpperCase() + label.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className={styles.datePickerBox}>
+        <CalendarTodayIcon className={styles.calendarIcon} />
+        <div className={styles.cardContent}>
+          <div className={styles.datePickerContainer}>
+            <DatePicker
+              selected={startDate}
+              onChange={(date: Date | null) => setStartDate(date)}
+              customInput={
+                <input
+                  type="text"
+                  className={styles.datePickerInput}
+                  value={startDate ? startDate.toDateString() : ''}
+                  readOnly
+                />
+              }
+              dateFormat="dd MMM yyyy"
+            />
+            <span className={styles.datePickerSeparator}>↔</span>
+            <DatePicker
+              selected={endDate}
+              onChange={(date: Date | null) => setEndDate(date)}
+              customInput={
+                <input
+                  type="text"
+                  className={styles.datePickerInput}
+                  value={endDate ? endDate.toDateString() : ''}
+                  readOnly
+                />
+              }
+              dateFormat="dd MMM yyyy"
+            />
+          </div>
+          <button className={styles.iconButton}>
+            <CalendarTodayIcon />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
+
+export default DatePickerComponent;

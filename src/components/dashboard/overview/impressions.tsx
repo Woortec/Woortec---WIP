@@ -11,6 +11,7 @@ import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { Target } from '@phosphor-icons/react';
 import axios from 'axios';
+import { useDate } from './date/DateContext'; // Import the useDate hook
 
 export interface TotalImpressionsProps {
   diff?: number;
@@ -35,8 +36,8 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
               <Typography variant="h4">{value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: '#E86A6D', height: '56px', width: '56px' }}>
-  <Target fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
-</Avatar>
+              <Target fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+            </Avatar>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
@@ -64,6 +65,8 @@ const TotalImpressionsContainer = () => {
     trend: 'up',
   });
 
+  const { startDate, endDate } = useDate(); // Use the useDate hook to get the start and end dates
+
   useEffect(() => {
     const fetchImpressions = async () => {
       try {
@@ -81,12 +84,15 @@ const TotalImpressionsContainer = () => {
         console.log('Access Token:', accessToken);
         console.log('Ad Account ID:', adAccountId);
 
-        // Fetch the total impressions for the Facebook page
+        // Fetch the total impressions for the selected date range
         const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
             fields: 'impressions',
-            date_preset: 'last_30d',
+            time_range: JSON.stringify({
+              since: startDate?.toISOString().split('T')[0],
+              until: endDate?.toISOString().split('T')[0],
+            }),
           },
         });
 
@@ -96,9 +102,12 @@ const TotalImpressionsContainer = () => {
           throw new Error('No data found for the given ad account ID');
         }
 
-        const totalImpressions = response.data.data[0].impressions;
+        const totalImpressions = response.data.data.reduce(
+          (acc: number, item: any) => acc + parseInt(item.impressions, 10),
+          0
+        );
 
-        // Fetch the previous total impressions for the comparison
+        // Fetch the previous total impressions for comparison
         const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
           params: {
             access_token: accessToken,
@@ -113,7 +122,10 @@ const TotalImpressionsContainer = () => {
           throw new Error('No data found for the previous time period');
         }
 
-        const previousImpressions = previousResponse.data.data[0].impressions;
+        const previousImpressions = previousResponse.data.data.reduce(
+          (acc: number, item: any) => acc + parseInt(item.impressions, 10),
+          0
+        );
 
         const diff = ((totalImpressions - previousImpressions) / previousImpressions) * 100;
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
@@ -132,7 +144,7 @@ const TotalImpressionsContainer = () => {
     };
 
     fetchImpressions();
-  }, []);
+  }, [startDate, endDate]); // Trigger the effect whenever the start or end date changes
 
   return <TotalImpressions {...impressionsData} />;
 };

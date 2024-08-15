@@ -1,0 +1,86 @@
+/* DatePickerComponent.module.css */
+
+.card {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  flex-direction: row;
+  gap: 16px;
+  border-radius: 20px;
+  background-color: #f8f8f8;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.toggleButtonGroup {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.toggleButton {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  text-transform: capitalize;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  margin: 0 12px; /* Adjust the margin between buttons */
+}
+
+.toggleButton:hover {
+  background-color: #f0f0f0;
+}
+
+.selected {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.datePickerBox {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.calendarIcon {
+  color: grey;
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.datePickerContainer {
+  display: flex;
+  align-items: center;
+}
+
+.datePickerInput {
+  margin: 0 8px;
+  width: 150px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #333;
+  background-color: #fff;
+}
+
+.datePickerSeparator {
+  margin: 0 8px;
+  color: grey;
+}
+
+.iconButton {
+  margin-left: 8px;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}

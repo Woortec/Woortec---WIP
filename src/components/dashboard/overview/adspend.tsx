@@ -18,7 +18,6 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { DateRangePicker } from './DateRangePicker';
 
 ChartJS.register(
   CategoryScale,
@@ -29,14 +28,11 @@ ChartJS.register(
   Legend
 );
 
-export interface SalesProps {
-  sx?: SxProps;
+interface SalesProps {
   timeRange: string;
-}
-
-interface TimeRange {
-  since: string;
-  until: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  sx?: SxProps;
 }
 
 interface ChartData {
@@ -47,72 +43,85 @@ interface ChartData {
     borderColor: string;
     backgroundColor: string;
     fill: boolean;
-    barThickness: number; // Added barThickness property
+    barThickness: number;
   }[];
 }
 
-const getTimeRanges = (): { [key: string]: TimeRange } => {
-  const today = dayjs();
-  return {
-    day: {
-      since: today.subtract(1, 'day').format('YYYY-MM-DD'),
-      until: today.format('YYYY-MM-DD'),
-    },
-    week: {
-      since: today.subtract(1, 'week').format('YYYY-MM-DD'),
-      until: today.format('YYYY-MM-DD'),
-    },
-    month: {
-      since: today.subtract(1, 'month').format('YYYY-MM-DD'),
-      until: today.format('YYYY-MM-DD'),
-    },
-    year: {
-      since: today.startOf('year').format('YYYY-MM-DD'),
-      until: today.format('YYYY-MM-DD'),
-    },
-  };
+const getFormattedDate = (date: Date | null): string => {
+  return date ? dayjs(date).format('YYYY-MM-DD') : '';
 };
 
-const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-
-const getMonthName = (dateString: string): string => {
-  const date = dayjs(dateString);
-  return monthNames[date.month()];
-};
-
-export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
+export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
-  const timeRanges = getTimeRanges();
 
-  const fetchAdSpendData = async (range: string) => {
+  const fetchAdSpendData = async () => {
     try {
       const accessToken = getItemWithExpiry('fbAccessToken');
       const adAccountId = getItemWithExpiry('fbAdAccount');
-
+  
       if (!accessToken) {
         throw new Error('Missing access token');
       }
-
+  
       if (!adAccountId) {
         throw new Error('Missing ad account ID');
+      }
+
+      let timeIncrement = '1';
+      let labelFormat = 'ddd, DD MMM'; // Default to daily format
+
+      if (timeRange === 'month') {
+        timeIncrement = 'monthly';
+        labelFormat = 'MMM YYYY';
+      } else if (timeRange === 'year') {
+        timeIncrement = 'monthly';
+        labelFormat = 'MMM YYYY';
       }
 
       const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
-          fields: 'spend',
-          time_range: JSON.stringify(timeRanges[range]),
-          time_increment: range === 'year' ? 'monthly' : 'daily',
+          fields: 'spend,date_start',
+          time_range: JSON.stringify({
+            since: getFormattedDate(startDate),
+            until: getFormattedDate(endDate),
+          }),
+          time_increment: timeIncrement,
         },
       });
-
+  
       console.log('Raw Response Data:', response.data);
-
+  
       if (response.data.data && response.data.data.length > 0) {
-        const labels = response.data.data.map((item: any) => getMonthName(item.date_start));
-        const data = response.data.data.map((item: any) => parseFloat(item.spend));
+        const labels: string[] = [];
+        const data: number[] = [];
+
+        if (timeIncrement === '1') {
+          // Handle daily data
+          let currentDate = dayjs(startDate);
+          const end = dayjs(endDate);
+
+          while (currentDate.isBefore(end) || currentDate.isSame(end, 'day')) {
+            const formattedDate = currentDate.format(labelFormat);
+            labels.push(formattedDate);
+
+            const matchingDay = response.data.data.find((item: any) =>
+              dayjs(item.date_start).isSame(currentDate, 'day')
+            );
+
+            data.push(matchingDay ? parseFloat(matchingDay.spend) : 0);
+            currentDate = currentDate.add(1, 'day');
+          }
+        } else {
+          // Handle monthly data
+          response.data.data.forEach((item: any) => {
+            labels.push(dayjs(item.date_start).format(labelFormat));
+            data.push(parseFloat(item.spend));
+          });
+        }
+
         const formattedData: ChartData = {
           labels,
           datasets: [{
@@ -121,7 +130,7 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
             borderColor: '#486A75',
             backgroundColor: '#486A75',
             fill: true,
-            barThickness: 20, // Set bar thickness
+            barThickness: 20,
           }],
         };
         setChartData(formattedData);
@@ -139,8 +148,8 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
   };
 
   useEffect(() => {
-    fetchAdSpendData(timeRange);
-  }, [timeRange]);
+    fetchAdSpendData();
+  }, [startDate, endDate, timeRange]);
 
   return (
     <Card sx={sx}>
@@ -151,7 +160,7 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
             color="inherit"
             size="small"
             startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
-            onClick={() => fetchAdSpendData(timeRange)}
+            onClick={() => fetchAdSpendData()}
           >
             Sync
           </Button>
@@ -161,7 +170,34 @@ export function Sales({ sx, timeRange }: SalesProps): React.JSX.Element {
         {loading ? (
           <CircularProgress />
         ) : (
-          <Bar data={chartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }}}} height={350} />
+          <Bar
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false,
+                },
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: timeRange === 'month' || timeRange === 'year' ? 'Month' : 'Date',
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Ad Spend',
+                  },
+                  beginAtZero: true,
+                },
+              },
+            }}
+            height={350}
+          />
         )}
       </CardContent>
       <Divider />

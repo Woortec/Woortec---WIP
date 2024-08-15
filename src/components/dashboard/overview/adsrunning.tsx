@@ -1,4 +1,3 @@
-// TotalProfitContainer.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -29,7 +28,7 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
             <Typography variant="h4">{value}</Typography>
           </Stack>
           <Avatar sx={{ backgroundColor: '#D3346E', height: '56px', width: '56px' }}>
-          <ArrowUDownRight fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+            <ArrowUDownRight fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
           </Avatar>
         </Stack>
       </CardContent>
@@ -59,7 +58,10 @@ const TotalProfitContainer = () => {
           params: {
             access_token: accessToken,
             fields: 'status',
-            time_range: { since: startDate?.toISOString().split('T')[0], until: endDate?.toISOString().split('T')[0] },
+            time_range: JSON.stringify({
+              since: startDate?.toISOString().split('T')[0], 
+              until: endDate?.toISOString().split('T')[0]
+            }),
           },
         });
 
@@ -82,6 +84,7 @@ const TotalProfitContainer = () => {
 
 export default TotalProfitContainer;
 
+// Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {
   const itemStr = localStorage.getItem(key);
   if (!itemStr) {
