@@ -82,7 +82,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       if (token && storedUserId) {
         setAccessToken(token);
         setUserId(storedUserId);
-        fetchAdAccounts(token);
+        fetchAdAccounts(storedUserId, token);
         fetchPages(token);
       }
       if (storedAdAccount) {
@@ -101,9 +101,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     initializeState();
   }, []);
 
-  const fetchAdAccounts = (token: string) => {
+  const fetchAdAccounts = (userId: string, token: string) => {
     if ((window as any).FB) {
-      (window as any).FB.api('/me/adaccounts', { access_token: token }, (response: any) => {
+      const apiPath = `/${userId}/adaccounts?fields=id,name`;
+      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
           console.log('Fetched ad accounts:', accounts);
@@ -140,7 +141,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setUserId(userId);
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        fetchAdAccounts(accessToken);
+        fetchAdAccounts(userId, accessToken); // Pass userId to fetchAdAccounts
         fetchPages(accessToken);
         setModalOpen(true);
       } else {
