@@ -76,8 +76,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccount = getItemWithExpiry('fbAdAccount');
-      const storedPage = getItemWithExpiry('fbPage');
+      const storedAdAccount = getItemWithExpiry('fbAdAccount'); // This should be an object { id, name }
+      const storedPage = getItemWithExpiry('fbPage'); // This should be an object { id, name }
       console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
       if (token && storedUserId) {
         setAccessToken(token);
@@ -86,10 +86,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(token);
       }
       if (storedAdAccount) {
-        setSelectedAdAccount(storedAdAccount);
+        setSelectedAdAccount(storedAdAccount); // Directly use the stored object
       }
       if (storedPage) {
-        setSelectedPage(storedPage);
+        setSelectedPage(storedPage); // Directly use the stored object
       }
     };
 
@@ -158,7 +158,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccount', selectedAccount, 30 * 60 * 1000); // Store both id and name
     }
     setModalOpen(false);
   };
@@ -168,7 +168,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Page selected:', selectedPage);
     setSelectedPage(selectedPage);
     if (selectedPage) {
-      setItemWithExpiry('fbPage', selectedPage, 30 * 60 * 1000);
+      setItemWithExpiry('fbPage', selectedPage, 30 * 60 * 1000); // Store both id and name
     }
     setPageModalOpen(false);
   };
@@ -194,7 +194,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           <FacebookIcon className={styles.cardIcon} />
           <div className={styles.cardContent}>
             <Typography variant="body1">
-              {selectedAdAccount.name} <br /> {selectedAdAccount.id}
+              {selectedAdAccount.name}
             </Typography>
           </div>
           <IconButton onClick={handleRemoveSelection} className={styles.removeButton}>
@@ -215,7 +215,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         <Card className={styles.card}>
           <div className={styles.cardContent}>
             <Typography variant="body1">
-              {selectedPage.name} <br /> {selectedPage.id}
+              {selectedPage.name}
             </Typography>
           </div>
           <IconButton onClick={() => setSelectedPage(null)} className={styles.removeButton}>
