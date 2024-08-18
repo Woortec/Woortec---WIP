@@ -1,5 +1,3 @@
-/// api.ts
-
 import axios from 'axios';
 
 export const getItemWithExpiry = (key: string) => {
@@ -40,7 +38,7 @@ export const fetchAdData = async () => {
 
   try {
     const accountResponse = await axios.get(
-      `https://graph.facebook.com/v19.0/${adAccountId}`,
+      `https://graph.facebook.com/v20.0/${adAccountId}`,
       {
         params: {
           access_token: accessToken,
@@ -51,7 +49,7 @@ export const fetchAdData = async () => {
     const adCurrency = accountResponse.data.currency;
 
     const response = await axios.get(
-      `https://graph.facebook.com/v19.0/${adAccountId}/adsets`,
+      `https://graph.facebook.com/v20.0/${adAccountId}/adsets`,
       {
         params: {
           access_token: accessToken,
@@ -67,7 +65,7 @@ export const fetchAdData = async () => {
     }, {});
 
     const insightsResponse = await axios.get(
-      `https://graph.facebook.com/v19.0/${adAccountId}/insights`,
+      `https://graph.facebook.com/v20.0/${adAccountId}/insights`,
       {
         params: {
           access_token: accessToken,
@@ -78,39 +76,66 @@ export const fetchAdData = async () => {
       }
     );
 
-    const insights = insightsResponse.data.data.map((insight: any) => ({
-      ...insight,
-      name: adSetNames[insight.adset_id],
+    const insights = await Promise.all(insightsResponse.data.data.map(async (insight: any) => {
+      // Fetch ad creatives using the ad account and ad set ID
+      const adCreativeResponse = await axios.get(
+        `https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`,
+        {
+          params: {
+            access_token: accessToken,
+            fields: 'object_story_spec{link_data{image_hash}},image_hash',
+            ad_set_id: insight.adset_id, // Include ad_set_id to filter results
+          },
+        }
+      );
+
+      const adCreative = adCreativeResponse.data.data.find((creative: any) => creative.object_story_spec?.link_data?.image_hash);
+      console.log('Ad Creative Data:', adCreative); // Log the full creative object
+
+      let imageUrl = null;
+
+      // Extract the image hash from the ad creative
+      const imageHash = adCreative?.object_story_spec?.link_data?.image_hash || adCreative?.image_hash;
+
+      if (imageHash) {
+        // Fetch the permanent image URL using the image hash
+        const imageResponse = await axios.get(
+          `https://graph.facebook.com/v20.0/${adAccountId}/adimages`,
+          {
+            params: {
+              access_token: accessToken,
+              hashes: [imageHash],
+              fields: 'url',
+            },
+          }
+        );
+
+        const imagesData = imageResponse.data.data;
+        if (imagesData.length > 0 && imagesData[0].url) {
+          imageUrl = imagesData[0].url;
+        }
+      }
+
+      // If no image_hash, fallback to other available fields
+      if (!imageUrl && adCreative?.object_story_spec?.link_data?.picture) {
+        imageUrl = adCreative.object_story_spec.link_data.picture;
+      }
+
+      if (imageUrl && !imageUrl.includes('width')) {
+        // Optionally append width and height parameters if not already present
+        imageUrl = `${imageUrl}&width=1200&height=1200`;
+      }
+
+      return {
+        ...insight,
+        name: adSetNames[insight.adset_id],
+        imageUrl: imageUrl,
+      };
     }));
 
     return { adData: insights, currency: adCurrency };
   } catch (error) {
     console.error('Error fetching ad set data:', error);
     return { adData: [], currency: 'USD' };
-  }
-};
-
-export const fetchAdSetDetail = async (adSetId: string) => {
-  const accessToken = getItemWithExpiry('fbAccessToken');
-
-  if (!accessToken) {
-    console.error('Access token not found');
-    return null;
-  }
-
-  try {
-    const response = await axios.get(
-      `https://graph.facebook.com/v19.0/${adSetId}`,
-      {
-        params: {
-          access_token: accessToken,
-          fields: 'id,name,cpm,cpc,impressions,spend', // Add any other fields you want
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching ad set detail:', error);
-    return null;
   }
 };

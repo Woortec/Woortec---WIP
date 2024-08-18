@@ -84,3 +84,32 @@
   border: none;
   cursor: pointer;
 }
+.datePickerContainer {
+  display: flex;
+  align-items: center;
+}
+
+.todayButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 0;
+  cursor: pointer;
+  border-radius: 0 0 4px 4px;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  height: 40px; /* Adjust height if needed */
+}
+
+.todayButton:hover {
+  background-color: #0056b3;
+}
+
+.customHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}

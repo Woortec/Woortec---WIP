@@ -1,5 +1,3 @@
-'use client';
-
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -26,19 +24,19 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
     const today = new Date();
 
     switch (newPreset) {
-      case 'day':
-        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29));
+      case 'Today':
+        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 0));
         setEndDate(today);
         break;
-      case 'week':
+      case 'This Week':
         setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
         setEndDate(today);
         break;
-      case 'month':
+      case 'This Month':
         setStartDate(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
         setEndDate(today);
         break;
-      case 'year':
+      case 'This Year':
         setStartDate(new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()));
         setEndDate(today);
         break;
@@ -47,10 +45,15 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
     }
   };
 
+  const setTodayAsEndDate = () => {
+    const today = new Date();
+    setEndDate(today);
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.toggleButtonGroup}>
-        {['day', 'week', 'month', 'year'].map((label) => (
+        {['Today', 'This Week', 'This Month', 'This Year'].map((label) => (
           <button
             key={label}
             className={`${styles.toggleButton} ${preset === label ? styles.selected : ''}`}
@@ -90,6 +93,13 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
                 />
               }
               dateFormat="dd MMM yyyy"
+              renderCustomHeader={({ monthDate }) => (
+                <div className={styles.customHeader}>
+                  <button className={styles.todayButton} onClick={setTodayAsEndDate}>
+                    TODAY
+                  </button>
+                </div>
+              )}
             />
           </div>
           <button className={styles.iconButton}>

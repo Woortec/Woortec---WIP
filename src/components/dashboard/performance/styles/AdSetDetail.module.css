@@ -64,19 +64,20 @@
     font-weight: 600;
     color: #1c252a;
   }
-  
-  .metricValue {
-    font-family: Poppins, sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin-top: 8px;
-  }
-  
   .adSetDescription {
     font-family: Poppins, sans-serif;
     font-size: 14px;
     color: #333;
     margin-top: 24px;
   }
+  .metricValue {
+    color: black; /* Ensure the text color contrasts with the background */
+    font-size: 16px; /* Ensure the font size is visible */
+    font-weight: bold; /* Make sure it's not accidentally hidden */
+  }
   
+  .adCreative {
+    max-width: 100%; /* Ensures it scales with container */
+    height: 500px; /* Maintains aspect ratio */
+    object-fit: cover; /* Ensures the image covers the container */
+  }

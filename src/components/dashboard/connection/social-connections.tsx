@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Stack, Card, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Button, Stack, Card, Typography, IconButton } from '@mui/material';
 import { Facebook as FacebookIcon, Close as CloseIcon } from '@mui/icons-material';
 import type { SxProps } from '@mui/system';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
 import styles from './styles/Connect.module.css';
 
-const setItemWithExpiry = (key: string, value: string, ttl: number) => {
+const setItemWithExpiry = (key: string, value: any, ttl: number) => {
   const now = new Date();
   const item = {
     value: value,
@@ -86,10 +86,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(token);
       }
       if (storedAdAccount) {
-        setSelectedAdAccount({ id: storedAdAccount, name: '' });
+        setSelectedAdAccount(storedAdAccount);
       }
       if (storedPage) {
-        setSelectedPage({ id: storedPage, name: '' });
+        setSelectedPage(storedPage);
       }
     };
 
@@ -158,7 +158,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbAdAccount', selectedAccount, 30 * 60 * 1000);
     }
     setModalOpen(false);
   };
@@ -168,7 +168,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Page selected:', selectedPage);
     setSelectedPage(selectedPage);
     if (selectedPage) {
-      setItemWithExpiry('fbPage', selectedPage.id, 30 * 60 * 1000);
+      setItemWithExpiry('fbPage', selectedPage, 30 * 60 * 1000);
     }
     setPageModalOpen(false);
   };

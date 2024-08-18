@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { fetchAdSetDetail } from './api'; // Import your API call for fetching ad set details
+import { fetchAdData } from './api'; // Import the fetchAdData function
 import styles from './styles/AdSetDetail.module.css'; // Ensure the correct path to your CSS file
 
 interface AdSetDetailProps {
@@ -15,7 +15,8 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
 
   useEffect(() => {
     const getAdSetDetail = async () => {
-      const detail = await fetchAdSetDetail(adSetId); // Fetch ad set details from API
+      const { adData } = await fetchAdData(); // Fetch all ad data
+      const detail = adData.find((ad: any) => ad.adset_id === adSetId); // Find the specific ad set by ID
       setAdSetDetail(detail);
       setLoading(false);
     };
@@ -24,6 +25,10 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
 
   if (loading) {
     return <CircularProgress />;
+  }
+
+  if (!adSetDetail) {
+    return <Typography>No data available</Typography>;
   }
 
   return (
@@ -35,7 +40,9 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
         </IconButton>
       </Box>
       <Box className={styles.adSetDetailContent}>
-        <Box className={styles.imagePlaceholder} />
+        {adSetDetail?.imageUrl && (
+          <img src={adSetDetail.imageUrl} alt={`${adSetDetail?.name} Creative`} className={styles.adCreative} />
+        )}
         <Box className={styles.metricsContainer}>
           <Box className={styles.metricCard}>
             <Typography className={styles.metricLabel}>CPC</Typography>
@@ -55,9 +62,6 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
           </Box>
         </Box>
       </Box>
-      <Typography className={styles.adSetDescription}>
-        Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place. Say goodbye to the hassle of switching between different platforms and hello to a streamlined and efficient ad management experience.
-      </Typography>
     </Box>
   );
 };
