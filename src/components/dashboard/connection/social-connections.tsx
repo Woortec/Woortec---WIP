@@ -76,7 +76,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccount = getItemWithExpiry('fbAdAccount'); // This should be an object { id, name }
+      const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+      const storedAdAccount = getItemWithExpiry('fbAdAccountObj'); // This will store the object { id, name }
       const storedPage = getItemWithExpiry('fbPage'); // This should be an object { id, name }
       console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
       
@@ -87,8 +88,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(storedUserId, token); // Pass the token and userId after ensuring they are strings
       }
       
-      if (storedAdAccount) {
-        setSelectedAdAccount(storedAdAccount); // Directly use the stored object
+      if (storedAdAccountId) {
+        setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
       }
       if (storedPage) {
         setSelectedPage(storedPage); // Directly use the stored object
@@ -120,10 +121,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const fetchPages = (userId: string, token: string) => {
     if ((window as any).FB) {
-      console.log("Fetching pages for userId:", userId, "with token:", token); // Debugging
+      console.log("Fetching pages for userId:", userId, "with token:", token);
   
-      // Use the userId in the API path to get the accounts associated with the user
-      const apiPath = `/me/accounts`;  // Correct usage of userId
+      const apiPath = `/me/accounts`;
       
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
@@ -149,8 +149,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setUserId(userId);
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
-        fetchAdAccounts(userId, accessToken); // Pass userId to fetchAdAccounts
-        fetchPages(userId, accessToken); // Pass userId and token to fetchPages
+        fetchAdAccounts(userId, accessToken);
+        fetchPages(userId, accessToken);
         setModalOpen(true);
       } else {
         console.error('User cancelled login or did not fully authorize.');
@@ -168,7 +168,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     console.log('Ad account selected:', selectedAccount);
     setSelectedAdAccount(selectedAccount);
     if (selectedAccount) {
-      setItemWithExpiry('fbAdAccount', selectedAccount, 30 * 60 * 1000); // Store both id and name
+      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000); // Store only the id
+      setItemWithExpiry('fbAdAccountObj', selectedAccount, 30 * 60 * 1000); // Store the full object with id and name
     }
     setModalOpen(false);
   };
@@ -188,6 +189,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setSelectedAdAccount(null);
     setSelectedPage(null);
     localStorage.removeItem('fbAdAccount');
+    localStorage.removeItem('fbAdAccountObj');
     localStorage.removeItem('fbAccessToken');
     localStorage.removeItem('fbUserId');
     localStorage.removeItem('fbPage');
