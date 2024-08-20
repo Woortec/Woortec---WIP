@@ -79,12 +79,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       const storedAdAccount = getItemWithExpiry('fbAdAccount'); // This should be an object { id, name }
       const storedPage = getItemWithExpiry('fbPage'); // This should be an object { id, name }
       console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
-      if (token && storedUserId) {
+      
+      if (typeof token === 'string' && typeof storedUserId === 'string') {
         setAccessToken(token);
         setUserId(storedUserId);
         fetchAdAccounts(storedUserId, token);
-        fetchPages(token);
+        fetchPages(storedUserId, token); // Pass the token and userId after ensuring they are strings
       }
+      
       if (storedAdAccount) {
         setSelectedAdAccount(storedAdAccount); // Directly use the stored object
       }
@@ -116,9 +118,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
-  const fetchPages = (token: string) => {
+  const fetchPages = (userId: string, token: string) => {
     if ((window as any).FB) {
-      (window as any).FB.api('/${userId}/accounts', { access_token: token }, (response: any) => {
+      console.log("Fetching pages for userId:", userId, "with token:", token); // Debugging
+  
+      // Use the userId in the API path to get the accounts associated with the user
+      const apiPath = `/${userId}/accounts`;  // Correct usage of userId
+      
+      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
           console.log('Fetched pages:', pages);
@@ -129,6 +136,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       });
     }
   };
+  
 
   const handleFacebookLogin = () => {
     if (!isSdkLoaded) return;
@@ -142,13 +150,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
         setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
         fetchAdAccounts(userId, accessToken); // Pass userId to fetchAdAccounts
-        fetchPages(accessToken);
+        fetchPages(userId, accessToken); // Pass userId and token to fetchPages
         setModalOpen(true);
       } else {
         console.error('User cancelled login or did not fully authorize.');
       }
     }, { scope: 'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights' });
   };
+  
 
   const handleModalClose = () => {
     setModalOpen(false);
