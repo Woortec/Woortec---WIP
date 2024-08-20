@@ -105,7 +105,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if ((window as any).FB) {
-      const apiPath = `/${userId}/adaccounts?fields=id,name`;
+      const apiPath = `/me/adaccounts?fields=id,name`;
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
@@ -123,7 +123,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       console.log("Fetching pages for userId:", userId, "with token:", token); // Debugging
   
       // Use the userId in the API path to get the accounts associated with the user
-      const apiPath = `/${userId}/accounts`;  // Correct usage of userId
+      const apiPath = `/me/accounts`;  // Correct usage of userId
       
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
