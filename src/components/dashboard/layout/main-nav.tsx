@@ -43,11 +43,6 @@ export function MainNav(): React.JSX.Element {
          <SearchBar />
        {/* Include the new SearchBar component */}
         <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-          <Tooltip title="Contacts">
-            <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
-              <UsersIcon />
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
               <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>

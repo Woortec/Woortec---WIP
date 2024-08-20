@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid'; // Use stable Grid instead of Unstable_Grid2
 import BudgetContainer from '@/components/dashboard/overview/budget';
 import { Sales } from '@/components/dashboard/overview/adspend';
 import TotalCostPerMessageContainer from '@/components/dashboard/overview/cpm';
@@ -18,19 +18,19 @@ export default function Page(): React.JSX.Element {
   return (
     <DateProvider>
       <Grid container spacing={2}>
-        <Grid lg={3} sm={6} xs={12}>
+        <Grid item lg={3} md={6} xs={12}>
           <BudgetContainer startDate={startDate} endDate={endDate} />
         </Grid>
-        <Grid lg={3} sm={6} xs={12}>
+        <Grid item lg={3} md={6} xs={12}>
           <TotalImpressionsContainer />
         </Grid>
-        <Grid lg={3} sm={6} xs={12}>
+        <Grid item lg={3} md={6} xs={12}>
           <TotalCostPerMessageContainer />
         </Grid>
-        <Grid lg={3} sm={6} xs={12}>
-        <TotalProfitContainer />
+        <Grid item lg={3} md={6} xs={12}>
+          <TotalProfitContainer />
         </Grid>
-        <Grid lg={12} xs={12}>
+        <Grid item lg={12} xs={12}>
           <DatePickerComponent
             startDate={startDate}
             endDate={endDate}
@@ -38,10 +38,10 @@ export default function Page(): React.JSX.Element {
             setEndDate={setEndDate}
           />
         </Grid>
-        <Grid lg={8} xs={12}>
-          <Sales timeRange={`custom`} startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
+        <Grid item lg={8} xs={12}>
+          <Sales timeRange="custom" startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
         </Grid>
-        <Grid lg={4} md={6} xs={12}>
+        <Grid item lg={4} md={6} xs={12}>
           <TotalReach sx={{ height: '570px' }} />
         </Grid>
       </Grid>

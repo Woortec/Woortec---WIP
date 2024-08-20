@@ -10,6 +10,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowSquareUpRight as ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Drawer from '@mui/material/Drawer';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -21,40 +24,27 @@ import { navIcons } from './nav-icons';
 
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  return (
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
     <Box
       sx={{
-        '--SideNav-background': '#FFFFFF', // White background color
-        '--SideNav-color': '#333333', // Darker shade for text
-        '--NavItem-color': '#333333', // Same as SideNav-color
-        '--NavItem-hover-background': '#F0F0F0', // Light grey for hover
-        '--NavItem-active-background': '#E0E0E0', // Slightly darker grey for active
-        '--NavItem-active-color': '#333333', // Same as text color
-        '--NavItem-disabled-color': '#A0A4A8', // Neutral disabled color
-        '--NavItem-icon-color': '#333333', // Same as text color
-        '--NavItem-icon-active-color': '#333333', // Same as text color for active items
-        '--NavItem-icon-disabled-color': '#A0A4A8', // Neutral disabled icon color
         bgcolor: 'var(--SideNav-background)',
         color: 'var(--SideNav-color)',
-        display: { xs: 'none', lg: 'flex' },
+        display: 'flex',
         flexDirection: 'column',
-        height: '98%',
-        left: 19,
-        maxWidth: '100%',
-        borderRadius: '12px',
-        position: 'fixed',
-        scrollbarWidth: 'none',
-        top: 8,
-        width: '365px', // Adjust width to be smaller
-        zIndex: 'var(--SideNav-zIndex)',
-        '&::-webkit-scrollbar': { display: 'none' },
-        borderRight: '1px solid #E0E0E0', // Add border on the right for separation
+        height: '100%',
+        width: 340, // Adjust width for mobile drawer
+        p: 2, // Adjust padding to reduce space
       }}
     >
-      <Stack spacing={2} sx={{ p: 3 }}>
+      <Stack spacing={2} sx={{ p: 2, alignItems: 'center' }}> {/* Reduced padding and center-aligned items */}
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex', justifyContent: 'center' }}>
-          <Logo color="light" height={70} width={122} />
+          <Logo color="light" height={60} width={110} /> {/* Reduced logo size */}
         </Box>
         <Box
           sx={{
@@ -66,25 +56,96 @@ export function SideNav(): React.JSX.Element {
           }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography color="#333333" variant="body2">
-              Workspace
-            </Typography>
-            <Typography color="inherit" variant="subtitle1">
+            <Typography color="var(--mui-palette-neutral-400)" variant="body2" sx={{ textAlign: 'center' }}> {/* Centered text */}
               Woortec
             </Typography>
           </Box>
           <CaretUpDownIcon />
         </Box>
       </Stack>
-      <Divider sx={{ borderColor: '#E0E0E0' }} />
-      <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
+      <Divider sx={{ borderColor: '#E0E0E0', my: 1 }} /> {/* Adjusted margin */}
+      <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}> {/* Reduced padding */}
         {renderNavItems({ pathname, items: navItems })}
       </Box>
-      <Stack spacing={2} sx={{ p: '12px' }}>
+      <Stack spacing={1} sx={{ p: 1 }}>
         <div>
+          {/* Add any additional items or actions here */}
         </div>
       </Stack>
     </Box>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger icon */}
+      <IconButton
+        aria-label="open drawer"
+        onClick={handleDrawerToggle}
+        edge="start"
+        sx={{
+          display: { lg: 'none', xs: 'inline-flex' },
+          position: 'fixed',
+          top: 16,
+          left: 15,
+          zIndex: 1300, // Ensure it stays on top
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
+      
+      {/* Desktop side nav */}
+      <Box
+        sx={{
+          '--SideNav-background': '#FFFFFF',
+          '--SideNav-color': '#333333',
+          '--NavItem-color': '#333333',
+          '--NavItem-hover-background': '#F0F0F0',
+          '--NavItem-active-background': '#E0E0E0',
+          '--NavItem-active-color': '#333333',
+          '--NavItem-disabled-color': '#A0A4A8',
+          '--NavItem-icon-color': '#333333',
+          '--NavItem-icon-active-color': '#333333',
+          '--NavItem-icon-disabled-color': '#A0A4A8',
+          bgcolor: 'var(--SideNav-background)',
+          color: 'var(--SideNav-color)',
+          display: { xs: 'none', lg: 'flex' },
+          flexDirection: 'column',
+          height: '98%',
+          left: 19,
+          maxWidth: '100%',
+          borderRadius: '12px',
+          position: 'fixed',
+          scrollbarWidth: 'none',
+          top: 8,
+          width: '357px', // Reduced width for the sidebar
+          zIndex: 'var(--SideNav-zIndex)',
+          '&::-webkit-scrollbar': { display: 'none' },
+          borderRight: '1px solid #E0E0E0',
+          p: 2, // Reduced padding to compact the sidebar
+        }}
+      >
+        {drawer}
+      </Box>
+
+      {/* Mobile drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
+        sx={{
+          display: { xs: 'block', lg: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 256,
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
+    </>
   );
 }
 
@@ -136,7 +197,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           textDecoration: 'none',
           whiteSpace: 'nowrap',
           ...(disabled && {
-            bgcolor: '#F4F5F7', // Lighter background for disabled items
+            bgcolor: '#F4F5F7',
             color: 'var(--NavItem-disabled-color)',
             cursor: 'not-allowed',
           }),
@@ -155,7 +216,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
         <Box sx={{ flex: '1 1 auto' }}>
           <Typography
             component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '45px' }}
+            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }} // Adjusted line-height
           >
             {title}
           </Typography>
