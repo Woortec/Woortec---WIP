@@ -118,7 +118,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const fetchPages = (token: string) => {
     if ((window as any).FB) {
-      (window as any).FB.api('/me/accounts', { access_token: token }, (response: any) => {
+      (window as any).FB.api('/${userId}/accounts', { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
           console.log('Fetched pages:', pages);
