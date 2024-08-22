@@ -78,6 +78,7 @@
   
   .adCreative {
     max-width: 100%; /* Ensures it scales with container */
-    height: 500px; /* Maintains aspect ratio */
+    height: auto; /* Maintains aspect ratio */
+    margin-bottom: 10px;
     object-fit: cover; /* Ensures the image covers the container */
   }

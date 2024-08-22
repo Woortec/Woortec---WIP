@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { fetchAdData } from './api'; // Import the fetchAdData function
-import styles from './styles/AdSetDetail.module.css'; // Ensure the correct path to your CSS file
+import { fetchAdData } from './api';
+import styles from './styles/AdSetDetail.module.css';
 
 interface AdSetDetailProps {
   adSetId: string;
@@ -15,8 +15,13 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
 
   useEffect(() => {
     const getAdSetDetail = async () => {
-      const { adData } = await fetchAdData(); // Fetch all ad data
-      const detail = adData.find((ad: any) => ad.adset_id === adSetId); // Find the specific ad set by ID
+      const { adData } = await fetchAdData();
+      const detail = adData.find((ad: any) => ad.adset_id === adSetId);
+      if (detail) {
+        console.log(`Ad set detail found:`, detail);
+      } else {
+        console.error(`No ad set detail found for ID: ${adSetId}`);
+      }
       setAdSetDetail(detail);
       setLoading(false);
     };
@@ -42,6 +47,9 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
       <Box className={styles.adSetDetailContent}>
         {adSetDetail?.imageUrl && (
           <img src={adSetDetail.imageUrl} alt={`${adSetDetail?.name} Creative`} className={styles.adCreative} />
+        )}
+        {!adSetDetail?.imageUrl && (
+          <Typography className={styles.imageNotFound}>No image available for this ad set.</Typography>
         )}
         <Box className={styles.metricsContainer}>
           <Box className={styles.metricCard}>

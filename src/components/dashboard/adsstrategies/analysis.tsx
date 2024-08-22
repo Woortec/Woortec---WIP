@@ -11,7 +11,7 @@ import {
   Paper,
   Button,
 } from '@mui/material';
-import axios from 'axios';
+import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
 
 interface PlanInput {
   planRequestDate: string;
@@ -91,6 +91,7 @@ const Analysis: React.FC = () => {
   const [campaignDetails, setCampaignDetails] = useState<any>(null);
   const [planOutput, setPlanOutput] = useState<WeeklyPlan[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     const details = JSON.parse(localStorage.getItem('campaignDetails') || '{}');
@@ -124,48 +125,24 @@ const Analysis: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        const { campaignDetails, planOutput } = JSON.parse(content);
-        setCampaignDetails(campaignDetails);
-        setPlanOutput(planOutput);
-      };
-      reader.readAsText(file);
-    }
-  };
+const handleUpload = () => {
+    // Combine the campaign details and plan output
+    const campaignData = { campaignDetails, planOutput };
 
-  const handleUpload = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    const adAccountId = localStorage.getItem('adAccountId');
-    const pageId = localStorage.getItem('pageId');
+    // Log the data to ensure it has the correct values
+    console.log('Saving campaign data to localStorage:', campaignData);
 
-    if (!accessToken || !adAccountId || !pageId) {
-      alert('Missing credentials in localStorage.');
-      return;
-    }
+    // Save the current campaign data to local storage
+    localStorage.setItem('uploadedCampaign', JSON.stringify(campaignData));
 
-    try {
-      const response = await axios.post('/api/upload-campaign', {
-        accessToken,
-        adAccountId,
-        pageId,
-        planOutput: JSON.stringify({ campaignDetails, planOutput }),  // Send planOutput as a JSON string
-      });
-      console.log('Campaign uploaded successfully:', response.data);
-      alert('Campaign uploaded successfully!');
-    } catch (error) {
-      console.error('Error uploading campaign:', error);
-      alert('Failed to upload campaign.');
-    }
-  };
+    // Verify the data was saved correctly
+    const storedData = localStorage.getItem('uploadedCampaign');
+    console.log('Stored campaign data:', JSON.parse(storedData || '{}'));
 
-  if (!campaignDetails) {
-    return <div>Loading...</div>;
-  }
+    // Redirect to the campaign creation page
+    router.push('/dashboard/campaign');
+};
+
 
   const getHeaderClass = (index: number) => {
     if (index === planOutput.length - 2) {
@@ -201,6 +178,10 @@ const Analysis: React.FC = () => {
     }
   };
 
+  if (!campaignDetails) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className={styles.container}>
       <Paper className={styles.tableContainer}>
@@ -209,12 +190,6 @@ const Analysis: React.FC = () => {
           <div className={styles.actions}>
             <Button onClick={handleExport} className={styles.exportButton}>Export Campaign</Button>
             <Button onClick={handleUpload} className={styles.uploadButton}>Upload to Facebook</Button>
-            <input
-              accept="application/json"
-              type="file"
-              onChange={handleImport}
-              className={styles.importInput}
-            />
           </div>
         </div>
         <Box className={styles.expressLaunching}>
@@ -279,11 +254,6 @@ const Analysis: React.FC = () => {
             ))}
           </div>
         </div>
-        {!isSubscribed && (
-          <div className={styles.subscribeOverlay}>
-            <Button className={styles.subscribeButton} onClick={handleSubscribe}>Subscribe to View All Details</Button>
-          </div>
-        )}
       </Paper>
     </div>
   );

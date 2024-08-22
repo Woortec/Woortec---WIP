@@ -1,0 +1,83 @@
+{
+  "campaignDetails": {
+    "objective": "Drive sales",
+    "startDate": "2024-08-26",
+    "adLink": "http://localhost:3000/dashboard/adsstrategies",
+    "budget": "123",
+    "answerMessages": "yes"
+  },
+  "planOutput": [
+    {
+      "weekNumber": "W36",
+      "startingDay": "2024-09-01",
+      "plansWeek": "W1",
+      "investPercentage": 0.1,
+      "investAmount": 12,
+      "numberOfAds": 1,
+      "dailyBudgetPerAd": 1.7142857142857142,
+      "calculatedIncrease": 0,
+      "toMessages": 1,
+      "toLink": 0
+    },
+    {
+      "weekNumber": "W37",
+      "startingDay": "2024-09-08",
+      "plansWeek": "W2",
+      "investPercentage": 0.15,
+      "investAmount": 18,
+      "numberOfAds": 1,
+      "dailyBudgetPerAd": 2.5714285714285716,
+      "calculatedIncrease": 50,
+      "toMessages": 1,
+      "toLink": 0
+    },
+    {
+      "weekNumber": "W38",
+      "startingDay": "2024-09-15",
+      "plansWeek": "W3",
+      "investPercentage": 0.15,
+      "investAmount": 18,
+      "numberOfAds": 1,
+      "dailyBudgetPerAd": 2.5714285714285716,
+      "calculatedIncrease": 0,
+      "toMessages": 1,
+      "toLink": 0
+    },
+    {
+      "weekNumber": "W39",
+      "startingDay": "2024-09-22",
+      "plansWeek": "W4",
+      "investPercentage": 0.19,
+      "investAmount": 23,
+      "numberOfAds": 2,
+      "dailyBudgetPerAd": 1.6428571428571428,
+      "calculatedIncrease": 27.77777777777778,
+      "toMessages": 1,
+      "toLink": 1
+    },
+    {
+      "weekNumber": "W40",
+      "startingDay": "2024-09-29",
+      "plansWeek": "W5",
+      "investPercentage": 0.19,
+      "investAmount": 23,
+      "numberOfAds": 2,
+      "dailyBudgetPerAd": 1.6428571428571428,
+      "calculatedIncrease": 0,
+      "toMessages": 1,
+      "toLink": 1
+    },
+    {
+      "weekNumber": "W41",
+      "startingDay": "2024-10-06",
+      "plansWeek": "W6",
+      "investPercentage": 0.22,
+      "investAmount": 27,
+      "numberOfAds": 2,
+      "dailyBudgetPerAd": 1.9285714285714286,
+      "calculatedIncrease": 17.391304347826086,
+      "toMessages": 1,
+      "toLink": 1
+    }
+  ]
+}

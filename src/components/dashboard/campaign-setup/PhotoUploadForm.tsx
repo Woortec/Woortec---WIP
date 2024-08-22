@@ -3,22 +3,56 @@ import { Image, X } from '@phosphor-icons/react';
 import styles from './styles/PhotoUploadForm.module.css';
 import ProgressBar from './ProgressBar';
 
-const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void }> = ({ nextStep, prevStep }) => {
-  const [image, setImage] = useState<File | null>(null);
+const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void; setImage: (file: File | null) => void }> = ({ nextStep, prevStep, setImage }) => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null); // Reset error message on new upload attempt
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(file);
-      setImagePreviewUrl(URL.createObjectURL(file));
+      const selectedFile = e.target.files[0];
+      
+      // Validate file type
+      if (!selectedFile.type.startsWith('image/')) {
+        setError('Please upload a valid image file.');
+        return;
+      }
+      
+      setFile(selectedFile); // Store the file locally
+      setImage(selectedFile); // Pass the image file to the main component
+      setImagePreviewUrl(URL.createObjectURL(selectedFile)); // Set preview URL
+
+      // Optionally, save the image to localStorage or another persistent storage
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem('uploadedImage', reader.result as string); // Save the image as a data URL
+      };
+      reader.readAsDataURL(selectedFile);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle image upload logic here
-    nextStep();
+    if (file) {
+      nextStep(); // Proceed to the next step if an image is selected
+    } else {
+      setError('Please upload an image.');
+    }
+  };
+
+  const removeImage = () => {
+    setFile(null);
+    setImagePreviewUrl(null);
+    setImage(null);
+    localStorage.removeItem('uploadedImage'); // Remove the image from localStorage
+  };
+
+  const triggerFileInputClick = () => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
   };
 
   return (
@@ -35,18 +69,19 @@ const PhotoUploadForm: React.FC<{ nextStep: () => void; prevStep: () => void }> 
             Drag your image(s) to start uploading
             <input type="file" accept="image/*" onChange={handleChange} className={styles.input} required />
             <span>OR</span>
-            <button type="button" className={styles.uploadButton}>
+            <button type="button" className={styles.uploadButton} onClick={triggerFileInputClick}>
               Upload from your Desktop
             </button>
           </label>
-          {image && (
+          {error && <p className={styles.error}>{error}</p>}
+          {imagePreviewUrl && (
             <div className={styles.imagePreview}>
-              <img src={imagePreviewUrl as string} alt="Preview" className={styles.previewImage} />
+              <img src={imagePreviewUrl} alt="Preview" className={styles.previewImage} />
               <div className={styles.imageDetails}>
+                <button type="button" onClick={removeImage} className={styles.removeImageButton}>
+                  <X size={16} />
+                </button>
               </div>
-              <button type="button" onClick={() => { setImage(null); setImagePreviewUrl(null); }} className={styles.removeImageButton}>
-                <X size={16} />
-              </button>
             </div>
           )}
         </div>

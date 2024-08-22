@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+let cachedAdData: any[] = [];
+let cachedCurrency: string = 'USD';
+let dataFetched: boolean = false;
+
 export const getItemWithExpiry = (key: string) => {
   if (typeof window !== 'undefined') {
     const itemStr = localStorage.getItem(key);
@@ -26,7 +30,6 @@ export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
     localStorage.setItem(key, JSON.stringify(item));
   }
 };
-
 export const fetchAdData = async () => {
   const accessToken = getItemWithExpiry('fbAccessToken');
   const adAccountId = getItemWithExpiry('fbAdAccount');
@@ -77,7 +80,6 @@ export const fetchAdData = async () => {
     );
 
     const insights = await Promise.all(insightsResponse.data.data.map(async (insight: any) => {
-      // Fetch ad creatives using the ad account and ad set ID
       const adCreativeResponse = await axios.get(
         `https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`,
         {
@@ -94,17 +96,16 @@ export const fetchAdData = async () => {
 
       let imageUrl = null;
 
-      // Extract the image hash from the ad creative
       const imageHash = adCreative?.object_story_spec?.link_data?.image_hash || adCreative?.image_hash;
 
       if (imageHash) {
-        // Fetch the permanent image URL using the image hash
+        console.log(`Fetching image for hash: ${imageHash}`);
         const imageResponse = await axios.get(
           `https://graph.facebook.com/v20.0/${adAccountId}/adimages`,
           {
             params: {
               access_token: accessToken,
-              hashes: [imageHash],
+              hashes: [imageHash], // Pass the image hash as an array
               fields: 'url',
             },
           }
@@ -113,17 +114,10 @@ export const fetchAdData = async () => {
         const imagesData = imageResponse.data.data;
         if (imagesData.length > 0 && imagesData[0].url) {
           imageUrl = imagesData[0].url;
+          console.log(`Fetched image URL: ${imageUrl}`);
+        } else {
+          console.error('No image URL found for image hash:', imageHash);
         }
-      }
-
-      // If no image_hash, fallback to other available fields
-      if (!imageUrl && adCreative?.object_story_spec?.link_data?.picture) {
-        imageUrl = adCreative.object_story_spec.link_data.picture;
-      }
-
-      if (imageUrl && !imageUrl.includes('width')) {
-        // Optionally append width and height parameters if not already present
-        imageUrl = `${imageUrl}&width=1200&height=1200`;
       }
 
       return {
