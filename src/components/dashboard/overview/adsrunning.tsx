@@ -6,29 +6,29 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ArrowUDownRight } from '@phosphor-icons/react';
+import { Binoculars } from '@phosphor-icons/react';
 import axios from 'axios';
 import { useDate } from './date/DateContext';
 import type { SxProps } from '@mui/system';
 
-export interface TotalProfitProps {
+export interface TotalAdsProps {
   sx?: SxProps;
   value: string;
 }
 
-export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element {
+export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
   return (
     <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
       <CardContent>
         <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
           <Stack spacing={1}>
             <Typography color="text.secondary" variant="overline">
-              Total Ads Running
+              Total Ads
             </Typography>
             <Typography variant="h4">{value}</Typography>
           </Stack>
           <Avatar sx={{ backgroundColor: '#D3346E', height: '56px', width: '56px' }}>
-            <ArrowUDownRight fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+            <Binoculars fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
           </Avatar>
         </Stack>
       </CardContent>
@@ -36,8 +36,8 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
   );
 }
 
-const TotalProfitContainer = () => {
-  const [totalAds, setTotalAds] = useState('');
+const TotalAdsContainer = () => {
+  const [adsData, setAdsData] = useState('');
   const { startDate, endDate } = useDate();
 
   useEffect(() => {
@@ -54,20 +54,22 @@ const TotalProfitContainer = () => {
           throw new Error('Missing ad account ID');
         }
 
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/ads`, {
+        // Fetch all ads within the selected date range
+        const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/ads`, {
           params: {
             access_token: accessToken,
-            fields: 'status',
+            fields: 'effective_status',
             time_range: JSON.stringify({
-              since: startDate?.toISOString().split('T')[0], 
-              until: endDate?.toISOString().split('T')[0]
+              since: startDate?.toISOString().split('T')[0],
+              until: endDate?.toISOString().split('T')[0],
             }),
           },
         });
 
-        const activeAdsCount = response.data.data.filter((ad: any) => ad.status === 'ACTIVE').length;
+        const totalAdsCount = response.data.data.length;
+        const activeAdsCount = response.data.data.filter((ad: any) => ad.effective_status === 'ACTIVE').length;
 
-        setTotalAds(activeAdsCount.toString());
+        setAdsData(`${activeAdsCount} active ads out of ${totalAdsCount} ads`);
       } catch (error) {
         console.error('Error fetching total ads data:', error);
         if (axios.isAxiosError(error) && error.response) {
@@ -76,13 +78,15 @@ const TotalProfitContainer = () => {
       }
     };
 
-    fetchTotalAds();
+    if (startDate && endDate) {
+      fetchTotalAds();
+    }
   }, [startDate, endDate]);
 
-  return <TotalProfit value={totalAds} />;
+  return <TotalAds value={adsData} />;
 };
 
-export default TotalProfitContainer;
+export default TotalAdsContainer;
 
 // Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {

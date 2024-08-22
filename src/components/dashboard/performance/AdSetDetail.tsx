@@ -54,7 +54,7 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
         <Box className={styles.metricsContainer}>
           <Box className={styles.metricCard}>
             <Typography className={styles.metricLabel}>CPC</Typography>
-            <Typography className={styles.metricValue}>{adSetDetail?.cpc || 'N/A'}</Typography>
+            <Typography className={styles.metricValue}>{adSetDetail?.costPerMessagingConversationStarted || 'N/A'}</Typography>
           </Box>
           <Box className={styles.metricCard}>
             <Typography className={styles.metricLabel}>CPM</Typography>

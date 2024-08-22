@@ -22,10 +22,10 @@ export default function Page(): React.JSX.Element {
           <BudgetContainer startDate={startDate} endDate={endDate} />
         </Grid>
         <Grid item lg={3} md={6} xs={12}>
-          <TotalImpressionsContainer />
+          <TotalImpressionsContainer startDate={startDate} endDate={endDate} />
         </Grid>
         <Grid item lg={3} md={6} xs={12}>
-          <TotalCostPerMessageContainer />
+          <TotalCostPerMessageContainer startDate={startDate} endDate={endDate} />
         </Grid>
         <Grid item lg={3} md={6} xs={12}>
           <TotalProfitContainer />

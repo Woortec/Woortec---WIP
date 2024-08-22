@@ -11,7 +11,7 @@ import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { Target } from '@phosphor-icons/react';
 import axios from 'axios';
-import { useDate } from './date/DateContext'; // Import the useDate hook
+import dayjs from 'dayjs';
 
 export interface TotalImpressionsProps {
   diff?: number;
@@ -25,7 +25,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}> {/* Setting a fixed height */}
+    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
       <CardContent>
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
@@ -58,14 +58,17 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
   );
 }
 
-const TotalImpressionsContainer = () => {
+interface TotalImpressionsContainerProps {
+  startDate: Date | null;
+  endDate: Date | null;
+}
+
+const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsContainerProps) => {
   const [impressionsData, setImpressionsData] = useState<{ value: string; diff: number; trend: 'up' | 'down' }>({
     value: '',
     diff: 0,
     trend: 'up',
   });
-
-  const { startDate, endDate } = useDate(); // Use the useDate hook to get the start and end dates
 
   useEffect(() => {
     const fetchImpressions = async () => {
@@ -73,12 +76,8 @@ const TotalImpressionsContainer = () => {
         const accessToken = getItemWithExpiry('fbAccessToken');
         const adAccountId = getItemWithExpiry('fbAdAccount');
 
-        if (!accessToken) {
-          throw new Error('Missing access token');
-        }
-
-        if (!adAccountId) {
-          throw new Error('Missing ad account ID');
+        if (!accessToken || !adAccountId) {
+          throw new Error('Missing access token or ad account ID');
         }
 
         console.log('Access Token:', accessToken);
@@ -90,8 +89,8 @@ const TotalImpressionsContainer = () => {
             access_token: accessToken,
             fields: 'impressions',
             time_range: JSON.stringify({
-              since: startDate?.toISOString().split('T')[0],
-              until: endDate?.toISOString().split('T')[0],
+              since: dayjs(startDate).format('YYYY-MM-DD'),
+              until: dayjs(endDate).format('YYYY-MM-DD'),
             }),
           },
         });
@@ -106,6 +105,9 @@ const TotalImpressionsContainer = () => {
           (acc: number, item: any) => acc + parseInt(item.impressions, 10),
           0
         );
+
+        // Format the total impressions with commas as thousands separators
+        const formattedImpressions = new Intl.NumberFormat('en-US').format(totalImpressions);
 
         // Fetch the previous total impressions for comparison
         const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
@@ -131,7 +133,7 @@ const TotalImpressionsContainer = () => {
         const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
 
         setImpressionsData({
-          value: totalImpressions.toString(),
+          value: formattedImpressions,
           diff: Math.abs(diff),
           trend: trend,
         });
@@ -143,7 +145,9 @@ const TotalImpressionsContainer = () => {
       }
     };
 
-    fetchImpressions();
+    if (startDate && endDate) {
+      fetchImpressions();
+    }
   }, [startDate, endDate]); // Trigger the effect whenever the start or end date changes
 
   return <TotalImpressions {...impressionsData} />;

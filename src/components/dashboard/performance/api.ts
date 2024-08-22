@@ -30,6 +30,7 @@ export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
     localStorage.setItem(key, JSON.stringify(item));
   }
 };
+
 export const fetchAdData = async () => {
   const accessToken = getItemWithExpiry('fbAccessToken');
   const adAccountId = getItemWithExpiry('fbAdAccount');
@@ -72,8 +73,8 @@ export const fetchAdData = async () => {
       {
         params: {
           access_token: accessToken,
-          fields: 'adset_id,cpm,cpc,impressions,spend',
-          date_preset: 'last_30d',
+          fields: 'adset_id,cpm,cpc,impressions,spend,actions',
+          date_preset: 'last_7d',
           level: 'adset'
         },
       }
