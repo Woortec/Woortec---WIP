@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { fetchAdData } from './api';
+import { fetchAdData, createThread, addMessageToThread, createRun, waitForRunCompletion, getAIResponse } from './api';
 import styles from './styles/AdSetDetail.module.css';
 
 interface AdSetDetailProps {
@@ -12,18 +12,36 @@ interface AdSetDetailProps {
 const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
   const [adSetDetail, setAdSetDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [aiResponse, setAiResponse] = useState<string>('');
 
   useEffect(() => {
     const getAdSetDetail = async () => {
-      const { adData } = await fetchAdData();
-      const detail = adData.find((ad: any) => ad.adset_id === adSetId);
-      if (detail) {
-        console.log(`Ad set detail found:`, detail);
-      } else {
-        console.error(`No ad set detail found for ID: ${adSetId}`);
+      try {
+        const { adData } = await fetchAdData(); // Fetch ad data (cached if already fetched)
+        const detail = adData.find((ad: any) => ad.adset_id === adSetId);
+        if (detail) {
+          setAdSetDetail(detail);
+          if (!detail.aiGeneratedResponse) { // Avoid regenerating AI response if it already exists
+            const threadId = await createThread(); // Create a new thread
+            await addMessageToThread(threadId, detail); // Add a message to the thread
+            const runId = await createRun(threadId); // Attach the assistant to the thread
+            await waitForRunCompletion(threadId, runId); // Wait for run completion
+            const aiGeneratedResponse = await getAIResponse(threadId); // Get AI-generated response
+            detail.aiGeneratedResponse = aiGeneratedResponse || 'Failed to generate AI response.'; // Store response
+            setAiResponse(detail.aiGeneratedResponse);
+          } else {
+            setAiResponse(detail.aiGeneratedResponse); // Use cached AI response
+          }
+        } else {
+          console.error(`No ad set detail found for ID: ${adSetId}`);
+          setAiResponse('No ad set detail found.');
+        }
+      } catch (error) {
+        console.error('Error during thread, message addition, or run creation:', error);
+        setAiResponse('Failed to generate AI response. Please try again later.');
+      } finally {
+        setLoading(false); // Stop the loading indicator
       }
-      setAdSetDetail(detail);
-      setLoading(false);
     };
     getAdSetDetail();
   }, [adSetId]);
@@ -69,6 +87,28 @@ const AdSetDetail: React.FC<AdSetDetailProps> = ({ adSetId, onClose }) => {
             <Typography className={styles.metricValue}>{adSetDetail?.spend || 'N/A'}</Typography>
           </Box>
         </Box>
+      </Box>
+      <Box className={styles.aiResponseContainer}>
+        <Typography className={styles.aiResponseTitle}>Woortec Team Response:</Typography>
+        {aiResponse ? (
+          <Box className={styles.aiResponseContent}>
+            {aiResponse.split('\n').map((line, index) => (
+              <Typography key={index} component="div" style={{ marginBottom: '8px' }}>
+                {line.match(/^\d+\./) ? (
+                  <strong>{line}</strong>  // Numbered lines (metrics)
+                ) : line.startsWith('- ') ? (
+                  <ul style={{ marginLeft: '20px', listStyleType: 'disc' }}>
+                    <li>{line.substring(2)}</li>
+                  </ul>
+                ) : (
+                  line 
+                )}
+              </Typography>
+            ))}
+          </Box>
+        ) : (
+          <Typography className={styles.aiResponseContent}>Failed to generate AI response.</Typography>
+        )}
       </Box>
     </Box>
   );

@@ -77,8 +77,25 @@
   }
   
   .adCreative {
-    max-width: 100%; /* Ensures it scales with container */
+    max-width: 50%; /* Ensures it scales with container */
     height: auto; /* Maintains aspect ratio */
     margin-bottom: 10px;
     object-fit: cover; /* Ensures the image covers the container */
   }
+
+  .aiResponseContainer {
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .aiResponseTitle {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .aiResponseContent {
+    font-style: italic;
+  }
+  

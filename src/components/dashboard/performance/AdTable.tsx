@@ -37,7 +37,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
         <React.Fragment key={ad.adset_id}>
           <Box className={styles.tableRow} onClick={() => handleAdSetClick(ad.adset_id)}>
             <Box className={`${styles.tableCell} ${styles.tableCellFirst}`}>
-              <Typography className={styles.adSetName}>{`0${index + 1} ${ad.name}`}</Typography>
+              <Typography className={styles.adSetName}>{ad.name}</Typography> {/* Removed numbering */}
             </Box>
             <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.cpc, convertedThresholds.cpc, true) }}>
               <Typography className={`${styles.metricValue} ${ad.cpc <= convertedThresholds.cpc ? styles.goodMetric : styles.badMetric}`}>

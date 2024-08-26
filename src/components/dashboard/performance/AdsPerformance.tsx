@@ -1,6 +1,5 @@
 'use client'
 
-// AdsPerformance.tsx
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import BudgetInput from './BudgetInput';
