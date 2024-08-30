@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 
+
+
 import { createClient } from '../utils/supabase/server';
+
 
 export default async function middleware(req: any) {
   try {
@@ -19,9 +22,20 @@ export default async function middleware(req: any) {
       return NextResponse.next();
     }
 
-    return NextResponse.next();
+    const response = NextResponse.next();
+
+    // Set the Permissions-Policy header without the unrecognized 'ch-ua-form-factor'
+    response.headers.set('Permissions-Policy', 'geolocation=(self)'); // Example of a valid policy
+
+    return response;
   } catch (error) {
     console.log('error in middleware', error);
     return NextResponse.redirect(new URL('/error', req.url));
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable body parsing, so we can handle the raw request body
+  },
+};
