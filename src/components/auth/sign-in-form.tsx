@@ -197,7 +197,7 @@ export function SignInForm(): React.JSX.Element {
     }
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/sign-in`,
+        redirectTo: `https://app.woortec.com/auth/reset-password`,
       });
 
       if (error) {
