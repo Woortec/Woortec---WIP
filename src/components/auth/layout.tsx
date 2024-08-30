@@ -55,14 +55,6 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
               At Woortec, we organize the advertising investment process, with our integrated platform designed to simplify ad management, providing you with a centralized hub for all your campaigns.
             </Typography>
           </Stack>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Box
-              component="img"
-              alt="Woortec"
-              src="/assets/Woortec.png"
-              sx={{ height: 'auto', width: '100%', maxWidth: '600px' }}
-            />
-          </Box>
         </Stack>
       </Box>
     </Box>
