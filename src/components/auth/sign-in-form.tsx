@@ -34,6 +34,8 @@ export function SignInForm(): React.JSX.Element {
   const [password, setPassword] = React.useState<string>('');
   const [googleAuthError, setGoogleAuthError] = React.useState<string | null>(null);
   const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null);
+  const [resetPasswordError, setResetPasswordError] = React.useState<string | null>(null);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = React.useState<string | null>(null);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -186,6 +188,28 @@ export function SignInForm(): React.JSX.Element {
     }
   }, [supabase]);
   
+  const handleForgotPassword = async () => {
+    setResetPasswordError(null);
+    setResetPasswordSuccess(null);
+    if (!email) {
+      setErrors((prev) => ({ ...prev, email: 'Email is required to reset password' }));
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (error) {
+        setResetPasswordError(error.message);
+      } else {
+        setResetPasswordSuccess('Password reset email sent. Please check your inbox.');
+      }
+    } catch (error) {
+      console.error('Error sending reset password email:', error);
+      setResetPasswordError('An unexpected error occurred. Please try again.');
+    }
+  };
 
   return (
     <Stack spacing={4}>
@@ -233,9 +257,11 @@ export function SignInForm(): React.JSX.Element {
             {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
           </FormControl>
           <div>
-            <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
+            <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
               Forgot password?
             </Link>
+            {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
+            {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
           </div>
           {errors.root && <Alert color="error">{errors.root}</Alert>}
           <Button disabled={isPending} type="submit" variant="contained">

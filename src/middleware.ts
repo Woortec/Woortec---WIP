@@ -10,9 +10,11 @@ export default async function middleware(req: any) {
     const providerLogin = req.cookies.get('sb-uvhvgcrczfdfvoujarga-auth-token-code-verifier');
 
     const protectedPaths = ['/dashboard', '/private', '/settings', '/'];
+    const publicPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error'];
 
     const isRootPath = pathname === '/';
     const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
+    const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
     if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next();
@@ -20,14 +22,10 @@ export default async function middleware(req: any) {
     if (
       (isRootPath || isProtectedPath) &&
       !user &&
-      pathname !== '/auth/sign-in' &&
-      pathname !== '/error' &&
-      pathname !== '/auth/callback' &&
-      pathname !== '/auth/sign-up'
+      !isPublicPath
     ) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
     }
-
 
     const response = NextResponse.next();
 
