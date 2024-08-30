@@ -171,7 +171,7 @@ export const createThread = async (): Promise<string> => {
 export const addMessageToThread = async (threadId: string, adSetDetail: any): Promise<void> => {
   const prompt = `
   Analyze the following ad set metrics:
-  1. **CPC**: ${adSetDetail?.costPerMessagingConversationStarted || 'N/A'}
+  1. **CPC**: ${adSetDetail?.cpc || 'N/A'}
   2. **CPM**: ${adSetDetail?.cpm || 'N/A'}
   3. **Impressions**: ${adSetDetail?.impressions || 'N/A'}
   4. **Spent**: ${adSetDetail?.spend || 'N/A'}
