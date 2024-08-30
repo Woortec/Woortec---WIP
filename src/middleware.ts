@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-
-
-
 import { createClient } from '../utils/supabase/server';
-
 
 export default async function middleware(req: any) {
   try {
@@ -21,6 +17,17 @@ export default async function middleware(req: any) {
     if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next();
     }
+    if (
+      (isRootPath || isProtectedPath) &&
+      !user &&
+      pathname !== '/auth/sign-in' &&
+      pathname !== '/error' &&
+      pathname !== '/auth/callback' &&
+      pathname !== '/auth/sign-up'
+    ) {
+      return NextResponse.redirect(new URL('/auth/sign-in', req.url));
+    }
+
 
     const response = NextResponse.next();
 
@@ -33,9 +40,3 @@ export default async function middleware(req: any) {
     return NextResponse.redirect(new URL('/error', req.url));
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false, // Disable body parsing, so we can handle the raw request body
-  },
-};
