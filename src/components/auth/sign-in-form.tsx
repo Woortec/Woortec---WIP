@@ -160,15 +160,20 @@ export function SignInForm(): React.JSX.Element {
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
     console.log('Starting Facebook sign-in process');
-
+  
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          scopes: 'email,public_profile',  // Add scopes as needed
+          queryParams: {
+            response_type: 'code',  // Adding response_type as 'code'
+            config_id: '460931022938058',  // Replace with your actual config_id
+          },
         },
       });
-
+  
       if (error) {
         console.log('Facebook auth error', error);
         setFacebookAuthError(error.message);
@@ -180,6 +185,7 @@ export function SignInForm(): React.JSX.Element {
       setIsPending(false);
     }
   }, [supabase]);
+  
 
   return (
     <Stack spacing={4}>
