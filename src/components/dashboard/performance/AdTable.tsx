@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import AdSetDetail from './AdSetDetail'; // Import the new component
+import AdDetail from './AdSetDetail'; // Import the updated AdDetail component
 import { getColor, formatValue, getComment, getImpressionsComment, calculateSpentColor, calculateSpentComment, convertThresholds, calculateExpectedSpend } from './utils';
 import styles from './styles/AdTable.module.css';
 
@@ -14,30 +14,30 @@ interface AdTableProps {
 const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   const convertedThresholds = convertThresholds(currency);
   const expectedSpend = calculateExpectedSpend(budget, currency);
-  const [selectedAdSetId, setSelectedAdSetId] = useState<string | null>(null);
+  const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
 
-  const handleAdSetClick = (adSetId: string) => {
-    setSelectedAdSetId(selectedAdSetId === adSetId ? null : adSetId);
+  const handleAdClick = (adId: string) => {
+    setSelectedAdId(selectedAdId === adId ? null : adId);
   };
 
   const handleCloseDetail = () => {
-    setSelectedAdSetId(null);
+    setSelectedAdId(null);
   };
 
   return (
     <Box className={styles.adTableContainer}>
       <Box className={styles.tableHeader}>
-        <Box className={styles.tableHeaderCell}>AD SET NAMES</Box>
+        <Box className={styles.tableHeaderCell}>AD NAMES</Box>
         <Box className={styles.tableHeaderCell}>CPC</Box>
         <Box className={styles.tableHeaderCell}>CPM</Box>
         <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
         <Box className={styles.tableHeaderCell}>SPENT</Box>
       </Box>
       {adData.map((ad, index) => (
-        <React.Fragment key={ad.adset_id}>
-          <Box className={styles.tableRow} onClick={() => handleAdSetClick(ad.adset_id)}>
+        <React.Fragment key={ad.ad_id}>
+          <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
             <Box className={`${styles.tableCell} ${styles.tableCellFirst}`}>
-              <Typography className={styles.adSetName}>{ad.name}</Typography> {/* Removed numbering */}
+              <Typography className={styles.adName}>{ad.name}</Typography>
             </Box>
             <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.cpc, convertedThresholds.cpc, true) }}>
               <Typography className={`${styles.metricValue} ${ad.cpc <= convertedThresholds.cpc ? styles.goodMetric : styles.badMetric}`}>
@@ -80,9 +80,9 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
               </Tooltip>
             </Box>
           </Box>
-          {selectedAdSetId === ad.adset_id && (
+          {selectedAdId === ad.ad_id && (
             <Box className={styles.detailRow}>
-              <AdSetDetail adSetId={ad.adset_id} onClose={handleCloseDetail} />
+              <AdDetail adId={ad.ad_id} onClose={handleCloseDetail} />
             </Box>
           )}
         </React.Fragment>

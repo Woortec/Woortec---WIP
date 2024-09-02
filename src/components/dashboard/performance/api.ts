@@ -56,27 +56,27 @@ export const fetchAdData = async () => {
     });
     cachedCurrency = accountResponse.data.currency;
 
-    const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/adsets`, {
+    const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/ads`, {
       params: {
         access_token: accessToken,
         fields: 'id,name,status',
       },
     });
 
-    // Filter active ad sets
-    const activeAdSets = response.data.data.filter((adSet: any) => adSet.status === 'ACTIVE');
-    const adSetIds = activeAdSets.map((adSet: any) => adSet.id);
-    const adSetNames = activeAdSets.reduce((acc: { [key: string]: string }, adSet: any) => {
-      acc[adSet.id] = adSet.name;
+    // Filter active ads
+    const activeAds = response.data.data.filter((ad: any) => ad.status === 'ACTIVE');
+    const adIds = activeAds.map((ad: any) => ad.id);
+    const adNames = activeAds.reduce((acc: { [key: string]: string }, ad: any) => {
+      acc[ad.id] = ad.name;
       return acc;
     }, {});
 
     const insightsResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/insights`, {
       params: {
         access_token: accessToken,
-        fields: 'adset_id,cpm,cpc,impressions,spend,actions',
+        fields: 'ad_id,cpm,cpc,impressions,spend,actions',
         date_preset: 'last_7d',
-        level: 'adset',
+        level: 'ad',
         limit: 100,
       },
     });
@@ -89,7 +89,7 @@ export const fetchAdData = async () => {
             params: {
               access_token: accessToken,
               fields: 'object_story_spec{link_data{image_hash}},image_hash',
-              ad_set_id: insight.adset_id,
+              ad_id: insight.ad_id,
             },
           }
         );
@@ -122,7 +122,7 @@ export const fetchAdData = async () => {
 
         return {
           ...insight,
-          name: adSetNames[insight.adset_id],
+          name: adNames[insight.ad_id],
           imageUrl: imageUrl,
         };
       })
@@ -132,7 +132,7 @@ export const fetchAdData = async () => {
     dataFetched = true;
     return { adData: insights, currency: cachedCurrency };
   } catch (error) {
-    console.error('Error fetching ad set data:', error);
+    console.error('Error fetching ad data:', error);
     return { adData: [], currency: 'USD' };
   }
 };
