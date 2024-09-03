@@ -170,12 +170,6 @@ export const createThread = async (): Promise<string> => {
 
 export const addMessageToThread = async (threadId: string, adSetDetail: any): Promise<void> => {
   const prompt = `
-  Analyze the following ad set metrics:
-  1. **CPC**: ${adSetDetail?.cpc || 'N/A'}
-  2. **CPM**: ${adSetDetail?.cpm || 'N/A'}
-  3. **Impressions**: ${adSetDetail?.impressions || 'N/A'}
-  4. **Spent**: ${adSetDetail?.spend || 'N/A'}
-
   Provide detailed insights into the performance of the ad set. For each ad set metric, format the response with numbers and bullet points for each recommendation or insight. Do not include any citations or references in the response.
   `;
 
