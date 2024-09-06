@@ -22,7 +22,6 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import Stripe from 'stripe';
 import { z as zod } from 'zod';
-import axios from 'axios'; // Import axios for API calls
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
@@ -54,6 +53,7 @@ export function SignUpForm(): React.JSX.Element {
   const router = useRouter();
   const supabase = createClient();
   const { checkSession } = useUser();
+
   const [isPending, setIsPending] = React.useState<boolean>(false);
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
@@ -72,58 +72,66 @@ export function SignUpForm(): React.JSX.Element {
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true);
-
-      try {
-        // Check if the email is disposable using the API route
-        await axios.post('/api/check-email', { email: values.email });
-
-        const { data, error } = await supabase.auth.signUp({
-          email: values.email,
-          password: values.password,
-          options: {
-            data: {
-              firstName: values.firstName,
-              lastName: values.lastName,
-            },
-          },
-        });
-
-        if (error) {
-          setError('root', { type: 'server', message: error.message });
-          setIsPending(false);
-          return;
-        }
-
-        if (data) {
-          // Create a Stripe customer
-          const customer = await stripe.customers.create({
-            email: values.email,
-            name: `${values.firstName} ${values.lastName}`,
-          });
-
-          // Insert the user into the Supabase 'user' table
-          await supabase.from('user').insert([
-            {
-              email: data.user.user_metadata.email,
-              provider: data.user.app_metadata.provider,
-              uuid: data.user.user_metadata.sub,
-              firstName: data.user.user_metadata.firstName,
-              lastName: data.user.user_metadata.lastName,
-              customerId: customer.id, // Store the Stripe customer ID
-            },
-          ]);
-        }
-
-        alert('Please verify your email');
-
-        // Refresh the auth state
-        await checkSession?.();
-
-        router.refresh();
-      } catch (error) {
-        setError('email', { type: 'manual', message: 'Temporary email addresses are not allowed' });
+  
+      // Call the UserCheck API to validate the email
+      const emailCheckResponse = await fetch(`https://api.usercheck.com/email/${values.email}?key=YxppwgkhuJuAyYh489KyPALDXOlldowp`, {
+        method: 'GET',
+      });
+  
+      const emailCheckData = await emailCheckResponse.json();
+  
+      // Check if the email is disposable
+      if (emailCheckData.disposable) {
+        // Set an error message in the form and stop further execution
+        setError('email', { message: 'Temporary/disposable email addresses are not allowed' });
         setIsPending(false);
+        return; // Stop further execution
       }
+  
+      // Proceed with the sign-up if the email is not disposable
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            firstName: values.firstName,
+            lastName: values.lastName,
+          },
+        },
+      });
+  
+      if (error) {
+        console.log('error', error);
+        setError('root', { type: 'server', message: error.message });
+        setIsPending(false);
+        return;
+      }
+  
+      if (data) {
+        // Create a Stripe customer
+        const customer = await stripe.customers.create({
+          email: values.email,
+          name: `${values.firstName} ${values.lastName}`,
+        });
+  
+        // Insert the user into the Supabase 'user' table
+        await supabase.from('user').insert([
+          {
+            email: data.user.user_metadata.email,
+            provider: data.user.app_metadata.provider,
+            uuid: data.user.user_metadata.sub,
+            firstName: data.user.user_metadata.firstName,
+            lastName: data.user.user_metadata.lastName,
+            customerId: customer.id, // Store the Stripe customer ID
+          },
+        ]);
+      }
+  
+      alert('Please verify your email');
+  
+      // Refresh the auth state
+      await checkSession?.();
+      router.refresh();
     },
     [checkSession, router, setError, supabase]
   );
