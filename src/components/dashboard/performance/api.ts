@@ -170,7 +170,7 @@ export const createThread = async (): Promise<string> => {
 
 export const addMessageToThread = async (threadId: string, adSetDetail: any): Promise<void> => {
   const prompt = `
-  Provide detailed insights into the performance of the ad set. For each ad set metric, format the response with numbers and bullet points for each recommendation or insight. Do not include any citations or references in the response.
+  Provide insights into the performance of the ad set. For each ad set metric, format the response as a sentence. Do not include any citations or references in the response. Also make sure it's gonna be under 100 words
   `;
 
   try {

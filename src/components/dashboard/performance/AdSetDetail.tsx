@@ -55,39 +55,45 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   }
 
   return (
-    <Box className={styles.adDetailContainer}>
-      <Box className={styles.adDetailHeader}>
-        <Typography className={styles.adName}>{adDetail?.name}</Typography>
+    <Box className={styles.adSetDetailContainer}>
+      {/* Header Section */}
+      <Box className={styles.adSetDetailHeader}>
+        <Typography className={styles.adSetName}>{adDetail?.name}</Typography>
         <IconButton className={styles.closeButton} onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </Box>
-      <Box className={styles.adDetailContent}>
-        {adDetail?.imageUrl && (
-          <img src={adDetail.imageUrl} alt={`${adDetail?.name} Creative`} className={styles.adCreative} />
-        )}
-        {!adDetail?.imageUrl && (
-          <Typography className={styles.imageNotFound}>No image available for this ad.</Typography>
-        )}
-        <Box className={styles.metricsContainer}>
-          <Box className={styles.metricCard}>
-            <Typography className={styles.metricLabel}>CPC</Typography>
-            <Typography className={styles.metricValue}>{adDetail?.cpc || 'N/A'}</Typography>
+
+      {/* Main Content Section: Image and Metrics */}
+      <Box className={styles.adSetDetailContent}>
+        <img src={adDetail.imageUrl || '/path-to-placeholder-image.png'} alt="Ad Creative" className={styles.adCreative} />
+        
+        <Box className={styles.budgetContainer}>
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} green`}>CPC</div>
+
+            <div className={styles.budgetValue}> {adDetail?.cpc || 'N/A'}</div>
           </Box>
-          <Box className={styles.metricCard}>
-            <Typography className={styles.metricLabel}>CPM</Typography>
-            <Typography className={styles.metricValue}>{adDetail?.cpm || 'N/A'}</Typography>
+
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>CPM</div>
+            <div className={styles.budgetValue}> {adDetail?.cpm || 'N/A'}</div>
           </Box>
-          <Box className={styles.metricCard}>
-            <Typography className={styles.metricLabel}>Impressions</Typography>
-            <Typography className={styles.metricValue}>{adDetail?.impressions || 'N/A'}</Typography>
+          
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
+            <div className={styles.budgetValue}> {adDetail?.impressions  || 'N/A'}</div>
           </Box>
-          <Box className={styles.metricCard}>
-            <Typography className={styles.metricLabel}>Spent</Typography>
-            <Typography className={styles.metricValue}>{adDetail?.spend || 'N/A'}</Typography>
+
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
+            <div className={styles.budgetValue}> {adDetail?.spend || 'N/A'}</div>
           </Box>
+          {/* Add more budget cards as needed */}
         </Box>
       </Box>
+
+      {/* AI Response Section */}
       <Box className={styles.aiResponseContainer}>
         <Typography className={styles.aiResponseTitle}>Woortec Team Response:</Typography>
         {aiResponse ? (
@@ -95,7 +101,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
             {aiResponse.split('\n').map((line, index) => (
               <Typography key={index} component="div" style={{ marginBottom: '8px' }}>
                 {line.match(/^\d+\./) ? (
-                  <strong>{line}</strong>  // Numbered lines (metrics)
+                  <strong>{line}</strong> // Numbered lines (metrics)
                 ) : line.startsWith('- ') ? (
                   <ul style={{ marginLeft: '20px', listStyleType: 'disc' }}>
                     <li>{line.substring(2)}</li>

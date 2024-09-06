@@ -9,140 +9,163 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
+  ArcElement,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { SxProps } from '@mui/material';
+import { Doughnut } from 'react-chartjs-2';
+import { Box, SxProps } from '@mui/material';
+import dayjs from 'dayjs';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export interface TotalReachProps {
   sx?: SxProps;
+  startDate: Date | null;
+  endDate: Date | null;
 }
 
-export function TotalReach({ sx }: TotalReachProps): React.JSX.Element {
+export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.JSX.Element {
+  const [totalReach, setTotalReach] = useState<number>(0);
+  const [clicks, setClicks] = useState<number>(0);
+  const [messagesStarted, setMessagesStarted] = useState<number>(0);
   const [chartData, setChartData] = useState({
-    labels: [],
+    labels: ['Clicks', 'Messages Started'],
     datasets: [
       {
-        label: 'Reach',
-        data: [],
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        fill: false,
+        data: [0, 0],
+        backgroundColor: ['#4BC0C0', '#364FC7'],
+        hoverBackgroundColor: ['#4BC0C0', '#364FC7'],
+        borderWidth: 0,
       },
     ],
   });
 
-  useEffect(() => {
-    const fetchTotalReach = async () => {
-      try {
-        const accessToken = getItemWithExpiry('fbAccessToken');
-        const adAccountId = getItemWithExpiry('fbAdAccount');
+  const fetchTotalReach = async () => {
+    try {
+      const accessToken = getItemWithExpiry('fbAccessToken');
+      const adAccountId = getItemWithExpiry('fbAdAccount');
 
-        if (!accessToken) {
-          throw new Error('Missing access token');
-        }
-
-        if (!adAccountId) {
-          throw new Error('Missing ad account ID');
-        }
-
-        console.log('Access Token:', accessToken);
-        console.log('Ad Account ID:', adAccountId);
-
-        // Fetch the total reach for the ad account
-        const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
-          params: {
-            access_token: accessToken,
-            fields: 'impressions',
-            date_preset: 'this_year',
-          },
-        });
-
-        console.log('Response data:', response.data);
-
-        if (!response.data.data || response.data.data.length === 0) {
-          throw new Error('No data found for the given ad account ID');
-        }
-
-        const reachData = response.data.data;
-        const labels = reachData.map((dataPoint: any) => dataPoint.date_stop);
-        const data = reachData.map((dataPoint: any) => dataPoint.impressions);
-
-        setChartData({
-          labels: labels,
-          datasets: [
-            {
-              label: 'Reach',
-              data: data,
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              fill: false,
-            },
-          ],
-        });
-      } catch (error) {
-        console.error('Error fetching total reach data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-          console.error('Response data:', error.response.data);
-        } else {
-          console.error(error);
-        }
+      if (!accessToken) {
+        throw new Error('Missing access token');
       }
-    };
 
-    fetchTotalReach();
-  }, []);
+      if (!adAccountId) {
+        throw new Error('Missing ad account ID');
+      }
+
+      // Fetch the total reach, clicks, and messages started based on the user's selected date range
+      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+        params: {
+          access_token: accessToken,
+          fields: 'impressions,clicks,actions',
+          time_range: JSON.stringify({
+            since: dayjs(startDate).format('YYYY-MM-DD'),
+            until: dayjs(endDate).format('YYYY-MM-DD'),
+          }),
+        },
+      });
+
+      const reachData = response.data.data;
+
+      if (!reachData || reachData.length === 0) {
+        throw new Error('No data found for the given ad account ID');
+      }
+
+      // Process the response to get total impressions, clicks, and messages started
+      const totalReach = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.impressions), 0);
+      const totalClicks = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.clicks), 0);
+
+      const totalMessagesStarted = reachData.reduce((sum: number, dataPoint: any) => {
+        const messageAction = dataPoint.actions?.find(
+          (action: any) => action.action_type === 'onsite_conversion.messaging_conversation_started_7d'
+        );
+        return sum + (messageAction ? parseInt(messageAction.value) : 0);
+      }, 0);
+
+      setTotalReach(totalReach);
+      setClicks(totalClicks);
+      setMessagesStarted(totalMessagesStarted);
+
+      setChartData({
+        labels: ['Clicks', 'Messages Started'],
+        datasets: [
+          {
+            data: [totalClicks, totalMessagesStarted],
+            backgroundColor: ['#486A75', '#E46A6A'],
+            hoverBackgroundColor: ['#4BC0C0', '#CF366C'],
+            borderWidth: 0,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Error fetching total reach data:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchTotalReach();
+    }
+  }, [startDate, endDate]);
+
+  // Format numbers using Intl.NumberFormat
+  const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
 
   return (
-    <Card sx={{ ...sx, height: '570px', overflow: 'hidden' }}> {/* Setting a fixed height */}
+    <Card sx={{ ...sx, height: '570px', overflow: 'hidden' }}>
       <CardHeader title="Total Reach" />
-      <CardContent>
-        <Stack spacing={2}>
-          <Line data={chartData} />
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-            {chartData.datasets[0].data.map((item, index) => (
-              <Stack key={chartData.labels[index]} spacing={1} sx={{ alignItems: 'center' }}>
-                <Typography variant="h6">{chartData.labels[index]}</Typography>
-                <Typography color="text.secondary" variant="subtitle2">
-                  {item}
-                </Typography>
-              </Stack>
-            ))}
-          </Stack>
+      <CardContent sx={{ position: 'relative' }}>
+        <Stack spacing={2} alignItems="center">
+          <Box sx={{ position: 'relative', display: 'inline-block' }}>
+            <Doughnut
+              data={chartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: function (tooltipItem) {
+                        const value = tooltipItem.raw as number;
+                        return `${tooltipItem.label}: ${new Intl.NumberFormat('en-US').format(value)}`;
+                      },
+                    },
+                  },
+                },
+                cutout: '70%',
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h5" component="div">{formatNumber(totalReach)}</Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Total Reach
+              </Typography>
+            </Box>
+          </Box>
         </Stack>
       </CardContent>
     </Card>
   );
 }
+
 // Utility function to get item from localStorage with expiry
 function getItemWithExpiry(key: string): string | null {
   const itemStr = localStorage.getItem(key);
-  // If the item doesn't exist, return null
   if (!itemStr) {
     return null;
   }
   try {
     const item = JSON.parse(itemStr);
     const now = new Date();
-    // Compare the expiry time of the item with the current time
     if (now.getTime() > item.expiry) {
-      // If the item is expired, delete the item from storage and return null
       localStorage.removeItem(key);
       return null;
     }

@@ -1,101 +1,112 @@
 .adSetDetailContainer {
-    padding: 24px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 900px;
-    margin: 24px auto;
-  }
-  
-  .adSetDetailHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-  
-  .adSetName {
-    font-family: Poppins, sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: #1c252a;
-  }
-  
-  .closeButton {
-    background-color: transparent;
-    color: #1c252a;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .adSetDetailContent {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  
-  .imagePlaceholder {
-    width: 300px;
-    height: 300px;
-    background-color: #e0e0e0;
-    border-radius: 8px;
-  }
-  
-  .metricsContainer {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-left: 24px;
-  }
-  
-  .metricCard {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .metricLabel {
-    font-family: Poppins, sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1c252a;
-  }
-  .adSetDescription {
-    font-family: Poppins, sans-serif;
-    font-size: 14px;
-    color: #333;
-    margin-top: 24px;
-  }
-  .metricValue {
-    color: black; /* Ensure the text color contrasts with the background */
-    font-size: 16px; /* Ensure the font size is visible */
-    font-weight: bold; /* Make sure it's not accidentally hidden */
-  }
-  
-  .adCreative {
-    max-width: 50%; /* Ensures it scales with container */
-    height: auto; /* Maintains aspect ratio */
-    margin-bottom: 10px;
-    object-fit: cover; /* Ensures the image covers the container */
-  }
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 1000px; /* Increase max-width to accommodate the layout */
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  .aiResponseContainer {
-    border-top: 1px solid #ccc;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  .aiResponseTitle {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .aiResponseContent {
-    font-style: italic;
-  }
-  
+.adSetDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.adSetName {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1c252a;
+}
+
+.closeButton {
+  background-color: transparent;
+  color: #1c252a;
+  border: none;
+  cursor: pointer;
+}
+
+.adSetDetailContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 24px; /* Space between content and AI response */
+}
+
+.adCreative {
+  width: 300px;
+  height: 300px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 24px;
+  background-color: #e0e0e0;
+}
+
+.budgetContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.budgetCard {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.budgetIcon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.budgetLabel {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #777777;
+}
+
+.budgetValue {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c252a;
+}
+
+.green { color: #00bfa5; }
+.red { color: #f44336; }
+.yellow { color: #ffeb3b; }
+
+.aiResponseContainer {
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 24px;
+  background-color: #f9f9f9;
+  width: 100%; /* Ensure it spans the full width */
+}
+
+.aiResponseTitle {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.aiResponseContent {
+  font-style: italic;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}

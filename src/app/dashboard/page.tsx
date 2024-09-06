@@ -42,7 +42,7 @@ export default function Page(): React.JSX.Element {
           <Sales timeRange="custom" startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
         </Grid>
         <Grid item lg={4} md={6} xs={12}>
-          <TotalReach sx={{ height: '570px' }} />
+          <TotalReach startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
         </Grid>
       </Grid>
     </DateProvider>
