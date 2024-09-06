@@ -22,6 +22,7 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import Stripe from 'stripe';
 import { z as zod } from 'zod';
+import disposableDomains from 'disposable-email-domains'; // Import the list of disposable domains
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
@@ -36,7 +37,12 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
-  email: zod.string().min(1, { message: 'Email is required' }).email(),
+  email: zod.string().min(1, { message: 'Email is required' }).email().refine((email) => {
+    const emailDomain = email.split('@')[1];
+    return !disposableDomains.includes(emailDomain);
+  }, {
+    message: 'Temporary email addresses are not allowed',
+  }),
   password: zod
     .string()
     .min(8, { message: 'Password should be at least 8 characters' })
