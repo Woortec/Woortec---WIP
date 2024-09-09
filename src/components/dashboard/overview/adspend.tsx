@@ -62,73 +62,77 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
     try {
       const accessToken = getItemWithExpiry('fbAccessToken');
       const adAccountId = getItemWithExpiry('fbAdAccount');
-  
+
       if (!accessToken) {
         throw new Error('Missing access token');
       }
-  
+
       if (!adAccountId) {
         throw new Error('Missing ad account ID');
       }
-  
+
       let timeIncrement = '1';
       let labelFormat = 'ddd, DD MMM'; // Default to daily format
-  
+
       const start = dayjs(startDate);
-      const end = dayjs(endDate);
+      const end = dayjs(); // Set end date to today if the time range is 'This Month'
       const monthDifference = end.diff(start, 'month');
-  
+
       if (monthDifference >= 2) {
         timeIncrement = 'monthly'; // Use monthly aggregation if the difference is 2 months or more
         labelFormat = 'MMM'; // Format to show short month names like "Jan", "Feb", etc.
       }
-  
+
+      // Log the start and end date to make sure they are correct
+      console.log(`Fetching data from ${getFormattedDate(start.toDate())} to ${getFormattedDate(end.toDate())}`);
+
       const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'spend,date_start',
           time_range: JSON.stringify({
             since: getFormattedDate(startDate),
-            until: getFormattedDate(endDate),
+            until: getFormattedDate(end.toDate()), // Ensure we fetch data until today's date
           }),
-          time_increment: timeIncrement, // Adjust time increment based on date range
+          time_increment: timeIncrement,
+          limit: 50, // Adjust time increment based on date range
         },
       });
-  
+
       console.log('Raw Response Data:', response.data);
-  
+
       if (response.data.data && response.data.data.length > 0) {
         const labels: string[] = [];
         const data: number[] = [];
-  
+
         if (timeIncrement === 'monthly') {
           // Handle data with monthly aggregation
           const monthlyData = new Array(12).fill(0); // Initialize array to store spend data for each month
-  
+
           response.data.data.forEach((item: any) => {
             const month = dayjs(item.date_start).month(); // Get month index (0-11)
             monthlyData[month] += parseFloat(item.spend); // Accumulate spend for each month
           });
-  
+
           labels.push(...shortMonths); // Add short month names to labels
           data.push(...monthlyData); // Add monthly spend data to the chart
         } else {
           // Handle daily data or other increments
           let currentDate = start;
-  
+
           while (currentDate.isBefore(end) || currentDate.isSame(end, 'day')) {
             const formattedDate = currentDate.format(labelFormat);
             labels.push(formattedDate);
-  
+
             const matchingDay = response.data.data.find((item: any) =>
               dayjs(item.date_start).isSame(currentDate, 'day')
             );
-  
+
             data.push(matchingDay ? parseFloat(matchingDay.spend) : 0);
             currentDate = currentDate.add(1, 'day');
           }
         }
-  
+
         const formattedData: ChartData = {
           labels,
           datasets: [{
@@ -153,6 +157,8 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
       setLoading(false);
     }
   };
+
+
   
 
   useEffect(() => {

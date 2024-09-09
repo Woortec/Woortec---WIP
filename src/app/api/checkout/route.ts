@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
         },
       ],
       customer: customerId,
-      success_url: `https://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `https://localhost:3000/cancel`,
+      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/cancel`,
     });
     return NextResponse.json({ url: session.url }, { status: 200 });
   } catch (error) {

@@ -19,23 +19,34 @@ const Page = () => {
 
   // Function to check or create Stripe Customer
   const handleStripeCustomer = async (email: string) => {
-    const { data: userRecord, error: fetchError } = await supabase
-      .from('user')
-      .select('customerId')
-      .eq('email', email)
-      .single();
+    try {
+      // Fetch the user record to see if they already have a Stripe customerId
+      const { data: userRecord, error: fetchError } = await supabase
+        .from('user')
+        .select('customerId')
+        .eq('email', email)
+        .single();
 
-    if (fetchError || !userRecord?.customerId) {
+      // If no error and user has a customerId, do nothing
+      if (userRecord?.customerId) {
+        console.log(`User already has Stripe customerId: ${userRecord.customerId}`);
+        return;
+      }
+
+      // If no customerId exists, create a new Stripe customer
       const customer = await stripe.customers.create({
         email,
       });
 
+      // Update the user with the new Stripe customer ID
       await supabase
         .from('user')
         .update({ customerId: customer.id })
         .eq('email', email);
 
       console.log(`Stripe customer created with ID: ${customer.id}`);
+    } catch (error) {
+      console.error('Error handling Stripe customer:', error);
     }
   };
 
@@ -72,7 +83,7 @@ const Page = () => {
                   },
                 ]);
 
-                console.log('Inserting user into database...');
+                console.log('Inserting new user into database...');
                 if (!insertError) {
                   // After inserting the new user, create a Stripe customer for them
                   await handleStripeCustomer(email);

@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -10,12 +9,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { priceId, customerId } = req.body;
 
-    if (!priceId) {
-      res.status(400).json({ error: 'Price ID is required' });
-      return;
+    // Check if both priceId and customerId are provided
+    if (!priceId || !customerId) {
+      return res.status(400).json({ error: 'Price ID and Customer ID are required' });
     }
-    console.log('customerId', customerId);
+
     try {
+      // Create a checkout session for subscription
       const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
         line_items: [
@@ -24,18 +24,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             quantity: 1,
           },
         ],
-        customer: 'cus_QNRWNyMpd0ZEob',
+        customer: customerId, // Use the customerId passed from the request
         success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/cancel`,
       });
-      console.log(session.url);
-      res.status(200).json({ url: session.url });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: err });
+
+      // Respond with the session URL for the client to redirect to
+      return res.status(200).json({ url: session.url });
+    } catch (error) {
+      console.error('Stripe Checkout Session Error:', error);
+      return res.status(500).json({ error: 'An error occurred while creating the checkout session' });
     }
   } else {
+    // If it's not a POST request, return method not allowed
     res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
+    return res.status(405).end('Method Not Allowed');
   }
 }
