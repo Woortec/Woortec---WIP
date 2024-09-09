@@ -163,30 +163,31 @@ export function SignInForm(): React.JSX.Element {
   React.useEffect(() => {
     const handleAuthCallback = async () => {
       const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-
+  
       if (error) {
         setGoogleAuthError('Failed to get session data after Google sign-in.');
         setIsPending(false);
         return;
       }
-
+  
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-
-        // Handle Stripe customer creation/check
+  
+        // Ensure that we create or check Stripe customer after OAuth sign-in
         await handleStripeCustomer(data.session.user.email);
-
+  
         await handleKlaviyoSubscription(data.session.user.email);
         await checkSession?.();
         router.push('/');
       }
     };
-
+  
     if (window.location.pathname === '/auth/callback') {
       handleAuthCallback();
     }
   }, [supabase, checkSession, router]);
+  
 
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);

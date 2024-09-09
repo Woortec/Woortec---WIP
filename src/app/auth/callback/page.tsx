@@ -3,13 +3,41 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import Stripe from 'stripe';
 
 import { createClient } from '../../../../utils/supabase/client';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20',
+});
 
 const Page = () => {
   const supabase = createClient();
   const router = useRouter();
   const [insert, setInsert] = useState(true);
+
+  // Function to check or create Stripe Customer
+  const handleStripeCustomer = async (email: string) => {
+    const { data: userRecord, error: fetchError } = await supabase
+      .from('user')
+      .select('customerId')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !userRecord?.customerId) {
+      const customer = await stripe.customers.create({
+        email,
+      });
+
+      await supabase
+        .from('user')
+        .update({ customerId: customer.id })
+        .eq('email', email);
+
+      console.log(`Stripe customer created with ID: ${customer.id}`);
+    }
+  };
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -43,17 +71,17 @@ const Page = () => {
                     lastName: fullName,
                   },
                 ]);
-                console.log('Calling');
-                console.log(2);
+
+                console.log('Inserting user into database...');
+                if (!insertError) {
+                  // After inserting the new user, create a Stripe customer for them
+                  await handleStripeCustomer(email);
+                }
                 setInsert(false);
               }
-              // if (data) {
-              //   setInsert(false);
-              //   console.log(1);
-              //   router.push('/');
-              //   console.log(data);
-              // }
             } else {
+              // If the user exists, check if they have a Stripe customer ID
+              await handleStripeCustomer(email);
               router.push('/');
             }
           }
@@ -65,13 +93,13 @@ const Page = () => {
       }
     };
     handleAuth();
-  }, []);
+  }, [insert]);
 
   useEffect(() => {
     if (!insert) {
       router.push('/');
     }
-  });
+  }, [insert, router]);
 
   return <div>Loading...</div>;
 };
