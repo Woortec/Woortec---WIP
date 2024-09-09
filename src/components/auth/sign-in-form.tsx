@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import * as React from 'react';
 import RouterLink from 'next/link';
@@ -16,11 +16,17 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
+import Stripe from 'stripe';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20',
+});
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -51,8 +57,8 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to handle Klaviyo subscription
   const handleKlaviyoSubscription = async (email: string, password?: string) => {
-    console.log(`Subscribing email: ${email} to Klaviyo`);
     try {
       const response = await fetch('/api/sign-in', {
         method: 'POST',
@@ -71,6 +77,28 @@ export function SignInForm(): React.JSX.Element {
       }
     } catch (error) {
       console.error('Error during Klaviyo subscription:', error);
+    }
+  };
+
+  // Function to check or create Stripe Customer
+  const handleStripeCustomer = async (email: string) => {
+    const { data: userRecord, error: fetchError } = await supabase
+      .from('user')
+      .select('customerId')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !userRecord?.customerId) {
+      const customer = await stripe.customers.create({
+        email,
+      });
+
+      await supabase
+        .from('user')
+        .update({ customerId: customer.id })
+        .eq('email', email);
+
+      console.log(`Stripe customer created with ID: ${customer.id}`);
     }
   };
 
@@ -96,7 +124,11 @@ export function SignInForm(): React.JSX.Element {
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-        await handleKlaviyoSubscription(data.user.email, password); // Subscribe profile in Klaviyo
+
+        // Handle Stripe customer creation/check
+        await handleStripeCustomer(data.user.email);
+
+        await handleKlaviyoSubscription(data.user.email, password);
         await checkSession?.();
         router.push('/');
       }
@@ -109,7 +141,6 @@ export function SignInForm(): React.JSX.Element {
 
   const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
-    console.log('Starting Google sign-in process');
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -120,12 +151,10 @@ export function SignInForm(): React.JSX.Element {
       });
 
       if (error) {
-        console.log('Google auth error', error);
         setGoogleAuthError(error.message);
         setIsPending(false);
       }
     } catch (error) {
-      console.error('Error during Google sign-in:', error);
       setGoogleAuthError('An unexpected error occurred. Please try again.');
       setIsPending(false);
     }
@@ -136,19 +165,19 @@ export function SignInForm(): React.JSX.Element {
       const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
 
       if (error) {
-        console.error('Error getting session from URL:', error);
         setGoogleAuthError('Failed to get session data after Google sign-in.');
         setIsPending(false);
         return;
       }
 
       if (data?.session) {
-        console.log('Google sign-in successful, session data:', data.session);
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
 
-        console.log('Subscribing to Klaviyo');
-        await handleKlaviyoSubscription(data.session.user.email); // Subscribe profile in Klaviyo without password
+        // Handle Stripe customer creation/check
+        await handleStripeCustomer(data.session.user.email);
+
+        await handleKlaviyoSubscription(data.session.user.email);
         await checkSession?.();
         router.push('/');
       }
@@ -161,33 +190,30 @@ export function SignInForm(): React.JSX.Element {
 
   const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
     setIsPending(true);
-    console.log('Starting Facebook sign-in process');
-  
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          scopes: 'email,public_profile',  // Add scopes as needed
+          scopes: 'email,public_profile',
           queryParams: {
-            response_type: 'code',  // Adding response_type as 'code'
-            config_id: '460931022938058',  // Replace with your actual config_id
+            response_type: 'code',
+            config_id: '460931022938058', // Replace with your actual config_id
           },
         },
       });
-  
+
       if (error) {
-        console.log('Facebook auth error', error);
         setFacebookAuthError(error.message);
         setIsPending(false);
       }
     } catch (error) {
-      console.error('Error during Facebook sign-in:', error);
       setFacebookAuthError('An unexpected error occurred. Please try again.');
       setIsPending(false);
     }
   }, [supabase]);
-  
+
   const handleForgotPassword = async () => {
     setResetPasswordError(null);
     setResetPasswordSuccess(null);
@@ -206,14 +232,13 @@ export function SignInForm(): React.JSX.Element {
         setResetPasswordSuccess('Password reset email sent. Please check your inbox.');
       }
     } catch (error) {
-      console.error('Error sending reset password email:', error);
       setResetPasswordError('An unexpected error occurred. Please try again.');
     }
   };
 
   return (
     <Stack spacing={4}>
-      <GTM gtmId="GTM-NXB5KPF3" /> {/* Add GTM component here */}
+      <GTM gtmId="GTM-NXB5KPF3" />
       <Stack spacing={1}>
         <Typography variant="h4">Sign in</Typography>
         <Typography color="text.secondary" variant="body2">

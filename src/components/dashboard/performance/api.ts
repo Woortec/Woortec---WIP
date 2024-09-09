@@ -169,16 +169,13 @@ export const createThread = async (): Promise<string> => {
 };
 
 export const addMessageToThread = async (threadId: string, adSetDetail: any): Promise<void> => {
-  const prompt = `
-  Provide insights into the performance of the ad set. For each ad set metric, format the response as a sentence. Do not include any citations or references in the response. Also make sure it's gonna be under 100 words
-  `;
-
   try {
+    // Sending the data to the assistant, no need to specify the prompt as it's already set up in your OpenAI account
     await axios.post(
-      `https://api.openai.com/v1/threads/${threadId}/messages`,
+      `https://api.openai.com/v1/threads/${threadId}/messages`, // Make sure to use the thread ID of your assistant
       {
         role: 'user',
-        content: prompt,
+        content: JSON.stringify(adSetDetail), // The assistant will use the predefined prompt and format response
       },
       {
         headers: {
@@ -192,6 +189,7 @@ export const addMessageToThread = async (threadId: string, adSetDetail: any): Pr
     throw new Error('Failed to add message to thread');
   }
 };
+
 
 export const createRun = async (threadId: string): Promise<string> => {
   if (cachedRunId) return cachedRunId!; // Non-null assertion

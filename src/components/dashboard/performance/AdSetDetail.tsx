@@ -71,7 +71,6 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
         <Box className={styles.budgetContainer}>
           <Box className={styles.budgetCard}>
             <div className={`${styles.budgetIcon} green`}>CPC</div>
-
             <div className={styles.budgetValue}> {adDetail?.cpc || 'N/A'}</div>
           </Box>
 
