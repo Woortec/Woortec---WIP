@@ -8,11 +8,11 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ArrowSquareUpRight as ArrowSquareUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareUpRight';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
+import Joyride, { Step } from 'react-joyride'; // Import Joyride
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -25,6 +25,38 @@ import { navIcons } from './nav-icons';
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [runTour, setRunTour] = React.useState(false); // State for running the tour
+  const [isMounted, setIsMounted] = React.useState(false); // State to track when the component is mounted
+
+  // Automatically start the tour when the component is mounted
+  React.useEffect(() => {
+    setIsMounted(true); // Mark component as mounted
+    setRunTour(true);
+  }, []);
+
+  // Define steps for the Joyride tour
+  const steps: Step[] = [
+    {
+      target: '.overview-step',
+      content: 'Here is the overview section.',
+    },
+    {
+      target: '.ads-performance-step',
+      content: 'Here you can view the ads performance.',
+    },
+    {
+      target: '.ads-strategies-step',
+      content: 'This section contains the ads strategies.',
+    },
+    {
+      target: '.campaign-setup-step',
+      content: 'Set up your campaign from here.',
+    },
+    {
+      target: '.social-connections-step',
+      content: 'Manage your social connections here.',
+    },
+  ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -42,9 +74,14 @@ export function SideNav(): React.JSX.Element {
         p: 2, // Adjust padding to reduce space
       }}
     >
-      <Stack spacing={2} sx={{ p: 2, alignItems: 'center' }}> {/* Reduced padding and center-aligned items */}
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex', justifyContent: 'center' }}>
-          <Logo color="light" height={60} width={110} /> {/* Reduced logo size */}
+      <Stack spacing={2} sx={{ p: 2, alignItems: 'center' }}>
+        <Box
+          component={RouterLink}
+          href={paths.home}
+          className="logo-step"
+          sx={{ display: 'inline-flex', justifyContent: 'center' }}
+        >
+          <Logo color="light" height={60} width={110} />
         </Box>
         <Box
           sx={{
@@ -56,28 +93,45 @@ export function SideNav(): React.JSX.Element {
           }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography color="var(--mui-palette-neutral-400)" variant="body2" sx={{ textAlign: 'center' }}> {/* Centered text */}
+            <Typography color="var(--mui-palette-neutral-400)" variant="body2" sx={{ textAlign: 'center' }}>
               Woortec
             </Typography>
           </Box>
           <CaretUpDownIcon />
         </Box>
       </Stack>
-      <Divider sx={{ borderColor: '#E0E0E0', my: 1 }} /> {/* Adjusted margin */}
-      <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}> {/* Reduced padding */}
+      <Divider sx={{ borderColor: '#E0E0E0', my: 1 }} />
+
+      <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
-      <Stack spacing={1} sx={{ p: 1 }}>
-        <div>
-          {/* Add any additional items or actions here */}
-        </div>
-      </Stack>
     </Box>
   );
 
   return (
     <>
-      {/* Mobile hamburger icon */}
+      {/* Joyride component for the tour */}
+      {isMounted && (
+        <Joyride
+          steps={steps}
+          run={runTour}
+          continuous={true}
+          scrollToFirstStep={true}
+          showProgress={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              zIndex: 10000,
+            },
+          }}
+          callback={(data) => {
+            if (data.status === 'finished' || data.status === 'skipped') {
+              setRunTour(false); // Reset tour when finished or skipped
+            }
+          }}
+        />
+      )}
+
       <IconButton
         aria-label="open drawer"
         onClick={handleDrawerToggle}
@@ -87,25 +141,17 @@ export function SideNav(): React.JSX.Element {
           position: 'fixed',
           top: 16,
           left: 15,
-          zIndex: 1300, // Ensure it stays on top
+          zIndex: 1300,
         }}
       >
         <MenuIcon />
       </IconButton>
-      
+
       {/* Desktop side nav */}
       <Box
         sx={{
           '--SideNav-background': '#FFFFFF',
           '--SideNav-color': '#333333',
-          '--NavItem-color': '#333333',
-          '--NavItem-hover-background': '#F0F0F0',
-          '--NavItem-active-background': '#E0E0E0',
-          '--NavItem-active-color': '#333333',
-          '--NavItem-disabled-color': '#A0A4A8',
-          '--NavItem-icon-color': '#333333',
-          '--NavItem-icon-active-color': '#333333',
-          '--NavItem-icon-disabled-color': '#A0A4A8',
           bgcolor: 'var(--SideNav-background)',
           color: 'var(--SideNav-color)',
           display: { xs: 'none', lg: 'flex' },
@@ -115,13 +161,12 @@ export function SideNav(): React.JSX.Element {
           maxWidth: '100%',
           borderRadius: '12px',
           position: 'fixed',
-          scrollbarWidth: 'none',
           top: 8,
-          width: '357px', // Reduced width for the sidebar
+          width: '357px',
           zIndex: 'var(--SideNav-zIndex)',
           '&::-webkit-scrollbar': { display: 'none' },
           borderRight: '1px solid #E0E0E0',
-          p: 2, // Reduced padding to compact the sidebar
+          p: 2,
         }}
       >
         {drawer}
@@ -173,6 +218,18 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
 
+  // Define nav item classes for Joyride steps
+  const navItemClasses: { [key: string]: string } = {
+    Overview: 'overview-step',
+    'Ads Performance': 'ads-performance-step',
+    'Ads Strategies': 'ads-strategies-step',
+    'Campaign Setup': 'campaign-setup-step',
+    'Social Connections': 'social-connections-step',
+  };
+
+  // Make sure title is a valid string before using it as a key
+  const className = typeof title === 'string' ? navItemClasses[title] || '' : '';
+
   return (
     <li>
       <Box
@@ -184,6 +241,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
               rel: external ? 'noreferrer' : undefined,
             }
           : { role: 'button' })}
+        className={className}
         sx={{
           alignItems: 'center',
           borderRadius: '4px',
@@ -216,7 +274,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
         <Box sx={{ flex: '1 1 auto' }}>
           <Typography
             component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }} // Adjusted line-height
+            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}
           >
             {title}
           </Typography>

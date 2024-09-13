@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid'; // Use stable Grid instead of Unstable_Grid2
 import BudgetContainer from '@/components/dashboard/overview/budget';
 import { Sales } from '@/components/dashboard/overview/adspend';
@@ -17,6 +17,12 @@ export default function Page(): React.JSX.Element {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [runTour, setRunTour] = useState<boolean>(true);
+  const [isMounted, setIsMounted] = useState<boolean>(false); // Track mounting state
+
+  useEffect(() => {
+    // Set the isMounted state to true after the component mounts
+    setIsMounted(true);
+  }, []);
 
   const steps: Step[] = [
     {
@@ -51,18 +57,21 @@ export default function Page(): React.JSX.Element {
 
   return (
     <DateProvider>
-      <Joyride
-        steps={steps}
-        run={runTour}
-        continuous
-        showSkipButton
-        showProgress
-        styles={{
-          options: {
-            zIndex: 10000, // Ensure the tour stays on top of other UI elements
-          },
-        }}
-      />
+      {/* Conditionally render Joyride only after mounting */}
+      {isMounted && (
+        <Joyride
+          steps={steps}
+          run={runTour}
+          continuous
+          showSkipButton
+          showProgress
+          styles={{
+            options: {
+              zIndex: 10000, // Ensure the tour stays on top of other UI elements
+            },
+          }}
+        />
+      )}
       <Grid container spacing={2}>
         <Grid item lg={3} md={6} xs={12} className="budget-container">
           <BudgetContainer startDate={startDate} endDate={endDate} />
