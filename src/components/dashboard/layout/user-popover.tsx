@@ -31,12 +31,19 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
     try {
+      // Call the authClient to clear localStorage and handle sign out logic
+      await authClient.signOut();
+  
+      // Clear cookies
       Cookies.remove('accessToken');
-      router.refresh();
+  
+      // Optionally, redirect to the login page or refresh the page
+      router.push(paths.auth.signIn); // Redirect to login after sign out
     } catch (err) {
       logger.error('Sign out error', err);
     }
-  }, [checkSession, router]);
+  }, [router]);
+  
 
   return (
     <Popover

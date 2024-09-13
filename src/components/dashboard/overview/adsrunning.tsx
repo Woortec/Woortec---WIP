@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -37,8 +37,8 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
 }
 
 const TotalAdsContainer = () => {
-  const [adsData, setAdsData] = useState('');
-  const { startDate, endDate } = useDate();
+  const [adsData, setAdsData] = useState('Loading...');
+  const { startDate, endDate } = useDate(); // Make sure this is correctly getting the dates
 
   useEffect(() => {
     const fetchTotalAds = async () => {
@@ -46,13 +46,12 @@ const TotalAdsContainer = () => {
         const accessToken = getItemWithExpiry('fbAccessToken');
         const adAccountId = getItemWithExpiry('fbAdAccount');
 
-        if (!accessToken) {
-          throw new Error('Missing access token');
+        if (!accessToken || !adAccountId) {
+          throw new Error('Missing access token or ad account ID');
         }
 
-        if (!adAccountId) {
-          throw new Error('Missing ad account ID');
-        }
+        // Ensure startDate and endDate are not null before proceeding
+        if (!startDate || !endDate) return;
 
         // Fetch all ads within the selected date range
         const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/ads`, {
@@ -60,8 +59,8 @@ const TotalAdsContainer = () => {
             access_token: accessToken,
             fields: 'effective_status',
             time_range: JSON.stringify({
-              since: startDate?.toISOString().split('T')[0],
-              until: endDate?.toISOString().split('T')[0],
+              since: startDate.toISOString().split('T')[0],
+              until: endDate.toISOString().split('T')[0],
             }),
           },
         });
@@ -69,19 +68,18 @@ const TotalAdsContainer = () => {
         const totalAdsCount = response.data.data.length;
         const activeAdsCount = response.data.data.filter((ad: any) => ad.effective_status === 'ACTIVE').length;
 
-        setAdsData(`${activeAdsCount} active ads out of ${totalAdsCount} ads`);
+        setAdsData(`${activeAdsCount} Active ads`);
       } catch (error) {
         console.error('Error fetching total ads data:', error);
-        if (axios.isAxiosError(error) && error.response) {
-          console.error('Response data:', error.response.data);
-        }
+        setAdsData('Error loading ads');
       }
     };
 
+    // Re-fetch ads data whenever the date range changes
     if (startDate && endDate) {
       fetchTotalAds();
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate]); // This ensures the effect runs when the date changes
 
   return <TotalAds value={adsData} />;
 };

@@ -29,7 +29,7 @@ const CampaignDetailsForm: React.FC<{ nextStep: () => void }> = ({ nextStep }) =
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Strategy Creation</h1>
+      <h1 className={styles.title}>Campaign Setup</h1>
       <ProgressBar step={1} />
       <form onSubmit={handleSubmit} className={styles.formContainer}>
         <div className={styles.formContent}>

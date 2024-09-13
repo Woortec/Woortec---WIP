@@ -9,25 +9,119 @@ import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useState, useEffect } from 'react';
+import { createClient } from '../../../../utils/supabase/client';
+import { useUser } from '@/hooks/use-user';
 
-const states = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-] as const;
+interface UserMetadata {
+  full_name?: string;
+  avatar_url?: string;
+}
 
 export function AccountDetailsForm(): React.JSX.Element {
+  const supabase = createClient();
+  const { user } = useUser(); // Fetch the currently logged-in user from Supabase Auth
+
+  const userMetadata: UserMetadata = user?.user_metadata || {};
+  const [fullName, setFullName] = useState(userMetadata.full_name || '');
+  const [avatarUrl, setAvatarUrl] = useState(userMetadata.avatar_url || '');
+  const [image, setImage] = useState<File | null>(null);
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load user profile data when the component mounts
+  useEffect(() => {
+    if (user) {
+      setFullName(userMetadata.full_name || '');
+      setAvatarUrl(userMetadata.avatar_url || '');
+    }
+  }, [user, userMetadata]);
+
+  // Handle profile image change
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent form from reloading the page
+    setIsSubmitting(true);
+
+    if (!user) {
+      console.error('User is not logged in.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Update profile details in Supabase (name)
+      const { error: profileError } = await supabase.auth.updateUser({
+        data: { full_name: fullName },
+      });
+
+      if (profileError) {
+        console.error('Profile update failed:', profileError.message);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Upload and update profile picture if image is selected
+      if (image) {
+        const filePath = `${user.id}/profile-picture.png`;
+        const { error: uploadError } = await supabase.storage
+          .from('profile-pictures')
+          .upload(filePath, image, { upsert: true });
+
+        if (uploadError) {
+          console.error('Image upload failed:', uploadError.message);
+          setIsSubmitting(false);
+          return;
+        }
+
+        const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/profile-pictures/${filePath}`;
+
+        // Update profile picture URL in user metadata
+        const { error: dbError } = await supabase
+          .from('user')
+          .update({ avatar_url: imageUrl })
+          .eq('id', user.id);
+
+        if (dbError) {
+          console.error('Failed to update profile picture URL:', dbError.message);
+          setIsSubmitting(false);
+          return;
+        }
+
+        setAvatarUrl(imageUrl); // Update state to reflect the new profile picture URL
+      }
+
+      // Optionally handle password update if provided
+      if (password) {
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password,
+        });
+
+        if (passwordError) {
+          console.error('Password update failed:', passwordError.message);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      setIsSubmitting(false);
+      alert('Profile updated successfully!');
+
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-      }}
-    >
+    <form onSubmit={handleSubmit}>
       <Card>
         <CardHeader subheader="The information can be edited" title="Profile" />
         <Divider />
@@ -35,51 +129,34 @@ export function AccountDetailsForm(): React.JSX.Element {
           <Grid container spacing={3}>
             <Grid md={6} xs={12}>
               <FormControl fullWidth required>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput defaultValue="Sofia" label="First name" name="firstName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput defaultValue="Rivers" label="Last name" name="lastName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput defaultValue="sofia@devias.io" label="Email address" name="email" />
+                <InputLabel>Full Name</InputLabel>
+                <OutlinedInput
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  label="Full Name"
+                  name="fullName"
+                />
               </FormControl>
             </Grid>
             <Grid md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput label="Phone number" name="phone" type="tel" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select defaultValue="New York" label="State" name="state" variant="outlined">
-                  {states.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput label="City" />
+                <InputLabel>Change Password</InputLabel>
+                <OutlinedInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  type="password"
+                  name="password"
+                />
               </FormControl>
             </Grid>
           </Grid>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save details</Button>
+          <Button disabled={isSubmitting} type="submit" variant="contained">
+            Save details
+          </Button>
         </CardActions>
       </Card>
     </form>
