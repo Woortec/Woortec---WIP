@@ -12,11 +12,12 @@ import DatePickerComponent from '@/components/dashboard/overview/DateRangePicker
 import { DateProvider } from '@/components/dashboard/overview/date/DateContext';
 import TotalAdsContainer from '@/components/dashboard/overview/adsrunning';
 import Joyride, { Step } from 'react-joyride';
+import { useTour } from '@/contexts/TourContext'; // Import the useTour hook from your TourContext
 
 export default function Page(): React.JSX.Element {
+  const { runTour, steps } = useTour(); // Access global tour state and steps
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [runTour, setRunTour] = useState<boolean>(true);
   const [isMounted, setIsMounted] = useState<boolean>(false); // Track mounting state
 
   useEffect(() => {
@@ -24,51 +25,20 @@ export default function Page(): React.JSX.Element {
     setIsMounted(true);
   }, []);
 
-  const steps: Step[] = [
-    {
-      target: '.budget-container',
-      content: 'This is where you can see your budget overview.',
-    },
-    {
-      target: '.impressions-container',
-      content: 'This shows the total impressions your ads have received.',
-    },
-    {
-      target: '.cpm-container',
-      content: 'This displays the cost per message for your ads.',
-    },
-    {
-      target: '.profit-container',
-      content: 'Here you can see the total ads running and their profit.',
-    },
-    {
-      target: '.date-picker',
-      content: 'Use this to select the date range for your data.',
-    },
-    {
-      target: '.ad-spend-chart',
-      content: 'This chart shows your ad spend over time.',
-    },
-    {
-      target: '.total-reach',
-      content: 'Check the total reach of your ads, including clicks and messages started.',
-    }
-  ];
-
   return (
     <DateProvider>
       {/* Conditionally render Joyride only after mounting */}
       {isMounted && (
         <Joyride
-          steps={steps}
-          run={runTour}
-          continuous
-          showSkipButton
-          showProgress
-          styles={{
-            options: {
-              zIndex: 10000, // Ensure the tour stays on top of other UI elements
-            },
+        steps={steps} // Use global steps
+        run={runTour} // Use the global runTour state
+        continuous
+        showSkipButton
+        showProgress
+        styles={{
+          options: {
+            zIndex: 10000, // Ensure the tour stays on top of other UI elements
+          },
           }}
         />
       )}

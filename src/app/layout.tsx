@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { Viewport } from 'next';
-
+import { TourProvider } from '@/contexts/TourContext';
 import '@/styles/global.css';
 
 import { UserProvider } from '@/contexts/user-context';
@@ -17,11 +17,13 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
     <html lang="en">
       <body>
+      <TourProvider>
         <LocalizationProvider>
           <UserProvider>
             <ThemeProvider>{children}</ThemeProvider>
           </UserProvider>
         </LocalizationProvider>
+        </TourProvider>
       </body>
     </html>
   );

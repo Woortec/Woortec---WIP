@@ -12,7 +12,8 @@ import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/C
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
-import Joyride, { Step } from 'react-joyride'; // Import Joyride
+import Joyride, { CallBackProps, Step } from 'react-joyride'; // Import Joyride
+import { useTour } from '@/contexts/TourContext'; // Import the useTour hook
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -25,41 +26,25 @@ import { navIcons } from './nav-icons';
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [runTour, setRunTour] = React.useState(false); // State for running the tour
+  const { runTour, startTour, steps } = useTour();
   const [isMounted, setIsMounted] = React.useState(false); // State to track when the component is mounted
 
-  // Automatically start the tour when the component is mounted
   React.useEffect(() => {
     setIsMounted(true); // Mark component as mounted
-    setRunTour(true);
   }, []);
-
-  // Define steps for the Joyride tour
-  const steps: Step[] = [
-    {
-      target: '.overview-step',
-      content: 'Here is the overview section.',
-    },
-    {
-      target: '.ads-performance-step',
-      content: 'Here you can view the ads performance.',
-    },
-    {
-      target: '.ads-strategies-step',
-      content: 'This section contains the ads strategies.',
-    },
-    {
-      target: '.campaign-setup-step',
-      content: 'Set up your campaign from here.',
-    },
-    {
-      target: '.social-connections-step',
-      content: 'Manage your social connections here.',
-    },
-  ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  // Handle Joyride callback for when tour steps are reached
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+
+    if (status === 'finished' || status === 'skipped') {
+      console.log('Tour Finished or Skipped');
+      // Optionally reset the tour state if needed here
+    }
   };
 
   const drawer = (
@@ -105,6 +90,16 @@ export function SideNav(): React.JSX.Element {
       <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
+
+      {/* Button to start the Joyride tour */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={startTour} // This triggers the tour globally
+        sx={{ mt: 2 }}
+      >
+        Start Tour 🎓
+      </Button>
     </Box>
   );
 
@@ -114,21 +109,17 @@ export function SideNav(): React.JSX.Element {
       {isMounted && (
         <Joyride
           steps={steps}
-          run={runTour}
+          run={runTour} // This checks the global state to run the tour
           continuous={true}
           scrollToFirstStep={true}
           showProgress={true}
           showSkipButton={true}
           styles={{
             options: {
-              zIndex: 10000,
+              zIndex: 10000, // Ensure the tour stays on top of other UI elements
             },
           }}
-          callback={(data) => {
-            if (data.status === 'finished' || data.status === 'skipped') {
-              setRunTour(false); // Reset tour when finished or skipped
-            }
-          }}
+          callback={handleJoyrideCallback} // Callback to handle tour events
         />
       )}
 
@@ -272,10 +263,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           ) : null}
         </Box>
         <Box sx={{ flex: '1 1 auto' }}>
-          <Typography
-            component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}
-          >
+          <Typography component="span" sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}>
             {title}
           </Typography>
         </Box>
