@@ -26,7 +26,7 @@ import { navIcons } from './nav-icons';
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const { runTour, startTour, steps } = useTour();
+  const { runTour, startTour, stopTour, steps } = useTour(); // Added stopTour function from context
   const [isMounted, setIsMounted] = React.useState(false); // State to track when the component is mounted
 
   React.useEffect(() => {
@@ -42,8 +42,7 @@ export function SideNav(): React.JSX.Element {
     const { status } = data;
 
     if (status === 'finished' || status === 'skipped') {
-      console.log('Tour Finished or Skipped');
-      // Optionally reset the tour state if needed here
+      stopTour(); // Close the tour if it is finished or skipped
     }
   };
 
@@ -98,7 +97,7 @@ export function SideNav(): React.JSX.Element {
         onClick={startTour} // This triggers the tour globally
         sx={{ mt: 2 }}
       >
-        Start Tour 🎓
+        Start Tour 
       </Button>
     </Box>
   );
@@ -113,13 +112,22 @@ export function SideNav(): React.JSX.Element {
           continuous={true}
           scrollToFirstStep={true}
           showProgress={true}
-          showSkipButton={true}
+          showSkipButton={false} // Disabled the Skip button
           styles={{
             options: {
               zIndex: 10000, // Ensure the tour stays on top of other UI elements
             },
           }}
           callback={handleJoyrideCallback} // Callback to handle tour events
+          locale={{
+            back: 'Back',
+            next: 'Next',
+            close: 'Close Tour', // This will now appear as the "Close" button
+          }}
+          floaterProps={{
+            disableAnimation: true,
+            hideArrow: true,
+          }}
         />
       )}
 

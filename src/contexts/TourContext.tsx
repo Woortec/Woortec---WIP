@@ -6,6 +6,7 @@ import { Step } from 'react-joyride';
 interface TourContextType {
   runTour: boolean;
   startTour: () => void;
+  stopTour: () => void;
   steps: Step[];
 }
 
@@ -79,9 +80,13 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const startTour = () => {
     setRunTour(true);
   };
+    // Stop the tour
+    const stopTour = () => {
+      setRunTour(false);
+    };
 
   return (
-    <TourContext.Provider value={{ runTour, startTour, steps }}>
+    <TourContext.Provider value={{ runTour, startTour, stopTour, steps }}>
       {children}
     </TourContext.Provider>
   );
