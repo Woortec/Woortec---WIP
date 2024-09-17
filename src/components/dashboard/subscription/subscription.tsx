@@ -42,9 +42,9 @@ const Subscription = () => {
 
   const plans = [
     {
-      id: isYearly ? 'price_1PTGqcHow0UPMFTyHi3UH69t' : 'price_1PTGpiHow0UPMFTygPGXNkMw',
+      id: isYearly ? 'price_1Q002uHow0UPMFTyVx0Hv9aI' : 'price_1Q003JHow0UPMFTykx3LRZeV',
       name: 'Basic',
-      price: isYearly ? '€99.50/year' : '$9.95/month',
+      price: isYearly ? '$299.99/year' : '$29.99/month',
       features: [
         'Daily Report',
         'Performance Optimization',
@@ -53,9 +53,9 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1PTGs0How0UPMFTyEoMy6lvb' : 'price_1PTGrCHow0UPMFTypEzCEk0o',
+      id: isYearly ? 'price_1Q008uHow0UPMFTyp6ifXtV3' : 'price_1Q009rHow0UPMFTyyxea5LzG',
       name: 'Essential',
-      price: isYearly ? '$99.95/year' : '$9.95/month',
+      price: isYearly ? '$499.98/year' : '$49.98/month',
       features: [
         'Personalized Advertising Roadmap',
         'Objective Definition and Alignment',
@@ -66,9 +66,9 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1PTGsEHow0UPMFTy84qbnK8Q' : 'price_1PTGrcHow0UPMFTyapjtNGRq',
+      id: isYearly ? 'price_1Q00CeHow0UPMFTywnltJFXW' : 'price_1Q00D5How0UPMFTyI3zY6QCr',
       name: 'Advanced',
-      price: isYearly ? '$99.95/year' : '$9.95/month',
+      price: isYearly ? '$699.97/year' : '$69.97/month',
       features: [
         'Full-Service Advertising Management',
         'Monthly Performance Reports',

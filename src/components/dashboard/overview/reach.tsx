@@ -29,6 +29,9 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
   const [totalReach, setTotalReach] = useState<number>(0);
   const [clicks, setClicks] = useState<number>(0);
   const [messagesStarted, setMessagesStarted] = useState<number>(0);
+
+  const [originalData, setOriginalData] = useState<number[]>([0, 0]); // Store the original values for toggling
+
   const [chartData, setChartData] = useState({
     labels: ['Clicks', 'Messages Started'],
     datasets: [
@@ -87,6 +90,9 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
       setClicks(totalClicks);
       setMessagesStarted(totalMessagesStarted);
 
+      // Save original data for toggling visibility
+      setOriginalData([totalClicks, totalMessagesStarted]);
+
       setChartData({
         labels: ['Clicks', 'Messages Started'],
         datasets: [
@@ -109,6 +115,35 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
     }
   }, [startDate, endDate]);
 
+  // Handle legend click to toggle between showing and hiding "Clicks" or "Messages Started"
+  const handleLegendClick = (event: any, legendItem: any) => {
+    const clickedIndex = legendItem.index;
+
+    // Clone the current dataset data
+    const newData = [0, 0];
+    newData[clickedIndex] = chartData.datasets[0].data[clickedIndex];
+
+    // Toggle between showing and hiding the data for the clicked legend item
+    if (newData[clickedIndex] === 0) {
+      // Restore the original value
+      newData[clickedIndex] = originalData[clickedIndex];
+    } else {
+      // Hide by setting it to 0
+      newData[clickedIndex] = 0;
+    }
+
+    // Update the chart data with the toggled values
+    setChartData((prevData) => ({
+      ...prevData,
+      datasets: [
+        {
+          ...prevData.datasets[0],
+          data: newData,
+        },
+      ],
+    }));
+  };
+
   // Format numbers using Intl.NumberFormat
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
 
@@ -130,6 +165,11 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
                         return `${tooltipItem.label}: ${new Intl.NumberFormat('en-US').format(value)}`;
                       },
                     },
+                  },
+                  legend: {
+                    display: true,
+                    position: 'top',
+                    onClick: handleLegendClick,
                   },
                 },
                 cutout: '70%',

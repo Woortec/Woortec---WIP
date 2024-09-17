@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
+import { Box, Typography, IconButton, CircularProgress, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { fetchAdData, createThread, addMessageToThread, createRun, waitForRunCompletion, getAIResponse } from './api';
 import styles from './styles/AdSetDetail.module.css';
@@ -13,23 +13,31 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   const [adDetail, setAdDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [aiResponse, setAiResponse] = useState<string>('');
+  const [requestingAdvice, setRequestingAdvice] = useState<boolean>(false);
+  const [canRequestAdvice, setCanRequestAdvice] = useState<boolean>(true);
+
+  const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
+  const ADVICE_REQUEST_KEY = `lastAdviceRequest_${adId}`;
 
   useEffect(() => {
+    const checkAdviceEligibility = () => {
+      const lastRequest = localStorage.getItem(ADVICE_REQUEST_KEY);
+      if (lastRequest) {
+        const lastRequestDate = new Date(parseInt(lastRequest, 10));
+        const currentDate = new Date();
+        if (currentDate.getTime() - lastRequestDate.getTime() < WEEK_IN_MS) {
+          setCanRequestAdvice(false);
+        }
+      }
+    };
+
     const getAdDetail = async () => {
       try {
         const { adData } = await fetchAdData(); // Fetch ad data (cached if already fetched)
         const detail = adData.find((ad: any) => ad.ad_id === adId);
         if (detail) {
           setAdDetail(detail);
-          if (!detail.aiGeneratedResponse) { // Avoid regenerating AI response if it already exists
-            const threadId = await createThread(); // Create a new thread
-            await addMessageToThread(threadId, detail); // Add a message to the thread
-            const runId = await createRun(threadId); // Attach the assistant to the thread
-            await waitForRunCompletion(threadId, runId); // Wait for run completion
-            const aiGeneratedResponse = await getAIResponse(threadId); // Get AI-generated response
-            detail.aiGeneratedResponse = aiGeneratedResponse || 'Failed to generate AI response.'; // Store response
-            setAiResponse(detail.aiGeneratedResponse);
-          } else {
+          if (detail.aiGeneratedResponse) {
             setAiResponse(detail.aiGeneratedResponse); // Use cached AI response
           }
         } else {
@@ -43,8 +51,36 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
         setLoading(false); // Stop the loading indicator
       }
     };
+
+    checkAdviceEligibility();
     getAdDetail();
   }, [adId]);
+
+  const handleRequestAdvice = async () => {
+    if (!canRequestAdvice) return;
+
+    setRequestingAdvice(true);
+    try {
+      const threadId = await createThread(); // Create a new thread
+      await addMessageToThread(threadId, adDetail); // Add a message to the thread
+      const runId = await createRun(threadId); // Attach the assistant to the thread
+      await waitForRunCompletion(threadId, runId); // Wait for run completion
+      const aiGeneratedResponse = await getAIResponse(threadId); // Get AI-generated response
+      setAiResponse(aiGeneratedResponse || 'Failed to generate AI response.');
+      
+      adDetail.aiGeneratedResponse = aiGeneratedResponse; // Store AI response
+      setAdDetail({ ...adDetail });
+
+      // Store the time of the request
+      localStorage.setItem(ADVICE_REQUEST_KEY, Date.now().toString());
+      setCanRequestAdvice(false);
+    } catch (error) {
+      console.error('Error during thread, message addition, or run creation:', error);
+      setAiResponse('Failed to generate AI response. Please try again later.');
+    } finally {
+      setRequestingAdvice(false);
+    }
+  };
 
   if (loading) {
     return <CircularProgress />;
@@ -115,6 +151,22 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           <Typography className={styles.aiResponseContent}>Failed to generate AI response.</Typography>
         )}
       </Box>
+
+      {/* Button to request expert's advice */}
+      {canRequestAdvice ? (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleRequestAdvice}
+          disabled={requestingAdvice}
+        >
+          {requestingAdvice ? 'Requesting Advice...' : "Ask for Expert's Advice"}
+        </Button>
+      ) : (
+        <Typography variant="body2" color="error" style={{ marginTop: '16px' }}>
+          You can only request advice once per week.
+        </Typography>
+      )}
     </Box>
   );
 };
