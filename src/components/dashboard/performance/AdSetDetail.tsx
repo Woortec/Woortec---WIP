@@ -66,7 +66,6 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
       const runId = await createRun(threadId); // Attach the assistant to the thread
       await waitForRunCompletion(threadId, runId); // Wait for run completion
       const aiGeneratedResponse = await getAIResponse(threadId); // Get AI-generated response
-      setAiResponse(aiGeneratedResponse || 'Failed to generate AI response.');
       
       adDetail.aiGeneratedResponse = aiGeneratedResponse; // Store AI response
       setAdDetail({ ...adDetail });
@@ -148,7 +147,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
             ))}
           </Box>
         ) : (
-          <Typography className={styles.aiResponseContent}>Failed to generate AI response.</Typography>
+          <Typography className={styles.aiResponseContent}>.</Typography>
         )}
       </Box>
 
