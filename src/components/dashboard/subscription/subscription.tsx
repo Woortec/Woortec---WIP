@@ -1,40 +1,67 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Container, Card, CardContent, Typography, Button, Switch, FormControlLabel, Checkbox } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { createClient } from '../../../../utils/supabase/client'; // Adjust the path as needed
 import './styles.css'; // Import the CSS file
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const Subscription = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  // Supabase client initialization
+  const supabase = createClient();
+
+  // Check if the user is logged in
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const handleSubscribe = async (priceId: string) => {
+    // If the user is not logged in, redirect them to the sign-in page with a redirect back to this page
+    if (!isLoggedIn) {
+      router.push(`/auth/sign-in?redirect=/dashboard/subscription`);
+      return;
+    }
+  
     const stripe = await stripePromise;
-
+  
     if (!stripe) {
       console.error('Stripe has not loaded yet.');
       return;
     }
-
+  
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ priceId }),
     });
-
+  
     if (response.status !== 200) {
       console.error('Failed to create checkout session');
       return;
     }
-
+  
     const session = await response.json();
-
+  
     const result = await stripe.redirectToCheckout({
       sessionId: session.id,
     });
-
+  
     if (result.error) {
       console.error(result.error.message);
     }
@@ -42,9 +69,9 @@ const Subscription = () => {
 
   const plans = [
     {
-      id: isYearly ? 'price_1Q002uHow0UPMFTyVx0Hv9aI' : 'price_1Q003JHow0UPMFTykx3LRZeV',
+      id: isYearly ? 'price_1Q0evMHow0UPMFTy7WwmoxcI' : 'price_1Q0evoHow0UPMFTyzK1fRTYm',
       name: 'Basic',
-      price: isYearly ? '$299.99/year' : '$29.99/month',
+      price: isYearly ? '₱16,800.00/year' : '₱1,700.00/month',
       features: [
         'Daily Report',
         'Performance Optimization',
@@ -53,9 +80,9 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1Q008uHow0UPMFTyp6ifXtV3' : 'price_1Q009rHow0UPMFTyyxea5LzG',
+      id: isYearly ? 'price_1Q0ezLHow0UPMFTylKWCd7E7' : 'price_1Q0ezjHow0UPMFTyW1A6oNiT',
       name: 'Essential',
-      price: isYearly ? '$499.98/year' : '$49.98/month',
+      price: isYearly ? '₱28,800.00/year' : '₱2,850.00/month',
       features: [
         'Personalized Advertising Roadmap',
         'Objective Definition and Alignment',
@@ -66,9 +93,9 @@ const Subscription = () => {
       ],
     },
     {
-      id: isYearly ? 'price_1Q00CeHow0UPMFTywnltJFXW' : 'price_1Q00D5How0UPMFTyI3zY6QCr',
+      id: isYearly ? 'price_1Q0exJHow0UPMFTyCgaPtHGm' : 'price_1Q0exxHow0UPMFTy8ccU5P8t',
       name: 'Advanced',
-      price: isYearly ? '$699.97/year' : '$69.97/month',
+      price: isYearly ? '₱40,800.00/year' : '₱4,000.00/month',
       features: [
         'Full-Service Advertising Management',
         'Monthly Performance Reports',
