@@ -12,7 +12,23 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 
+import { createClient } from '../../../../utils/supabase/client';
+
 export function UpdatePasswordForm(): React.JSX.Element {
+  const supabase = createClient();
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const updatePaswword = async () => {
+    if (password === confirmPassword) {
+      const { data, error } = await supabase.auth.updateUser({ password: password });
+      console.log('data', data);
+      console.log(error);
+
+      alert('password updated successfully');
+    } else {
+      alert('Password and confirm password must be same');
+    }
+  };
   return (
     <form
       onSubmit={(event) => {
@@ -26,17 +42,36 @@ export function UpdatePasswordForm(): React.JSX.Element {
           <Stack spacing={3} sx={{ maxWidth: 'sm' }}>
             <FormControl fullWidth>
               <InputLabel>Password</InputLabel>
-              <OutlinedInput label="Password" name="password" type="password" />
+              <OutlinedInput
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                label="Password"
+                name="password"
+                type="password"
+              />
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Confirm password</InputLabel>
-              <OutlinedInput label="Confirm password" name="confirmPassword" type="password" />
+              <OutlinedInput
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                label="Confirm password"
+                name="confirmPassword"
+                type="password"
+              />
             </FormControl>
           </Stack>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Update</Button>
+          <Button
+            onClick={() => {
+              updatePaswword();
+            }}
+            variant="contained"
+          >
+            Update
+          </Button>
         </CardActions>
       </Card>
     </form>

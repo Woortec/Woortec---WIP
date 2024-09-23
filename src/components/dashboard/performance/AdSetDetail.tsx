@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, CircularProgress, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { fetchAdData, createThread, addMessageToThread, createRun, waitForRunCompletion, getAIResponse } from './api';
+import { Box, Button, CircularProgress, IconButton, Typography } from '@mui/material';
+
+import { createClient } from '../../../../utils/supabase/client';
+import { addMessageToThread, createRun, createThread, fetchAdData, getAIResponse, waitForRunCompletion } from './api';
 import styles from './styles/AdSetDetail.module.css';
 
 interface AdDetailProps {
@@ -57,6 +59,15 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   }, [adId]);
 
   const handleRequestAdvice = async () => {
+    const userId = localStorage.getItem('userid');
+    const supabase = createClient();
+    const { data, error } = await supabase.from('user').select('*').eq('uuid', userId);
+    console.log();
+    if (data[0]?.isQuery) {
+      setCanRequestAdvice(false);
+      alert("You can use this feature once per week, and you've already used it this week.");
+      return;
+    }
     if (!canRequestAdvice) return;
 
     setRequestingAdvice(true);
@@ -66,12 +77,18 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
       const runId = await createRun(threadId); // Attach the assistant to the thread
       await waitForRunCompletion(threadId, runId); // Wait for run completion
       const aiGeneratedResponse = await getAIResponse(threadId); // Get AI-generated response
-      
+
       adDetail.aiGeneratedResponse = aiGeneratedResponse; // Store AI response
       setAdDetail({ ...adDetail });
+      await supabase
+        .from('user')
+        .update({
+          isQuery: true,
+        })
+        .eq('uuid', userId);
 
       // Store the time of the request
-      localStorage.setItem(ADVICE_REQUEST_KEY, Date.now().toString());
+      // localStorage.setItem(ADVICE_REQUEST_KEY, Date.now().toString());
       setCanRequestAdvice(false);
     } catch (error) {
       console.error('Error during thread, message addition, or run creation:', error);
@@ -101,8 +118,12 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
       {/* Main Content Section: Image and Metrics */}
       <Box className={styles.adSetDetailContent}>
-        <img src={adDetail.imageUrl || '/path-to-placeholder-image.png'} alt="Ad Creative" className={styles.adCreative} />
-        
+        <img
+          src={adDetail.imageUrl || '/path-to-placeholder-image.png'}
+          alt="Ad Creative"
+          className={styles.adCreative}
+        />
+
         <Box className={styles.budgetContainer}>
           <Box className={styles.budgetCard}>
             <div className={`${styles.budgetIcon} green`}>CPC</div>
@@ -113,10 +134,10 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
             <div className={`${styles.budgetIcon} yellow`}>CPM</div>
             <div className={styles.budgetValue}> {adDetail?.cpm || 'N/A'}</div>
           </Box>
-          
+
           <Box className={styles.budgetCard}>
             <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
-            <div className={styles.budgetValue}> {adDetail?.impressions  || 'N/A'}</div>
+            <div className={styles.budgetValue}> {adDetail?.impressions || 'N/A'}</div>
           </Box>
 
           <Box className={styles.budgetCard}>
@@ -141,7 +162,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                     <li>{line.substring(2)}</li>
                   </ul>
                 ) : (
-                  line 
+                  line
                 )}
               </Typography>
             ))}
@@ -153,12 +174,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
       {/* Button to request expert's advice */}
       {canRequestAdvice ? (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleRequestAdvice}
-          disabled={requestingAdvice}
-        >
+        <Button variant="contained" color="primary" onClick={handleRequestAdvice} disabled={requestingAdvice}>
           {requestingAdvice ? 'Requesting Advice...' : "Ask for Expert's Advice"}
         </Button>
       ) : (

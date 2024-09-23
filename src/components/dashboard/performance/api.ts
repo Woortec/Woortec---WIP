@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { createClient } from '../../../../utils/supabase/client';
+
 let cachedAdData: any[] = [];
 let cachedCurrency: string = 'USD';
 let dataFetched: boolean = false;
@@ -35,12 +37,15 @@ export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
 };
 
 export const fetchAdData = async () => {
+  const supabase = createClient();
   if (dataFetched && cachedAdData.length > 0) {
     return { adData: cachedAdData, currency: cachedCurrency };
   }
-
-  const accessToken = getItemWithExpiry('fbAccessToken');
-  const adAccountId = getItemWithExpiry('fbAdAccount');
+  const uuid = localStorage.getItem('userid');
+  const { data, error } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
+  console.log('fetchDED DATA', data);
+  const accessToken = data[0]?.access_token;
+  const adAccountId = data[0]?.account_id;
 
   if (!accessToken || !adAccountId) {
     console.error('Access token or ad account ID not found');
@@ -83,16 +88,13 @@ export const fetchAdData = async () => {
 
     const insights = await Promise.all(
       insightsResponse.data.data.map(async (insight: any) => {
-        const adCreativeResponse = await axios.get(
-          `https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`,
-          {
-            params: {
-              access_token: accessToken,
-              fields: 'object_story_spec{link_data{image_hash}},image_hash',
-              ad_id: insight.ad_id,
-            },
-          }
-        );
+        const adCreativeResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`, {
+          params: {
+            access_token: accessToken,
+            fields: 'object_story_spec{link_data{image_hash}},image_hash',
+            ad_id: insight.ad_id,
+          },
+        });
 
         const adCreative = adCreativeResponse.data.data.find(
           (creative: any) => creative.object_story_spec?.link_data?.image_hash
@@ -103,16 +105,13 @@ export const fetchAdData = async () => {
         const imageHash = adCreative?.object_story_spec?.link_data?.image_hash || adCreative?.image_hash;
 
         if (imageHash) {
-          const imageResponse = await axios.get(
-            `https://graph.facebook.com/v20.0/${adAccountId}/adimages`,
-            {
-              params: {
-                access_token: accessToken,
-                hashes: [imageHash],
-                fields: 'url',
-              },
-            }
-          );
+          const imageResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/adimages`, {
+            params: {
+              access_token: accessToken,
+              hashes: [imageHash],
+              fields: 'url',
+            },
+          });
 
           const imagesData = imageResponse.data.data;
           if (imagesData.length > 0 && imagesData[0].url) {
@@ -156,7 +155,7 @@ export const createThread = async (): Promise<string> => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
+          Authorization: `Bearer ${openaiApiKey}`,
           'OpenAI-Beta': 'assistants=v2',
         },
       }
@@ -180,7 +179,7 @@ export const addMessageToThread = async (threadId: string, adSetDetail: any): Pr
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
+          Authorization: `Bearer ${openaiApiKey}`,
           'OpenAI-Beta': 'assistants=v2',
         },
       }
@@ -189,7 +188,6 @@ export const addMessageToThread = async (threadId: string, adSetDetail: any): Pr
     throw new Error('Failed to add message to thread');
   }
 };
-
 
 export const createRun = async (threadId: string): Promise<string> => {
   if (cachedRunId) return cachedRunId!; // Non-null assertion
@@ -203,7 +201,7 @@ export const createRun = async (threadId: string): Promise<string> => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
+          Authorization: `Bearer ${openaiApiKey}`,
           'OpenAI-Beta': 'assistants=v2',
         },
       }
@@ -224,7 +222,7 @@ export const waitForRunCompletion = async (threadId: string, runId: string): Pro
       const response = await axios.get(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`,
+          Authorization: `Bearer ${openaiApiKey}`,
           'OpenAI-Beta': 'assistants=v2',
         },
       });
@@ -254,7 +252,7 @@ export const getAIResponse = async (threadId: string): Promise<string | null> =>
     const response = await axios.get(`https://api.openai.com/v1/threads/${threadId}/messages`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${openaiApiKey}`,
+        Authorization: `Bearer ${openaiApiKey}`,
         'OpenAI-Beta': 'assistants=v2',
       },
     });

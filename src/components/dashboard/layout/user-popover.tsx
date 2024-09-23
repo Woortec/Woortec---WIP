@@ -33,17 +33,21 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
     try {
       // Call the authClient to clear localStorage and handle sign out logic
       await authClient.signOut();
-  
-      // Clear cookies
-      Cookies.remove('accessToken');
-  
-      // Optionally, redirect to the login page or refresh the page
-      router.push(paths.auth.signIn); // Redirect to login after sign out
+      localStorage.clear();
+
+      // Clear all cookies
+      const cookies = document.cookie.split('; ');
+      cookies.forEach((cookie) => {
+        const cookieName = cookie.split('=')[0];
+        Cookies.remove(cookieName);
+      });
+
+      router.push('/auth/sign-in');
+      window.location.reload();
     } catch (err) {
       logger.error('Sign out error', err);
     }
   }, [router]);
-  
 
   return (
     <Popover

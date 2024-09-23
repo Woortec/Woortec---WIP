@@ -10,7 +10,7 @@ export default async function middleware(req: any) {
     const providerLogin = req.cookies.get('sb-uvhvgcrczfdfvoujarga-auth-token-code-verifier');
 
     const protectedPaths = ['/dashboard', '/private', '/settings', '/'];
-    const publicPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error', '/dashboard/subscription'];
+    const publicPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error'];
 
     const isRootPath = pathname === '/';
     const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
