@@ -3,21 +3,22 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
+import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Drawer from '@mui/material/Drawer';
 import Joyride, { CallBackProps, Step } from 'react-joyride'; // Import Joyride
-import { useTour } from '@/contexts/TourContext'; // Import the useTour hook
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
+import { useTour } from '@/contexts/TourContext'; // Import the useTour hook
+
 import { Logo } from '@/components/core/logo';
 
 import { navItems } from './config';
@@ -48,13 +49,13 @@ export function SideNav(): React.JSX.Element {
 
   const drawer = (
     <Box
+      className="custom-sidebar"
       sx={{
         bgcolor: 'var(--SideNav-background)',
         color: 'var(--SideNav-color)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        width: 340, // Adjust width for mobile drawer
         p: 2, // Adjust padding to reduce space
       }}
     >
@@ -97,7 +98,7 @@ export function SideNav(): React.JSX.Element {
         onClick={startTour} // This triggers the tour globally
         sx={{ mt: 2 }}
       >
-        Start Tour 
+        Start Tour
       </Button>
     </Box>
   );
@@ -271,7 +272,10 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           ) : null}
         </Box>
         <Box sx={{ flex: '1 1 auto' }}>
-          <Typography component="span" sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}>
+          <Typography
+            component="span"
+            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}
+          >
             {title}
           </Typography>
         </Box>

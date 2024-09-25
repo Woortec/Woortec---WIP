@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import BudgetInput from './BudgetInput';
+
 import AdTable from './AdTable';
 import { fetchAdData, getItemWithExpiry, setItemWithExpiry } from './api';
+import BudgetInput from './BudgetInput';
 import styles from './styles/AdsPerformance.module.css';
 
 const AdsPerformance: React.FC = () => {
@@ -38,7 +39,7 @@ const AdsPerformance: React.FC = () => {
   const calculateAdStats = (adData: any[]) => {
     let warnings = 0;
     let successes = 0;
-    adData.forEach(ad => {
+    adData.forEach((ad) => {
       if (ad.cpc > 0.09 || ad.cpm > 0.99) {
         warnings += 1;
       } else {
@@ -50,7 +51,7 @@ const AdsPerformance: React.FC = () => {
   };
 
   return (
-    <Box className={styles.container}>
+    <Box className={`${styles.container} custom-perm-item`}>
       <Box className={styles.summaryCard}>
         <Box className={styles.summaryItem}>
           <Box className={styles.iconWrapper}>
@@ -96,8 +97,7 @@ const AdsPerformance: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <Box display="flex" justifyContent="center" alignItems="center" marginBottom={3}>
-      </Box>
+      <Box display="flex" justifyContent="center" alignItems="center" marginBottom={3}></Box>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
           <CircularProgress />

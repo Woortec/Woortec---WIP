@@ -16,7 +16,7 @@ export default function NotFound(): React.JSX.Element {
   return (
     <Box component="main" sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '100%' }}>
       <Stack spacing={3} sx={{ alignItems: 'center', maxWidth: 'md' }}>
-        <Box>
+        <Box className="fnd-cus">
           <Box
             component="img"
             alt="Under development"

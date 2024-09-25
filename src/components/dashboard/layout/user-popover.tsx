@@ -16,6 +16,7 @@ import Cookies from 'js-cookie';
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
+import { userData } from '@/contexts/user-context';
 import { useUser } from '@/hooks/use-user';
 
 export interface UserPopoverProps {
@@ -26,7 +27,7 @@ export interface UserPopoverProps {
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { checkSession } = useUser();
-
+  const { userInfo } = userData();
   const router = useRouter();
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
@@ -48,7 +49,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       logger.error('Sign out error', err);
     }
   }, [router]);
-
+  console.log('Thisi is is isd', userInfo);
   return (
     <Popover
       anchorEl={anchorEl}
@@ -58,9 +59,9 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       slotProps={{ paper: { sx: { width: '240px' } } }}
     >
       <Box sx={{ p: '16px 20px ' }}>
-        <Typography variant="subtitle1">Woortec Test</Typography>
+        <Typography variant="subtitle1">{userInfo?.firstName + ' ' + userInfo?.lastName}</Typography>
         <Typography color="text.secondary" variant="body2">
-          dev@woortec.com
+          {userInfo?.email || 'dev@woortec.com'}
         </Typography>
       </Box>
       <Divider />

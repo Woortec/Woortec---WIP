@@ -25,7 +25,7 @@ export interface IntegrationCardProps {
 
 export function IntegrationCard({ integration }: IntegrationCardProps): React.JSX.Element {
   return (
-    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Card className="cdrs-cus" sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardContent sx={{ flex: '1 1 auto' }}>
         <Stack spacing={2}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>

@@ -46,10 +46,9 @@ export default function Page(): React.JSX.Element {
 
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [isMounted, setIsMounted] = useState<boolean>(false); // Track mounting state
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   useEffect(() => {
-    // Set the isMounted state to true after the component mounts
     setIsMounted(true);
   }, []);
 

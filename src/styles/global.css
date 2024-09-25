@@ -16,7 +16,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* Variables */
 :root {
   --icon-fontSize-sm: 1rem;
@@ -34,4 +33,399 @@ html {
 
 body {
   height: 100%;
+}
+
+.MuiBox-root.mui-1h2lv3f {
+  display: grid;
+  grid-template-columns: max-content 0.3fr 1fr;
+  gap: 30px;
+}
+body .mui-11jvc03 {
+  width: 100%;
+  padding: 30px;
+  position: sticky;
+  top: 40px;
+  height: 91vh;
+}
+body .mui-13ymq9i {
+  padding-left: 0;
+}
+body .custom-sidebar,
+body .custom-sidebar nav {
+  padding: 0;
+}
+body .custom-sidebar nav {
+  min-height: 380px;
+  overflow: auto !important;
+  height: 380px;
+}
+
+body .custom-sidebar nav::-webkit-scrollbar {
+  width: 4px;
+  overflow: hidden;
+  border-radius: 100px;
+}
+body .custom-sidebar nav::-webkit-scrollbar-thumb {
+  background-color: #02b194;
+  overflow: hidden;
+  border-radius: 100px;
+}
+body .custom-sidebar nav::-webkit-scrollbar-track {
+  background-color: #e0e0e0;
+  overflow: hidden;
+  border-radius: 100px;
+}
+
+body .cus-filt-prnt {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+}
+body .cus-filter {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+body .cus-filter > button {
+  margin: 0;
+  width: 100%;
+}
+
+body .mui-1dn57np-MuiTypography-root {
+  font-size: 1.5rem;
+}
+
+body span[aria-label='Notifications'] .MuiBadge-dot {
+  top: 12px;
+  right: 15px;
+}
+body .CampaignSetup_container__5iZsN {
+  height: 100%;
+}
+body .CampaignSetup_selectWrapper__cpUow {
+  height: 46px;
+}
+body .AdsPerformance_summaryCard___FgjK {
+  width: 100%;
+  max-width: 100%;
+  padding: 30px 20px !important;
+}
+body .AdsPerformance_container__d__cz {
+  padding: 16px 0px 79px;
+}
+body .ProgressBar_container__s6dVz {
+  margin-bottom: 40px;
+}
+
+/* Media Quries */
+@media only screen and (max-width: 1199px) {
+  body .MuiBox-root.mui-1h2lv3f {
+    grid-template-columns: 1fr !important;
+  }
+  body header.mui-1h0txfa {
+    width: 95%;
+  }
+  body .mui-1jze0m {
+    margin-left: 30px;
+  }
+  body .mui-10tt4q4-MuiButtonBase-root-MuiIconButton-root {
+    top: 42px;
+    left: 50px;
+  }
+  body .custom-sidebar {
+    padding: 30px;
+  }
+  body .mui-1wayaui-MuiModal-root-MuiDrawer-root .MuiDrawer-paper {
+    width: 320px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  body .mui-10tt4q4-MuiButtonBase-root-MuiIconButton-root {
+    top: 20px;
+  }
+  body .cus-filt-prnt {
+    grid-template-columns: 1fr;
+  }
+  body .custom-sidebar {
+    padding: 20px;
+  }
+  body .AdsPerformance_summaryCard___FgjK {
+    width: 100%;
+    max-width: 100%;
+    padding: 30px 20px !important;
+  }
+  body .AdsPerformance_container__d__cz {
+    padding: 16px 0px 79px;
+  }
+  body .AdSetDetail_adSetDetailContainer__Verw8 {
+    max-width: 100%;
+    margin: 0;
+  }
+  body .AdSetDetail_adCreative__dlRvS {
+    width: 230px;
+    height: 230px;
+  }
+  body .AdSetDetail_budgetIcon__zVjIx {
+    font-size: 20px;
+  }
+  body .AdTable_detailRow__MnaZ0 {
+    display: block;
+    width: 100%;
+    min-width: 100%;
+  }
+  body .CampaignSetup_container__5iZsN {
+    padding: 35px;
+  }
+  body .PhotoUploadForm_formContainer__W0evb {
+    padding: 60px;
+    max-width: 100%;
+  }
+  body .PhotoUploadForm_container__ceigU {
+    padding: 60px;
+  }
+  body .PhotoUploadForm_previewImage__bIXnA {
+    max-height: 150px;
+    max-width: 150px;
+  }
+  body .CampaignNameForm_container___M008 {
+    padding: 60px;
+  }
+  body .CampaignNameForm_formContainer__CYAkN {
+    padding: 60px;
+  }
+  body .react-joyride {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .mui-xu1r15-MuiCardContent-root canvas {
+    width: 100%;
+    max-width: 100%;
+    height: 300px;
+  }
+  body .CampaignDetailsForm_container__OUfL8 {
+    max-width: 100%;
+    padding: 30px 30px;
+  }
+  body .CampaignDetailsForm_formContent__3N4Un {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  body .CampaignDetailsForm_formContainer__MTLJ2 {
+    padding: 30px;
+    width: 100%;
+    max-width: 100%;
+  }
+  body .CampaignDetailsForm_submitButton__2T7sM {
+    margin-top: 10px;
+  }
+  body .ProgressBar_icon__phGGn {
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+  }
+  body .ProgressBar_stepText__r9OXi {
+    font:
+      600 10px Poppins,
+      sans-serif;
+  }
+  body .CampaignDetailsForm_question__U7Rej {
+    font-size: 14px;
+  }
+  body .CampaignDetailsForm_input__DlXI7 {
+    margin-top: 0;
+  }
+  body input[type='text'],
+  body input[type='date'],
+  body input[type='url'],
+  body input[type='number'] {
+    font-size: 14px;
+  }
+  body .CampaignDetailsForm_input__DlXI7 {
+    font-size: 14px;
+  }
+  body .PhotoUploadForm_formContainer__W0evb {
+    padding: 30px;
+  }
+  body .PhotoUploadForm_uploadButton__QFZmp {
+    font-size: 14px;
+  }
+  body .PhotoUploadForm_imageUploadLabel__quukX {
+    padding: 30px;
+    max-width: 406px;
+    font-size: 14px;
+  }
+  body .PhotoUploadForm_backButton__jGMy0,
+  body .PhotoUploadForm_submitButton__AuRjg {
+    padding: 14px;
+    font:
+      500 14px Poppins,
+      sans-serif;
+    width: 100px;
+  }
+  body .PhotoUploadForm_container__ceigU {
+    padding: 30px;
+  }
+  body .PhotoUploadForm_description__HkEWA {
+    font:
+      500 14px / 22px Montserrat,
+      sans-serif;
+  }
+  body .CampaignNameForm_container___M008 {
+    padding: 30px;
+  }
+  body .CampaignNameForm_formContainer__CYAkN {
+    padding: 30px;
+  }
+  .CampaignNameForm_description__tLE0I {
+    font:
+      500 14px / 22px Montserrat,
+      sans-serif;
+  }
+  body .CampaignNameForm_backButton__pUzTm,
+  body .CampaignNameForm_submitButton__nQEhG {
+    padding: 14px;
+    font:
+      500 14px Poppins,
+      sans-serif;
+    width: 100px;
+  }
+  body .CampaignNameForm_formContent__f0ErY {
+    gap: 20px;
+  }
+  body .Connect_container__MAxNc {
+    flex-wrap: wrap;
+  }
+  body .mui-1hm4y2z {
+    width: 200px;
+  }
+  body .AdTable_tableRow__wcQlQ {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  body .AdTable_tableCellFirst__yt_j_ {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+  }
+  body .AdSetDetail_adSetDetailContent__8TTPi {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 30px;
+  }
+  body .AdSetDetail_aiResponseContainer__lpUln {
+    margin-bottom: 30px;
+  }
+  body .AdTable_adTableContainer__4YdND {
+    width: 100%;
+    padding: 0;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  body .cus-filter {
+    grid-template-columns: 1fr;
+  }
+  body .mui-10tt4q4-MuiButtonBase-root-MuiIconButton-root {
+    left: 36px;
+  }
+  body .mui-1uf3g2m-MuiInputBase-input {
+    border: 1px solid transparent !important;
+  }
+  body .CampaignSetup_container__5iZsN {
+    padding: 20px;
+  }
+  body .CampaignDetailsForm_container__OUfL8 {
+    padding: 40px 20px;
+  }
+  body .ProgressBar_container__s6dVz {
+    margin-top: 50px;
+  }
+  body .CampaignDetailsForm_formContainer__MTLJ2 {
+    padding: 20px;
+  }
+  body .CampaignDetailsForm_submitButton__2T7sM {
+    width: 150px;
+    padding: 15px;
+    font:
+      500 14px Poppins,
+      sans-serif;
+  }
+  body .ProgressBar_stepText__r9OXi {
+    max-width: 50px;
+  }
+  body .PhotoUploadForm_formContainer__W0evb {
+    padding: 20px;
+  }
+  body .PhotoUploadForm_container__ceigU {
+    padding: 20px;
+  }
+  body .PhotoUploadForm_uploadButton__QFZmp {
+    font-size: 10px;
+  }
+  body .PhotoUploadForm_imageUploadLabel__quukX {
+    padding: 20px 10px;
+    font-size: 12px;
+  }
+  body .PhotoUploadForm_backButton__jGMy0,
+  body .PhotoUploadForm_submitButton__AuRjg {
+    padding: 12px;
+    font:
+      500 12px Poppins,
+      sans-serif;
+    width: 80px;
+  }
+  body .PhotoUploadForm_previewImage__bIXnA {
+    max-height: 60px;
+    max-width: 60px;
+  }
+  body .CampaignNameForm_container___M008 {
+    padding: 20px;
+  }
+  body .CampaignNameForm_formContainer__CYAkN {
+    padding: 20px;
+  }
+  body .CampaignNameForm_infoText__mjeLh {
+    font:
+      500 14px Poppins,
+      sans-serif;
+  }
+  body .CampaignNameForm_question__3pXMU {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  body .Connect_container__MAxNc button {
+    width: 100%;
+    max-width: 100%;
+  }
+  body .mui-dq3k6s-MuiTypography-root {
+    font-size: 28px;
+    line-height: 36px;
+  }
+  body .mui-1ouiqrh-MuiTypography-root {
+    font-size: 14px;
+    padding: 0 20px;
+  }
+  body .AdSetDetail_budgetContainer__EDL32 {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+  }
+  body .AdTable_tableHeader__EWtBf {
+    padding: 14px;
+    font-size: 10px;
+  }
+  body .AdSetDetail_adSetDetailContainer__Verw8 {
+    padding: 10px;
+  }
+}
+
+@media only screen and (max-width: 380px) {
+  body .Connect_modalContent__uLw_X {
+    max-width: 360px;
+  }
 }

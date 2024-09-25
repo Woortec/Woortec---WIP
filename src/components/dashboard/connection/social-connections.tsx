@@ -75,33 +75,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    const uuid = localStorage.getItem('userid');
-    const hehe = async () => {
-      const { data, error } = await supabase
-        .from('facebookData')
-        .select('*') // Specify the columns you want to fetch, or '*' for all columns
-        .eq('user_id', uuid);
-      console.log('thisishioh isod', data);
-      if (data) {
-        setAccessToken(data[0].access_token);
-        setUserId(data[0].fb_user_id);
-        setAdAccounts([
-          {
-            name: data[0].ad_account_name,
-            id: data[0].account_id,
-          },
-        ]);
-        setSelectedPage({
-          id: data[0].page_id,
-          name: data[0].page_name,
-        });
-      }
-    };
-    hehe();
-  }, []);
-
-  useEffect(() => {
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
@@ -117,9 +90,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(storedUserId, token); // Pass the token and userId after ensuring they are strings
       }
 
-      if (storedAdAccountId) {
-        setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
-      }
+      // if (storedAdAccountId) {
+      //   setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+      // }
       if (storedPage) {
         setSelectedPage(storedPage); // Directly use the stored object
       }
@@ -247,6 +220,37 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
+  useEffect(() => {
+    const supabase = createClient();
+    const uuid = localStorage.getItem('userid');
+    const hehe = async () => {
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('*') // Specify the columns you want to fetch, or '*' for all columns
+        .eq('user_id', uuid);
+      console.log('thisishioh isod', data);
+      if (data) {
+        setAccessToken(data[0].access_token);
+        setUserId(data[0].fb_user_id);
+        setAdAccounts([
+          {
+            name: data[0].account_name,
+            id: data[0].account_id,
+          },
+        ]);
+        setSelectedAdAccount({
+          id: data[0].account_id,
+          name: data[0].account_name,
+        });
+        setSelectedPage({
+          id: data[0].page_id,
+          name: data[0].page_name,
+        });
+      }
+    };
+    hehe();
+  }, []);
+  console.log('selectedAdAccount', selectedAdAccount);
   useEffect(() => {
     if (accessToken && userId && adAccounts && selectedAdAccount && selectedPage) {
       const supabase = createClient();
