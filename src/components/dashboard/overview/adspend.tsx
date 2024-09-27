@@ -9,6 +9,7 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { createClient } from '../../../../utils/supabase/client'; // Make sure the path to your Supabase client is correct
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -60,15 +61,32 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
 
   const fetchAdSpendData = async () => {
     try {
-      const accessToken = getItemWithExpiry('fbAccessToken');
-      const adAccountId = getItemWithExpiry('fbAdAccount');
+      const supabase = createClient();
+      const userId = localStorage.getItem('userid'); // Fetch the userId from localStorage (if applicable)
+
+      if (!userId) {
+        throw new Error('User ID is missing.');
+      }
+
+      // Fetch access token and ad account ID from Supabase
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('access_token, account_id')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        throw new Error('Error fetching data from Supabase.');
+      }
+
+      const { access_token: accessToken, account_id: adAccountId } = data;
 
       if (!accessToken) {
-        throw new Error('Missing access token');
+        throw new Error('Missing access token from Supabase.');
       }
 
       if (!adAccountId) {
-        throw new Error('Missing ad account ID');
+        throw new Error('Missing ad account ID from Supabase.');
       }
 
       let timeIncrement = '1';
@@ -157,9 +175,6 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
       setLoading(false);
     }
   };
-
-
-  
 
   useEffect(() => {
     fetchAdSpendData();

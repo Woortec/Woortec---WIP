@@ -16,6 +16,7 @@ import {
 import { Doughnut } from 'react-chartjs-2';
 import { Box, SxProps } from '@mui/material';
 import dayjs from 'dayjs';
+import { createClient } from '../../../../utils/supabase/client'; // Adjust the path to your Supabase client
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -46,8 +47,25 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
 
   const fetchTotalReach = async () => {
     try {
-      const accessToken = getItemWithExpiry('fbAccessToken');
-      const adAccountId = getItemWithExpiry('fbAdAccount');
+      const supabase = createClient();
+      const userId = localStorage.getItem('userid'); // Fetch the userId from localStorage
+
+      if (!userId) {
+        throw new Error('User ID is missing.');
+      }
+
+      // Fetch access token and ad account ID from Supabase
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('access_token, account_id')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        throw new Error('Error fetching data from Supabase.');
+      }
+
+      const { access_token: accessToken, account_id: adAccountId } = data;
 
       if (!accessToken) {
         throw new Error('Missing access token');
@@ -194,24 +212,4 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
       </CardContent>
     </Card>
   );
-}
-
-// Utility function to get item from localStorage with expiry
-function getItemWithExpiry(key: string): string | null {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  try {
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return item.value;
-  } catch (error) {
-    console.error('Error parsing item from localStorage', error);
-    return null;
-  }
 }

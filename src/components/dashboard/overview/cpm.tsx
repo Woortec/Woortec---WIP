@@ -8,6 +8,7 @@ import { ArrowDown as ArrowDownIcon, ArrowUp as ArrowUpIcon } from '@phosphor-ic
 import axios from 'axios';
 import { ChatText } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
+import { createClient } from '../../../../utils/supabase/client'; // Adjust the path to your Supabase client
 
 export interface TotalCostPerMessageProps {
   diff?: number;
@@ -60,21 +61,40 @@ interface TotalCostPerMessageContainerProps {
 }
 
 const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessageContainerProps) => {
-  const [costData, setCostData] = useState<{ value: string; diff: number; trend: 'up' | 'down' }>({
-    value: '',
-    diff: 0,
-    trend: 'up',
-  });
+  const [costData, setCostData] = useState<{ value: string; diff: number; trend: 'up' | 'down' }>(
+    {
+      value: '',
+      diff: 0,
+      trend: 'up',
+    }
+  );
 
   const fetchTotalCostPerMessage = async () => {
     try {
-      const accessToken = getItemWithExpiry('fbAccessToken');
-      const adAccountId = getItemWithExpiry('fbAdAccount');
-  
+      const supabase = createClient();
+      const userId = localStorage.getItem('userid'); // Fetch the userId from localStorage (if applicable)
+
+      if (!userId) {
+        throw new Error('User ID is missing.');
+      }
+
+      // Fetch access token and ad account ID from Supabase
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('access_token, account_id')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        throw new Error('Error fetching data from Supabase.');
+      }
+
+      const { access_token: accessToken, account_id: adAccountId } = data;
+
       if (!accessToken || !adAccountId) {
         throw new Error('Missing access token or ad account ID');
       }
-  
+
       // Fetch the currency of the ad account
       const accountDetailsResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}`, {
         params: {
@@ -85,7 +105,7 @@ const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessag
 
       const currency = accountDetailsResponse.data.currency;
       console.log('Currency:', currency);
-  
+
       // Fetch the total cost per messaging conversation started for the Facebook ad account
       const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/insights`, {
         params: {
@@ -97,33 +117,33 @@ const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessag
           }),
         },
       });
-  
+
       // Log the full response for debugging
       console.log('Response data:', response.data);
-  
+
       // Extract actions and spend data
       const actions = response.data.data[0]?.actions || [];
       const spend = parseFloat(response.data.data[0]?.spend || '0');
       console.log('Spend:', spend);
       console.log('Actions:', actions);
-  
+
       // Filter the action to only include 'onsite_conversion.messaging_conversation_started_7d'
       const messagingActions = actions.filter(
         (action: any) => action.action_type === 'onsite_conversion.messaging_conversation_started_7d'
       );
       console.log('Messaging Actions:', messagingActions);
-  
+
       // Calculate the total cost per message
       const totalMessages = messagingActions.reduce(
         (sum: number, action: any) => sum + parseInt(action.value, 10),
         0
       );
       console.log('Total Messages:', totalMessages);
-  
+
       // If there are no messages, avoid division by zero
       const costPerMessage = totalMessages > 0 ? spend / totalMessages : 0;
       console.log('Cost per Message:', costPerMessage);
-  
+
       // Fetch the previous total cost per messaging conversation started for comparison
       const previousResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/insights`, {
         params: {
@@ -132,44 +152,44 @@ const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessag
           date_preset: 'last_month',
         },
       });
-  
+
       // Log the previous response for debugging
       console.log('Previous response data:', previousResponse.data);
-  
+
       // Extract previous actions and spend data
       const previousActions = previousResponse.data.data[0]?.actions || [];
       const previousSpend = parseFloat(previousResponse.data.data[0]?.spend || '0');
       console.log('Previous Spend:', previousSpend);
       console.log('Previous Actions:', previousActions);
-  
+
       // Filter the previous actions to only include 'onsite_conversion.messaging_conversation_started_7d'
       const previousMessagingActions = previousActions.filter(
         (action: any) => action.action_type === 'onsite_conversion.messaging_conversation_started_7d'
       );
       console.log('Previous Messaging Actions:', previousMessagingActions);
-  
+
       // Calculate the previous total cost per message
       const previousTotalMessages = previousMessagingActions.reduce(
         (sum: number, action: any) => sum + parseInt(action.value, 10),
         0
       );
       console.log('Previous Total Messages:', previousTotalMessages);
-  
+
       // If there are no previous messages, avoid division by zero
       const previousCostPerMessage = previousTotalMessages > 0 ? previousSpend / previousTotalMessages : 0;
       console.log('Previous Cost per Message:', previousCostPerMessage);
-  
+
       // Calculate the difference percentage
       const diff = previousCostPerMessage > 0 ? ((costPerMessage - previousCostPerMessage) / previousCostPerMessage) * 100 : 0;
       const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
       console.log('Diff:', diff, 'Trend:', trend);
-  
+
       // Format the cost per message with the correct currency
       const formattedCostPerMessage = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency,
       }).format(costPerMessage);
-  
+
       setCostData({
         value: formattedCostPerMessage,
         diff: Math.abs(diff),
@@ -182,7 +202,7 @@ const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessag
       }
     }
   };
-  
+
   useEffect(() => {
     if (startDate && endDate) {
       fetchTotalCostPerMessage();
@@ -193,23 +213,3 @@ const TotalCostPerMessageContainer = ({ startDate, endDate }: TotalCostPerMessag
 };
 
 export default TotalCostPerMessageContainer;
-
-// Utility function to get item from localStorage with expiry
-function getItemWithExpiry(key: string): string | null {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  try {
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return item.value;
-  } catch (error) {
-    console.error('Error parsing item from localStorage', error);
-    return null;
-  }
-}
