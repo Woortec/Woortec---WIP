@@ -11,6 +11,7 @@ import { CurrencyDollar as CurrencyDollarIcon } from '@phosphor-icons/react/dist
 import axios from 'axios';
 import type { SxProps } from '@mui/system';
 import dayjs from 'dayjs';
+import { createClient } from '../../../../utils/supabase/client'; // Ensure the correct path to your Supabase client
 
 export interface BudgetProps {
   diff?: number;
@@ -63,24 +64,43 @@ interface BudgetContainerProps {
 }
 
 const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
-  const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down'; currency: string }>({
-    value: '',
-    diff: 0,
-    trend: 'up',
-    currency: 'USD',
-  });
+  const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down'; currency: string }>(
+    {
+      value: '',
+      diff: 0,
+      trend: 'up',
+      currency: 'USD',
+    }
+  );
 
   const fetchBudget = async () => {
     try {
-      const accessToken = getItemWithExpiry('fbAccessToken');
-      const adAccountId = getItemWithExpiry('fbAdAccount');
+      const supabase = createClient();
+      const userId = localStorage.getItem('userid'); // Assuming you have user ID stored in localStorage
+
+      if (!userId) {
+        throw new Error('User ID is missing.');
+      }
+
+      // Fetch the access token, ad account ID, and page ID from Supabase
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('access_token, account_id, page_id')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        throw new Error('Error fetching data from Supabase.');
+      }
+
+      const { access_token: accessToken, account_id: adAccountId, page_id: pageId } = data;
 
       if (!accessToken) {
-        throw new Error('Missing access token');
+        throw new Error('Missing access token from Supabase.');
       }
 
       if (!adAccountId) {
-        throw new Error('Missing ad account ID');
+        throw new Error('Missing ad account ID from Supabase.');
       }
 
       // Fetch the ad account details to get the currency

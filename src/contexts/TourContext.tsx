@@ -1,6 +1,7 @@
 // contexts/TourContext.tsx
-'use client'
-import React, { createContext, useState, useContext } from 'react';
+'use client';
+
+import React, { createContext, useContext, useState } from 'react';
 import { Step } from 'react-joyride';
 
 interface TourContextType {
@@ -80,14 +81,10 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const startTour = () => {
     setRunTour(true);
   };
-    // Stop the tour
-    const stopTour = () => {
-      setRunTour(false);
-    };
+  // Stop the tour
+  const stopTour = () => {
+    setRunTour(false);
+  };
 
-  return (
-    <TourContext.Provider value={{ runTour, startTour, stopTour, steps }}>
-      {children}
-    </TourContext.Provider>
-  );
+  return <TourContext.Provider value={{ runTour, startTour, stopTour, steps }}>{children}</TourContext.Provider>;
 };

@@ -429,3 +429,9 @@ body .ProgressBar_container__s6dVz {
     max-width: 360px;
   }
 }
+
+body main .MuiContainer-root.mui-zbi050-MuiContainer-root,
+body main .CampaignDetailsForm_formContainer__MTLJ2,
+body main .CampaignDetailsForm_container__OUfL8 {
+  max-width: 100% !important;
+}

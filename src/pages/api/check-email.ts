@@ -1,12 +1,16 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { promises as fs } from 'fs';
 import path from 'path';
+
+import { NextApiRequest, NextApiResponse } from 'next';
 
 // Function to load disposable domains
 async function loadDisposableDomains(): Promise<string[]> {
   const filePath = path.join(process.cwd(), 'auth', 'disposable-email-domains.conf');
   const data = await fs.readFile(filePath, 'utf-8');
-  return data.split('\n').map(domain => domain.trim()).filter(Boolean);
+  return data
+    .split('\n')
+    .map((domain) => domain.trim())
+    .filter(Boolean);
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

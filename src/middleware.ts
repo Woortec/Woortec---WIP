@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { createClient } from '../utils/supabase/server';
 
 export default async function middleware(req: any) {
@@ -19,11 +20,7 @@ export default async function middleware(req: any) {
     if (pathname.startsWith('/_next') || pathname.startsWith('/api')) {
       return NextResponse.next();
     }
-    if (
-      (isRootPath || isProtectedPath) &&
-      !user &&
-      !isPublicPath
-    ) {
+    if ((isRootPath || isProtectedPath) && !user && !isPublicPath) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
     }
 
