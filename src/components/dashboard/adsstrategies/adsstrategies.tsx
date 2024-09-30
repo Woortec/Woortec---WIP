@@ -3,6 +3,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './styles/CampaignSetup.module.css';
+import { createClient } from '../../../../utils/supabase/client';
 
 function CampaignSetup() {
   const [objective, setObjective] = useState('');
@@ -10,22 +11,35 @@ function CampaignSetup() {
   const [adLink, setAdLink] = useState('');
   const [budget, setBudget] = useState('');
   const [answerMessages, setAnswerMessages] = useState('');
+  const [showSubscriptionPopup, setShowSubscriptionPopup] = useState(false); // State to control the subscription pop-up
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    const campaignDetails = localStorage.getItem('campaignDetails');
-    const preparingStartTime = localStorage.getItem('preparingStartTime');
+    // Check if user has a planId
+    const checkUserPlan = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('user')
+          .select('planId')
+          .eq('uuid', user.id)
+          .single();
 
-    if (campaignDetails && preparingStartTime) {
-      router.push('/dashboard/adsstrategies/preparing');
-    }
+        if (error || !data?.planId) {
+          setShowSubscriptionPopup(true); // Show the subscription pop-up if no planId
+        }
+      }
+    };
+
+    checkUserPlan();
 
     // Calculate the next Monday date
     const today = new Date();
     const nextMonday = new Date(today);
     nextMonday.setDate(today.getDate() + ((8 - today.getDay()) % 7));
     setStartDate(nextMonday.toISOString().split('T')[0]);
-  }, [router]);
+  }, [supabase]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,6 +116,21 @@ function CampaignSetup() {
         </div>
         <button type="submit" className={styles.submitButton}>Submit</button>
       </form>
+
+      {showSubscriptionPopup && (
+        <div className={styles.popup}>
+          <div className={styles.popupContent}>
+            <h2>Subscription Required</h2>
+            <p>You need to subscribe to a plan in order to use this service. Please visit the subscription page to continue.</p>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowSubscriptionPopup(false)} // Close the pop-up
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
