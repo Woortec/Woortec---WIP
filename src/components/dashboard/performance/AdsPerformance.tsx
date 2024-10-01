@@ -40,7 +40,7 @@ const AdsPerformance: React.FC = () => {
     let warnings = 0;
     let successes = 0;
     adData.forEach((ad) => {
-      if (ad.cpc > 0.09 || ad.cpm > 0.99) {
+      if (ad.ctr < 2) {
         warnings += 1;
       } else {
         successes += 1;

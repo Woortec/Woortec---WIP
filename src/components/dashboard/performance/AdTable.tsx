@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import AdDetail from './AdSetDetail'; // Import the updated AdDetail component
+import AdDetail from './AdSetDetail';
 import { getColor, formatValue, getComment, getImpressionsComment, calculateSpentColor, calculateSpentComment, convertThresholds, calculateExpectedSpend } from './utils';
 import styles from './styles/AdTable.module.css';
 
@@ -29,10 +29,11 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
       <Box className={styles.tableHeader}>
         <Box className={styles.tableHeaderCell}>AD NAMES</Box>
         <Box className={styles.tableHeaderCell}>CPC</Box>
-        <Box className={styles.tableHeaderCell}>CPM</Box>
-        <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
+        <Box className={styles.tableHeaderCell}>CTR (%)</Box> {/* Changed from CPM to CTR */}
+        <Box className={styles.tableHeaderCell}>REACH</Box> {/* Changed from Impressions to Reach */}
         <Box className={styles.tableHeaderCell}>SPENT</Box>
       </Box>
+
       {adData.map((ad, index) => (
         <React.Fragment key={ad.ad_id}>
           <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
@@ -41,7 +42,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
             </Box>
             <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.cpc, convertedThresholds.cpc, true) }}>
               <Typography className={`${styles.metricValue} ${ad.cpc <= convertedThresholds.cpc ? styles.goodMetric : styles.badMetric}`}>
-                {formatValue(ad.cpc, currency)}
+                {formatValue(ad.cpc, currency)} {/* Display CPC */}
               </Typography>
               <Tooltip title={getComment('CPC', ad.cpc, convertedThresholds.cpc, true)} arrow>
                 <IconButton>
@@ -49,26 +50,31 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
                 </IconButton>
               </Tooltip>
             </Box>
-            <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.cpm, convertedThresholds.cpm, true) }}>
-              <Typography className={`${styles.metricValue} ${ad.cpm <= convertedThresholds.cpm ? styles.goodMetric : styles.badMetric}`}>
-                {formatValue(ad.cpm, currency)}
+
+            <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.ctr, 1.6, false) }}> {/* Display CTR */}
+              <Typography className={`${styles.metricValue} ${ad.ctr >= 1.6 ? styles.goodMetric : styles.badMetric}`}>
+                {ad.ctr.toFixed(2)}%
               </Typography>
-              <Tooltip title={getComment('CPM', ad.cpm, convertedThresholds.cpm, true)} arrow>
+              <Tooltip title={getComment('CTR', ad.ctr, 1.6, false)} arrow>
                 <IconButton>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </Box>
-            <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.impressions, ad.spend * convertedThresholds.impressions, false) }}>
+
+            {/* REACH */}
+            <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.impressions / ad.spend, 700, false) }}>
               <Typography className={styles.metricValue}>
                 {formatValue(ad.impressions, currency, false)}
               </Typography>
-              <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * convertedThresholds.impressions)} arrow>
+              <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * 700)} arrow>
                 <IconButton>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </Box>
+
+            {/* SPENT */}
             <Box className={`${styles.tableCell} ${styles.tableCellLast}`} style={{ backgroundColor: calculateSpentColor(ad.spend, expectedSpend) }}>
               <Typography className={`${styles.metricValue} ${ad.spend >= expectedSpend ? styles.goodMetric : styles.badMetric}`}>
                 {formatValue(ad.spend, currency)}
@@ -80,6 +86,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
               </Tooltip>
             </Box>
           </Box>
+
           {selectedAdId === ad.ad_id && (
             <Box className={styles.detailRow}>
               <AdDetail adId={ad.ad_id} onClose={handleCloseDetail} />

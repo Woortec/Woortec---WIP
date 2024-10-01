@@ -98,6 +98,25 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
     }
   };
 
+// Calculate CTR (Click-Through Rate)
+const calculateCTR = (clicks: number, impressions: number) => {
+  if (!impressions || impressions === 0) return 'N/A'; // Avoid division by zero
+  const ctr = (clicks / impressions) * 100;
+  return ctr.toFixed(2); // Return CTR as a percentage (2 decimal places)
+};
+
+
+
+// Ensure values are valid numbers, fallback to 'N/A' if not
+const formatValue = (value: any, currency: string = '', fallback: string = 'N/A') => {
+  if (value === null || value === undefined || isNaN(parseFloat(value))) {
+    return fallback; // If value is invalid, return fallback
+  }
+
+  return `${parseFloat(value).toFixed(2)} ${currency}`; // Format the value and append currency
+};
+
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -124,28 +143,31 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           className={styles.adCreative}
         />
 
-        <Box className={styles.budgetContainer}>
-          <Box className={styles.budgetCard}>
-            <div className={`${styles.budgetIcon} green`}>CPC</div>
-            <div className={styles.budgetValue}> {adDetail?.cpc || 'N/A'}</div>
-          </Box>
+<Box className={styles.budgetContainer}>
+  <Box className={styles.budgetCard}>
+    <div className={`${styles.budgetIcon} green`}>CPC</div>
+    <div className={styles.budgetValue}> {formatValue(adDetail?.cpc)}</div> {/* Display CPC */}
+  </Box>
 
-          <Box className={styles.budgetCard}>
-            <div className={`${styles.budgetIcon} yellow`}>CPM</div>
-            <div className={styles.budgetValue}> {adDetail?.cpm || 'N/A'}</div>
-          </Box>
+  <Box className={styles.budgetCard}>
+    <div className={`${styles.budgetIcon} yellow`}>CTR (%)</div> {/* Changed from CPM to CTR */}
+    <div className={styles.budgetValue}>
+      {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
+    </div> {/* Display CTR */}
+  </Box>
 
-          <Box className={styles.budgetCard}>
-            <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
-            <div className={styles.budgetValue}> {adDetail?.impressions || 'N/A'}</div>
-          </Box>
+  <Box className={styles.budgetCard}>
+    <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
+    <div className={styles.budgetValue}> {formatValue(adDetail?.impressions, 'N/A')}</div>
+  </Box>
 
-          <Box className={styles.budgetCard}>
-            <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
-            <div className={styles.budgetValue}> {adDetail?.spend || 'N/A'}</div>
-          </Box>
-          {/* Add more budget cards as needed */}
-        </Box>
+  <Box className={styles.budgetCard}>
+    <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
+    <div className={styles.budgetValue}> {formatValue(adDetail?.spend, 'N/A')}</div>
+  </Box>
+  {/* Add more budget cards as needed */}
+</Box>
+
       </Box>
 
       {/* AI Response Section */}
