@@ -27,6 +27,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column' }}>
         <Box sx={{ p: 3 }}>
           <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-block', fontSize: 0 }}>
+            {/* Logo or home link can go here */}
           </Box>
         </Box>
         <Box sx={{ alignItems: 'center', display: 'flex', flex: '1 1 auto', justifyContent: 'center', p: 3 }}>
@@ -36,11 +37,12 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       <Box
         sx={{
           alignItems: 'center',
-          background: 'radial-gradient(50% 50% at 50% 50%, #122647 0%, #090E23 100%)',
+          backgroundColor: '#486A75',  // Update the background color
           color: 'var(--mui-palette-common-white)',
           display: { xs: 'none', lg: 'flex' },
           justifyContent: 'center',
           p: 3,
+          position: 'relative',  // Ensure proper positioning for the image
         }}
       >
         <Stack spacing={3}>
@@ -55,6 +57,15 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
               At Woortec, we organize the advertising investment process, with our integrated platform designed to simplify ad management, providing you with a centralized hub for all your campaigns.
             </Typography>
           </Stack>
+          {/* Adding the image */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <img
+              src="/woortec.svg"
+              alt="Woortec Logo"
+              width="300"
+              height="300"
+            />
+          </Box>
         </Stack>
       </Box>
     </Box>
