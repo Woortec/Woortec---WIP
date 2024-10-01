@@ -43,7 +43,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
         Cookies.remove(cookieName);
       });
 
-      router.push('/auth/sign-in');
+      router.push('/auth/log-in');
       window.location.reload();
     } catch (err) {
       logger.error('Sign out error', err);

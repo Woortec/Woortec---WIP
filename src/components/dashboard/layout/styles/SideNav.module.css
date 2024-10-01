@@ -1,0 +1,117 @@
+/* Container for the sidebar */
+.sidebar {
+    width: 260px; /* Adjust width for better fit */
+    background-color: #ffffff; /* White background for sidebar */
+    padding: 20px; /* Padding for inner spacing */
+    height: 100vh; /* Full height for sidebar */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items at the start */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  }
+  
+  /* Logo and brand name styling */
+  .logoContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px; /* Space below logo */
+  }
+  
+  .brandName {
+    font-size: 20px; /* Brand name size */
+    font-weight: bold;
+    text-align: center;
+    color: #333; /* Dark text for brand */
+  }
+  
+  /* Navigation items */
+  .navList {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    flex-grow: 1; /* Allow nav items to grow */
+  }
+  
+  .navItem {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px; /* Adequate padding for items */
+    color: #555; /* Default color for nav items */
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    cursor: pointer;
+    margin-bottom: 10px; /* Space between items */
+  }
+  
+  .navItem:hover {
+    background-color: #e0f7fa; /* Light blue background on hover */
+    color: #00796b; /* Darker text color on hover */
+  }
+  
+  .navItem.active {
+    background-color: #00796b; /* Active background color */
+    color: white; /* Active text color */
+  }
+  
+  /* Icon styling */
+  .navIcon {
+    margin-right: 12px; /* Space between icon and text */
+    font-size: 20px; /* Icon size */
+  }
+  
+  /* Divider between sections */
+  .divider {
+    border-top: 1px solid #e0e0e0; /* Light gray divider */
+    margin: 20px 0; /* Space above and below divider */
+  }
+  
+  /* "Start Tour" button styling */
+  .tourButton {
+    background-color: #00bfa6; /* Button color */
+    color: white; /* Text color */
+    font-size: 16px; /* Button text size */
+    font-weight: bold; /* Button text weight */
+    padding: 12px 20px; /* Button padding */
+    border-radius: 25px; /* Rounded button */
+    text-align: center; /* Center text */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    cursor: pointer; /* Pointer cursor */
+    margin-top: auto; /* Push button to bottom */
+    display: block; /* Block for full width */
+  }
+  
+  .tourButton:hover {
+    background-color: #009c89; /* Darker shade on hover */
+  }
+  
+  /* Hamburger menu icon (for mobile view) */
+  .menuButton {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1300;
+    color: #333;
+  }
+  
+  /* Responsive styling */
+  @media (min-width: 1024px) {
+    .mobileDrawer {
+      display: none; /* Hide mobile drawer on desktop */
+    }
+  
+    .desktopNav {
+      display: flex; /* Show desktop nav */
+      width: 260px; /* Set fixed width */
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh; /* Full height */
+      z-index: 1200;
+      border-right: 1px solid #e0e0e0; /* Right border */
+      padding-top: 20px; /* Top padding */
+    }
+  }
+  

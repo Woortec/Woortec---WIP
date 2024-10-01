@@ -241,7 +241,7 @@ export function SignInForm(): React.JSX.Element {
     <Stack spacing={4}>
       <GTM gtmId="GTM-NXB5KPF3" />
       <Stack spacing={1}>
-        <Typography variant="h4">Sign in</Typography>
+        <Typography variant="h4">Log In</Typography>
         <Typography color="text.secondary" variant="body2">
           Don&apos;t have an account?{' '}
           <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
@@ -291,7 +291,7 @@ export function SignInForm(): React.JSX.Element {
           </div>
           {errors.root && <Alert color="error">{errors.root}</Alert>}
           <Button disabled={isPending} type="submit" variant="contained">
-            Sign in
+           Log In
           </Button>
         </Stack>
       </form>
@@ -302,7 +302,7 @@ export function SignInForm(): React.JSX.Element {
         variant="contained"
         startIcon={<GoogleIcon />}
       >
-        Sign in with Google
+        Log In with Google
       </Button>
       {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
       <Button
@@ -312,7 +312,7 @@ export function SignInForm(): React.JSX.Element {
         variant="contained"
         startIcon={<FacebookIcon />}
       >
-        Sign in with Facebook
+        Log in with Facebook
       </Button>
       {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
     </Stack>

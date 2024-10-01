@@ -62,7 +62,7 @@ export function ResetPasswordForm(): React.JSX.Element {
         } else {
           setSuccessMessage('Your password has been successfully reset.');
           setTimeout(() => {
-            router.push('/auth/sign-in'); // Redirect to sign-in page after a short delay
+            router.push('/auth/log-in'); // Redirect to sign-in page after a short delay
           }, 3000);
         }
       } catch (error) {

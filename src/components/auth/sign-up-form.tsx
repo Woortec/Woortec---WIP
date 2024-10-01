@@ -33,6 +33,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
+// Updated schema with confirm password validation
 const schema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required' }),
   lastName: zod.string().min(1, { message: 'Last name is required' }),
@@ -42,12 +43,16 @@ const schema = zod.object({
     .min(8, { message: 'Password should be at least 8 characters' })
     .regex(/[A-Z]/, { message: 'Password should have at least one uppercase letter' })
     .regex(/\d/, { message: 'Password should have at least one number' }),
+  confirmPassword: zod.string().min(1, { message: 'Confirm password is required' }),
   terms: zod.boolean().refine((value) => value, 'You must accept the terms and conditions'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'], // Path to the confirmPassword field
 });
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { firstName: '', lastName: '', email: '', password: '', terms: false } satisfies Values;
+const defaultValues = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', terms: false } satisfies Values;
 
 export function SignUpForm(): React.JSX.Element {
   const router = useRouter();
@@ -56,8 +61,11 @@ export function SignUpForm(): React.JSX.Element {
 
   const [isPending, setIsPending] = React.useState<boolean>(false);
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState<boolean>(false);
+  const [isEmailRegistered, setIsEmailRegistered] = React.useState<boolean>(false); // New state
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
@@ -72,23 +80,33 @@ export function SignUpForm(): React.JSX.Element {
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true);
-  
+
       // Call the UserCheck API to validate the email
       const emailCheckResponse = await fetch(`https://api.usercheck.com/email/${values.email}?key=YxppwgkhuJuAyYh489KyPALDXOlldowp`, {
         method: 'GET',
       });
-  
+
       const emailCheckData = await emailCheckResponse.json();
-  
+
       // Check if the email is disposable
       if (emailCheckData.disposable) {
-        // Set an error message in the form and stop further execution
         setError('email', { message: 'Temporary/disposable email addresses are not allowed' });
         setIsPending(false);
-        return; // Stop further execution
+        return;
       }
-  
-      // Proceed with the sign-up if the email is not disposable
+
+      // Check if the email is already registered in Supabase
+      const { data: existingUser, error: fetchError } = await supabase.auth.signInWithOtp({
+        email: values.email,
+      });
+
+      if (!fetchError && existingUser) {
+        setIsEmailRegistered(true); // Set flag to display log in message
+        setIsPending(false);
+        return;
+      }
+
+      // Proceed with the sign-up if the email is not disposable or already registered
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -99,21 +117,20 @@ export function SignUpForm(): React.JSX.Element {
           },
         },
       });
-  
+
       if (error) {
-        console.log('error', error);
         setError('root', { type: 'server', message: error.message });
         setIsPending(false);
         return;
       }
-  
+
       if (data) {
         // Create a Stripe customer
         const customer = await stripe.customers.create({
           email: values.email,
           name: `${values.firstName} ${values.lastName}`,
         });
-  
+
         // Insert the user into the Supabase 'user' table
         await supabase.from('user').insert([
           {
@@ -126,9 +143,9 @@ export function SignUpForm(): React.JSX.Element {
           },
         ]);
       }
-  
+
       alert('Please verify your email');
-  
+
       // Refresh the auth state
       await checkSession?.();
       router.refresh();
@@ -143,7 +160,7 @@ export function SignUpForm(): React.JSX.Element {
         <Typography color="text.secondary" variant="body2">
           Already have an account?{' '}
           <Link component={RouterLink} href={paths.auth.signIn} underline="hover" variant="subtitle2">
-            Sign in
+            Log In
           </Link>
         </Typography>
       </Stack>
@@ -179,6 +196,14 @@ export function SignUpForm(): React.JSX.Element {
                 <InputLabel>Email address</InputLabel>
                 <OutlinedInput {...field} label="Email address" type="email" />
                 {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
+                {isEmailRegistered && (
+                  <FormHelperText error>
+                    Email is already registered. Please{' '}
+                    <Link href="https://app.woortec.com/auth/log-in" underline="hover" target="_blank">
+                      log in here
+                    </Link>.
+                  </FormHelperText>
+                )}
               </FormControl>
             )}
           />
@@ -206,6 +231,33 @@ export function SignUpForm(): React.JSX.Element {
                   }
                 />
                 {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
+              </FormControl>
+            )}
+          />
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormControl error={Boolean(errors.confirmPassword)}>
+                <InputLabel>Confirm Password</InputLabel>
+                <OutlinedInput
+                  {...field}
+                  label="Confirm Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle confirm password visibility"
+                        onClick={handleClickShowConfirmPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+                {errors.confirmPassword ? <FormHelperText>{errors.confirmPassword.message}</FormHelperText> : null}
               </FormControl>
             )}
           />

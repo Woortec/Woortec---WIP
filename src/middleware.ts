@@ -11,7 +11,7 @@ export default async function middleware(req: any) {
     const providerLogin = req.cookies.get('sb-uvhvgcrczfdfvoujarga-auth-token-code-verifier');
 
     const protectedPaths = ['/dashboard', '/private', '/settings', '/'];
-    const publicPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error'];
+    const publicPaths = ['/auth/log-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error'];
 
     const isRootPath = pathname === '/';
     const isProtectedPath = protectedPaths.some((path) => pathname.startsWith(path));
@@ -21,7 +21,7 @@ export default async function middleware(req: any) {
       return NextResponse.next();
     }
     if ((isRootPath || isProtectedPath) && !user && !isPublicPath) {
-      return NextResponse.redirect(new URL('/auth/sign-in', req.url));
+      return NextResponse.redirect(new URL('/auth/log-in', req.url));
     }
 
     const response = NextResponse.next();
