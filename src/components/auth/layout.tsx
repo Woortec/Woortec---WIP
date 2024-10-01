@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ReactGA from 'react-ga4';
+import WoortecIllustration from '../../../public/assets/log-in-woortec.svg';
 
 import { paths } from '@/paths';
 
@@ -18,53 +19,59 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
     <Box
       sx={{
-        display: { xs: 'flex', lg: 'grid' },
-        flexDirection: 'column',
-        gridTemplateColumns: '1fr 1fr',
-        minHeight: '100%',
+        display: 'flex',
+        flexDirection: { xs: 'column', lg: 'row' },
+        minHeight: '100vh',
+        backgroundColor: '#f7f7f7', // Add background color to match design
       }}
     >
-      <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column' }}>
-        <Box sx={{ p: 3 }}>
-          <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-block', fontSize: 0 }}>
-            {/* Logo or home link can go here */}
-          </Box>
-        </Box>
-        <Box sx={{ alignItems: 'center', display: 'flex', flex: '1 1 auto', justifyContent: 'center', p: 3 }}>
-          <Box sx={{ maxWidth: '450px', width: '100%' }}>{children}</Box>
-        </Box>
-      </Box>
+      {/* Left Section - Login Form */}
       <Box
         sx={{
+          display: 'flex',
+          flex: 1,
           alignItems: 'center',
-          backgroundColor: '#486A75',  // Update the background color
-          color: 'var(--mui-palette-common-white)',
-          display: { xs: 'none', lg: 'flex' },
           justifyContent: 'center',
-          p: 3,
-          position: 'relative',  // Ensure proper positioning for the image
+          padding: { xs: 3, lg: 6 },
+          backgroundColor: '#fff', // Background for form
         }}
       >
-        <Stack spacing={3}>
-          <Stack spacing={1}>
-            <Typography color="inherit" sx={{ fontSize: '24px', lineHeight: '32px', textAlign: 'center' }} variant="h1">
-              Welcome to{' '}
-              <Box component="span" sx={{ color: '#15b79e' }}>
-                Woortec
-              </Box>
-            </Typography>
-            <Typography align="center" variant="subtitle1">
-              At Woortec, we organize the advertising investment process, with our integrated platform designed to simplify ad management, providing you with a centralized hub for all your campaigns.
-            </Typography>
-          </Stack>
-          {/* Adding the image */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <img
-              src="/woortec.svg"
-              alt="Woortec Logo"
-              width="300"
-              height="300"
-            />
+        <Box sx={{ maxWidth: '450px', width: '100%' }}>
+          {children}
+        </Box>
+      </Box>
+
+      {/* Right Section - Illustration and Text */}
+      <Box
+        sx={{
+          flex: 1,
+          backgroundColor: '#486A75', // Update the background color
+          color: 'white',
+          display: { xs: 'none', lg: 'flex' }, // Hidden on smaller screens
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 3,
+        }}
+      >
+        <Stack spacing={3} alignItems="center">
+          {/* Heading */}
+          <Typography
+            sx={{
+              fontSize: '24px',
+              lineHeight: '32px',
+              textAlign: 'center',
+            }}
+            variant="h1"
+          >
+            Maximize impact, minimize spend with{' '}
+            <Box component="span" sx={{ color: '#15b79e' }}>
+              Woortec
+            </Box>
+          </Typography>
+
+          {/* SVG Image */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <WoortecIllustration style={{ maxWidth: '100%', height: 'auto' }} />
           </Box>
         </Stack>
       </Box>

@@ -17,6 +17,7 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import Stripe from 'stripe';
+import Box from '@mui/material/Box'; // <-- Missing Box import
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
@@ -239,82 +240,148 @@ export function SignInForm(): React.JSX.Element {
 
   return (
     <Stack spacing={4}>
-      <GTM gtmId="GTM-NXB5KPF3" />
-      <Stack spacing={1}>
-        <Typography variant="h4">Log In</Typography>
-        <Typography color="text.secondary" variant="body2">
-          Don&apos;t have an account?{' '}
-          <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-            Sign up
-          </Link>
-        </Typography>
-      </Stack>
-      <form onSubmit={handleSubmit}>
-        <Stack spacing={2}>
-          <FormControl error={Boolean(errors.email)}>
-            <InputLabel>Email address</InputLabel>
-            <OutlinedInput
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              label="Email address"
-              type="email"
-            />
-            {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
-          </FormControl>
-          <FormControl error={Boolean(errors.password)}>
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              endAdornment={
-                showPassword ? (
-                  <EyeIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" onClick={() => setShowPassword(false)} />
-                ) : (
-                  <EyeSlashIcon
-                    cursor="pointer"
-                    fontSize="var(--icon-fontSize-md)"
-                    onClick={() => setShowPassword(true)}
-                  />
-                )
-              }
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-            />
-            {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
-          </FormControl>
-          <div>
-            <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
-              Forgot password?
-            </Link>
-            {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
-            {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
-          </div>
-          {errors.root && <Alert color="error">{errors.root}</Alert>}
-          <Button disabled={isPending} type="submit" variant="contained">
-           Log In
-          </Button>
-        </Stack>
-      </form>
-      <Button
-        onClick={handleGoogleSignIn}
-        disabled={isPending}
-        type="button"
-        variant="contained"
-        startIcon={<GoogleIcon />}
-      >
-        Log In with Google
-      </Button>
-      {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
-      <Button
-        onClick={handleFacebookSignIn}
-        disabled={isPending}
-        type="button"
-        variant="contained"
-        startIcon={<FacebookIcon />}
-      >
-        Log in with Facebook
-      </Button>
-      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
+    <Stack spacing={1}>
+      <Typography variant="h4">Welcome back!</Typography>
+      <Typography color="text.secondary" variant="body2">
+        Don&apos;t have an account?{' '}
+        <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
+          Sign Up
+        </Link>
+      </Typography>
     </Stack>
+    <form onSubmit={handleSubmit}>
+      <Stack spacing={2}>
+        <FormControl error={Boolean(errors.email)}>
+          <InputLabel>Email address</InputLabel>
+          <OutlinedInput
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            label="Email address"
+            type="email"
+            sx={{ borderRadius: '8px' }} // Add rounded corners
+          />
+          {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
+        </FormControl>
+        <FormControl error={Boolean(errors.password)}>
+          <InputLabel>Password</InputLabel>
+          <OutlinedInput
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            endAdornment={
+              showPassword ? (
+                <EyeIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" onClick={() => setShowPassword(false)} />
+              ) : (
+                <EyeSlashIcon
+                  cursor="pointer"
+                  fontSize="var(--icon-fontSize-md)"
+                  onClick={() => setShowPassword(true)}
+                />
+              )
+            }
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            sx={{ borderRadius: '8px' }} // Add rounded corners
+          />
+          {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
+        </FormControl>
+        <div>
+        <Box sx={{ textAlign: 'right' }}>  {/* Aligned to the right */}
+  <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
+    Forgot password?
+  </Link>
+</Box>
+          {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
+          {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
+        </div>
+        {errors.root && <Alert color="error">{errors.root}</Alert>}
+        <Button
+          disabled={isPending}
+          type="submit"
+          variant="contained"
+          sx={{
+            backgroundColor: '#15b79e', // Matching button color
+            borderRadius: '8px', // Add rounded corners
+          }}
+        >
+          Log In
+        </Button>
+      </Stack>
+    </form>
+    <Stack spacing={2} justifyContent="center" alignItems="center">
+  {/* Horizontal line with "or continue with" text */}
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      width: '100%',
+    }}
+  >
+    <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
+    <Typography
+      variant="body2"
+      sx={{
+        color: '#90a4ae',
+        paddingX: 2, // Adds spacing between the text and lines
+        fontSize: '14px',
+      }}
+    >
+      or continue with
+    </Typography>
+    <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
+  </Box>
+
+  {/* Google and Facebook circular buttons */}
+  <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+    <Button
+      onClick={handleGoogleSignIn}
+      disabled={isPending}
+      type="button"
+      variant="outlined"
+      sx={{
+        width: '50px',
+        height: '50px',
+        minWidth: '50px', // Ensures the button is circular
+        borderRadius: '50%',
+        borderColor: '#486A75',
+        color: '#486A75',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '&:hover': {
+          backgroundColor: '#486A75',
+          borderColor: '#486A75',
+          color: '#ffffff',
+        },
+      }}
+    >
+      <GoogleIcon />
+    </Button>
+    <Button
+      onClick={handleFacebookSignIn}
+      disabled={isPending}
+      type="button"
+      variant="outlined"
+      sx={{
+        width: '50px',
+        height: '50px',
+        minWidth: '50px', // Ensures the button is circular
+        borderRadius: '50%',
+        borderColor: '#486A75',
+        color: '#486A75',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '&:hover': {
+          backgroundColor: '#486A75',
+          borderColor: '#486A75',
+          color: '#ffffff',
+        },
+      }}
+    >
+      <FacebookIcon />
+    </Button>
+  </Stack>
+</Stack>
+  </Stack>  
   );
 }
