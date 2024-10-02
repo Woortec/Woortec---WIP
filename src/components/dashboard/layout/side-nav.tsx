@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
-import Joyride, { CallBackProps, Step } from 'react-joyride'; // Import Joyride
+import Joyride, { CallBackProps } from 'react-joyride'; // Import Joyride
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -47,7 +47,7 @@ export function SideNav(): React.JSX.Element {
     }
   };
 
-  const drawer = (
+  const drawerContent = (
     <Box
       className="custom-sidebar"
       sx={{
@@ -137,7 +137,7 @@ export function SideNav(): React.JSX.Element {
         onClick={handleDrawerToggle}
         edge="start"
         sx={{
-          display: { lg: 'none', xs: 'inline-flex' },
+          display: { lg: 'none', xs: 'inline-flex' }, // Show only on small screens
           position: 'fixed',
           top: 16,
           left: 15,
@@ -154,9 +154,9 @@ export function SideNav(): React.JSX.Element {
           '--SideNav-color': '#333333',
           bgcolor: 'var(--SideNav-background)',
           color: 'var(--SideNav-color)',
-          display: { xs: 'none', lg: 'flex' },
+          display: { xs: 'none', lg: 'flex' }, // Hidden on small screens
           flexDirection: 'column',
-          height: '98%',
+          height: '98vh',
           left: 19,
           maxWidth: '100%',
           borderRadius: '12px',
@@ -166,10 +166,10 @@ export function SideNav(): React.JSX.Element {
           zIndex: 'var(--SideNav-zIndex)',
           '&::-webkit-scrollbar': { display: 'none' },
           borderRight: '1px solid #E0E0E0',
-          p: 2,
+          p: 4,
         }}
       >
-        {drawer}
+        {drawerContent}
       </Box>
 
       {/* Mobile drawer */}
@@ -181,14 +181,14 @@ export function SideNav(): React.JSX.Element {
           keepMounted: true, // Better open performance on mobile
         }}
         sx={{
-          display: { xs: 'block', lg: 'none' },
+          display: { xs: 'block', lg: 'none' }, // Hidden on large screens
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: 256,
           },
         }}
       >
-        {drawer}
+        {drawerContent}
       </Drawer>
     </>
   );

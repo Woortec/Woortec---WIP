@@ -1,57 +1,87 @@
-/* Connect.module.css */
 .container {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    padding: 1rem;
-  }
-  
-  .card {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: white;
-  }
-  
-  .cardIcon {
-    margin-right: 1rem;
-  }
-  
-  .cardContent {
-    flex-grow: 1;
-  }
-  
-  .removeButton {
-    margin-left: auto;
-  }
-  
-  .button {
-    background-color: #1877F2;
-    color: white;
-    border-radius: 8px;
-  }
-  
-  .button:hover {
-    background-color: #145BC0;
-  }
-  
-  .modalContent {
-    padding: 20px;
-    background: white;
-    margin: 50px auto;
-    max-width: 400px;
-    position: relative;
-  }
-  
-  .closeButton {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-  }
-  
-  .dialogActions {
-    justify-content: flex-end;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  gap: 1rem;
+  background-color: #f9fafb; /* Softer, lighter background */
+  border-radius: 16px;
+  max-width: 300px; /* Limit the card width to keep it compact */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for a subtle lift */
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.5rem;
+  gap: 0.5rem;
+  background-color: #f0f4f8; /* Light grey background similar to the reference */
+  border-radius: 12px;
+  max-width: 300px;
+  box-shadow: none; /* No shadow on card itself */
+}
+
+.cardIcon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 0.5rem; /* Smaller icon with space below */
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardContent .title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #2c3e50; /* Darker text for title */
+}
+
+.cardContent .description {
+  font-size: 0.875rem;
+  color: #7f8c8d; /* Light grey for description text */
+}
+
+.removeButton {
+  display: none; /* Hide the remove button for now */
+}
+
+.button {
+  background-color: #00c293; /* Green color for the button as per the reference */
+  color: white;
+  padding: 0.75rem 1.5rem; /* Padding for a nice button size */
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center; /* Center the text */
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #00a982; /* Slightly darker green on hover */
+}
+
+.modalContent {
+  padding: 2rem;
+  background: white;
+  margin: 50px auto;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #f44336;
+}
+
+.dialogActions {
+  justify-content: flex-end;
+}

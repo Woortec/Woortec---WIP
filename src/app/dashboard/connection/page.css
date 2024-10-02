@@ -1,0 +1,22 @@
+.App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Creates 3 equal columns */
+    gap: 1.5rem; /* Adds space between the components */
+    width: 90%; /* Adjust width as necessary */
+    max-width: 1200px; /* Limit the maximum width */
+    padding: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .grid-container {
+      grid-template-columns: 1fr; /* Stack items in a single column on small screens */
+    }
+  }
+  

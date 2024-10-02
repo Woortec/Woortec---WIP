@@ -285,14 +285,15 @@ export function SignInForm(): React.JSX.Element {
           {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
         </FormControl>
         <div>
-        <Box sx={{ textAlign: 'right' }}>  {/* Aligned to the right */}
-  <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
-    Forgot password?
-  </Link>
-</Box>
-          {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
-          {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
-        </div>
+  <Box sx={{ textAlign: 'right' }}>
+    <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
+      Forgot password?
+    </Link>
+  </Box>
+  {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
+  {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
+</div>
+
         {errors.root && <Alert color="error">{errors.root}</Alert>}
         <Button
           disabled={isPending}

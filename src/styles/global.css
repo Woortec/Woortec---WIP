@@ -435,3 +435,21 @@ body main .CampaignDetailsForm_formContainer__MTLJ2,
 body main .CampaignDetailsForm_container__OUfL8 {
   max-width: 100% !important;
 }
+
+
+/* Global CSS for hiding the scrollbar */
+html, body {
+  overflow: hidden; /* This will hide the scrollbar */
+  height: 100%; /* Make sure the body takes up the full height */
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
