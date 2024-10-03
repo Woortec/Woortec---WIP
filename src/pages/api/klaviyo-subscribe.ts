@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const KLAVIYO_API_KEY = process.env.NEXT_PUBLIC_KLAVIYO_API_KEY;
 const KLAVIYO_API_URL = 'https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs';
-const LIST_ID = 'XSsStF'; // Replace with your actual list ID
+const LIST_ID = 'Y8z9xD'; // Replace with your actual list ID
 const REVISION = '2024-07-15'; // Use the latest date of revision according to Klaviyo's API
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
