@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ReactGA from 'react-ga4';
-import WoortecIllustration from '../../../public/assets/log-in-woortec.svg';
+import Image from 'next/image'; // Import the Image component to handle SVG or other images
+import WoortecIllustration from '../../../public/assets/log-in-woortec.svg'; // Import your illustration
 
 import { paths } from '@/paths';
 
@@ -22,7 +23,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
         display: 'flex',
         flexDirection: { xs: 'column', lg: 'row' },
         minHeight: '100vh',
-        backgroundColor: '#f7f7f7', // Add background color to match design
+        backgroundColor: '#486A75', // Set background color to match the design
       }}
     >
       {/* Left Section - Login Form */}
@@ -33,10 +34,20 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
           alignItems: 'center',
           justifyContent: 'center',
           padding: { xs: 3, lg: 6 },
-          backgroundColor: '#fff', // Background for form
+          backgroundColor: '#486A75', // Background for form section
         }}
       >
-        <Box sx={{ maxWidth: '450px', width: '100%' }}>
+        <Box
+          sx={{ 
+            maxWidth: '700px', // Increased the width of the form
+            height: '800px',
+            width: '100%',
+            backgroundColor: '#fff',
+            borderRadius: '12px', // Rounded corners for the form
+            padding: '48px', // Increased padding for a more spacious look
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Shadow to lift the form
+          }}
+        >
           {children}
         </Box>
       </Box>
@@ -45,7 +56,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       <Box
         sx={{
           flex: 1,
-          backgroundColor: '#486A75', // Update the background color
+          backgroundColor: '#486A75',
           color: 'white',
           display: { xs: 'none', lg: 'flex' }, // Hidden on smaller screens
           justifyContent: 'center',
@@ -79,7 +90,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
   );
 }
 
-export default function App({ Component, pageProps }: { Component: any, pageProps: any }) {
+export default function App({ Component, pageProps }: { Component: any; pageProps: any }) {
   const router = useRouter();
 
   useEffect(() => {

@@ -80,32 +80,33 @@ export function SignUpForm(): React.JSX.Element {
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true);
-
+  
       // Call the UserCheck API to validate the email
       const emailCheckResponse = await fetch(`https://api.usercheck.com/email/${values.email}?key=YxppwgkhuJuAyYh489KyPALDXOlldowp`, {
         method: 'GET',
       });
-
+  
       const emailCheckData = await emailCheckResponse.json();
-
+  
       // Check if the email is disposable
       if (emailCheckData.disposable) {
         setError('email', { message: 'Temporary/disposable email addresses are not allowed' });
         setIsPending(false);
         return;
       }
-
+  
       // Check if the email is already registered in Supabase
-      const { data: existingUser, error: fetchError } = await supabase.auth.signInWithOtp({
-        email: values.email,
-      });
-
-      if (!fetchError && existingUser) {
-        setIsEmailRegistered(true); // Set flag to display log in message
+      const { data: userExists, error: userCheckError } = await supabase
+        .from('user')
+        .select('email')
+        .eq('email', values.email);
+  
+      if (userExists && userExists.length > 0) {
+        setIsEmailRegistered(true); // Set flag to display log-in message
         setIsPending(false);
         return;
       }
-
+  
       // Proceed with the sign-up if the email is not disposable or already registered
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
@@ -117,20 +118,20 @@ export function SignUpForm(): React.JSX.Element {
           },
         },
       });
-
+  
       if (error) {
         setError('root', { type: 'server', message: error.message });
         setIsPending(false);
         return;
       }
-
+  
       if (data) {
         // Create a Stripe customer
         const customer = await stripe.customers.create({
           email: values.email,
           name: `${values.firstName} ${values.lastName}`,
         });
-
+  
         // Insert the user into the Supabase 'user' table
         await supabase.from('user').insert([
           {
@@ -143,15 +144,16 @@ export function SignUpForm(): React.JSX.Element {
           },
         ]);
       }
-
+  
       alert('Please verify your email');
-
+  
       // Refresh the auth state
       await checkSession?.();
       router.refresh();
     },
     [checkSession, router, setError, supabase]
   );
+  
 
   return (
     <Stack spacing={3}>

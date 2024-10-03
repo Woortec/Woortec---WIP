@@ -315,6 +315,7 @@ export function SignInForm(): React.JSX.Element {
       display: 'flex',
       alignItems: 'center',
       width: '100%',
+      marginTop: '240px' 
     }}
   >
     <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
