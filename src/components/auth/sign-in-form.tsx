@@ -241,7 +241,10 @@ export function SignInForm(): React.JSX.Element {
   return (
     <Stack spacing={4}>
     <Stack spacing={1}>
-      <Typography variant="h4">Welcome back!</Typography>
+      <Typography variant="h4"
+        sx={{ marginTop: '20px',
+        }}>
+        Welcome back!</Typography>
       <Typography color="text.secondary" variant="body2">
         Don&apos;t have an account?{' '}
         <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
@@ -258,7 +261,11 @@ export function SignInForm(): React.JSX.Element {
             onChange={(e) => setEmail(e.target.value)}
             label="Email address"
             type="email"
-            sx={{ borderRadius: '8px' }} // Add rounded corners
+            sx={{ borderRadius: '8px', // Add rounded corners
+              backgroundColor: '#FFFFFF', // Change the color
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }  // Keep the border on focus
+             }}
           />
           {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
         </FormControl>
@@ -280,7 +287,11 @@ export function SignInForm(): React.JSX.Element {
             }
             label="Password"
             type={showPassword ? 'text' : 'password'}
-            sx={{ borderRadius: '8px' }} // Add rounded corners
+            sx={{ borderRadius: '8px', // Add rounded corners
+              backgroundColor: '#FFFFFF', // Change the color
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }  // Keep the border on focus
+             }}
           />
           {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
         </FormControl>
@@ -302,6 +313,7 @@ export function SignInForm(): React.JSX.Element {
           sx={{
             backgroundColor: '#15b79e', // Matching button color
             borderRadius: '8px', // Add rounded corners
+            marginTop: '40px'
           }}
         >
           Log In
@@ -315,7 +327,7 @@ export function SignInForm(): React.JSX.Element {
       display: 'flex',
       alignItems: 'center',
       width: '100%',
-      marginTop: '240px' 
+      marginTop: '20px' 
     }}
   >
     <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>

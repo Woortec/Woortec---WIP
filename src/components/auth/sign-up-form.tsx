@@ -173,8 +173,20 @@ export function SignUpForm(): React.JSX.Element {
             name="firstName"
             render={({ field }) => (
               <FormControl error={Boolean(errors.firstName)}>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput {...field} label="First name" />
+                <InputLabel
+                sx={{
+                  fontSize: '15px', // Adjust font size
+                  top: '-2px'
+                }}
+                 >First name</InputLabel>
+                <OutlinedInput {...field} label="First name" 
+                sx={{ borderRadius: '8px', // Add rounded corners
+                  backgroundColor: '#FFFFFF', // Change the color
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },  // Keep the border on focus
+                  height: '45px'
+                 }}
+                 />
                 {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
               </FormControl>
             )}
@@ -184,8 +196,20 @@ export function SignUpForm(): React.JSX.Element {
             name="lastName"
             render={({ field }) => (
               <FormControl error={Boolean(errors.lastName)}>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput {...field} label="Last name" />
+                <InputLabel
+                 sx={{
+                  fontSize: '15px', // Adjust font size
+                  top: '-2px'
+                }}
+                >Last name</InputLabel>
+                <OutlinedInput {...field} label="Last name" 
+                sx={{
+                  backgroundColor: '#FFFFFF', // Change the color
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },  // Keep the border on focus
+                  height: '45px'
+                 }}
+                 />
                 {errors.lastName ? <FormHelperText>{errors.lastName.message}</FormHelperText> : null}
               </FormControl>
             )}
@@ -195,8 +219,20 @@ export function SignUpForm(): React.JSX.Element {
             name="email"
             render={({ field }) => (
               <FormControl error={Boolean(errors.email)}>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput {...field} label="Email address" type="email" />
+                <InputLabel
+                sx={{
+                  fontSize: '15px', // Adjust the font size here
+                  top: '-2px'
+                 }}
+                >Email address</InputLabel>
+                <OutlinedInput {...field} label="Email address" type="email"
+                sx={{
+                  backgroundColor: '#FFFFFF', // Change the color
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },  // Keep the border on focus
+                  height: '45px'
+                 }}
+                 />
                 {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
                 {isEmailRegistered && (
                   <FormHelperText error>
@@ -214,11 +250,23 @@ export function SignUpForm(): React.JSX.Element {
             name="password"
             render={({ field }) => (
               <FormControl error={Boolean(errors.password)}>
-                <InputLabel>Password</InputLabel>
+                <InputLabel
+                sx={{
+                  fontSize: '15px', // Adjust the font size here
+                  top: '-2px'
+                 }}
+                 >Password</InputLabel>
                 <OutlinedInput
                   {...field}
+                  
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
+                  sx={{
+                    backgroundColor: '#FFFFFF', // Change the color
+                    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },  // Keep the border on focus
+                    height: '45px'
+                   }}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -241,11 +289,22 @@ export function SignUpForm(): React.JSX.Element {
             name="confirmPassword"
             render={({ field }) => (
               <FormControl error={Boolean(errors.confirmPassword)}>
-                <InputLabel>Confirm Password</InputLabel>
+                <InputLabel
+                sx={{
+                  fontSize: '15px', // Adjust the font size here
+                  top: '-2px'
+                 }}
+                 >Confirm Password</InputLabel>
                 <OutlinedInput
                   {...field}
                   label="Confirm Password"
                   type={showConfirmPassword ? 'text' : 'password'}
+                  sx={{
+                    backgroundColor: '#FFFFFF', // Change the color
+                    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },  // Keep the border on focus
+                    height: '45px'
+                   }}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton

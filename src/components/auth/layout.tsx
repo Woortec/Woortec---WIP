@@ -40,9 +40,9 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
         <Box
           sx={{ 
             maxWidth: '700px', // Increased the width of the form
-            height: '800px',
+            height: '650px',
             width: '100%',
-            backgroundColor: '#fff',
+            backgroundColor: '#F2F4F5',
             borderRadius: '12px', // Rounded corners for the form
             padding: '48px', // Increased padding for a more spacious look
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Shadow to lift the form
