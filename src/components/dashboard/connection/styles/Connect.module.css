@@ -2,11 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1rem;
+  padding: 40px;
   gap: 1rem;
-  background-color: #f9fafb; /* Softer, lighter background */
+  background-color: #fff; /* Softer, lighter background */
   border-radius: 16px;
-  max-width: 300px; /* Limit the card width to keep it compact */
+  width: 100%; /* Make sure it takes up full width */
+  height: 100vh; /* Take up full viewport height */
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for a subtle lift */
 }
 
@@ -17,9 +18,9 @@
   align-items: flex-start;
   padding: 1.5rem;
   gap: 0.5rem;
-  background-color: #f0f4f8; /* Light grey background similar to the reference */
+  background-color: #30baff; /* Light grey background similar to the reference */
   border-radius: 12px;
-  max-width: 300px;
+  max-width: 500px;
   box-shadow: none; /* No shadow on card itself */
 }
 
@@ -63,7 +64,8 @@
 }
 
 .button:hover {
-  background-color: #00a982; /* Slightly darker green on hover */
+  background-color: #00604a; /* Slightly darker green on hover */
+  color: #00a982;
 }
 
 .modalContent {

@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Close as CloseIcon, Facebook as FacebookIcon } from '@mui/icons-material';
-import { Button, Card, IconButton, Stack, Typography } from '@mui/material';
+import { Button, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
 import type { SxProps } from '@mui/system';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
@@ -307,53 +309,71 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   }, [accessToken, userId, adAccounts, selectedAdAccount, selectedPage]);
 
   return (
-    <Stack spacing={2} direction="row" className={styles.container} sx={sx}>
-      {selectedAdAccount ? (
-        <Card className={styles.card}>
+    <Stack className={styles.container}>
+    <Typography variant="h5" gutterBottom>
+      Connect with your social media accounts
+    </Typography>
+    <Typography variant="body2" gutterBottom>
+      Simplify your ad strategy by connecting your accounts effortlessly.
+    </Typography>
+
+    <Grid container spacing={3}>
+      {/* Facebook Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
           <FacebookIcon className={styles.cardIcon} />
           <div className={styles.cardContent}>
-            <Typography variant="body1">{selectedAdAccount.name}</Typography>
+            <Typography className={styles.title}>Facebook</Typography>
+            <Typography className={styles.description}>
+              Connect to Supercharge Your Ads!
+            </Typography>
           </div>
-          <IconButton onClick={handleRemoveSelection} className={styles.removeButton}>
-            <CloseIcon />
-          </IconButton>
+          <Button className={styles.button}>CONNECTED</Button>
         </Card>
-      ) : (
-        <Button
-          variant="contained"
-          startIcon={<FacebookIcon />}
-          onClick={handleFacebookLogin}
-          className={styles.button}
-        >
-          Connect a Facebook Page
-        </Button>
-      )}
-      {selectedPage ? (
-        <Card className={styles.card}>
+      </Grid>
+
+      {/* Instagram Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <InstagramIcon className={styles.cardIcon} />
           <div className={styles.cardContent}>
-            <Typography variant="body1">{selectedPage.name}</Typography>
+            <Typography className={styles.title}>Instagram</Typography>
+            <Typography className={styles.description}>
+              Connect to Supercharge Your Ads!
+            </Typography>
           </div>
-          <IconButton onClick={() => setSelectedPage(null)} className={styles.removeButton}>
-            <CloseIcon />
-          </IconButton>
+          <Button className={styles.button} sx={{ backgroundColor:'#00c293',
+          color: 'white',
+           }}>Make the connection</Button>
         </Card>
-      ) : (
-        <Button variant="contained" onClick={() => setPageModalOpen(true)} className={styles.button}>
-          Select a Page
-        </Button>
-      )}
-      <AdAccountSelectionModal
-        open={modalOpen}
-        adAccounts={adAccounts}
-        onClose={handleModalClose}
-        onSelect={handleAdAccountSelect}
-      />
-      <PageSelectionModal
-        open={pageModalOpen}
-        pages={pages}
-        onClose={() => setPageModalOpen(false)}
-        onSelect={handlePageSelect}
-      />
-    </Stack>
-  );
+      </Grid>
+
+      {/* LinkedIn Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <LinkedInIcon className={styles.cardIcon} />
+          <div className={styles.cardContent}>
+            <Typography className={styles.title}>LinkedIn</Typography>
+            <Typography className={styles.description}>
+              We need to connect to your account
+            </Typography>
+          </div>
+          <Button className={styles.button} sx={{ backgroundColor:'#00c293',
+          color: 'white',
+           }}>Make the connection</Button>
+        </Card>
+      </Grid>
+    </Grid>
+
+    {/* New Feature Announcement */}
+    <Typography variant="body2" sx={{ marginTop: '35px'}}>
+      Your connected social accounts (0):
+    </Typography>
+
+    {/* New Feature Announcement */}
+    <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
+      New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
+    </Typography>
+  </Stack>
+);
 }
