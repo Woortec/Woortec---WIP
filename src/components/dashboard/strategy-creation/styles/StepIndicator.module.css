@@ -1,0 +1,50 @@
+.stepsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .stepWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stepCircle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e0e0e0;
+  }
+  
+  .icon {
+    font-size: 24px; /* Placeholder icon size */
+  }
+  
+  .active {
+    background-color: #d4f4d4; /* Light green for the active step */
+    border-color: #6fcf97; /* Stronger green border for active step */
+  }
+  
+  .stepLabel {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .stepLine {
+    width: 100px; /* Adjust the length of the line between steps */
+    height: 2px;
+    background-color: #e0e0e0;
+    margin: 0 10px;
+  }
+  
+  .stepWrapper .active + .stepLabel {
+    color: #333; /* Darker color for active step label */
+  }
+  

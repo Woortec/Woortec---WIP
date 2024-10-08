@@ -1,0 +1,25 @@
+.container {
+    padding: 20px;
+}
+
+.analysisTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.analysisTable th,
+.analysisTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.downloadButton,
+.uploadButton {
+    background-color: #3b8070;
+    color: white;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+}

@@ -19,7 +19,8 @@ export const paths = {
     adsstrategies: '/dashboard/adsstrategies',
     analysistable: '/dashboard/strategies/analysis',
     campaign: '/dashboard/campaign',
-    CampaignSetup: '/dashboard/campaign-setup'
+    CampaignSetup: '/dashboard/campaign-setup',
+    strategy: '/dashboard/strategy',
     
   },
   errors: { notFound: '/errors/not-found' },
