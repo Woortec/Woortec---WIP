@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation'; // Use Next.js's router
 import styles from './styles/StrategyResultPage.module.css';
 
 const StrategyResultPage: React.FC = () => {
-    const navigate = useNavigate();
+    const router = useRouter(); // Initialize Next.js router
 
     const handleBackToStart = () => {
-        navigate('/');
+        router.push('/'); // Navigate to the home page
     };
 
     return (

@@ -1,14 +1,14 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation'; // Use Next.js's usePathname to get current path
 import styles from './styles/StepIndicator.module.css';  // Adjust the path to your CSS file
 
 const StepIndicator: React.FC = () => {
-  const location = useLocation();
+  const pathname = usePathname(); // Get the current pathname
   
   // Function to determine active step based on current location
   const getActiveStep = () => {
-    if (location.pathname === "/strategy-creation") return 2;
-    if (location.pathname === "/strategy-result") return 3;
+    if (pathname === "/strategy-creation") return 2;
+    if (pathname === "/strategy-result") return 3;
     return 1; // Default to Objective if no match
   };
 

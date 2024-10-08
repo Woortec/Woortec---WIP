@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation'; // Use Next.js's router
 import styles from './styles/ObjectivePage.module.css';
 import StepIndicator from './StepIndicator';
 import { createClient } from '../../../../utils/supabase/client'; // Import Supabase client
 
 const ObjectivePage: React.FC = () => {
-    const navigate = useNavigate();
+    const router = useRouter(); // Initialize Next.js router
 
     // State to store the form data
     const [formData, setFormData] = useState({
@@ -63,7 +63,7 @@ const ObjectivePage: React.FC = () => {
     // Handle continue button click
     const handleContinue = async () => {
         await storeDataInSupabase(); // Store the form data in Supabase
-        navigate('/strategy-creation');
+        router.push('/strategy-creation'); // Use router.push() to navigate
     };
 
     return (
