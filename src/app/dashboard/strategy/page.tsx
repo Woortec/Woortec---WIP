@@ -12,7 +12,6 @@ function App() {
       <div className="App">
         <Routes>
           {/* Route for Objective Page */}
-          <Route path="/" element={<ObjectivePage />} />
           <Route path="/dashboard/strategy" element={<ObjectivePage />} />  {/* New route */}
 
           {/* Route for Strategy Creation Page */}
