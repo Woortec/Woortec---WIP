@@ -21,6 +21,9 @@ export const paths = {
     campaign: '/dashboard/campaign',
     CampaignSetup: '/dashboard/campaign-setup',
     strategy: '/dashboard/strategy',
+    objective: '/dashboard/strategy/objective',
+    strategycreation: '/dashboard/strategy/strategycreation',
+    strategyresult: '/dashboard/strategy/strategyresult',
     
   },
   errors: { notFound: '/errors/not-found' },
