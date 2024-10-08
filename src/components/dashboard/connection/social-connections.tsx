@@ -285,6 +285,31 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
         New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
       </Typography>
+
+{/* Modals for ad account and page selection */}
+{/* Modals for ad account and page selection */}
+<AdAccountSelectionModal
+  open={modalOpen}
+  adAccounts={adAccounts} 
+  onClose={() => setModalOpen(false)}
+  onSelect={(accountId: string) => {
+    const selectedAccount = adAccounts.find(account => account.id === accountId); // Find the full account object by its ID
+    if (selectedAccount) {
+      setSelectedAdAccount(selectedAccount); // Set the full account object in the state
+    }
+  }}
+/>
+
+<PageSelectionModal
+  open={pageModalOpen}
+  pages={pages}
+  onClose={() => setPageModalOpen(false)}
+  onSelect={(pageId: string) => {
+    const selectedPage = pages.find((page) => page.id === pageId);  // Find the full page object based on the ID
+    if (selectedPage) setSelectedPage(selectedPage);  // Set the full page object in the state
+  }}
+/>
+
     </Stack>
   );
 }

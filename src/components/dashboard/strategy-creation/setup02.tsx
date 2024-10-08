@@ -32,7 +32,7 @@ const StrategyCreationPage: React.FC = () => {
 
         // Navigate to the next page after 3 minutes (180000ms)
         const timeout = setTimeout(() => {
-            router.push('//dashboard/strategy/strategyresult'); // Use router.push() to navigate
+            router.push('/dashboard/strategy/strategyresult'); // Use router.push() to navigate
         }, totalDuration);
 
         return () => {
