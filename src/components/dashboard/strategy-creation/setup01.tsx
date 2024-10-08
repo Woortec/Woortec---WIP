@@ -63,7 +63,7 @@ const ObjectivePage: React.FC = () => {
     // Handle continue button click
     const handleContinue = async () => {
         await storeDataInSupabase(); // Store the form data in Supabase
-        router.push('/strategy-creation'); // Use router.push() to navigate
+        router.push('/dashboard/strategy/strategycreation'); // Use router.push() to navigate
     };
 
     return (

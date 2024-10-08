@@ -8,7 +8,7 @@ const StrategyResultPage: React.FC = () => {
     const router = useRouter(); // Initialize Next.js router
 
     const handleBackToStart = () => {
-        router.push('/'); // Navigate to the home page
+        router.push('/dashboard/strategy'); // Navigate to the home page
     };
 
     return (

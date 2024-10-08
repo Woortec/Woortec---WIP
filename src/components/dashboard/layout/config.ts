@@ -7,5 +7,5 @@ export const navItems: NavItemConfig[] = [
   { key: 'adsstrategies', title: 'Ads Strategies', href: paths.dashboard.adsstrategies, icon: 'strategy' },
   { key: 'campaign', title: 'Campaign Setup', href: paths.dashboard.campaign, icon: 'usergear' },
   { key: 'connection', title: 'Social Connections', href: paths.dashboard.connection, icon: 'broadcast' },
-  { key: 'strategy', title: 'Ads Strategy', href: paths.dashboard.strategy, icon: 'strategy' },
+  { key: 'strategy', title: 'Ads Strategy', href: paths.dashboard.objective, icon: 'strategy' },
 ];

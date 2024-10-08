@@ -20,7 +20,7 @@ export const paths = {
     analysistable: '/dashboard/strategies/analysis',
     campaign: '/dashboard/campaign',
     CampaignSetup: '/dashboard/campaign-setup',
-    strategy: '/dashboard/strategy',
+    objective: '/dashboard/strategy',
     strategycreation: '/dashboard/strategy/strategycreation',
     strategyresult: '/dashboard/strategy/strategyresult',
     

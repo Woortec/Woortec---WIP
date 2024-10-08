@@ -1,23 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ObjectivePage from './objective/page';  // Adjust the import paths
-import StrategyCreationPage from './strategycreation/page'
-import StrategyResultPage from './strategyresult/page';
+import ObjectivePage from '@/components/dashboard/strategy-creation/setup01';
+import StrategyCreationPage from '@/components/dashboard/strategy-creation/setup02';
+import StrategyResultPage from '@/components/dashboard/strategy-creation/setup03';
 
-function Strategy() {
+function App() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // Render nothing on the server side
+  }
+
   return (
     <Router>
-      <div className="Strategy">
+      <div className="App">
         <Routes>
-          <Route path="/dashboard/strategy" element={<ObjectivePage />} />  {/* New route */}
-          <Route path="/strategy-creation" element={<StrategyCreationPage />} />
-          <Route path="/strategy-result" element={<StrategyResultPage />} />
+          <Route path="/dashboard/strategy" element={<ObjectivePage />} />
+          <Route path="/dashboard/strategy/strategycreation" element={<StrategyCreationPage />} />
+          <Route path="/dashboard/strategy/strategyresult" element={<StrategyResultPage />} />
         </Routes>
       </div>
     </Router>
   );
 }
 
-export default Strategy;
+export default App;
