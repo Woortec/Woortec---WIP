@@ -74,13 +74,50 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [pageModalOpen, setPageModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string; currency: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
+  const [isConnected, setIsConnected] = useState(false); // Track if the user is already connected
+
+  const supabase = createClient();
 
   // Initialize Facebook SDK and state
   useEffect(() => {
     loadFacebookSDK().then(() => {
       setIsSdkLoaded(true);
     });
+
+    checkUserConnection(); // Check if the user is already connected on page load
   }, []);
+
+  const checkUserConnection = async () => {
+    const localUserId = localStorage.getItem('userid');
+    if (!localUserId) return;
+
+    // Check Supabase if user is already connected
+    const { data, error } = await supabase
+      .from('facebookData')
+      .select('*')
+      .eq('user_id', localUserId);
+
+    if (error) {
+      console.error('Error checking user connection:', error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      // User is already connected, set state accordingly
+      setAccessToken(data[0].access_token);
+      setUserId(data[0].fb_user_id);
+      setSelectedAdAccount({
+        id: data[0].account_id,
+        name: data[0].account_name,
+        currency: data[0].currency,
+      });
+      setSelectedPage({
+        id: data[0].page_id,
+        name: data[0].page_name,
+      });
+      setIsConnected(true);
+    }
+  };
 
   const handleFacebookLogin = () => {
     if ((window as any).FB) {
@@ -137,7 +174,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find((account) => account.id === accountId);
     if (selectedAccount) {
-      setSelectedAdAccount(selectedAccount); // Set selected ad account
+      setSelectedAdAccount(selectedAccount);
 
       // Store in localStorage
       setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
@@ -145,14 +182,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       // Close the ad account modal and open the page selection modal
       setModalOpen(false);
       fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
-      setPageModalOpen(true); // Open page modal
+      setPageModalOpen(true);
     }
   };
 
   const handlePageSelect = (pageId: string) => {
     const selectedPage = pages.find((page) => page.id === pageId);
     if (selectedPage) {
-      setSelectedPage(selectedPage); // Set selected page
+      setSelectedPage(selectedPage);
 
       // Store in localStorage
       setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000);
@@ -183,7 +220,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     selectedAdAccount: { id: string; name: string; currency: string };
     selectedPage: { id: string; name: string };
   }) => {
-    const supabase = createClient();
     const localUserId = localStorage.getItem('userid');
 
     const { data, error } = await supabase.from('facebookData').insert({
@@ -201,28 +237,32 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       console.error('Error inserting data into Supabase:', error);
     } else {
       console.log('Data inserted into Supabase successfully:', data);
+      setIsConnected(true);
     }
   };
 
-  const handleDisconnectAdAccount = () => {
+  const handleDisconnectAdAccount = async () => {
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
+    localStorage.removeItem('fbAccessToken');
+    localStorage.removeItem('fbUserId');
     setAccessToken(null);
     setUserId(null);
-  };
+    setIsConnected(false);
 
-  const handleDisconnectPage = () => {
-    setSelectedPage(null);
-    localStorage.removeItem('fbPage');
+    // Optionally delete the data from Supabase
+    const localUserId = localStorage.getItem('userid');
+    await supabase.from('facebookData').delete().eq('user_id', localUserId);
   };
 
   const renderAdAccounts = () => {
-    return adAccounts.map((account) => (
-      <div key={account.id}>
-        <p>Ad Account: {account.name}</p>
-        <p>Currency: {account.currency}</p>
+    if (!selectedAdAccount) return null;
+    return (
+      <div>
+        <p>Ad Account: {selectedAdAccount.name}</p>
+        <p>Currency: {selectedAdAccount.currency}</p>
       </div>
-    ));
+    );
   };
 
   return (
@@ -242,19 +282,17 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             <div className={styles.cardContent}>
               <Typography className={styles.title}>Facebook</Typography>
               <Typography className={styles.description}>
-                Connect to Supercharge Your Ads!
+                {isConnected ? 'Connected to Facebook' : 'Connect to Supercharge Your Ads!'}
               </Typography>
             </div>
-            {accessToken ? (
-              <div>
-                <Button
-                  className={styles.button}
-                  sx={{ backgroundColor: '#00c293', color: 'white' }}
-                  onClick={handleDisconnectAdAccount}
-                >
-                  DISCONNECT
-                </Button>
-              </div>
+            {isConnected ? (
+              <Button
+                className={styles.button}
+                sx={{ backgroundColor: '#00c293', color: 'white' }}
+                onClick={handleDisconnectAdAccount}
+              >
+                DISCONNECT
+              </Button>
             ) : (
               <Button
                 className={styles.button}
@@ -302,7 +340,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
       {/* Render fetched ad accounts with currency */}
       <Typography variant="h6" sx={{ marginTop: '20px' }}>
-        Connected Ad Accounts:
+        Connected Ad Account:
       </Typography>
       {renderAdAccounts()}
 
