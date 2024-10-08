@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ObjectivePage from './page/ObjectivePage';  // Adjust the import paths
-import StrategyCreationPage from '@/components/dashboard/strategy-creation/setup02';
-import StrategyResultPage from '@/components/dashboard/strategy-creation/setup03';
+import ObjectivePage from './strategysetup/ObjectivePage';  // Adjust the import paths
+import StrategyCreationPage from './strategysetup/ObjectivePage';
+import StrategyResultPage from './strategysetup/ObjectivePage';
 
 function App() {
   return (
