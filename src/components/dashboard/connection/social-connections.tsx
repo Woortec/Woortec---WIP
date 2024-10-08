@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Close as CloseIcon, Facebook as FacebookIcon } from '@mui/icons-material';
-import { Button, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Facebook as FacebookIcon } from '@mui/icons-material';
+import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import type { SxProps } from '@mui/system';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -93,6 +93,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         fetchPages(storedUserId, token);
       }
 
+      if (storedAdAccount) {
+        setSelectedAdAccount(storedAdAccount); // Directly use the stored object
+      }
+
       if (storedPage) {
         setSelectedPage(storedPage); // Directly use the stored object
       }
@@ -118,11 +122,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           }));
           console.log('Fetched ad accounts with currency:', accounts);
           setAdAccounts(accounts);
-
-          // Now you can store the fetched data in the database
-          accounts.forEach(async (account: { id: string; name: string; currency: string }) => {
-            await storeAdAccountInDatabase(account);
-          });
         } else {
           console.error('Error fetching ad accounts:', response.error);
         }
@@ -148,39 +147,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
-  const storeAdAccountInDatabase = async (account: { id: string; name: string; currency: string }) => {
-    const supabase = createClient();
-    const localUserId = localStorage.getItem('userid');
+  const handleDisconnectAdAccount = () => {
+    setSelectedAdAccount(null);
+    localStorage.removeItem('fbAdAccountObj');
+  };
 
-    // Check if the ad account already exists in the database for this user
-    const { data: existingData, error: selectError } = await supabase
-      .from('facebookData')
-      .select('*')
-      .eq('user_id', localUserId)
-      .eq('account_id', account.id);
-
-    if (selectError) {
-      console.error('Error checking for existing ad account data:', selectError);
-      return;
-    }
-
-    // If the ad account doesn't exist, insert it with the currency field
-    if (existingData.length === 0) {
-      const { data, error } = await supabase.from('facebookData').insert({
-        account_id: account.id,
-        account_name: account.name,
-        currency: account.currency, // Store currency here
-        user_id: localUserId,
-      });
-
-      if (error) {
-        console.error('Error inserting ad account data with currency:', error);
-      } else {
-        console.log('Ad account data with currency inserted successfully:', data);
-      }
-    } else {
-      console.log('Ad account already exists, skipping insertion.');
-    }
+  const handleDisconnectPage = () => {
+    setSelectedPage(null);
+    localStorage.removeItem('fbPage');
   };
 
   const renderAdAccounts = () => {
@@ -212,29 +186,41 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 Connect to Supercharge Your Ads!
               </Typography>
             </div>
-            <Button
-              className={styles.button}
-              sx={{ backgroundColor: accessToken ? '#00c293' : '#f0f4f8', color: accessToken ? 'white' : 'black' }}
-              onClick={() => {
-                if (!accessToken) {
-                  if ((window as any).FB) {
-                    (window as any).FB.login((response: any) => {
-                      if (response.authResponse) {
-                        const token = response.authResponse.accessToken;
-                        const userId = response.authResponse.userID;
-                        setAccessToken(token);
-                        setUserId(userId);
+            {accessToken ? (
+              <div>
+                <Button
+                  className={styles.button}
+                  sx={{ backgroundColor: '#00c293', color: 'white' }}
+                  onClick={handleDisconnectAdAccount}
+                >
+                  DISCONNECT
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className={styles.button}
+                sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
+                onClick={() => {
+                  if (!accessToken) {
+                    if ((window as any).FB) {
+                      (window as any).FB.login((response: any) => {
+                        if (response.authResponse) {
+                          const token = response.authResponse.accessToken;
+                          const userId = response.authResponse.userID;
+                          setAccessToken(token);
+                          setUserId(userId);
 
-                        setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); // 1 day expiry
-                        setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
-                      }
-                    }, { scope: 'ads_read, pages_show_list' });
+                          setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); // 1 day expiry
+                          setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
+                        }
+                      }, { scope: 'ads_read, pages_show_list' });
+                    }
                   }
-                }
-              }}
-            >
-              {accessToken ? 'CONNECTED' : 'CONNECT'}
-            </Button>
+                }}
+              >
+                CONNECT
+              </Button>
+            )}
           </Card>
         </Grid>
 
@@ -286,30 +272,32 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
       </Typography>
 
-{/* Modals for ad account and page selection */}
-{/* Modals for ad account and page selection */}
-<AdAccountSelectionModal
-  open={modalOpen}
-  adAccounts={adAccounts} 
-  onClose={() => setModalOpen(false)}
-  onSelect={(accountId: string) => {
-    const selectedAccount = adAccounts.find(account => account.id === accountId); // Find the full account object by its ID
-    if (selectedAccount) {
-      setSelectedAdAccount(selectedAccount); // Set the full account object in the state
-    }
-  }}
-/>
+      {/* Modals for ad account and page selection */}
+      <AdAccountSelectionModal
+        open={modalOpen}
+        adAccounts={adAccounts}
+        onClose={() => setModalOpen(false)}
+        onSelect={(accountId: string) => {
+          const selectedAccount = adAccounts.find((account) => account.id === accountId); // Find the full account object by its ID
+          if (selectedAccount) {
+            setSelectedAdAccount(selectedAccount); // Set the full account object in the state
+            setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000); // Store selected account in localStorage
+          }
+        }}
+      />
 
-<PageSelectionModal
-  open={pageModalOpen}
-  pages={pages}
-  onClose={() => setPageModalOpen(false)}
-  onSelect={(pageId: string) => {
-    const selectedPage = pages.find((page) => page.id === pageId);  // Find the full page object based on the ID
-    if (selectedPage) setSelectedPage(selectedPage);  // Set the full page object in the state
-  }}
-/>
-
+      <PageSelectionModal
+        open={pageModalOpen}
+        pages={pages}
+        onClose={() => setPageModalOpen(false)}
+        onSelect={(pageId: string) => {
+          const selectedPage = pages.find((page) => page.id === pageId); // Find the full page object based on the ID
+          if (selectedPage) {
+            setSelectedPage(selectedPage); // Set the full page object in the state
+            setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000); // Store selected page in localStorage
+          }
+        }}
+      />
     </Stack>
   );
 }
