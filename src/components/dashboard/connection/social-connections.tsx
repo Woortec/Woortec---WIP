@@ -5,8 +5,7 @@ import { Facebook as FacebookIcon } from '@mui/icons-material';
 import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { SxProps } from '@mui/system';
-
+import { SxProps } from '@mui/system';  // Add this line
 import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
@@ -147,43 +146,42 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
-  const storeAdAccountInDatabase = async (account: { id: string; name: string; currency: string }) => {
+  const storeDataInSupabase = async ({
+    accessToken,
+    userId,
+    selectedAdAccount,
+    selectedPage,
+  }: {
+    accessToken: string;
+    userId: string;
+    selectedAdAccount: { id: string; name: string; currency: string };
+    selectedPage: { id: string; name: string };
+  }) => {
     const supabase = createClient();
     const localUserId = localStorage.getItem('userid');
 
-    const { data: existingData, error: selectError } = await supabase
-      .from('facebookData')
-      .select('*')
-      .eq('user_id', localUserId)
-      .eq('account_id', account.id);
+    const { data, error } = await supabase.from('facebookData').insert({
+      user_id: localUserId,
+      access_token: accessToken,
+      fb_user_id: userId,
+      page_id: selectedPage.id,
+      page_name: selectedPage.name,
+      account_id: selectedAdAccount.id,
+      account_name: selectedAdAccount.name,
+      currency: selectedAdAccount.currency,
+    });
 
-    if (selectError) {
-      console.error('Error checking for existing ad account data:', selectError);
-      return;
-    }
-
-    if (existingData.length === 0) {
-      const { data, error } = await supabase.from('facebookData').insert({
-        account_id: account.id,
-        account_name: account.name,
-        currency: account.currency,
-        user_id: localUserId,
-      });
-
-      if (error) {
-        console.error('Error inserting ad account data with currency:', error);
-      } else {
-        console.log('Ad account data with currency inserted successfully:', data);
-      }
+    if (error) {
+      console.error('Error inserting data into Supabase:', error);
     } else {
-      console.log('Ad account already exists, skipping insertion.');
+      console.log('Data inserted into Supabase successfully:', data);
     }
   };
 
   const handleDisconnectAdAccount = () => {
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
-    setAccessToken(null);  // Remove the access token
+    setAccessToken(null); // Remove the access token
     setUserId(null);
   };
 
@@ -305,7 +303,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
           if (selectedAccount) {
             setSelectedAdAccount(selectedAccount); // Set the full account object in the state
             setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000); // Store selected account in localStorage
-            await storeAdAccountInDatabase(selectedAccount); // Store the selected account in Supabase
+            // Store the selected account and other details in Supabase
+            if (accessToken && userId && selectedPage) {
+              await storeDataInSupabase({
+                accessToken,
+                userId,
+                selectedAdAccount: selectedAccount,
+                selectedPage: selectedPage,
+              });
+            }
           }
         }}
       />
@@ -314,11 +320,20 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         open={pageModalOpen}
         pages={pages}
         onClose={() => setPageModalOpen(false)}
-        onSelect={(pageId: string) => {
+        onSelect={async (pageId: string) => {
           const selectedPage = pages.find((page) => page.id === pageId); // Find the full page object based on the ID
           if (selectedPage) {
             setSelectedPage(selectedPage); // Set the full page object in the state
             setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000); // Store selected page in localStorage
+            // Store the selected page and other details in Supabase
+            if (accessToken && userId && selectedAdAccount) {
+              await storeDataInSupabase({
+                accessToken,
+                userId,
+                selectedAdAccount: selectedAdAccount,
+                selectedPage: selectedPage,
+              });
+            }
           }
         }}
       />
