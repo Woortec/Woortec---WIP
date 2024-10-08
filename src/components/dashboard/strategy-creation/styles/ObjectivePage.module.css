@@ -154,3 +154,18 @@
         font-size: 13px;
     }
 }
+.budgetInputContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .currencyDisplay {
+    margin-left: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: none;
+    font-size: 16px;
+    width: 60px;
+    text-align: center;
+  }
+  

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Use Next.js's router
 import styles from './styles/ObjectivePage.module.css';
 import StepIndicator from './StepIndicator';
@@ -16,6 +16,44 @@ const ObjectivePage: React.FC = () => {
         manageInquiries: '',
         trafficUrl: ''
     });
+
+    const [currency, setCurrency] = useState<string>(''); // State to store the user's currency
+
+    // Fetch currency from the facebookData table in Supabase
+    const fetchCurrency = async () => {
+        try {
+            const supabase = createClient();
+
+            // Retrieve user_id from localStorage
+            const user_id = localStorage.getItem('userid');
+
+            if (!user_id) {
+                console.error('User ID not found in localStorage');
+                return;
+            }
+
+            // Fetch currency from facebookData based on user_id
+            const { data, error } = await supabase
+                .from('facebookData')
+                .select('currency')
+                .eq('user_id', user_id);
+
+            if (error) {
+                console.error('Error fetching currency from Supabase:', error);
+            } else if (data && data.length > 0) {
+                setCurrency(data[0].currency); // Set the fetched currency
+            } else {
+                console.error('No connected ad account found for the user.');
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    };
+
+    // Fetch the currency on component mount
+    useEffect(() => {
+        fetchCurrency();
+    }, []);
 
     // Handle form input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -41,15 +79,14 @@ const ObjectivePage: React.FC = () => {
 
             const { data, error } = await supabase
                 .from('ads_strategy')  // Use your actual table name
-                .insert([
-                    {
-                        user_id: user_id,  // Link user_id
-                        objective: formData.objective,
-                        budget: formData.budget,
-                        manage_inquiries: formData.manageInquiries,
-                        traffic_url: formData.trafficUrl,
-                    }
-                ]);
+                .insert([{
+                    user_id: user_id,  // Link user_id
+                    objective: formData.objective,
+                    budget: formData.budget,
+                    manage_inquiries: formData.manageInquiries,
+                    traffic_url: formData.trafficUrl,
+                }]);
+
             if (error) {
                 console.error('Error inserting data:', error);
             } else {
@@ -89,14 +126,24 @@ const ObjectivePage: React.FC = () => {
                 </div>
                 <div className={styles.formGroup}>
                     <label>What is the budget you are willing to allocate for this campaign?</label>
-                    <input
-                        type="text"
-                        name="budget"
-                        className={styles.input}
-                        placeholder="Enter the amount"
-                        value={formData.budget}
-                        onChange={handleInputChange}
-                    />
+                    <div className={styles.budgetInputContainer}>
+                        <input
+                            type="text"
+                            name="budget"
+                            className={styles.input}
+                            placeholder="Enter the amount"
+                            value={formData.budget}
+                            onChange={handleInputChange}
+                        />
+                        {currency && (
+                            <input
+                                type="text"
+                                className={styles.currencyDisplay}
+                                value={currency}
+                                readOnly
+                            />
+                        )}
+                    </div>
                 </div>
                 <div className={styles.formGroup}>
                     <label>Are you able to manage and respond to customer inquiries generated through this campaign?</label>
