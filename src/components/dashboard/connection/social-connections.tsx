@@ -5,7 +5,7 @@ import { Facebook as FacebookIcon } from '@mui/icons-material';
 import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { SxProps } from '@mui/system';  // Add this line
+import { SxProps } from '@mui/system'; 
 import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
@@ -74,16 +74,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [pageModalOpen, setPageModalOpen] = useState(false);
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string; currency: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
-  const [isMounted, setIsMounted] = useState(false); // Track whether the component is mounted
 
+  // Load Facebook SDK and initialize state
   useEffect(() => {
-    setIsMounted(true); // Mark the component as mounted
     const initializeState = () => {
       const token = getItemWithExpiry('fbAccessToken');
       const storedUserId = getItemWithExpiry('fbUserId');
       const storedAdAccount = getItemWithExpiry('fbAdAccountObj');
       const storedPage = getItemWithExpiry('fbPage');
-      console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
 
       if (typeof token === 'string' && typeof storedUserId === 'string') {
         setAccessToken(token);
@@ -111,7 +109,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if ((window as any).FB) {
-      const apiPath = `/me/adaccounts?fields=id,name,currency`; // Fetch currency as well
+      const apiPath = `/me/adaccounts?fields=id,name,currency`; 
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const accounts = response.data.map((account: any) => ({
@@ -119,7 +117,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             name: account.name,
             currency: account.currency,
           }));
-          console.log('Fetched ad accounts with currency:', accounts);
           setAdAccounts(accounts);
         } else {
           console.error('Error fetching ad accounts:', response.error);
@@ -130,14 +127,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const fetchPages = (userId: string, token: string) => {
     if ((window as any).FB) {
-      console.log('Fetching pages for userId:', userId, 'with token:', token);
-
       const apiPath = `/me/accounts`;
 
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
-          console.log('Fetched pages:', pages);
           setPages(pages);
         } else {
           console.error('Error fetching pages:', response.error);
@@ -188,10 +182,9 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             setAccessToken(token);
             setUserId(userId);
 
-            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); // Store for 1 day
+            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); 
             setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
 
-            // After successful login, trigger AdAccountSelectionModal
             setModalOpen(true);
           }
         },
@@ -203,7 +196,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleDisconnectAdAccount = () => {
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
-    setAccessToken(null); // Remove the access token
+    setAccessToken(null);
     setUserId(null);
   };
 
@@ -255,7 +248,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
               <Button
                 className={styles.button}
                 sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
-                onClick={handleFacebookLogin}  // Trigger Facebook login
+                onClick={handleFacebookLogin} 
               >
                 CONNECT
               </Button>
@@ -317,11 +310,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         adAccounts={adAccounts}
         onClose={() => setModalOpen(false)}
         onSelect={async (accountId: string) => {
-          const selectedAccount = adAccounts.find((account) => account.id === accountId); // Find the full account object by its ID
+          const selectedAccount = adAccounts.find((account) => account.id === accountId);
           if (selectedAccount) {
-            setSelectedAdAccount(selectedAccount); // Set the full account object in the state
-            setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000); // Store selected account in localStorage
-            // Store the selected account and other details in Supabase
+            setSelectedAdAccount(selectedAccount); 
+            setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000); 
             if (accessToken && userId && selectedPage) {
               await storeDataInSupabase({
                 accessToken,
@@ -339,11 +331,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         pages={pages}
         onClose={() => setPageModalOpen(false)}
         onSelect={async (pageId: string) => {
-          const selectedPage = pages.find((page) => page.id === pageId); // Find the full page object based on the ID
+          const selectedPage = pages.find((page) => page.id === pageId);
           if (selectedPage) {
-            setSelectedPage(selectedPage); // Set the full page object in the state
-            setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000); // Store selected page in localStorage
-            // Store the selected page and other details in Supabase
+            setSelectedPage(selectedPage); 
+            setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000); 
             if (accessToken && userId && selectedAdAccount) {
               await storeDataInSupabase({
                 accessToken,
