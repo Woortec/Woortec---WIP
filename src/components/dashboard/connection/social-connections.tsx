@@ -5,7 +5,7 @@ import { Facebook as FacebookIcon } from '@mui/icons-material';
 import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { SxProps } from '@mui/system'; 
+import { SxProps } from '@mui/system';
 import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
@@ -75,41 +75,40 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string; currency: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
 
-  // Load Facebook SDK and initialize state
+  // Initialize Facebook SDK and state
   useEffect(() => {
-    const initializeState = () => {
-      const token = getItemWithExpiry('fbAccessToken');
-      const storedUserId = getItemWithExpiry('fbUserId');
-      const storedAdAccount = getItemWithExpiry('fbAdAccountObj');
-      const storedPage = getItemWithExpiry('fbPage');
-
-      if (typeof token === 'string' && typeof storedUserId === 'string') {
-        setAccessToken(token);
-        setUserId(storedUserId);
-        fetchAdAccounts(storedUserId, token);
-        fetchPages(storedUserId, token);
-      }
-
-      if (storedAdAccount) {
-        setSelectedAdAccount(storedAdAccount);
-      }
-
-      if (storedPage) {
-        setSelectedPage(storedPage);
-      }
-    };
-
     loadFacebookSDK().then(() => {
       setIsSdkLoaded(true);
-      initializeState();
     });
-
-    initializeState();
   }, []);
+
+  const handleFacebookLogin = () => {
+    if ((window as any).FB) {
+      (window as any).FB.login(
+        (response: any) => {
+          if (response.authResponse) {
+            const token = response.authResponse.accessToken;
+            const userId = response.authResponse.userID;
+            setAccessToken(token);
+            setUserId(userId);
+
+            // Store accessToken and userId for 24 hours
+            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
+            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
+
+            // Open the ad account selection modal after successful login
+            fetchAdAccounts(userId, token);
+            setModalOpen(true);
+          }
+        },
+        { scope: 'ads_read, pages_show_list' }
+      );
+    }
+  };
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if ((window as any).FB) {
-      const apiPath = `/me/adaccounts?fields=id,name,currency`; 
+      const apiPath = `/me/adaccounts?fields=id,name,currency`;
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const accounts = response.data.map((account: any) => ({
@@ -118,8 +117,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             currency: account.currency,
           }));
           setAdAccounts(accounts);
-        } else {
-          console.error('Error fetching ad accounts:', response.error);
         }
       });
     }
@@ -128,15 +125,50 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const fetchPages = (userId: string, token: string) => {
     if ((window as any).FB) {
       const apiPath = `/me/accounts`;
-
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
           setPages(pages);
-        } else {
-          console.error('Error fetching pages:', response.error);
         }
       });
+    }
+  };
+
+  const handleAdAccountSelect = (accountId: string) => {
+    const selectedAccount = adAccounts.find((account) => account.id === accountId);
+    if (selectedAccount) {
+      setSelectedAdAccount(selectedAccount); // Set selected ad account
+
+      // Store in localStorage
+      setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
+
+      // Close the ad account modal and open the page selection modal
+      setModalOpen(false);
+      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
+      setPageModalOpen(true); // Open page modal
+    }
+  };
+
+  const handlePageSelect = (pageId: string) => {
+    const selectedPage = pages.find((page) => page.id === pageId);
+    if (selectedPage) {
+      setSelectedPage(selectedPage); // Set selected page
+
+      // Store in localStorage
+      setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000);
+
+      // Close the page modal
+      setPageModalOpen(false);
+
+      // Store both the ad account and page data into Supabase after both selections are made
+      if (selectedAdAccount && selectedPage) {
+        storeDataInSupabase({
+          accessToken: accessToken!,
+          userId: userId!,
+          selectedAdAccount: selectedAdAccount,
+          selectedPage: selectedPage,
+        });
+      }
     }
   };
 
@@ -169,27 +201,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       console.error('Error inserting data into Supabase:', error);
     } else {
       console.log('Data inserted into Supabase successfully:', data);
-    }
-  };
-
-  const handleFacebookLogin = () => {
-    if ((window as any).FB) {
-      (window as any).FB.login(
-        (response: any) => {
-          if (response.authResponse) {
-            const token = response.authResponse.accessToken;
-            const userId = response.authResponse.userID;
-            setAccessToken(token);
-            setUserId(userId);
-
-            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); 
-            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
-
-            setModalOpen(true);
-          }
-        },
-        { scope: 'ads_read, pages_show_list' }
-      );
     }
   };
 
@@ -248,7 +259,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
               <Button
                 className={styles.button}
                 sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
-                onClick={handleFacebookLogin} 
+                onClick={handleFacebookLogin}
               >
                 CONNECT
               </Button>
@@ -309,42 +320,14 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         open={modalOpen}
         adAccounts={adAccounts}
         onClose={() => setModalOpen(false)}
-        onSelect={async (accountId: string) => {
-          const selectedAccount = adAccounts.find((account) => account.id === accountId);
-          if (selectedAccount) {
-            setSelectedAdAccount(selectedAccount); 
-            setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000); 
-            if (accessToken && userId && selectedPage) {
-              await storeDataInSupabase({
-                accessToken,
-                userId,
-                selectedAdAccount: selectedAccount,
-                selectedPage: selectedPage,
-              });
-            }
-          }
-        }}
+        onSelect={handleAdAccountSelect}
       />
 
       <PageSelectionModal
         open={pageModalOpen}
         pages={pages}
         onClose={() => setPageModalOpen(false)}
-        onSelect={async (pageId: string) => {
-          const selectedPage = pages.find((page) => page.id === pageId);
-          if (selectedPage) {
-            setSelectedPage(selectedPage); 
-            setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000); 
-            if (accessToken && userId && selectedAdAccount) {
-              await storeDataInSupabase({
-                accessToken,
-                userId,
-                selectedAdAccount: selectedAdAccount,
-                selectedPage: selectedPage,
-              });
-            }
-          }
-        }}
+        onSelect={handlePageSelect}
       />
     </Stack>
   );
