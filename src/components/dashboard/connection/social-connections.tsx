@@ -178,6 +178,28 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
+  const handleFacebookLogin = () => {
+    if ((window as any).FB) {
+      (window as any).FB.login(
+        (response: any) => {
+          if (response.authResponse) {
+            const token = response.authResponse.accessToken;
+            const userId = response.authResponse.userID;
+            setAccessToken(token);
+            setUserId(userId);
+
+            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000); // Store for 1 day
+            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
+
+            // After successful login, trigger AdAccountSelectionModal
+            setModalOpen(true);
+          }
+        },
+        { scope: 'ads_read, pages_show_list' }
+      );
+    }
+  };
+
   const handleDisconnectAdAccount = () => {
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
@@ -233,11 +255,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
               <Button
                 className={styles.button}
                 sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
-                onClick={() => {
-                  if (!accessToken) {
-                    setModalOpen(true); // Open the AdAccountSelectionModal when no accessToken exists
-                  }
-                }}
+                onClick={handleFacebookLogin}  // Trigger Facebook login
               >
                 CONNECT
               </Button>
