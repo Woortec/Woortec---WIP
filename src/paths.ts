@@ -23,6 +23,7 @@ export const paths = {
     objective: '/dashboard/strategy',
     strategycreation: '/dashboard/strategy/strategycreation',
     strategyresult: '/dashboard/strategy/strategyresult',
+    buyerpersona: '/dashboard/buyerpersona',
     
   },
   errors: { notFound: '/errors/not-found' },

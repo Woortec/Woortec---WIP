@@ -1,0 +1,21 @@
+.container {
+    background: linear-gradient(to right, #4f83c1, #0e4b72);
+    padding: 20px;
+    color: white;
+    border-radius: 10px;
+  }
+  
+  .checkboxes {
+    margin: 10px 0;
+  }
+  
+  .nextButton {
+    padding: 10px 20px;
+    border: none;
+    background-color: #2e7d32;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
