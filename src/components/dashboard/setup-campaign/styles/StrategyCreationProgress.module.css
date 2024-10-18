@@ -1,0 +1,18 @@
+.progressContainer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.progressBar {
+    height: 20px;
+    background-color: #ddd;
+    width: 80%;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+.progress {
+    height: 100%;
+    background-color: #4caf50;
+    border-radius: 10px;
+}

@@ -9,4 +9,5 @@ export const navItems: NavItemConfig[] = [
   { key: 'connection', title: 'Social Connections', href: paths.dashboard.connection, icon: 'broadcast' },
   { key: 'strategy', title: 'Ads Strategy', href: paths.dashboard.objective, icon: 'strategy' },
   { key: 'buyerpersona', title: 'Buyer Persona', href: paths.dashboard.buyerpersona, icon: 'strategy' },
+  { key: 'setupcampaign', title: 'Campaign Setup', href: paths.dashboard.setupcampaign, icon: 'usergear' },
 ];

@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 
 
-import { createClient } from '../../utils/supabase/server';
+import { createClient } from '../../utils/supabase/client';
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

@@ -1,0 +1,15 @@
+/* StrategyConfirmation.module.css */
+.confirmationContainer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.confirmButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

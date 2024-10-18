@@ -1,0 +1,60 @@
+.progressBarContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.progressBar {
+    height: 2px; /* Make the progress bar thinner */
+    background-color: #e0e0e0; /* Background color for unfilled bar */
+    border-radius: 1px;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.progress {
+    height: 100%;
+    background-color: #4caf50; /* Green color for the filled part */
+    border-radius: 1px;
+    transition: width 0.3s ease;
+}
+
+.stepLabelContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.stepLabel {
+    color: #c0c0c0; /* Inactive label color */
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    width: 33%; /* Equal spacing for 3 steps */
+}
+
+.stepLabel.active {
+    color: #4caf50; /* Active label color */
+    font-weight: bold;
+}
+
+.stepLabel::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+}
+
+.stepLabel.active::before {
+    background-color: #4caf50; /* Active step circle color */
+}

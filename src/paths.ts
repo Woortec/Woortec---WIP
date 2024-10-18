@@ -24,7 +24,7 @@ export const paths = {
     strategycreation: '/dashboard/strategy/strategycreation',
     strategyresult: '/dashboard/strategy/strategyresult',
     buyerpersona: '/dashboard/buyerpersona',
-    
+    setupcampaign: '/dashboard/setup-campaign',
   },
   errors: { notFound: '/errors/not-found' },
 } as const;

@@ -1,0 +1,55 @@
+.adCreativeContainer {
+    text-align: center;
+    padding: 20px;
+}
+
+.uploadSection {
+    margin-top: 20px;
+    border: 2px dashed #ddd;
+    padding: 40px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.imagePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.imagePreview img {
+    width: 100px;
+    height: auto;
+}
+
+.uploadButton {
+    margin-top: 20px;
+    background-color: #ddd;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.backButton {
+    background-color: #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.continueButton {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
