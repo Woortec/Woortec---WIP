@@ -19,28 +19,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     let event: Stripe.Event;
 
     try {
-      // Ensure the buffer is converted to string before passing to Stripe
-      event = stripe.webhooks.constructEvent(buf.toString(), sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error(`⚠️  Webhook signature verification failed. Error: ${errorMessage}`, err);
+      console.log(`⚠️  Webhook signature verification failed. Error: ${errorMessage}`);
       return res.status(400).send(`Webhook Error: ${errorMessage}`);
     }
 
-    // Handle the event based on its type
+    // Handle the event
     switch (event.type) {
-      case 'payment_intent.succeeded': {
+      case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log(`PaymentIntent was successful for ID: ${paymentIntent.id}`);
-        // Handle the successful payment intent, like updating your DB or notifying the user
+        console.log(`PaymentIntent was successful!`);
+        // Handle successful payment here
         break;
-      }
-      // Add more cases to handle other Stripe event types as needed
+      // Add more cases for other event types if needed
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`Unhandled event type ${event.type}`);
     }
 
-    // Return a 200 response to acknowledge receipt of the event
     res.json({ received: true });
   } else {
     res.setHeader('Allow', 'POST');
