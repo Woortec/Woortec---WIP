@@ -1,5 +1,3 @@
-// ProgressBar.tsx
-
 import React from 'react';
 import {
   Stepper,
@@ -29,16 +27,15 @@ const steps = [
 const Title = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   marginBottom: theme.spacing(2),
-  textAlign: 'center',
+  textAlign: 'left', // Align text to the left
 }));
 
 const Description = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   marginBottom: theme.spacing(4),
-  textAlign: 'center',
+  textAlign: 'left', // Align text to the left
   maxWidth: 800,
-  marginLeft: 'auto',
-  marginRight: 'auto',
+  margin: 0, // No auto margin
 }));
 
 const Brand = styled('span')(({ theme }) => ({

@@ -1,43 +1,46 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+// payment.js
+
 import Stripe from 'stripe';
+import { createClient } from '../../../utils/supabase/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { priceId, customerId } = req.body;
+export async function createCheckoutSession(userId: string, priceId: string) {
+  const supabase = createClient();
+  try {
+    // Retrieve the customerId from Supabase
+    const { data: userData, error } = await supabase
+      .from('user')
+      .select('customerId')
+      .eq('id', userId)
+      .single();
 
-    // Check if both priceId and customerId are provided
-    if (!priceId || !customerId) {
-      return res.status(400).json({ error: 'Price ID and Customer ID are required' });
+    if (error || !userData) {
+      console.error('User not found or error fetching user data:', error);
+      return;
     }
 
-    try {
-      // Create a checkout session for subscription
-      const session = await stripe.checkout.sessions.create({
-        mode: 'subscription',
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        customer: customerId, // Use the customerId passed from the request
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cancel`,
-      });
+    const customerId = userData.customerId;
 
-      // Respond with the session URL for the client to redirect to
-      return res.status(200).json({ url: session.url });
-    } catch (error) {
-      console.error('Stripe Checkout Session Error:', error);
-      return res.status(500).json({ error: 'An error occurred while creating the checkout session' });
-    }
-  } else {
-    // If it's not a POST request, return method not allowed
-    res.setHeader('Allow', 'POST');
-    return res.status(405).end('Method Not Allowed');
+    // Create a Checkout Session with the existing customerId
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      customer: customerId,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: 'https://app.woortec.com/success',
+      cancel_url: 'https://app.woortec.com/cancel',
+    });
+
+    return session;
+  } catch (error) {
+    console.error('Error creating Checkout Session:', error);
   }
 }
