@@ -1,53 +1,94 @@
+/* Container for the strategy section */
 .strategyContainer {
-    text-align: center;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
 }
 
+/* Heading */
+.strategyContainer h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Group of cards */
 .cardGroup {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
+  display: flex;
+  justify-content: space-around;
+  gap: 30px;
 }
 
+/* Individual card styles */
 .card {
-    width: 30%;
-    padding: 20px;
-    border: 2px solid transparent; /* Default border */
-    cursor: pointer;
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    background-color: #ffffff; /* Slight background */
-    border-radius: 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center items horizontally */
-    justify-content: space-between; /* Space between content */
-    height: 100%; /* Make sure cards take full height */
+  width: 30%;
+  padding: 25px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.card:hover {
-    transform: scale(1.05);
-    border-color: #00BFA6; /* Change border color on hover for active cards */
-}
-
+/* Image within the card */
 .card img {
-    max-width: 80px; /* Adjust image size */
-    margin-bottom: 20px; /* Spacing below the image */
-    display: block;
-    margin: 0 auto; /* Center the image horizontally */
+  max-width: 100px;
+  margin-bottom: 20px;
 }
 
+/* Card hover effect */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  border-color: #00bfa6;
+}
+
+/* Locked card styles */
 .locked {
-    opacity: 0.5;
-    pointer-events: none; /* Disable interaction */
-    border-color: #ddd; /* Greyed out border for locked cards */
+  opacity: 0.6;
+  pointer-events: none;
+  border-color: #e0e0e0;
 }
 
 .locked h3, .locked p {
-    color: #777; /* Lighter text for locked cards */
+  color: #999;
 }
 
+/* Active card styling */
 .active {
-    border-color: #4caf50; /* Green border for active card */
+  border-color: #4caf50;
+}
+
+/* Text styling for card titles */
+.card h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Text styling for card descriptions */
+.card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Adjustments for small screens */
+@media (max-width: 768px) {
+  .cardGroup {
+      flex-direction: column;
+      gap: 20px;
+  }
+
+  .card {
+      width: 100%;
+  }
 }

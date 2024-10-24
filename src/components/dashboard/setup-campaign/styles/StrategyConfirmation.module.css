@@ -1,15 +1,23 @@
 /* StrategyConfirmation.module.css */
+
 .confirmationContainer {
     text-align: center;
-    margin-top: 40px;
+    padding: 60px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 100px;
 }
 
-.confirmButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.confirmationContainer h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.confirmationContainer p {
+    font-size: 18px;
+    color: #666;
 }

@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import StrategyCard from './StrategyCard'; // Component for strategy selection
-import AdCreativePage from './AdCreativePage'; // Component for ad creative upload
-import CampaignNamePage from './CampaignNamePage'; // Component for campaign name
-import StrategyCreationProgress from './StrategyCreationProgress'; // Progress component
-import StrategyConfirmation from './StrategyConfirmation'; // Final confirmation component
-import ProgressBar from './ProgressBar'; // Progress Bar component
+import StrategyCard from '@/components/dashboard/setup-campaign/StrategyCard';
+import AdCreativePage from '@/components/dashboard/setup-campaign/AdCreativePage';
+import CampaignNamePage from '@/components/dashboard/setup-campaign/CampaignNamePage';
+import StrategyConfirmation from '@/components/dashboard/setup-campaign/StrategyConfirmation';
+import StrategyCreationProgress from '@/components/dashboard/setup-campaign/StrategyCreationProgress';
 import { createClient } from '../../../../utils/supabase/client'; // Supabase client
 
 const CampaignSetupPage: React.FC = () => {
@@ -15,7 +14,7 @@ const CampaignSetupPage: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null); // Store uploaded image
   const [campaignData, setCampaignData] = useState<{ campaignName: string; labelOne: string; labelTwo: string } | null>(null); // Store campaign name & labels
   const [loading, setLoading] = useState<boolean>(true);
-  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [campaignId, setCampaignId] = useState<string | null>(null); // Store campaign ID
 
   // Fetch the campaign strategy data stored in Supabase
   const fetchPlanOutput = async () => {
@@ -53,13 +52,21 @@ const CampaignSetupPage: React.FC = () => {
   const handleNextStep = () => setCurrentStep((prev) => prev + 1);
   const handlePreviousStep = () => setCurrentStep((prev) => prev - 1);
 
+  const handleCampaignCreationSuccess = (createdCampaignId: string | null) => {
+    if (createdCampaignId) {
+      setCampaignId(createdCampaignId);
+      handleNextStep(); // Move to the next step (confirmation)
+    } else {
+      console.error('Campaign creation failed, no campaign ID provided.');
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
-      <ProgressBar currentStep={currentStep} totalSteps={5} />
       <div>
         {currentStep === 1 && (
           <StrategyCard onNext={handleNextStep} />
@@ -83,6 +90,7 @@ const CampaignSetupPage: React.FC = () => {
             planOutput={planOutput} // Pass the planOutput data
             imageFile={imageFile} // Pass the uploaded image file
             campaignData={campaignData} // Pass the campaign name and labels
+            onNext={handleCampaignCreationSuccess} // Move to the next step when done
           />
         )}
         {currentStep === 5 && (

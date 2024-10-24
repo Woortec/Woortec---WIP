@@ -1,26 +1,27 @@
-// StrategyCreationProgress.tsx
-
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './styles/StrategyCreationProgress.module.css';
 import axios from 'axios';
 import { createClient } from '../../../../utils/supabase/client'; // Import Supabase client
+import ProgressBar from './ProgressBar'; // Import ProgressBar component
 
 interface StrategyCreationProgressProps {
   planOutput: any;
   imageFile: File | null;
   campaignData: { campaignName: string; labelOne: string; labelTwo: string } | null;
+  onNext: (campaignId: string) => void; // Ensure this only accepts string now
 }
 
 const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
   planOutput,
   imageFile,
-  campaignData
+  campaignData,
+  onNext, // Call this function when the campaign is created
 }) => {
   const [progress, setProgress] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const createCampaignCalled = useRef<boolean>(false); // Use useRef to track if createCampaign has been called
+  const createCampaignCalled = useRef<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,15 +36,15 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
     }, 500);
 
     return () => clearInterval(interval);
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   const createCampaign = async () => {
     if (createCampaignCalled.current) {
-      return; // Prevent multiple executions of the campaign creation
+      return;
     }
     createCampaignCalled.current = true;
 
-    const userId = localStorage.getItem('userid'); // Assuming user ID is stored here
+    const userId = localStorage.getItem('userid');
     if (!userId) {
       console.error('User ID is missing');
       return;
@@ -52,7 +53,6 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
     const supabase = createClient();
 
     try {
-      // Fetch stored campaign data from Supabase
       const { data: campaignData, error } = await supabase
         .from('facebook_campaign_data')
         .select('label_one, label_two, campaign_name, image_path')
@@ -66,37 +66,40 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
 
       const { label_one, label_two, campaign_name, image_path } = campaignData;
 
-      // Ensure that none of the values are null or undefined
       if (!label_one || !label_two || !campaign_name || !image_path) {
         console.error('Missing required fields for campaign creation');
         return;
       }
 
-      // Construct form data to send to the API
       const formData = new FormData();
       formData.append('labelOne', label_one);
       formData.append('labelTwo', label_two);
       formData.append('campaignName', campaign_name);
       formData.append('userId', userId);
 
-      // Fetch the image from the path and convert it into a File object if it's valid
       const imageBlob = await fetch(image_path).then((res) => res.blob());
       if (imageBlob) {
-        const imageFile = new File([imageBlob], 'adImage.jpg'); // Convert blob to file
-        formData.append('image', imageFile); // Append the file to formData
+        const imageFile = new File([imageBlob], 'adImage.jpg');
+        formData.append('image', imageFile);
       } else {
         console.error('Image could not be retrieved from the provided path');
         return;
       }
 
-      // Send data to the API
       const response = await axios.post('/api/create-campaign', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log('Campaign created successfully:', response.data);
+      const campaignId = response.data?.adResponse?.id;
+      if (campaignId) {
+        console.log('Campaign created successfully:', campaignId);
+        onNext(campaignId); // Move to the next step with campaignId
+      } else {
+        console.error('Campaign creation failed: No campaign ID returned');
+        throw new Error('No campaign ID returned');
+      }
     } catch (error) {
       console.error('Error creating campaign:', error);
     } finally {
@@ -105,14 +108,23 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
   };
 
   return (
-    <div className={styles.progressContainer}>
-      <h2>Strategy Creation</h2>
-      <p>Creating your ads strategy...</p>
-      <div className={styles.progressBar}>
-        <div className={styles.progress} style={{ width: `${progress}%` }}></div>
+    <div className={styles.progressContainerWrapper}>
+      <div className={styles.progressContainer}>
+        {/* Progress Bar Section - Displaying the 4th step */}
+        <ProgressBar currentStep={4} />
+
+        <img
+          src="/path-to-image/campaign-creation-icon.png"
+          alt="Campaign Creation Icon"
+          className={styles.campaignImage}
+        />
+        <p>Creating your campaign...</p>
+        <div className={styles.progressBar}>
+          <div className={styles.progress} style={{ width: `${progress}%` }}></div>
+        </div>
+        <p>{progress}%</p>
+        {loading && <p className={styles.loadingText}>Setting up your campaign, please wait...</p>}
       </div>
-      <p>{progress}%</p>
-      {loading && <p>Creating your campaign...</p>}
     </div>
   );
 };
