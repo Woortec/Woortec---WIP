@@ -46,7 +46,7 @@ const Subscription = () => {
       name: 'Basic',
       price: isYearly ? '$299.99/year' : '$29.99/month',
       features: [
-        'Daily Report',
+        'Daily Reports',
         'Performance Optimization',
         'Event Calendar Alerts',
         'In-depth Ad Analysis',
