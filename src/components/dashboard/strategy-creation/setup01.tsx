@@ -263,11 +263,9 @@ const ObjectivePage: React.FC = () => {
                         aria-describedby={errors.objective ? 'objective-error' : undefined}
                     >
                         <option value="">Select the best option</option>
-                        <option value="brand-awareness">Brand Awareness</option>
-                        <option value="reach">Reach</option>
-                        <option value="engagement">Engagement</option>
-                        <option value="sales">Sales</option>
-                        <option value="lead-generation">Lead Generation</option>
+                        <option value="Brand Awareness">Are you aiming to enhance your brand&apos;s visibility and foster community engagement?</option>
+                        <option value="Sales">Would you like to drive more traffic to your website and increase sales conversions?</option>
+                        <option value="Lead Generation">Are you seeking to gather information from potential customers via a quick form, creating a robust database of prospective clients, even if immediate conversions may vary?</option>
                     </select>
                     {errors.objective && (
                         <div id="objective-error" className={styles.errorMessage}>

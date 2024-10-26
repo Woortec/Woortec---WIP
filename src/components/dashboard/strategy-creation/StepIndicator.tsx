@@ -16,27 +16,27 @@ const StepIndicator: React.FC = () => {
 
   return (
     <div className={styles.stepsContainer}>
-      <div className={styles.stepWrapper}>
-        <div className={`${styles.stepCircle} ${activeStep === 1 ? styles.active : ''}`}>
-          <div className={styles.icon}>🎯</div> {/* Placeholder for Objective icon */}
+      <div className={`${styles.stepWrapper} ${activeStep === 1 ? styles.active : ''}`}>
+        <div className={styles.stepIcon}>
+          <img src="/path/to/objective-icon.svg" alt="Objective Icon" />
         </div>
         <span className={styles.stepLabel}>Objective</span>
       </div>
       
       <div className={styles.stepLine}></div>
       
-      <div className={styles.stepWrapper}>
-        <div className={`${styles.stepCircle} ${activeStep === 2 ? styles.active : ''}`}>
-          <div className={styles.icon}>✏️</div> {/* Placeholder for Strategy Creation icon */}
+      <div className={`${styles.stepWrapper} ${activeStep === 2 ? styles.active : ''}`}>
+        <div className={styles.stepIcon}>
+          <img src="/path/to/strategy-creation-icon.svg" alt="Strategy Creation Icon" />
         </div>
         <span className={styles.stepLabel}>Strategy Creation</span>
       </div>
       
       <div className={styles.stepLine}></div>
       
-      <div className={styles.stepWrapper}>
-        <div className={`${styles.stepCircle} ${activeStep === 3 ? styles.active : ''}`}>
-          <div className={styles.icon}>🔍</div> {/* Placeholder for Strategy Result icon */}
+      <div className={`${styles.stepWrapper} ${activeStep === 3 ? styles.active : ''}`}>
+        <div className={styles.stepIcon}>
+          <img src="/path/to/strategy-result-icon.svg" alt="Strategy Result Icon" />
         </div>
         <span className={styles.stepLabel}>Strategy Result</span>
       </div>

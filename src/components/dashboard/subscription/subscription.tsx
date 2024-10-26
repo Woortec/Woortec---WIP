@@ -42,11 +42,11 @@ const Subscription = () => {
 
   const plans = [
     {
-      id: isYearly ? 'price_1Q002uHow0UPMFTyVx0Hv9aI' : 'price_1Q003JHow0UPMFTykx3LRZeV',
+      id: isYearly ? 'price_1QDjDqHow0UPMFTyFVrpzNPc' : 'price_1QDjDqHow0UPMFTyFVrpzNPc',
       name: 'Basic',
       price: isYearly ? '$299.99/year' : '$29.99/month',
       features: [
-        'Daily Report',
+        'Daily Reports',
         'Performance Optimization',
         'Event Calendar Alerts',
         'In-depth Ad Analysis',

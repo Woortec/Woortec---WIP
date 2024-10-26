@@ -21,6 +21,32 @@ interface WeeklyPlan {
     toLink: number;
 }
 
+// Function to save the JSON data to Supabase
+const savePlanToSupabase = async (planOutput: WeeklyPlan[], userId: string) => {
+    try {
+        const supabase = createClient();
+
+        // Insert the strategy result into the database
+        const { data, error } = await supabase
+            .from('facebook_campaign_data') // Make sure this table exists in your Supabase
+            .insert([
+                {
+                    user_id: userId,
+                    strategy_data: planOutput, // Storing the JSON data
+                    created_at: new Date().toISOString(), // Timestamp for when it's saved
+                },
+            ]);
+
+        if (error) {
+            console.error('Error saving strategy data to Supabase:', error);
+        } else {
+            console.log('Strategy data successfully saved:', data);
+        }
+    } catch (error) {
+        console.error('Unexpected error while saving to Supabase:', error);
+    }
+};
+
 // Function to calculate the week number for a given date
 function getWeekNumber(date: Date): string {
     const start = new Date(date.getFullYear(), 0, 1); // First day of the year
@@ -265,7 +291,22 @@ const StrategyResultPage: React.FC = () => {
     useEffect(() => {
         fetchCampaignDetails(); // Fetch campaign details when component mounts
     }, []);
+    
+    // Add this new useEffect to save the planOutput once it is set
+    useEffect(() => {
+        const saveData = async () => {
+            if (planOutput.length > 0) {
+                const userId = localStorage.getItem('userid');
+                if (userId) {
+                    await savePlanToSupabase(planOutput, userId); // Call to save data in Supabase
+                } else {
+                    console.error('User ID not found.');
+                }
+            }
+        };
 
+        saveData();
+    }, [planOutput]); // Triggered once the planOutput is ready
     if (loading) {
         return <div>Loading...</div>; // Loading state
     }
