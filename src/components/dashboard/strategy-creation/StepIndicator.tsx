@@ -18,7 +18,7 @@ const StepIndicator: React.FC = () => {
     <div className={styles.stepsContainer}>
       <div className={`${styles.stepWrapper} ${activeStep === 1 ? styles.active : ''}`}>
         <div className={styles.stepIcon}>
-          <img src="/path/to/objective-icon.svg" alt="Objective Icon" />
+          <img src="/images/objective.svg" alt="Objective Icon" />
         </div>
         <span className={styles.stepLabel}>Objective</span>
       </div>
@@ -27,7 +27,7 @@ const StepIndicator: React.FC = () => {
       
       <div className={`${styles.stepWrapper} ${activeStep === 2 ? styles.active : ''}`}>
         <div className={styles.stepIcon}>
-          <img src="/path/to/strategy-creation-icon.svg" alt="Strategy Creation Icon" />
+          <img src="/images/strategy-info.svg" alt="Strategy Creation Icon" />
         </div>
         <span className={styles.stepLabel}>Strategy Creation</span>
       </div>
@@ -36,7 +36,7 @@ const StepIndicator: React.FC = () => {
       
       <div className={`${styles.stepWrapper} ${activeStep === 3 ? styles.active : ''}`}>
         <div className={styles.stepIcon}>
-          <img src="/path/to/strategy-result-icon.svg" alt="Strategy Result Icon" />
+          <img src="/images/strategy-result.svg" alt="Strategy Result Icon" />
         </div>
         <span className={styles.stepLabel}>Strategy Result</span>
       </div>
