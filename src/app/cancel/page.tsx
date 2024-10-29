@@ -1,9 +1,10 @@
+// cancelpage.tsx
 'use client'
 
 import React, { useState } from 'react';
 import { Button, Modal, Spinner, Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
-import './CancelSubscriptionPage.css'; // Separate CSS file for custom styles
+import './CancelSubscriptionPage.css';
 
 const CancelSubscriptionPage = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,7 @@ const CancelSubscriptionPage = () => {
     setLoading(true);
     try {
       const response = await axios.post('/api/cancel-subscription', {
-        subscriptionId: 'sub_id_here',
+        subscriptionId: 'sub_id_here', // Replace with actual subscription ID
       });
 
       if (response.data.success) {
