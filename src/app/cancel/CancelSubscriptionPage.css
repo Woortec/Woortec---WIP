@@ -1,46 +1,88 @@
 .cancel-subscription-page {
-    padding: 50px 15px;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .card {
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #ffffff;
-  }
-  
-  .card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .card-text {
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 20px;
-  }
-  
-  button {
-    font-size: 1.2rem;
-    font-weight: 600;
-  }
-  
-  .modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-  }
-  
-  .modal-title {
-    font-weight: bold;
-  }
-  
-  .modal-body {
-    color: #6c757d;
-    font-size: 1rem;
-  }
-  
+  padding: 60px 20px;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subscription-card {
+  border-radius: 12px;
+  padding: 30px;
+  background-color: #ffffff;
+  border: none;
+  text-align: center;
+}
+
+.sad-image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.sad-image {
+  width: 150px;
+  height: 150px;
+  opacity: 0.8;
+}
+
+.card-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.cancel-btn {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00BFA6;
+  border-color: #00BFA6;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.modal-body {
+  color: #6c757d;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.modal-footer button {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 20px;
+}
+
+.modal-footer .btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+  transition: all 0.3s ease;
+}
+
+.modal-footer .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: #fff;
+}

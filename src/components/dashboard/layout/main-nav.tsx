@@ -28,7 +28,7 @@ export function MainNav(): React.JSX.Element {
         sx={{
           borderBottom: '1px solid #E0E0E0',
           backgroundColor: '#FFFFFF',
-          borderRadius: 12,
+          borderRadius: 4,
           position: 'sticky',
           top: 8,
           zIndex: theme.zIndex.appBar,

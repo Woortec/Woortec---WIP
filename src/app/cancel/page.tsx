@@ -1,4 +1,3 @@
-// cancelpage.tsx
 'use client'
 
 import React, { useState } from 'react';
@@ -27,6 +26,7 @@ const CancelSubscriptionPage = () => {
       alert('There was an issue cancelling your subscription.');
     } finally {
       setLoading(false);
+      setShowModal(false);
     }
   };
 
@@ -34,13 +34,21 @@ const CancelSubscriptionPage = () => {
     <Container className="cancel-subscription-page">
       <Row className="justify-content-center">
         <Col md={6}>
-          <Card className="text-center shadow-sm">
+          <Card className="subscription-card shadow-lg">
             <Card.Body>
+              {/* Sad Face Image */}
+              <div className="sad-image-container">
+                <img src="/assets/sad.svg" alt="Sad face" className="sad-image" />
+              </div>
+
+              {/* Title and Text */}
               <Card.Title className="mb-4">Manage Your Subscription</Card.Title>
               <Card.Text>
                 If you cancel your subscription, you'll lose access to all premium features and services.
               </Card.Text>
-              <Button variant="danger" size="lg" onClick={() => setShowModal(true)}>
+
+              {/* Cancel Button */}
+              <Button variant="outline-danger" size="lg" onClick={() => setShowModal(true)} className="cancel-btn">
                 Cancel Subscription
               </Button>
             </Card.Body>
@@ -57,7 +65,7 @@ const CancelSubscriptionPage = () => {
           Are you sure you want to cancel your subscription? This action cannot be undone, and you will lose access immediately.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
           <Button variant="danger" onClick={handleCancelSubscription} disabled={loading}>
