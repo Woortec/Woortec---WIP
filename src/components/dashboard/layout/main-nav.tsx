@@ -24,25 +24,25 @@ export function MainNav(): React.JSX.Element {
         sx={{
           borderBottom: '1px solid #E0E0E0',
           backgroundColor: '#FFFFFF',
-          borderRadius: '12px', // Slightly less rounded corners
+          borderRadius: { xs: '4px', md: '8px' }, // Responsive border radius
           position: 'sticky',
           top: 8,
           zIndex: 'var(--mui-zIndex-appBar)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          minHeight: '72px', // Increase header height slightly for better spacing
+          minHeight: { xs: '56px', md: '72px' }, // Responsive height
           width: '100%',
           margin: '0 auto',
-          paddingX: 3, // Adjust padding for consistent spacing
-          maxWidth: '1500px', // Limit width for larger screens
+          paddingX: { xs: 2, md: 4 }, // Responsive padding
+          maxWidth: { xs: '100%', md: '1500px' }, // Adjust max-width for larger screens
         }}
       >
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
               <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
-                <BellIcon size={24} /> {/* Set a fixed size for consistent appearance */}
+                <BellIcon size={24} />
               </IconButton>
             </Badge>
           </Tooltip>
@@ -54,9 +54,9 @@ export function MainNav(): React.JSX.Element {
             src="/assets/avatar.png"
             sx={{
               cursor: 'pointer',
-              width: 36, // Set avatar width to align with layout scale
-              height: 36,
-              border: '1px solid #E0E0E0', // Add subtle border for definition
+              width: { xs: 32, md: 40 }, // Responsive avatar size
+              height: { xs: 32, md: 40 },
+              border: '1px solid #E0E0E0',
             }}
           />
         </Stack>
