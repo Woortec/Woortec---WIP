@@ -23,26 +23,26 @@ export function MainNav(): React.JSX.Element {
         component="header"
         sx={{
           borderBottom: '1px solid #E0E0E0',
-          backgroundColor: '#F5F5F5',
-          borderRadius: '12px', // Adjust border radius to be more subtle
+          backgroundColor: '#FFFFFF',
+          borderRadius: '12px', // Slightly less rounded corners
           position: 'sticky',
           top: 8,
           zIndex: 'var(--mui-zIndex-appBar)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between', // Distribute items evenly across the width
-          minHeight: '64px',
-          width: '100%', // Make sure it takes full width
-          margin: '0 auto', // Center the navbar horizontally
-          px: 4, // Adjust padding for left and right to fit better
-          maxWidth: '100%', // Ensure full width
+          justifyContent: 'space-between',
+          minHeight: '72px', // Increase header height slightly for better spacing
+          width: '100%',
+          margin: '0 auto',
+          paddingX: 3, // Adjust padding for consistent spacing
+          maxWidth: '1500px', // Limit width for larger screens
         }}
       >
-        <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
               <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
-                <BellIcon />
+                <BellIcon size={24} /> {/* Set a fixed size for consistent appearance */}
               </IconButton>
             </Badge>
           </Tooltip>
@@ -52,7 +52,12 @@ export function MainNav(): React.JSX.Element {
             onClick={userPopover.handleOpen}
             ref={userPopover.anchorRef}
             src="/assets/avatar.png"
-            sx={{ cursor: 'pointer', width: 40, height: 40 }}
+            sx={{
+              cursor: 'pointer',
+              width: 36, // Set avatar width to align with layout scale
+              height: 36,
+              border: '1px solid #E0E0E0', // Add subtle border for definition
+            }}
           />
         </Stack>
       </Box>
