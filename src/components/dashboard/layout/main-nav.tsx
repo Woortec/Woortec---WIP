@@ -35,7 +35,7 @@ export function MainNav(): React.JSX.Element {
           width: '100%',
           margin: '0 auto',
           paddingX: { xs: 2, md: 4 }, // Responsive padding
-          maxWidth: { xs: '100%', md: '1500px' }, // Adjust max-width for larger screens
+          maxWidth: { xs: '100%', md: '2000px' }, // Adjust max-width for larger screens
         }}
       >
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
