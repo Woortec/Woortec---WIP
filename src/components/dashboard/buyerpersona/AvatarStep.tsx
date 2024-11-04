@@ -4,9 +4,10 @@ import styles from './styles/AvatarStep.module.css';
 interface AvatarStepProps {
   step: number;
   handleNext: () => void;
+  handleInfoBuyerPersona: () => void;
 }
 
-const AvatarStep: React.FC<AvatarStepProps> = ({ step, handleNext }) => {
+const AvatarStep: React.FC<AvatarStepProps> = ({ step, handleNext, handleInfoBuyerPersona }) => {
   return (
     <div className={styles.container}>
       <div className={styles.leftSection}>
@@ -14,7 +15,7 @@ const AvatarStep: React.FC<AvatarStepProps> = ({ step, handleNext }) => {
           <img src="/1Frame.svg" alt="Buyer Persona Info" className={styles.svgIcon} />
           <h1>What is a buyer persona?</h1>
           <p>Learn everything about buyer personas: how to research, conduct surveys, and design interviews to create your own.</p>
-          <button className={styles.infoBtn}>More information</button>
+          <button className={styles.infoBtn} onClick={handleInfoBuyerPersona}>More information</button>
         </div>
       </div>
 

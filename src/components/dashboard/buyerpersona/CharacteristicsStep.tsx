@@ -5,20 +5,32 @@ interface CharacteristicsStepProps {
   handleNext: () => void;
   handlePrev: () => void; // Add prop for handlePrev
   selectedAvatar: number | null; // Add prop for selectedAvatar
+  handleReturnToMainMenu: () => void; // Add this prop
+  goals: string;
+  setGoals: (goals: string) => void; // Add setter function
+  challenges: string;
+  setChallenges: (challenges: string) => void; // Add setter function
+  purchase: string;
+  setPurchase: (purchase: string) => void; // Add setter function
+  handleSkipInterview: () => void; // New prop for skipping to last step
 }
 
-const CharacteristicsStep: React.FC<CharacteristicsStepProps> = ({handleNext, handlePrev, selectedAvatar }) => {
-  const [age, setAge] = useState<number>(25); // Initialize age state
-
-  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(Number(event.target.value)); // Update age based on slider value
-  };
+const CharacteristicsStep: React.FC<CharacteristicsStepProps> = ({handleNext, handlePrev, selectedAvatar, 
+  handleReturnToMainMenu,
+  goals,
+  setGoals,
+  challenges,
+  setChallenges,
+  purchase,
+  setPurchase,
+  handleSkipInterview
+}) => {
 
   return (
 <div className={styles.wrapper}>
       {/* Left section */}
       <div className={styles.leftSection}>
-      <div><button className={styles.returnButton}>RETURN TO MAIN MENU</button></div>
+      <div><button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO MAIN MENU</button></div>
         {selectedAvatar !== null && (
           <div className={styles.selectedAvatarLeft}>
             <img
@@ -61,7 +73,7 @@ const CharacteristicsStep: React.FC<CharacteristicsStepProps> = ({handleNext, ha
       <div className={styles.circle}></div>
       <div className={styles.circleBorder}></div>
     </div>
-    <div><button className={styles.backButton}>Skip interview mode</button></div>
+    <div><button className={styles.backButton} onClick={handleSkipInterview}>Skip interview mode</button></div>
   </div>
 
       {/* Right section */}
@@ -70,17 +82,26 @@ const CharacteristicsStep: React.FC<CharacteristicsStepProps> = ({handleNext, ha
         {/* Right section content */}
         <div> 
         <h2 className={styles.placeHeader}>What are the primary goals and motivations of your Target Customer in their professional and personal life?</h2>
-        <textarea className={styles.placeText} placeholder="(Identify the specific websites or types of websites frequently browsed)"/>
+        <textarea className={styles.placeText} placeholder="(Identify the specific websites or types of websites frequently browsed)"
+                                         value={goals} 
+                                         onChange={(e) => setGoals(e.target.value)}
+        />
         </div>
 
         <div> 
         <h2 className={styles.placeHeader}>What are the main challenges or obstacles faced by your Target Customer?</h2>
-        <textarea className={styles.placeText} placeholder="(Explain the difficulties they encounter, such as time management, budget constraints, or skill gaps.)"/>
+        <textarea className={styles.placeText} placeholder="(Explain the difficulties they encounter, such as time management, budget constraints, or skill gaps.)"
+                                        value={challenges} 
+                                        onChange={(e) => setChallenges(e.target.value)} 
+        />
         </div>
 
         <div> 
         <h2 className={styles.placeHeader}>What concerns or objections might your Target Customer have when considering a purchase?</h2>
-        <textarea className={styles.placeText} placeholder="(Mention specific reasons they might hesitate, such as cost, product reliability, or customer support.)"/>
+        <textarea className={styles.placeText} placeholder="(Mention specific reasons they might hesitate, such as cost, product reliability, or customer support.)"
+                                        value={purchase} 
+                                         onChange={(e) => setPurchase(e.target.value)} 
+        />
         </div>
 
           {/* Pagination buttons */}
