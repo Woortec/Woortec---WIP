@@ -3,6 +3,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Stripe from 'stripe';
+import styles from './SuccessPage.module.css';
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY as string, {
   apiVersion: '2024-06-20',
@@ -30,15 +31,19 @@ const SuccessPage = () => {
   };
 
   if (!session) {
-    return <div>Loading...</div>;
+    return <div className={styles.container}>Loading...</div>;
   }
 
   return (
-    <div>
-      <h1>Payment Successful!</h1>
-      <p>Thank you for your payment!</p>
-      <p>Session ID: {session.id}</p>
-      <p>Amount Paid: {(session.amount_total / 100).toFixed(2)} {session.currency.toUpperCase()}</p>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h1 className={styles.heading}>Payment Successful!</h1>
+        <p className={styles.message}>Thank you for your payment!</p>
+        <div className={styles.details}>
+          <p><strong>Session ID:</strong> {session.id}</p>
+          <p><strong>Amount Paid:</strong> ${(session.amount_total / 100).toFixed(2)} {session.currency.toUpperCase()}</p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,19 +1,52 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Spinner, Container, Row, Col, Card } from 'react-bootstrap';
 import axios from 'axios';
+import { createClient } from '../../../utils/supabase/client';
 import './CancelSubscriptionPage.css';
+
+const supabase = createClient();
 
 const CancelSubscriptionPage = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [subscriptionId, setSubscriptionId] = useState(null);
+
+  useEffect(() => {
+    const fetchSubscriptionDetails = async () => {
+      const { data: user, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching user data:', error);
+        return;
+      }
+  
+      console.log('Fetched user data:', user); // Log user data
+  
+      const { data: subscription, error: subError } = await supabase
+        .from('subscriptions_details')
+        .select('subscriptionId')
+        .eq('userId', user.id)
+        .eq('isActive', true)
+        .single();
+  
+      if (subError) {
+        console.error('Error fetching subscription data:', subError);
+      } else {
+        console.log('Fetched subscription data:', subscription); // Log subscription data
+        setSubscriptionId(subscription?.subscriptionId); // Ensure subscriptionId is defined
+      }
+    };
+  
+    fetchSubscriptionDetails();
+  }, []);
+  
 
   const handleCancelSubscription = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('/api/cancel-subscription', {
-        subscriptionId: 'sub_id_here', // Replace with actual subscription ID
+      const response = await axios.post('/pages/api/subscription', {
+        subscriptionId,
       });
 
       if (response.data.success) {
@@ -48,7 +81,7 @@ const CancelSubscriptionPage = () => {
               </Card.Text>
 
               {/* Cancel Button */}
-              <Button variant="outline-danger" size="lg" onClick={() => setShowModal(true)} className="cancel-btn">
+              <Button variant="outline-danger" size="lg" onClick={() => setShowModal(true)} className="cancel-btn" disabled={!subscriptionId}>
                 Cancel Subscription
               </Button>
             </Card.Body>
