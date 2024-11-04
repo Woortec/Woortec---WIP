@@ -15,15 +15,33 @@ const CancelSubscriptionPage = () => {
   const [userId, setUserId] = useState(null);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
 
-  // Step 1: Fetch userId on component mount
+  // Step 1: Fetch int8 userId on component mount
   useEffect(() => {
     const fetchUserId = async () => {
+      // Fetch the user from Supabase Auth
       const { data: { user }, error } = await supabase.auth.getUser();
+
       if (error || !user) {
         console.error('Error fetching user data:', error);
         return;
       }
-      setUserId(user.id);
+
+      console.log('Fetched user UUID:', user.id); // This is the UUID from Supabase Auth
+
+      // Fetch the int8 user ID from your 'user' table using the UUID
+      const { data: userRecord, error: userFetchError } = await supabase
+        .from('user')
+        .select('id')
+        .eq('uuid', user.id)
+        .single();
+
+      if (userFetchError || !userRecord) {
+        console.error('Error fetching int8 user ID:', userFetchError);
+        return;
+      }
+
+      console.log('Fetched int8 user ID:', userRecord.id);
+      setUserId(userRecord.id); // Set the int8 userId
     };
 
     fetchUserId();
@@ -31,23 +49,31 @@ const CancelSubscriptionPage = () => {
 
   // Step 2: Check for active subscription once we have userId
   useEffect(() => {
-    if (!userId) return;
+    if (userId === null) return; // Wait until userId is fetched
 
     const fetchSubscriptionDetails = async () => {
-      const { data: subscription, error: subError } = await supabase
-        .from('subscriptions_details')
-        .select('subscriptionId')
-        .eq('userId', userId)
-        .eq('isActive', true)
-        .single();
+      try {
+        const { data: subscription, error: subError } = await supabase
+          .from('subscriptions_details')
+          .select('subscriptionId')
+          .eq('userId', userId) // userId is int8 in the database
+          .eq('isActive', true)
+          .single();
 
-      if (subError || !subscription) {
-        console.error('No active subscription found or error fetching subscription:', subError);
+        if (subError) {
+          console.error('Error fetching subscription data:', subError);
+          setHasActiveSubscription(false);
+        } else if (!subscription) {
+          console.warn('No active subscription found for this user.');
+          setHasActiveSubscription(false);
+        } else {
+          console.log('Fetched subscription data:', subscription);
+          setSubscriptionId(subscription.subscriptionId); // subscriptionId is text in the database
+          setHasActiveSubscription(true);
+        }
+      } catch (error) {
+        console.error('Unexpected error fetching subscription data:', error);
         setHasActiveSubscription(false);
-      } else {
-        console.log('Fetched subscription data:', subscription);
-        setSubscriptionId(subscription.subscriptionId);
-        setHasActiveSubscription(true);
       }
     };
 
@@ -62,6 +88,7 @@ const CancelSubscriptionPage = () => {
 
     setLoading(true);
     try {
+      // Adjust the API endpoint as per your application routing
       const response = await axios.post('/api/cancel-subscription', {
         subscriptionId,
       });
