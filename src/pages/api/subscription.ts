@@ -11,6 +11,8 @@ export async function cancelSubscription(subscriptionId: string) {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error('STRIPE_SECRET_KEY is not set in environment variables');
     throw new Error('STRIPE_SECRET_KEY is not set');
+  } else {
+    console.log('STRIPE_SECRET_KEY is set.');
   }
 
   // Initialize Stripe inside the function
@@ -20,8 +22,16 @@ export async function cancelSubscription(subscriptionId: string) {
 
   try {
     console.log('Attempting to cancel subscription in Stripe:', subscriptionId);
-    const subscription = await stripe.subscriptions.cancel(subscriptionId);
-    console.log('Subscription cancelled in Stripe:', subscription.id);
+
+    // Attempt to cancel the subscription in Stripe
+    let subscription;
+    try {
+      subscription = await stripe.subscriptions.cancel(subscriptionId);
+      console.log('Subscription cancelled in Stripe:', subscription.id);
+    } catch (stripeError: any) {
+      console.error('Error cancelling subscription in Stripe:', stripeError);
+      throw new Error(`Stripe error: ${stripeError.message}`);
+    }
 
     // Update the subscription details in Supabase
     const { data: userData, error: updateError } = await supabase
@@ -35,7 +45,7 @@ export async function cancelSubscription(subscriptionId: string) {
 
     if (updateError) {
       console.error('Error updating subscription details in Supabase:', updateError);
-      throw updateError;
+      throw new Error(`Supabase error: ${updateError.message}`);
     }
 
     console.log('Updated subscription details in Supabase:', userData);
@@ -55,7 +65,7 @@ export async function cancelSubscription(subscriptionId: string) {
 
         if (userFetchError || !userRecord) {
           console.error('Error fetching user ID from Supabase:', userFetchError);
-          throw new Error('Failed to fetch user ID');
+          throw new Error('Failed to fetch user ID from Supabase');
         }
 
         userId = userRecord.id;
@@ -71,7 +81,7 @@ export async function cancelSubscription(subscriptionId: string) {
 
       if (userUpdateError) {
         console.error('Error updating user plan in Supabase:', userUpdateError);
-        throw userUpdateError;
+        throw new Error(`Supabase error: ${userUpdateError.message}`);
       }
 
       console.log('User planId updated to null for user ID:', userId);
@@ -82,10 +92,8 @@ export async function cancelSubscription(subscriptionId: string) {
     return subscription;
   } catch (error: any) {
     console.error('Error in cancelSubscription:', error);
-
-    // If the error has a message, include it
-    const errorMessage = error.message || 'An unknown error occurred';
-    throw new Error(errorMessage);
+    // Include error message in the thrown error
+    throw new Error(error.message || 'An unknown error occurred in cancelSubscription');
   }
 }
 
@@ -110,11 +118,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error: any) {
     console.error('Error cancelling subscription:', error);
 
-    // For development, include the error message
-    const errorMessage = error.message || 'There was an issue cancelling your subscription.';
+    // Include error message in the response for debugging
     return res.status(500).json({
       error: 'There was an issue cancelling your subscription.',
-      message: errorMessage,
+      message: error.message,
     });
   }
 }
