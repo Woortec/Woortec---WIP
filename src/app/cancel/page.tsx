@@ -89,7 +89,7 @@ const CancelSubscriptionPage = () => {
     setLoading(true);
     try {
       // Adjust the API endpoint as per your application routing
-      const response = await axios.post('/pages/api/subscription', {
+      const response = await axios.post('/api/subscription', {
         subscriptionId,
       });
 
