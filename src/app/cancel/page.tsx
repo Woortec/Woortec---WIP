@@ -12,45 +12,63 @@ const CancelSubscriptionPage = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [subscriptionId, setSubscriptionId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
 
+  // Step 1: Fetch userId on component mount
   useEffect(() => {
-    const fetchSubscriptionDetails = async () => {
-      const { data: user, error } = await supabase.auth.getUser();
-      if (error) {
+    const fetchUserId = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
         console.error('Error fetching user data:', error);
         return;
       }
-  
-      console.log('Fetched user data:', user); // Log user data
-  
+      setUserId(user.id);
+    };
+
+    fetchUserId();
+  }, []);
+
+  // Step 2: Check for active subscription once we have userId
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchSubscriptionDetails = async () => {
       const { data: subscription, error: subError } = await supabase
         .from('subscriptions_details')
         .select('subscriptionId')
-        .eq('userId', user.id)
+        .eq('userId', userId)
         .eq('isActive', true)
         .single();
-  
-      if (subError) {
-        console.error('Error fetching subscription data:', subError);
+
+      if (subError || !subscription) {
+        console.error('No active subscription found or error fetching subscription:', subError);
+        setHasActiveSubscription(false);
       } else {
-        console.log('Fetched subscription data:', subscription); // Log subscription data
-        setSubscriptionId(subscription?.subscriptionId); // Ensure subscriptionId is defined
+        console.log('Fetched subscription data:', subscription);
+        setSubscriptionId(subscription.subscriptionId);
+        setHasActiveSubscription(true);
       }
     };
-  
+
     fetchSubscriptionDetails();
-  }, []);
-  
+  }, [userId]);
 
   const handleCancelSubscription = async () => {
+    if (!subscriptionId) {
+      alert('No active subscription found.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await axios.post('/pages/api/subscription', {
+      const response = await axios.post('/api/cancel-subscription', {
         subscriptionId,
       });
 
       if (response.data.success) {
         alert('Subscription cancelled successfully!');
+        setHasActiveSubscription(false);
       } else {
         alert('Error cancelling subscription.');
       }
@@ -77,13 +95,25 @@ const CancelSubscriptionPage = () => {
               {/* Title and Text */}
               <Card.Title className="mb-4">Manage Your Subscription</Card.Title>
               <Card.Text>
-                If you cancel your subscription, you'll lose access to all premium features and services.
+                {hasActiveSubscription ? (
+                  "If you cancel your subscription, you'll lose access to all premium features and services."
+                ) : (
+                  "You do not have an active subscription."
+                )}
               </Card.Text>
 
               {/* Cancel Button */}
-              <Button variant="outline-danger" size="lg" onClick={() => setShowModal(true)} className="cancel-btn" disabled={!subscriptionId}>
-                Cancel Subscription
-              </Button>
+              {hasActiveSubscription && (
+                <Button
+                  variant="outline-danger"
+                  size="lg"
+                  onClick={() => setShowModal(true)}
+                  className="cancel-btn"
+                  disabled={!subscriptionId}
+                >
+                  Cancel Subscription
+                </Button>
+              )}
             </Card.Body>
           </Card>
         </Col>
