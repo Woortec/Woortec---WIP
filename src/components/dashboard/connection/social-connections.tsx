@@ -344,15 +344,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       </Typography>
       {renderAdAccounts()}
 
-      <Typography variant="body2" sx={{ marginTop: '35px' }}>
-        Your connected social accounts (0):
-      </Typography>
-
-      {/* New Feature Announcement */}
-      <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
-        New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
-      </Typography>
-
       {/* Modals for ad account and page selection */}
       <AdAccountSelectionModal
         open={modalOpen}
