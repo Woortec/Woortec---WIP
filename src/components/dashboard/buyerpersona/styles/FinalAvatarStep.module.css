@@ -1,0 +1,232 @@
+.wrapper{
+    display: flex;
+    height: 100%;
+    background: linear-gradient(to right, #008369, #2FDA77);
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden; /* Prevent overflow */
+    justify-content: center;   /* Center horizontally */
+    align-items: center;       /* Center vertically */
+    padding: 20px;
+  }
+  
+  .header {
+    font-size: 18px; /* Increase font size */
+    font-weight: 600;
+    margin-bottom: 20px; /* Add space below the header */
+    color: #ffff; /* Change text color */
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .returnButton{
+    font-size: 12px; /* Increase font size */
+    font-weight: 400;
+    margin-bottom: 20px; /* Add space below the header */
+    color: #ffff; /* Change text color */
+    display: flex;
+  }
+  
+  .container {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+  }
+  
+  .lbox{
+    height: 100%;
+    max-height: 91px;
+    font-size: 14px;
+    padding: 10px;
+    padding-bottom: 0px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    font-weight: bold;
+    color: #008369;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  }
+
+  .avatarlbox{
+    display: flex;
+    padding: 10px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    background-color: white;
+  }
+  
+  .mbox {
+    width: 252px;
+    height: 180px;
+    font-size: 14px;
+    padding: 20px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #008369;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  }
+
+  
+  .rbox {
+    width: 252px;
+    height: 180px;
+    font-size: 14px;
+    padding: 20px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-weight: bold;
+    margin-bottom: 5px;
+    background-color: white;
+    color: #008369;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+  }
+
+  .selectedAvatarLeft{
+    padding-bottom: 5px;
+  }
+
+  .selectedAvatarImage {
+    width: 70px; /* Control the size of the avatar */
+    height: 70px;
+    padding-bottom: px;
+    border-radius: 50%; /* If avatars are round */
+    border: 2px solid #ffcc60; /* Optional styling for the avatar */
+  }
+
+  .lText{
+    color: #000;
+    font-weight: 700; /* Adjust font weight, e.g., 400 for normal */
+    text-align: center;
+  }
+
+  .buttonsContainer{
+    display: flex;
+    font-size: 14px;
+    font-weight: 400;
+    gap: 5px;
+    align-self: flex-end;
+  }
+
+  .saveButton{
+    border: 1px solid #ffffff; /* Optional styling for the avatar */
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: 5px;
+  }
+
+  .dlButton{
+    border: 1px solid #ffffff; /* Optional styling for the avatar */
+    padding-right: 10px;
+    padding-left: 10px;
+    color: #008369;
+    background-color: white;
+    border-radius: 5px;
+  }
+
+  .mText{
+    color: #000;
+    font-weight: 700; /* Adjust font weight, e.g., 400 for normal */
+    text-align: left;
+    width: 100%;
+  }
+
+  .rText{
+    color: #000;
+    font-weight: 700; /* Adjust font weight, e.g., 400 for normal */
+    text-align: left;
+    width: 100%;
+  }
+
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative; /* Ensure the modal has a relative position */
+}
+  .emailInput {
+    width: 100%;
+    padding: 8px;
+    margin: 16px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: black;
+  }
+  
+  .modalButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+ .modalSubmit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modalSubmit {
+    background: #008369;
+    color: #fff;
+  }
+  
+  .modalCloseButton {
+    position: relative;
+    left: 320px; /* Distance from the right */
+    background: transparent;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #000000;
+    z-index: 10; /* Ensure it's above other elements */
+  }
+  
+  .modalCloseButton:hover {
+    color: #333;
+  }
+
+  .modalHeader{
+    color: #000;
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  .mText, .lText, .rText {
+    resize: none; /* Disable manual resizing */
+  }
+
+  .mText, .rText{
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .mText:focus, .lText:focus, .rText:focus {
+    outline: none; /* Remove the default outline */
+    box-shadow: none; /* Remove any shadow effect */
+  }

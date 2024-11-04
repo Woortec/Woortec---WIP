@@ -6,10 +6,34 @@ interface BusinessStepProps {
   handleNext: () => void;
   handlePrev: () => void;
   selectedAvatar: number | null;
+  handleReturnToMainMenu: () => void; // Add this prop
+  age: number; // Prop for age
+  setAge: (age: number) => void; // Setter for age
+  location: string; // New prop for location
+  setLocation: (location: string) => void; // Setter for location
+  gender: string;               // Add gender as a prop
+  setGender: (gender: string) => void; // Setter for gender
+  language: string; // Add language prop
+  setLanguage: (language: string) => void; // Add setter for language
+  handleSkipInterview: () => void; // New prop for skipping to last step
 }
 
-const BusinessStep: React.FC<BusinessStepProps> = ({ step, handleNext, handlePrev, selectedAvatar }) => {
-  const [age, setAge] = useState<number>(20); // Initialize age state
+const BusinessStep: React.FC<BusinessStepProps> = ({
+  step,
+  handleNext,
+  handlePrev,
+  selectedAvatar,
+  handleReturnToMainMenu,
+  age, // Use the age prop
+  setAge, // Use the setter for age
+  location,
+  setLocation,
+  gender,
+  setGender,
+  language,
+  setLanguage,
+  handleSkipInterview
+}) => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>(''); // Initialize selected language state
   const [selectedGender, setSelectedGender] = useState('');
 
@@ -22,7 +46,7 @@ const BusinessStep: React.FC<BusinessStepProps> = ({ step, handleNext, handlePre
       {/* Left section */}
       <div className={styles.leftSection}>
         <div>
-          <button className={styles.returnButton}>RETURN TO MAIN MENU</button>
+          <button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO MAIN MENU</button>
         </div>
         {selectedAvatar !== null && (
           <div className={styles.selectedAvatarLeft}>
@@ -66,7 +90,7 @@ const BusinessStep: React.FC<BusinessStepProps> = ({ step, handleNext, handlePre
           <div className={styles.circleBorder}></div>
           <div className={styles.circleBorder}></div>
         </div>
-        <div><button className={styles.backButton}>Skip interview mode</button></div>
+        <div><button className={styles.backButton} onClick={handleSkipInterview}>Skip interview mode</button></div>
       </div>
 
       {/* Right Section */}
@@ -88,12 +112,18 @@ const BusinessStep: React.FC<BusinessStepProps> = ({ step, handleNext, handlePre
 
         <div className={styles.placeContainer}> 
         <h2>Where does your Target Customer live?</h2>
-        <input type="text" className={styles.placeText} placeholder="Enter text here"/>
+        <input type="text" className={styles.placeText} placeholder="Enter text here"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)} 
+        />
         </div>
 
         <div className={styles.languageContainer}>
           <h2>What is the primary language spoken by your Target Customer?</h2>
-          <select className={styles.dropdown}>
+          <select className={styles.dropdown} 
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+          >
             <option value="">Select a language</option>
             <option value="English">English</option>
             <option value="Filipino">Filipino</option>
@@ -103,20 +133,21 @@ const BusinessStep: React.FC<BusinessStepProps> = ({ step, handleNext, handlePre
 
         <div className={styles.radioGroup}>
           <h2>What is the gender of your Target Customer?</h2>
-            {['Male', 'Female', 'Non-Binary', 'Other'].map((gender) => (
-            <label key={gender} className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="gender"
-                value={gender}
-                checked={selectedGender === gender}
-                onChange={() => setSelectedGender(gender)}
-                className={styles.radioBox}
-              />
-              <span>{gender}</span> {/* Text next to the box */}
+            {['Male', 'Female', 'Non-Binary', 'Other'].map((genderOption) => (
+             <label key={genderOption} className={styles.radioLabel}>
+            <input
+             type="radio"
+             name="gender"
+             value={genderOption}
+             checked={gender === genderOption} // Check if this option is selected
+             onChange={() => setGender(genderOption)} // Update gender state
+             className={styles.radioBox}
+             />
+            <span>{genderOption}</span> {/* Text next to the box */}
             </label>
-        ))}
-        </div>
+             ))}
+          </div>
+
 
 
         {/* Pagination Buttons */}

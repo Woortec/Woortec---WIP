@@ -5,20 +5,29 @@ interface ToolsStepProps {
   handleNext: () => void;
   handlePrev: () => void; // Add prop for handlePrev
   selectedAvatar: number | null; // Add prop for selectedAvatar
+  handleReturnToMainMenu: () => void; // Add this prop
+  job: string; // Add prop for customer name
+  setJob: (name: string) => void; // Add setter function
+  education: string; // Add language prop
+  setEducation: (language: string) => void; // Add setter for language
+  annualIncome: string;
+  setAnnualIncome: (annualIncome: string) => void; // Add setter function
+  handleSkipInterview: () => void; // New prop for skipping to last step
 }
 
-const ToolsStep: React.FC<ToolsStepProps> = ({handleNext, handlePrev, selectedAvatar }) => {
-  const [age, setAge] = useState<number>(25); // Initialize age state
-
-  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(Number(event.target.value)); // Update age based on slider value
-  };
+const ToolsStep: React.FC<ToolsStepProps> = ({handleNext, handlePrev, selectedAvatar, handleReturnToMainMenu, job, setJob,
+  education,
+  setEducation,
+  annualIncome,
+  setAnnualIncome,
+  handleSkipInterview
+ }) => {
 
   return (
 <div className={styles.wrapper}>
       {/* Left section */}
       <div className={styles.leftSection}>
-      <div><button className={styles.returnButton}>RETURN TO MAIN MENU</button></div>
+      <div><button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO MAIN MENU</button></div>
         {selectedAvatar !== null && (
           <div className={styles.selectedAvatarLeft}>
             <img
@@ -61,7 +70,7 @@ const ToolsStep: React.FC<ToolsStepProps> = ({handleNext, handlePrev, selectedAv
       <div className={styles.circleBorder}></div>
       <div className={styles.circleBorder}></div>
     </div>
-    <div><button className={styles.backButton}>Skip interview mode</button></div>
+    <div><button className={styles.backButton} onClick={handleSkipInterview}>Skip interview mode</button></div>
   </div>
 
       {/* Right section */}
@@ -70,12 +79,18 @@ const ToolsStep: React.FC<ToolsStepProps> = ({handleNext, handlePrev, selectedAv
         {/* Right section content */}
         <div> 
         <h2>What is the current or potential job title of your Target Customer?</h2>
-        <input type="text" className={styles.placeText} placeholder="Enter text here"/>
+        <input type="text" className={styles.placeText} placeholder="Enter text here"
+                    value={job}
+                    onChange={(e) => setJob(e.target.value)}
+        />
         </div>
 
         <div className={styles.educationContainer}>
           <h2>What is the highest level of education you have attained?</h2>
-          <select className={styles.dropdown}>
+          <select className={styles.dropdown}
+                          value={education}
+                          onChange={(e) => setEducation(e.target.value)}
+          >
             <option value="">Select education level...</option>
             <option value="High School">High School</option>
             <option value="Associate's Degree">Associate's Degree</option>
@@ -86,7 +101,10 @@ const ToolsStep: React.FC<ToolsStepProps> = ({handleNext, handlePrev, selectedAv
 
         <div> 
         <h2>What is the estimated annual income of your Target Customer?</h2>
-        <input type="text" className={styles.placeText} placeholder="Enter text here"/>
+        <input type="text" className={styles.placeText} placeholder="Enter text here"
+                    value={annualIncome}
+                    onChange={(e) => setAnnualIncome(e.target.value)} 
+        />
         </div>
 
           {/* Pagination buttons */}

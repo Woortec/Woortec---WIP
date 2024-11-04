@@ -5,20 +5,28 @@ interface ConsumptionHabitsStepProps {
   handleNext: () => void;
   handlePrev: () => void; // Add prop for handlePrev
   selectedAvatar: number | null; // Add prop for selectedAvatar
+  handleReturnToMainMenu: () => void; // Add this prop
+  hobbies: string;
+  setHobbies: (hobbies: string) => void; // Add setter function
+  skill: string;
+  setSkill: (hobbies: string) => void; // Add setter function
+  handleSkipInterview: () => void; // New prop for skipping to last step
 }
 
-const ConsumptionHabitsStep: React.FC<ConsumptionHabitsStepProps> = ({handleNext, handlePrev, selectedAvatar }) => {
-  const [age, setAge] = useState<number>(25); // Initialize age state
-
-  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(Number(event.target.value)); // Update age based on slider value
-  };
+const ConsumptionHabitsStep: React.FC<ConsumptionHabitsStepProps> = ({handleNext, handlePrev, selectedAvatar, 
+  handleReturnToMainMenu, 
+  hobbies,
+  setHobbies,
+  skill,
+  setSkill,
+  handleSkipInterview
+}) => {
 
   return (
 <div className={styles.wrapper}>
       {/* Left section */}
       <div className={styles.leftSection}>
-      <div><button className={styles.returnButton}>RETURN TO MAIN MENU</button></div>
+      <div><button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO MAIN MENU</button></div>
         {selectedAvatar !== null && (
           <div className={styles.selectedAvatarLeft}>
             <img
@@ -61,7 +69,7 @@ const ConsumptionHabitsStep: React.FC<ConsumptionHabitsStepProps> = ({handleNext
       <div className={styles.circleBorder}></div>
       <div className={styles.circle}></div>
     </div>
-    <div><button className={styles.backButton}>Skip interview mode</button></div>
+    <div><button className={styles.backButton} onClick={handleSkipInterview}>Skip interview mode</button></div>
   </div>
 
       {/* Right section */}
@@ -70,12 +78,18 @@ const ConsumptionHabitsStep: React.FC<ConsumptionHabitsStepProps> = ({handleNext
         {/* Right section content */}
         <div> 
         <h2 className={styles.placeHeader}>What are the hobbies or activities that your Target Customer enjoys in their free time?</h2>
-        <textarea className={styles.placeText} placeholder="(Identify the specific websites or types of websites frequently browsed)"/>
+        <textarea className={styles.placeText} placeholder="(List hobbies such as reading, traveling, cooking, etc.)"
+                                                value={hobbies} 
+                                                onChange={(e) => setHobbies(e.target.value)} 
+        />
         </div>
 
         <div> 
         <h2 className={styles.placeHeader}>What skills has your Target Customer developed that are valuable in their personal or professional life?</h2>
-        <textarea className={styles.placeText} placeholder="(Describe specific skills like project management, creative writing, coding, etc.)"/>
+        <textarea className={styles.placeText} placeholder="(Describe specific skills like project management, creative writing, coding, etc.)"
+                                                value={skill} 
+                                                onChange={(e) => setSkill(e.target.value)}
+        />
         </div>
 
           {/* Pagination buttons */}

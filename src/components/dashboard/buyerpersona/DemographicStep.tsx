@@ -10,6 +10,8 @@ interface DemographicStepProps {
   setSelectedAvatar: (index: number | null) => void; // Add prop for setter
   customerName: string; // Add prop for customer name
   setCustomerName: (name: string) => void; // Add setter function
+  handleReturnToMainMenu: () => void; // Add this prop
+  handleSkipInterview: () => void; // New prop for skipping to last step
 }
 
 const DemographicStep: React.FC<DemographicStepProps> = ({ 
@@ -18,7 +20,9 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
   selectedAvatar, 
   setSelectedAvatar, 
   customerName, 
-  setCustomerName 
+  setCustomerName,
+  handleReturnToMainMenu, 
+  handleSkipInterview, // Include new prop
 }) => {
   const avatarFilenames = [
     'avatar-1.png',
@@ -48,7 +52,7 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
     <div className={styles.wrapper}>
       {/* Left section */}
       <div className={styles.leftSection}>
-        <div><button className={styles.returnButton}>RETURN TO MAIN MENU</button></div>
+        <div><button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO MAIN MENU</button></div>
         {selectedAvatar === null ? (
           <div className={styles.placeholderCircle}>?</div> // Placeholder when no avatar is selected
         ) : (
@@ -93,7 +97,7 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
           <div className={styles.circleBorder}></div>
           <div className={styles.circleBorder}></div>
         </div>
-        <div><button className={styles.backButton}>Skip interview mode</button></div>
+        <div><button className={styles.backButton} onClick={handleSkipInterview}>Skip interview mode</button></div>
       </div>
 
       {/* Right section */}
