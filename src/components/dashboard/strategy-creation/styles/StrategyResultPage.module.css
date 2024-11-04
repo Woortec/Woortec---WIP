@@ -1,174 +1,173 @@
 .container {
-    width: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-x: auto;
-  }
-  
-  .title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .details {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-  }
-  
-  .detailsBox {
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 18px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .details > p {
-    margin: 0;
-  }
-  
-  .buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 18px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #0056b3;
-  }
-  
-  .expressLaunching {
-    background-color: #000;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    margin-bottom: 10px;
-    border-radius: 5px;
-  }
-  
-  .audienceTargeting {
-    background-color: #e0e0e0;
-    padding: 10px;
-    text-align: center;
-    margin-bottom: 10px;
-    border-radius: 18px;
-  }
-  
-  .tableContainer {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    border-radius: 18px;
-    padding: 15px;
-    overflow-x: auto;
-  }
-  
-  .table {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr); /* Adjust based on the number of columns */
-    gap: 10px;
-  }
-  
-  .metaAds {
-    font-weight: bold;
-    background-color: #1C252A;
-    color: #FFFFFF;
-  }
-  
-  .levelHeader {
-    background-color: #02B194;
-    font-weight: bold;
-    color: #FFFFFF;
-  }
-  
-  /* Header-specific colors */
-  .levelHeader1 {
-    background-color: #02B194;
-  }
-  
-  .levelHeader2 {
-    background-color: #FFC456;
-  }
-  
-  .levelHeader3 {
-    background-color: #E86A6D;
-  }
-  
-  .levelHeader4 {
-    background-color: #0288D1;
-  }
-  
-  .planWeek {
-    background-color: #ffffff;
-    color: black;
-  }
-  
-  .startingDay {
-    background-color: #ffffff;
-    color: black;
-  }
-  
-  .invest {
-    background-color: #BBCCD1;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .numAds {
-    background-color: #BBCCD1;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .toMessages {
-    background-color: #BBCCD1;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .toLink {
-    background-color: #BBCCD1;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .dailyBudget {
-    background-color: #BBCCD1;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .analysisTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .analysisTable th,
-  .analysisTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .downloadButton,
-  .uploadButton {
-    background-color: #3b8070;
-    color: white;
-    padding: 10px;
-    margin: 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
+    width: 100% !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+}
+
+.title {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    margin-bottom: 20px !important;
+}
+
+.details {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 20px !important;
+}
+
+.detailsBox {
+    background-color: #f5f5f5 !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+    margin-bottom: 10px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+}
+
+.details > p {
+    margin: 0 !important;
+}
+
+.buttons {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+}
+
+.button {
+    padding: 10px 20px !important;
+    border: none !important;
+    border-radius: 18px !important;
+    background-color: #007bff !important;
+    color: white !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s !important;
+}
+
+.button:hover {
+    background-color: #0056b3 !important;
+}
+
+.expressLaunching {
+    background-color: #000 !important;
+    color: white !important;
+    padding: 10px !important;
+    text-align: center !important;
+    margin-bottom: 10px !important;
+    border-radius: 5px !important;
+}
+
+.audienceTargeting {
+    background-color: #e0e0e0 !important;
+    padding: 10px !important;
+    text-align: center !important;
+    margin-bottom: 10px !important;
+    border-radius: 18px !important;
+}
+
+.tableContainer {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    background-color: white !important;
+    border-radius: 18px !important;
+    padding: 15px !important;
+    overflow-x: auto !important;
+}
+
+.table {
+    display: grid !important;
+    grid-template-columns: repeat(8, 1fr) !important; /* Adjust based on the number of columns */
+    gap: 10px !important;
+}
+
+.metaAds {
+    font-weight: bold !important;
+    background-color: #1C252A !important;
+    color: #FFFFFF !important;
+}
+
+.levelHeader {
+    background-color: #02B194 !important;
+    font-weight: bold !important;
+    color: #FFFFFF !important;
+}
+
+/* Header-specific colors */
+.levelHeader1 {
+    background-color: #02B194 !important;
+}
+
+.levelHeader2 {
+    background-color: #FFC456 !important;
+}
+
+.levelHeader3 {
+    background-color: #E86A6D !important;
+}
+
+.levelHeader4 {
+    background-color: #0288D1 !important;
+}
+
+.planWeek {
+    background-color: #ffffff !important;
+    color: black !important;
+}
+
+.startingDay {
+    background-color: #ffffff !important;
+    color: black !important;
+}
+
+.invest {
+    background-color: #BBCCD1 !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+.numAds {
+    background-color: #BBCCD1 !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+.toMessages {
+    background-color: #BBCCD1 !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+.toLink {
+    background-color: #BBCCD1 !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+.dailyBudget {
+    background-color: #BBCCD1 !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+.analysisTable {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 20px !important;
+}
+
+.analysisTable th,
+.analysisTable td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+}
+
+.downloadButton,
+.uploadButton {
+    background-color: #3b8070 !important;
+    color: white !important;
+    padding: 10px !important;
+    margin: 10px !important;
+    border: none !important;
+    cursor: pointer !important;
+}

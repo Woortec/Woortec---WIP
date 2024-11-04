@@ -8,11 +8,12 @@ export const navItems: NavItemConfig[] = [
     title: 'Ads Performance',
     href: paths.dashboard.performance,
     icon: 'trendup',
+  },
+  { key: 'strategy', title: 'Ads Strategy', href: paths.dashboard.objective, icon: 'strategy',
     items: [
       { key: 'buyerpersona', title: 'Buyer Persona', href: paths.dashboard.buyerpersona, icon: 'strategy' },
     ],
-  },
-  { key: 'strategy', title: 'Ads Strategy', href: paths.dashboard.objective, icon: 'strategy' },
+   },
   { key: 'setupcampaign', title: 'Campaign Setup', href: paths.dashboard.setupcampaign, icon: 'usergear' },
   { key: 'connection', title: 'Social Connections', href: paths.dashboard.connection, icon: 'broadcast' },
 ];
