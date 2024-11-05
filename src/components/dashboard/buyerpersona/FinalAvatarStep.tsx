@@ -104,6 +104,7 @@ const FinalAvatarStep: React.FC<FinalAvatarStepProps> = ({selectedAvatar,
   return (
 <div className={styles.wrapper}>
 
+{/*THIS IS FOR MODAL ONLY*/}
 {isModalOpen && (
   <div className={styles.modalOverlay} onClick={closeModal}>
     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -135,7 +136,7 @@ const FinalAvatarStep: React.FC<FinalAvatarStepProps> = ({selectedAvatar,
   </div>
 )}
 
-<div className={styles.mainContainer}>
+<div className={styles.mainContainer}> {/*Whole Page*/}
   <div><button className={styles.returnButton} onClick={handleReturnToMainMenu}>← RETURN TO HOMEPAGE</button></div>
 
   <div className={styles.header}>
@@ -146,104 +147,156 @@ const FinalAvatarStep: React.FC<FinalAvatarStepProps> = ({selectedAvatar,
     </div>
   </div>
 
-  <div className={styles.container}>
-    {/* Left Column with 9 boxes */}
-    <div className={styles.leftColumn}>
-      
-      <div className={styles.avatarlbox}>
-        {selectedAvatar !== null && (
-          <div className={styles.selectedAvatarLeft}>
-            <img
-              src={`/assets/avatar-${selectedAvatar + 1}.png`}
-              alt={`Selected Avatar ${selectedAvatar + 1}`}
-              className={styles.selectedAvatarImage}
-            />
+  <div className={styles.container}> {/*For the whole columns*/}
+
+    {/* First Row */}
+    <div className={styles.firstRow}>
+
+      <div className={styles.fcolumnbox}>{/* First Column of First Row */}
+
+        <div className={styles.fleftcolumn}>
+          {selectedAvatar !== null && (
+            <div className={styles.selectedAvatarLeft}>
+              <img
+                src={`/assets/avatar-${selectedAvatar + 1}.png`}
+                alt={`Selected Avatar ${selectedAvatar + 1}`}
+                className={styles.selectedAvatarImage}
+              />
+            </div>
+          )}
+        </div>   
+
+        <div className={styles.frightcolumn}>
+
+          <div className={styles.frowup}>
+          Name
+          <div><textarea className={styles.flrText} placeholder="Enter text here" onInput={handleResize} value={`${customerName}`} onChange={(e) => handleNameChange(e.target.value)}></textarea></div>
           </div>
-        )}
+
+          <div className={styles.frowdown}>
+
+            <div className={styles.frowdownleft}>
+              <div className={styles.frowdownleftup}>
+                Location:
+                <div><textarea className={styles.flText} placeholder="Enter text here" onInput={handleResize} value={`${location}`} onChange={(e) => handleLocationChange(e.target.value)}></textarea></div>
+              </div>
+              <div className={styles.frowdownleftdown}>
+                Language:
+                <div><textarea className={styles.flText} placeholder="Enter text here" onInput={handleResize} value={`${language}`} onChange={(e) => setLanguage(e.target.value)}></textarea></div>
+              </div>
+            </div>
+
+            <div className={styles.frowdownright}>
+              <div className={styles.frowdownrightup}>
+                Age:
+                <div><textarea className={styles.flText} placeholder="Enter text here" onInput={handleResize} value={`${age}`} onChange={(e) => setAge(Number(e.target.value))}></textarea></div>
+              </div>
+              <div className={styles.frowdownrightdown}>
+                Gender:
+                <div><textarea className={styles.flText} placeholder="Enter text here" onInput={handleResize} value={`${gender}`} onChange={(e) => setGender(e.target.value)}></textarea></div>
+                </div>
+            </div>
+          </div>
+        </div>  
       </div>
-      <div className={styles.lbox}>
-        Name
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${customerName}`} onChange={(e) => handleNameChange(e.target.value)}></textarea></div>
+
+      <div className={styles.scolumnbox}>{/* 2nd Column of First Row */}
+        <div className={styles.scolbox}>
+          Job Title
+        <div><textarea className={styles.scolText} placeholder="Enter text here" onInput={handleResize} value={`${job}`} onChange={(e) => handleJobChange(e.target.value)}></textarea></div>
+        </div>
       </div>
-      <div className={styles.lbox}>
-        Job Title
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${job}`} onChange={(e) => handleJobChange(e.target.value)}></textarea></div>
+
+      <div className={styles.scolumnbox}>{/* 3rd Column of First Row */}
+        <div className={styles.scolbox}>
+          Highest Education
+          <div><textarea className={styles.scolText} placeholder="Enter text here" onInput={handleResize} value={`${education}`} onChange={(e) => setEducation(e.target.value)}></textarea></div>
+        </div>
       </div>
-      <div className={styles.lbox}>
-        Age
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${age}`} onChange={(e) => setAge(Number(e.target.value))}></textarea></div>
-      </div>
-      <div className={styles.lbox}>
-        Location
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${location}`} onChange={(e) => handleLocationChange(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.lbox}>
-        Language
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${language}`} onChange={(e) => setLanguage(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.lbox}>
-        Gender
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${gender}`} onChange={(e) => setGender(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.lbox}>
-        Highest Education
-        <div><textarea className={styles.lText} placeholder="Enter text here" onInput={handleResize} value={`${education}`} onChange={(e) => setEducation(e.target.value)}></textarea></div>
-      </div>
+
     </div>
 
-    {/* Middle Column with 4 boxes */}
-    <div className={styles.middleColumn}>
-      <div className={styles.mbox}>
-      Annual Income
-        <div><textarea className={styles.mText} placeholder="Enter text here" onInput={handleResize} value={`${annualIncome}`} onChange={(e) => setAnnualIncome(e.target.value)}></textarea></div>
+    {/* 2nd Row */}
+    <div className={styles.secondRow}>    {/* F Row */}
+
+      {/* 5 ColumnBoxes of 2nd Row */}
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+        Annual Income
+          <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${annualIncome}`} onChange={(e) => setAnnualIncome(e.target.value)}></textarea></div>
+        </div>
       </div>
-      <div className={styles.mbox}>
-      Websites often visited
-        <div><textarea className={styles.mText} placeholder="Enter text here" onInput={handleResize} value={`${website}`} onChange={(e) => setWebsite(e.target.value)}></textarea></div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+          Websites often visited
+          <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${website}`} onChange={(e) => setWebsite(e.target.value)}></textarea></div>
+        </div>
       </div>
-      <div className={styles.mbox}>
-      Regularly Read
-        <div><textarea className={styles.mText} placeholder="Enter text here" onInput={handleResize} value={`${read}`} onChange={(e) => setRead(e.target.value)}></textarea></div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+            Regularly read
+            <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${read}`} onChange={(e) => setRead(e.target.value)}></textarea></div>
+          </div>
       </div>
-      <div className={styles.mbox}>
-      Film Genres Liked
-        <div><textarea className={styles.mText} placeholder="Enter text here" onInput={handleResize} value={`${genre}`} onChange={(e) => setGenre(e.target.value)}></textarea></div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+            Film Genres Liked
+            <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${genre}`} onChange={(e) => setGenre(e.target.value)}></textarea></div>
+          </div>
       </div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+            Goals and Motivations
+            <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${goals}`} onChange={(e) => setGoals(e.target.value)}></textarea></div>
+          </div>  
+      </div>
+
     </div>
 
-    {/* Right Column with 4 boxes */}
-    <div className={styles.rightColumn}>
-      <div className={styles.rbox}>
-      Goals and Motivations
-        <div><textarea className={styles.rText} placeholder="Enter text here" onInput={handleResize} value={`${goals}`} onChange={(e) => setGoals(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.rbox}>
-      Challenges/Obstacles
-        <div><textarea className={styles.rText} placeholder="Enter text here" onInput={handleResize} value={`${challenges}`} onChange={(e) => setChallenges(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.rbox}>
-      Purchase Barriers
-        <div><textarea className={styles.rText} placeholder="Enter text here" onInput={handleResize} value={`${purchase}`} onChange={(e) => setPurchase(e.target.value)}></textarea></div>
-      </div>
-      <div className={styles.rbox}>
-      Hobbies/Activities
-        <div><textarea className={styles.rText} placeholder="Enter text here" onInput={handleResize} value={`${hobbies}`} onChange={(e) => setHobbies(e.target.value)}></textarea></div>
-      </div>
-    </div>
+    {/* rnd Row */}
+    <div className={styles.secondRow}>    {/* F Row */}
 
-    {/* Column with 1 boxes */}
-    <div className={styles.rightColumn}>
-      <div className={styles.rbox}>
-      Skills
-        <div><textarea className={styles.rText} placeholder="Enter text here" onInput={handleResize}
+      {/* 5 ColumnBoxes of 3rd Row */}
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+          Challenges/Obstacles
+          <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${challenges}`} onChange={(e) => setChallenges(e.target.value)}></textarea></div>
+          </div>  
+      </div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+          Purchase Barriers
+          <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${purchase}`} onChange={(e) => setPurchase(e.target.value)}></textarea></div>
+          </div>  
+      </div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+          Hobbies/Activities
+        <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize} value={`${hobbies}`} onChange={(e) => setHobbies(e.target.value)}></textarea></div>
+          </div>    
+      </div>
+
+      <div className={styles.secondcolumnbox}>
+        <div className={styles.secondrowboxes}>
+          Skills
+          <div><textarea className={styles.secText} placeholder="Enter text here" onInput={handleResize}
         value={`${skill}`} onChange={(e) => setSkill(e.target.value)}
         ></textarea></div>
+          </div>    
       </div>
-      <div className={styles.rbox}>
+
+      <div className={styles.secondcolumnbox}>
+      <div className={styles.secondrowboxes}>
       Social Media
         <div>
         <textarea
-      className={styles.rText}
+      className={styles.secText}
       placeholder="Enter text here"
       onInput={handleResize}
       value={selectedPlatforms.join(', ')}
@@ -253,11 +306,17 @@ const FinalAvatarStep: React.FC<FinalAvatarStepProps> = ({selectedAvatar,
       }}
     />
         </div>
+          </div> 
+          
       </div>
+
     </div>
 
   </div>
-</div>
+
+
+  </div>
+
 </div>
 
 
