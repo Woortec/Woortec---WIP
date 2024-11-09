@@ -44,6 +44,16 @@ export function Notifications(): React.JSX.Element {
                 </FormGroup>
               </Stack>
             </Grid>
+            <Grid md={4} sm={6} xs={12}>
+              <Stack spacing={1}>
+                <Typography variant="h6">Cancellation Reporting</Typography>
+                <FormGroup>
+                  <FormControlLabel control={<Checkbox defaultChecked />} label="Send weekly report" />
+                  <FormControlLabel control={<Checkbox />} label="Notify on cancellation events" />
+                  <FormControlLabel control={<Checkbox />} label="Monthly summary" />
+                </FormGroup>
+              </Stack>
+            </Grid>
           </Grid>
         </CardContent>
         <Divider />
