@@ -104,7 +104,7 @@ const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
       }
 
       // Fetch the ad account details to get the currency
-      const accountDetailsResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}`, {
+      const accountDetailsResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}`, {
         params: {
           access_token: accessToken,
           fields: 'currency',
@@ -114,7 +114,7 @@ const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
       const currency = accountDetailsResponse.data.currency;
 
       // Fetch the spend data for the given date range
-      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'spend',
@@ -131,7 +131,7 @@ const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
 
       const spend = parseFloat(response.data.data.reduce((total: number, item: any) => total + parseFloat(item.spend), 0));
 
-      const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+      const previousResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'spend',
