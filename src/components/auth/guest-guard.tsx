@@ -27,7 +27,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     }
 
     if (user) {
-      logger.debug('[GuestGuard]: User is logged is, redirecting to /dashboard');
+      logger.debug('[GuestGuard]: User is logged in, redirecting to /dashboard');
       router.push('/dashboard');
       return;
     }
