@@ -57,7 +57,7 @@
   
     try {
       // Fetch the currency for the ad account
-      const accountResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}`, {
+      const accountResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}`, {
         params: {
           access_token: accessToken,
           fields: 'currency',
@@ -66,7 +66,7 @@
       cachedCurrency = accountResponse.data.currency;
   
       // Fetch active ads
-      const response = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/ads`, {
+      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/ads`, {
         params: {
           access_token: accessToken,
           fields: 'id,name,status',
@@ -80,7 +80,7 @@
       }, {});
   
       // Fetch ad insights for the active ads
-      const insightsResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/insights`, {
+      const insightsResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'ad_id,impressions,spend,actions,cpc',
@@ -99,7 +99,7 @@
           const cpc = insight.cpc || 0; // Fetch CPC directly from the API response
   
           // Fetch ad creative
-          const adCreativeResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`, {
+          const adCreativeResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/adcreatives`, {
             params: {
               access_token: accessToken,
               fields: 'object_story_spec{link_data{image_hash}},image_hash',
@@ -115,7 +115,7 @@
           const imageHash = adCreative?.object_story_spec?.link_data?.image_hash || adCreative?.image_hash;
   
           if (imageHash) {
-            const imageResponse = await axios.get(`https://graph.facebook.com/v20.0/${adAccountId}/adimages`, {
+            const imageResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/adimages`, {
               params: {
                 access_token: accessToken,
                 hashes: [imageHash],
