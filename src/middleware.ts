@@ -26,7 +26,7 @@ export default async function middleware(req: any) {
 
     const response = NextResponse.next();
 
-    // Set tshe Permissions-Policy header without the unrecognized 'ch-ua-form-factor'
+    // Set the Permissions-Policy header without the unrecognized 'ch-ua-form-factor'
     response.headers.set('Permissions-Policy', 'geolocation=(self)'); // Example of a valid policy
 
     return response;
