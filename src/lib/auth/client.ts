@@ -38,9 +38,7 @@ export interface ResetPasswordParams {
 
 class AuthClient {
   async signUp(_: SignUpParams): Promise<{ error?: string }> {
-    // Make API request
-
-    // We do not handle the API, so we'll just generate a token and store it in localStorage.
+    // Generate a random token and store it in localStorage
     const token = generateToken();
     localStorage.setItem('custom-auth-token', token);
 
@@ -54,13 +52,12 @@ class AuthClient {
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
     const { email, password } = params;
 
-    // Make API request
-
-    // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
+    // Check credentials (mocked for now)
     if (email !== 'sofia@devias.io' || password !== 'Secret1') {
       return { error: 'Invalid credentials' };
     }
 
+    // Generate a token and store it in localStorage
     const token = generateToken();
     localStorage.setItem('custom-auth-token', token);
 
@@ -72,24 +69,41 @@ class AuthClient {
   }
 
   async updatePassword(_: ResetPasswordParams): Promise<{ error?: string }> {
-    return { error: 'Update reset not implemented' };
+    return { error: 'Update password not implemented' };
   }
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
-    // Make API request
+    try {
+      // First, check the custom token in localStorage
+      const tokenKey = 'sb-uvhvgcrczfdfvoujarga-auth-token';
+      const storedToken = localStorage.getItem(tokenKey);
 
-    // We do not handle the API, so just check if we have a token in localStorage.
-    const token = localStorage.getItem('custom-auth-token');
+      if (!storedToken) {
+        console.error('No auth token found in localStorage.');
+        return { data: null };
+      }
 
-    if (!token) {
+      // Parse the token and extract the user information
+      const parsedToken = JSON.parse(storedToken);
+      const user = parsedToken?.user;
+
+      if (!user) {
+        console.error('No user information found in the token.');
+        return { data: null };
+      }
+
+      console.log('Fetched user data:', user);
+      return { data: user }; // Return the user data
+    } catch (error) {
+      console.error('Error parsing the stored token:', error);
       return { data: null };
     }
-
-    return { data: user };
   }
 
   async signOut(): Promise<{ error?: string }> {
+    // Remove both the custom and Supabase tokens from localStorage
     localStorage.removeItem('custom-auth-token');
+    localStorage.removeItem('sb-uvhvgcrczfdfvoujarga-auth-token');
 
     return {};
   }

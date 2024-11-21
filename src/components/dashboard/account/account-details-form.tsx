@@ -131,7 +131,7 @@ export function AccountDetailsForm(): React.JSX.Element {
   return (
     <form onSubmit={handleSubmit}>
       <Card>
-        <CardHeader subheader="The informations can be edited" title="Profile" />
+        <CardHeader subheader="The information can be edited" title="Profile" />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>

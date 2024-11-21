@@ -1,5 +1,3 @@
-// sign-in-form.tsx
-
 'use client';
 
 import * as React from 'react';
@@ -17,18 +15,24 @@ import Typography from '@mui/material/Typography';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
+import Cookies from 'js-cookie';
+import Stripe from 'stripe';
 import Box from '@mui/material/Box';
 import { User } from '@supabase/supabase-js';
 
+import GTM from '../GTM';
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
 
-// Initialize Supabase client
-const supabase = createClient();
+// Initialize Stripe
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-06-20',
+});
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
+  const supabase = createClient();
   const { checkSession } = useUser();
 
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
@@ -55,6 +59,51 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to handle Klaviyo subscription
+  const handleKlaviyoSubscription = async (email: string, password?: string) => {
+    try {
+      const response = await fetch('/api/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Failed to subscribe profile in Klaviyo:', result.error);
+      } else {
+        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
+      }
+    } catch (error) {
+      console.error('Error during Klaviyo subscription:', error);
+    }
+  };
+
+  // Function to check or create Stripe Customer
+  const handleStripeCustomer = async (email: string) => {
+    const { data: userRecord, error: fetchError } = await supabase
+      .from('user')
+      .select('customerId')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !userRecord?.customerId) {
+      const customer = await stripe.customers.create({
+        email,
+      });
+
+      await supabase
+        .from('user')
+        .upsert({ email, customerId: customer.id })
+        .eq('email', email);
+
+      console.log(`Stripe customer created with ID: ${customer.id}`);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!validateForm()) {
@@ -70,12 +119,40 @@ export function SignInForm(): React.JSX.Element {
       });
 
       if (error) {
-        setErrors((prev) => ({ ...prev, root: error.message }));
-        setIsPending(false);
-        return;
+        // If the user doesn't exist or wrong password
+        if (error.message === 'Invalid login credentials') {
+          // Try to link the email/password to an existing OAuth user
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+
+          if (signUpError) {
+            setErrors((prev) => ({ ...prev, root: signUpError.message }));
+            setIsPending(false);
+            return;
+          }
+
+          if (signUpData.user) {
+            // User needs to confirm their email
+            setErrors((prev) => ({ ...prev, root: 'Check your email to confirm your account.' }));
+            setIsPending(false);
+            return;
+          }
+        } else {
+          setErrors((prev) => ({ ...prev, root: error.message }));
+          setIsPending(false);
+          return;
+        }
       }
 
-      if (data.session) {
+      if (data.user) {
+        Cookies.set('accessToken', data.session.access_token, { expires: 3 });
+
+        // Handle Stripe customer creation/check
+        await handleStripeCustomer(data.user.email);
+
+        await handleKlaviyoSubscription(data.user.email, password);
         await checkSession?.();
         router.push('/');
       }
@@ -91,23 +168,11 @@ export function SignInForm(): React.JSX.Element {
       setIsPending(true);
 
       try {
-        let options: any = {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        };
-
-        if (provider === 'facebook') {
-          options = {
-            ...options,
-            scopes: 'email,public_profile', // Add scopes as needed
-            queryParams: {
-              config_id: '937709384919732', // Include your actual config_id here
-            },
-          };
-        }
-
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
           provider,
-          options,
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
         });
 
         if (error) {
@@ -127,7 +192,7 @@ export function SignInForm(): React.JSX.Element {
         setIsPending(false);
       }
     },
-    []
+    [supabase]
   );
 
   React.useEffect(() => {
@@ -140,7 +205,47 @@ export function SignInForm(): React.JSX.Element {
         return;
       }
 
-      if (data.session) {
+      if (data?.session) {
+        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
+        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+
+        const userEmail = data.session.user.email;
+
+        // Check if a user with this email already exists
+        const { data: existingUser, error: userError } = await supabase.auth.admin.listUsers({
+          email: userEmail,
+        });
+
+        if (userError) {
+          console.error('Error fetching user:', userError);
+        } else if (existingUser.users.length > 1) {
+          // More than one user with the same email, need to merge accounts
+          // Use Supabase Auth admin API to delete the duplicate account
+          const duplicateUser = existingUser.users.find((user: User) => user.id !== data.session.user.id);
+
+
+          if (duplicateUser) {
+            // Link the provider to the existing user
+            await supabase.auth.admin.deleteUser(data.session.user.id);
+
+            // Re-authenticate as the existing user
+            const { data: newSession, error: sessionError } = await supabase.auth.signInWithPassword({
+              email: userEmail,
+              password: password || '', // You might need to prompt the user for a password
+            });
+
+            if (sessionError) {
+              console.error('Error re-authenticating user:', sessionError);
+            } else {
+              await supabase.auth.updateUser({ email: userEmail });
+            }
+          }
+        }
+
+        // Handle Stripe customer creation/check
+        await handleStripeCustomer(userEmail);
+
+        await handleKlaviyoSubscription(userEmail);
         await checkSession?.();
         router.push('/');
       }
@@ -149,7 +254,7 @@ export function SignInForm(): React.JSX.Element {
     if (window.location.pathname === '/auth/callback') {
       handleAuthCallback();
     }
-  }, [checkSession, router]);
+  }, [supabase, checkSession, router]);
 
   const handleForgotPassword = async () => {
     setResetPasswordError(null);
@@ -176,7 +281,12 @@ export function SignInForm(): React.JSX.Element {
   return (
     <Stack spacing={4}>
       <Stack spacing={1}>
-        <Typography variant="h4" sx={{ marginTop: '20px' }}>
+        <Typography
+          variant="h4"
+          sx={{
+            marginTop: '20px',
+          }}
+        >
           Welcome back!
         </Typography>
         <Typography color="text.secondary" variant="body2">
@@ -196,10 +306,10 @@ export function SignInForm(): React.JSX.Element {
               label="Email address"
               type="email"
               sx={{
-                borderRadius: '8px',
-                backgroundColor: '#FFFFFF',
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },
+                borderRadius: '8px', // Add rounded corners
+                backgroundColor: '#FFFFFF', // Change the color
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
               }}
             />
             {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
@@ -223,10 +333,10 @@ export function SignInForm(): React.JSX.Element {
               label="Password"
               type={showPassword ? 'text' : 'password'}
               sx={{
-                borderRadius: '8px',
-                backgroundColor: '#FFFFFF',
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' },
+                borderRadius: '8px', // Add rounded corners
+                backgroundColor: '#FFFFFF', // Change the color
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
               }}
             />
             {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
@@ -247,8 +357,8 @@ export function SignInForm(): React.JSX.Element {
             type="submit"
             variant="contained"
             sx={{
-              backgroundColor: '#15b79e',
-              borderRadius: '8px',
+              backgroundColor: '#15b79e', // Matching button color
+              borderRadius: '8px', // Add rounded corners
               marginTop: '40px',
             }}
           >
@@ -271,7 +381,7 @@ export function SignInForm(): React.JSX.Element {
             variant="body2"
             sx={{
               color: '#90a4ae',
-              paddingX: 2,
+              paddingX: 2, // Adds spacing between the text and lines
               fontSize: '14px',
             }}
           >
@@ -290,7 +400,7 @@ export function SignInForm(): React.JSX.Element {
             sx={{
               width: '50px',
               height: '50px',
-              minWidth: '50px',
+              minWidth: '50px', // Ensures the button is circular
               borderRadius: '50%',
               borderColor: '#486A75',
               color: '#486A75',
@@ -314,7 +424,7 @@ export function SignInForm(): React.JSX.Element {
             sx={{
               width: '50px',
               height: '50px',
-              minWidth: '50px',
+              minWidth: '50px', // Ensures the button is circular
               borderRadius: '50%',
               borderColor: '#486A75',
               color: '#486A75',
@@ -331,8 +441,6 @@ export function SignInForm(): React.JSX.Element {
             <FacebookIcon />
           </Button>
         </Stack>
-        {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
-        {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>}
       </Stack>
     </Stack>
   );
