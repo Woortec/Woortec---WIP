@@ -1,10 +1,12 @@
-'use client';
+'use client'
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -16,10 +18,19 @@ import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 
 export function MainNav(): React.JSX.Element {
-  const [openNav, setOpenNav] = React.useState<boolean>(false);
+  const [openNav, setOpenNav] = useState<boolean>(false);
+  const [notificationMenuAnchor, setNotificationMenuAnchor] = useState<null | HTMLElement>(null);
   const userPopover = usePopover<HTMLDivElement>();
   const theme = useTheme();
 
+  // Handle opening and closing of the notifications menu
+  const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationMenuAnchor(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationMenuAnchor(null);
+  };
 
   return (
     <>
@@ -93,13 +104,14 @@ export function MainNav(): React.JSX.Element {
           />
         </Stack>
 
-        {/* Center: Navigation Links */}
-
         {/* Right side: Notifications and Avatar */}
         <Stack direction="row" spacing={2} alignItems="center">
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
-              <IconButton sx={{ color: 'text.primary' }}>
+              <IconButton
+                sx={{ color: 'text.primary' }}
+                onClick={handleNotificationClick}
+              >
                 <BellIcon size={24} />
               </IconButton>
             </Badge>
@@ -131,6 +143,31 @@ export function MainNav(): React.JSX.Element {
           />
         </Stack>
       </Box>
+
+      {/* Notifications Dropdown Menu */}
+      <Menu
+        anchorEl={notificationMenuAnchor}
+        open={Boolean(notificationMenuAnchor)}
+        onClose={handleNotificationClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={handleNotificationClose}>
+          New user signed up
+        </MenuItem>
+        <MenuItem onClick={handleNotificationClose}>
+          Weekly report is ready
+        </MenuItem>
+        <MenuItem onClick={handleNotificationClose}>
+          Campaign updated successfully
+        </MenuItem>
+      </Menu>
 
       {/* User popover */}
       <UserPopover

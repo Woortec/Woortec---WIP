@@ -1,3 +1,5 @@
+// create-checkout-session.ts
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 import { createClient } from '../../../utils/supabase/server';
@@ -51,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (!customerId) {
         const customer = await stripe.customers.create({
           email: userEmail,
-          name: session.user.user_metadata?.full_name || userEmail, // Adjust based on your user data
+          name: session.user.user_metadata?.full_name || userEmail,
         });
 
         customerId = customer.id;
@@ -77,8 +79,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             quantity: 1,
           },
         ],
-        customer: customerId, // Use the customerId retrieved from Supabase
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        customer: customerId,
+        success_url: `${req.headers.origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/cancel`,
       });
 

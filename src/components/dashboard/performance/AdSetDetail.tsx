@@ -3,7 +3,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Box, Button, CircularProgress, IconButton, Typography } from '@mui/material';
 
 import { createClient } from '../../../../utils/supabase/client';
-import { addMessageToThread, createRun, createThread, fetchAdData, getAIResponse, waitForRunCompletion } from './api';
+import {
+  addMessageToThread,
+  createRun,
+  createThread,
+  fetchAdData,
+  getAIResponse,
+  waitForRunCompletion,
+} from './api';
 import styles from './styles/AdSetDetail.module.css';
 
 interface AdDetailProps {
@@ -17,6 +24,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   const [aiResponse, setAiResponse] = useState<string>('');
   const [requestingAdvice, setRequestingAdvice] = useState<boolean>(false);
   const [canRequestAdvice, setCanRequestAdvice] = useState<boolean>(true);
+  const [currency, setCurrency] = useState<string>('USD'); // Default to USD
 
   const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
   const ADVICE_REQUEST_KEY = `lastAdviceRequest_${adId}`;
@@ -35,10 +43,11 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
     const getAdDetail = async () => {
       try {
-        const { adData } = await fetchAdData(); // Fetch ad data (cached if already fetched)
+        const { adData, currency } = await fetchAdData(); // Fetch ad data and currency
         const detail = adData.find((ad: any) => ad.ad_id === adId);
         if (detail) {
           setAdDetail(detail);
+          setCurrency(currency); // Set the currency in state
           if (detail.aiGeneratedResponse) {
             setAiResponse(detail.aiGeneratedResponse); // Use cached AI response
           }
@@ -47,8 +56,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           setAiResponse('No ad detail found.');
         }
       } catch (error) {
-        console.error('Error during thread, message addition, or run creation:', error);
-        setAiResponse('Failed to generate AI response. Please try again later.');
+        console.error('Error fetching ad detail:', error);
+        setAiResponse('Failed to retrieve ad details. Please try again later.');
       } finally {
         setLoading(false); // Stop the loading indicator
       }
@@ -62,8 +71,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
     const userId = localStorage.getItem('userid');
     const supabase = createClient();
     const { data, error } = await supabase.from('user').select('*').eq('uuid', userId);
-    console.log();
-    if (data[0]?.isQuery) {
+
+    if (data && data[0]?.isQuery) {
       setCanRequestAdvice(false);
       alert("You can use this feature once per week, and you've already used it this week.");
       return;
@@ -80,42 +89,41 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
       adDetail.aiGeneratedResponse = aiGeneratedResponse; // Store AI response
       setAdDetail({ ...adDetail });
-      await supabase
-        .from('user')
-        .update({
-          isQuery: true,
-        })
-        .eq('uuid', userId);
+      await supabase.from('user').update({ isQuery: true }).eq('uuid', userId);
 
       // Store the time of the request
-      // localStorage.setItem(ADVICE_REQUEST_KEY, Date.now().toString());
+      localStorage.setItem(ADVICE_REQUEST_KEY, Date.now().toString());
       setCanRequestAdvice(false);
     } catch (error) {
-      console.error('Error during thread, message addition, or run creation:', error);
+      console.error('Error during advice request:', error);
       setAiResponse('Failed to generate AI response. Please try again later.');
     } finally {
       setRequestingAdvice(false);
     }
   };
 
-// Calculate CTR (Click-Through Rate)
-const calculateCTR = (clicks: number, impressions: number) => {
-  if (!impressions || impressions === 0) return 'N/A'; // Avoid division by zero
-  const ctr = (clicks / impressions) * 100;
-  return ctr.toFixed(2); // Return CTR as a percentage (2 decimal places)
-};
+  // Calculate CTR (Click-Through Rate)
+  const calculateCTR = (clicks: number, impressions: number) => {
+    if (!impressions || impressions === 0) return 'N/A'; // Avoid division by zero
+    const ctr = (clicks / impressions) * 100;
+    return ctr.toFixed(2); // Return CTR as a percentage (2 decimal places)
+  };
 
+  // Ensure values are valid numbers, fallback to 'N/A' if not
+  const formatValue = (
+    value: any,
+    currency: string = '',
+    fallback: string = 'N/A',
+    decimals: number = 2 // Default to 2 decimal places
+  ) => {
+    if (value === null || value === undefined || isNaN(parseFloat(value))) {
+      return fallback; // If value is invalid, return fallback
+    }
 
-
-// Ensure values are valid numbers, fallback to 'N/A' if not
-const formatValue = (value: any, currency: string = '', fallback: string = 'N/A') => {
-  if (value === null || value === undefined || isNaN(parseFloat(value))) {
-    return fallback; // If value is invalid, return fallback
-  }
-
-  return `${parseFloat(value).toFixed(2)} ${currency}`; // Format the value and append currency
-};
-
+    return `${parseFloat(value)
+      .toFixed(decimals)
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')} ${currency}`.trim(); // Format the value and append currency
+  };
 
   if (loading) {
     return <CircularProgress />;
@@ -143,39 +151,48 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
           className={styles.adCreative}
         />
 
-<Box className={styles.budgetContainer}>
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} green`}>CPC</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.cpc)}</div> {/* Display CPC */}
-  </Box>
+        <Box className={styles.budgetContainer}>
+          {/* CPC */}
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} green`}>CPC</div>
+            <div className={styles.budgetValue}>
+              {formatValue(adDetail?.cpc, currency)} {/* Pass currency if desired */}
+            </div>
+          </Box>
 
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} yellow`}>CTR (%)</div> {/* Changed from CPM to CTR */}
-    <div className={styles.budgetValue}>
-      {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
-    </div> {/* Display CTR */}
-  </Box>
+          {/* CTR */}
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>CTR (%)</div>
+            <div className={styles.budgetValue}>
+              {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
+            </div>
+          </Box>
 
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.impressions, 'N/A')}</div>
-  </Box>
+          {/* Impressions */}
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
+            <div className={styles.budgetValue}>
+              {formatValue(adDetail?.impressions, '', 'N/A', 0)} {/* No decimal places */}
+            </div>
+          </Box>
 
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.spend, 'N/A')}</div>
-  </Box>
-  {/* Add more budget cards as needed */}
-</Box>
-
+          {/* Spend */}
+          <Box className={styles.budgetCard}>
+            <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
+            <div className={styles.budgetValue}>
+              {formatValue(adDetail?.spend, currency)} {/* Include currency */}
+            </div>
+          </Box>
+          {/* Add more budget cards as needed */}
+        </Box>
       </Box>
 
       {/* AI Response Section */}
       <Box className={styles.aiResponseContainer}>
         <Typography className={styles.aiResponseTitle}>Woortec Team Response:</Typography>
-        {aiResponse ? (
+        {adDetail.aiGeneratedResponse ? (
           <Box className={styles.aiResponseContent}>
-            {aiResponse.split('\n').map((line, index) => (
+            {adDetail.aiGeneratedResponse.split('\n').map((line: string, index: number) => (
               <Typography key={index} component="div" style={{ marginBottom: '8px' }}>
                 {line.match(/^\d+\./) ? (
                   <strong>{line}</strong> // Numbered lines (metrics)
@@ -190,13 +207,19 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             ))}
           </Box>
         ) : (
-          <Typography className={styles.aiResponseContent}>.</Typography>
+          <Typography className={styles.aiResponseContent}>{aiResponse || '.'}</Typography>
         )}
       </Box>
 
       {/* Button to request expert's advice */}
       {canRequestAdvice ? (
-        <Button variant="contained" color="primary" onClick={handleRequestAdvice} disabled={requestingAdvice}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleRequestAdvice}
+          disabled={requestingAdvice}
+          style={{ marginTop: '16px' }}
+        >
           {requestingAdvice ? 'Requesting Advice...' : "Ask for Expert's Advice"}
         </Button>
       ) : (

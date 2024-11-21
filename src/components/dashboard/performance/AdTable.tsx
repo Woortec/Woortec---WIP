@@ -64,15 +64,15 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
 
             {/* REACH */}
             <Box className={styles.tableCell} style={{ backgroundColor: getColor(ad.impressions / ad.spend, 700, false) }}>
-              <Typography className={styles.metricValue}>
-                {formatValue(ad.impressions, currency, false)}
-              </Typography>
-              <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * 700)} arrow>
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
+  <Typography className={styles.metricValue}>
+    {formatValue(Math.round(ad.impressions), currency, false)}
+  </Typography>
+  <Tooltip title={getImpressionsComment(Math.round(ad.impressions), ad.spend * 700)} arrow>
+    <IconButton>
+      <InfoIcon />
+    </IconButton>
+  </Tooltip>
+</Box>
 
             {/* SPENT */}
             <Box className={`${styles.tableCell} ${styles.tableCellLast}`} style={{ backgroundColor: calculateSpentColor(ad.spend, expectedSpend) }}>
