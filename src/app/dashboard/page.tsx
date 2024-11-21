@@ -212,7 +212,32 @@ export default function Page(): React.JSX.Element {
           />
         )}
         <Grid container spacing={2}>
-          {/* ... Rest of your dashboard components ... */}
+          <Grid item lg={3} md={6} xs={12} className="budget-container">
+            <BudgetContainer startDate={startDate} endDate={endDate} />
+          </Grid>
+          <Grid item lg={3} md={6} xs={12} className="impressions-container">
+            <TotalImpressionsContainer startDate={startDate} endDate={endDate} />
+          </Grid>
+          <Grid item lg={3} md={6} xs={12} className="cpm-container">
+            <TotalCostPerMessageContainer startDate={startDate} endDate={endDate} />
+          </Grid>
+          <Grid item lg={3} md={6} xs={12} className="profit-container">
+            <TotalProfitContainer />
+          </Grid>
+          <Grid item lg={12} xs={12} className="date-picker">
+            <DatePickerComponent
+              startDate={startDate}
+              endDate={endDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+            />
+          </Grid>
+          <Grid item lg={8} xs={12} className="ad-spend-chart">
+            <Sales timeRange="custom" startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
+          </Grid>
+          <Grid item lg={4} md={6} xs={12} className="total-reach">
+            <TotalReach startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
+          </Grid>
         </Grid>
       </DateProvider>
     </>
