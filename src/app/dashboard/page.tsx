@@ -1,9 +1,6 @@
-// dashboard.tsx
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation'; // Import necessary hooks
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid'; 
@@ -55,30 +52,6 @@ export default function Page(): React.JSX.Element {
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [sessionDetails, setSessionDetails] = useState<any>(null);
-  const searchParams = useSearchParams();
-  const session_id = searchParams?.get('session_id');
-
-  useEffect(() => {
-    if (session_id) {
-      fetchSessionDetails(session_id);
-    }
-  }, [session_id]);
-
-  const fetchSessionDetails = async (sessionId: string) => {
-    try {
-      const response = await fetch(`/api/stripe-session/${sessionId}`);
-      const sessionData = await response.json();
-      if (sessionData.payment_status === 'paid' || sessionData.status === 'complete') {
-        setSessionDetails(sessionData);
-        setShowSubscriptionModal(true);
-      }
-    } catch (error) {
-      console.error('Error fetching session details:', error);
-    }
-  };
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -105,7 +78,6 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      {/* Existing Modal */}
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
         <Box sx={style}>
           {/* Modal Title */}
@@ -117,20 +89,20 @@ export default function Page(): React.JSX.Element {
             To ensure a more personalized and efficient experience, we just need a few more details from you.
           </Typography>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
             {/* Date of Birth Input */}
             <TextField
               label="Date of Birth"
               type="date"
               variant="outlined"
-              fullWidth={false}
+              fullWidth={false}  // Disable fullWidth to customize the width
               margin="normal"
               InputLabelProps={{
                 shrink: true,
               }}
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              sx={{ width: '250px' }}
+              sx={{ width: '250px' }}  // Set the custom width here
             />
 
             {/* Industry Name Dropdown with FormControl */}
@@ -157,56 +129,30 @@ export default function Page(): React.JSX.Element {
             </FormControl>
           </Box>
 
+
           {/* Submit Button */}
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={handleIndustry} 
-            sx={{ mt: 7, width: '200px' }}
-          >
-            Continue
-          </Button>
+                        <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handleIndustry} 
+                sx={{ mt: 7, width: '200px' }} // Added custom width of 250px
+              >
+                Continue
+              </Button>
         </Box>
       </Modal>
-
-      {/* Subscription Success Modal */}
-      <Modal
-        open={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-        aria-labelledby="subscription-success-title"
-        aria-describedby="subscription-success-description"
-      >
-        <Box sx={style}>
-          <Typography id="subscription-success-title" variant="h5" component="h2" gutterBottom>
-            Payment Successful!
-          </Typography>
-          <Typography variant="body1" color="textSecondary" gutterBottom>
-            Thank you for subscribing!
-          </Typography>
-          {sessionDetails && (
-            <div>
-              <p><strong>Session ID:</strong> {sessionDetails.id}</p>
-              <p><strong>Amount Paid:</strong> ${(sessionDetails.amount_total / 100).toFixed(2)} {sessionDetails.currency.toUpperCase()}</p>
-            </div>
-          )}
-          <Button variant="contained" color="primary" onClick={() => setShowSubscriptionModal(false)}>
-            Close
-          </Button>
-        </Box>
-      </Modal>
-
       <DateProvider>
         {/* Conditionally render Joyride only after mounting */}
         {isMounted && (
           <Joyride
-            steps={steps}
-            run={runTour}
+            steps={steps} // Use global steps
+            run={runTour} // Use the global runTour state
             continuous
             showSkipButton
             showProgress
             styles={{
               options: {
-                zIndex: 10000,
+                zIndex: 10000, // Ensure the tour stays on top of other UI elements
               },
             }}
           />

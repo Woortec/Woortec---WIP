@@ -168,11 +168,24 @@ export function SignInForm(): React.JSX.Element {
       setIsPending(true);
 
       try {
+        let options: any = {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        };
+
+        if (provider === 'facebook') {
+          options = {
+            ...options,
+            scopes: 'email,public_profile', // Add scopes as needed
+            queryParams: {
+              response_type: 'code', // Adding response_type as 'code'
+              config_id: '937709384919732', // Replace with your actual config_id
+            },
+          };
+        }
+
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider,
-          options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
-          },
+          options,
         });
 
         if (error) {
@@ -222,7 +235,6 @@ export function SignInForm(): React.JSX.Element {
           // More than one user with the same email, need to merge accounts
           // Use Supabase Auth admin API to delete the duplicate account
           const duplicateUser = existingUser.users.find((user: User) => user.id !== data.session.user.id);
-
 
           if (duplicateUser) {
             // Link the provider to the existing user
