@@ -173,7 +173,7 @@ export function SignInForm(): React.JSX.Element {
       };
 
       if (provider === 'facebook') {
-        options.scopes = 'email,public_profile';
+        options.scopes = 'email';
         options.queryParams = {
           config_id: '937709384919732', // Add your config_id here
         };
