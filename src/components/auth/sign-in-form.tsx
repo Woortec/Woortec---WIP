@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import * as React from 'react';
 import RouterLink from 'next/link';
@@ -16,19 +16,12 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
-import Stripe from 'stripe';
-import Box from '@mui/material/Box';
-import { User } from '@supabase/supabase-js';
+import { subscribeProfile } from '@/lib/klaviyo/subscribeProfile';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../utils/supabase/client';
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-});
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -42,8 +35,6 @@ export function SignInForm(): React.JSX.Element {
   const [password, setPassword] = React.useState<string>('');
   const [googleAuthError, setGoogleAuthError] = React.useState<string | null>(null);
   const [facebookAuthError, setFacebookAuthError] = React.useState<string | null>(null);
-  const [resetPasswordError, setResetPasswordError] = React.useState<string | null>(null);
-  const [resetPasswordSuccess, setResetPasswordSuccess] = React.useState<string | null>(null);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -59,48 +50,12 @@ export function SignInForm(): React.JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Function to handle Klaviyo subscription
-  const handleKlaviyoSubscription = async (email: string, password?: string) => {
+  const handleProfileSubscription = async (email: string) => {
     try {
-      const response = await fetch('/api/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error('Failed to subscribe profile in Klaviyo:', result.error);
-      } else {
-        console.log(`Profile subscribed in Klaviyo for email: ${email}`);
-      }
+      await subscribeProfile(email);
+      console.log('Profile subscribed in Klaviyo for email:', email);
     } catch (error) {
-      console.error('Error during Klaviyo subscription:', error);
-    }
-  };
-
-  // Function to check or create Stripe Customer
-  const handleStripeCustomer = async (email: string) => {
-    const { data: userRecord, error: fetchError } = await supabase
-      .from('user')
-      .select('customerId')
-      .eq('email', email)
-      .single();
-
-    if (fetchError || !userRecord?.customerId) {
-      const customer = await stripe.customers.create({
-        email,
-      });
-
-      await supabase
-        .from('user')
-        .upsert({ email, customerId: customer.id })
-        .eq('email', email);
-
-      console.log(`Stripe customer created with ID: ${customer.id}`);
+      console.error('Failed to subscribe profile in Klaviyo:', error);
     }
   };
 
@@ -119,41 +74,14 @@ export function SignInForm(): React.JSX.Element {
       });
 
       if (error) {
-        // If the user doesn't exist or wrong password
-        if (error.message === 'Invalid login credentials') {
-          // Try to link the email/password to an existing OAuth user
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-          });
-
-          if (signUpError) {
-            setErrors((prev) => ({ ...prev, root: signUpError.message }));
-            setIsPending(false);
-            return;
-          }
-
-          if (signUpData.user) {
-            // User needs to confirm their email
-            setErrors((prev) => ({ ...prev, root: 'Check your email to confirm your account.' }));
-            setIsPending(false);
-            return;
-          }
-        } else {
-          setErrors((prev) => ({ ...prev, root: error.message }));
-          setIsPending(false);
-          return;
-        }
+        setErrors((prev) => ({ ...prev, root: error.message }));
+        setIsPending(false);
+        return;
       }
 
       if (data.user) {
         Cookies.set('accessToken', data.session.access_token, { expires: 3 });
-
-        // Handle Stripe customer creation/check
-        await handleStripeCustomer(data.user.email);
-
-        await handleKlaviyoSubscription(data.user.email, password);
-        await checkSession?.();
+        await handleProfileSubscription(data.user.email); // Subscribe profile in Klaviyo
         router.push('/');
       }
     } catch (error) {
@@ -163,44 +91,20 @@ export function SignInForm(): React.JSX.Element {
     }
   };
 
-  const handleOAuthSignIn = React.useCallback(
-    async (provider: 'google' | 'facebook'): Promise<void> => {
-      setIsPending(true);
+  const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
+    setIsPending(true);
 
-      try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
-          },
-        });
-
-        if (error) {
-          if (provider === 'google') {
-            setGoogleAuthError(error.message);
-          } else {
-            setFacebookAuthError(error.message);
-          }
-          setIsPending(false);
-        }
-      } catch (error) {
-        if (provider === 'google') {
-          setGoogleAuthError('An unexpected error occurred. Please try again.');
-        } else {
-          setFacebookAuthError('An unexpected error occurred. Please try again.');
-        }
-        setIsPending(false);
-      }
-    },
-    [supabase]
-  );
-
-  React.useEffect(() => {
-    const handleAuthCallback = async () => {
-      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `http://app.woortec.com/auth/callback`,
+        },
+      });
 
       if (error) {
-        setErrors((prev) => ({ ...prev, root: 'Failed to get session data after OAuth sign-in.' }));
+        console.log('Google auth error', error);
+        setGoogleAuthError(error.message);
         setIsPending(false);
         return;
       }
@@ -208,91 +112,60 @@ export function SignInForm(): React.JSX.Element {
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-
-        const userEmail = data.session.user.email;
-
-        // Check if a user with this email already exists
-        const { data: existingUser, error: userError } = await supabase.auth.admin.listUsers({
-          email: userEmail,
-        });
-
-        if (userError) {
-          console.error('Error fetching user:', userError);
-        } else if (existingUser.users.length > 1) {
-          // More than one user with the same email, need to merge accounts
-          // Use Supabase Auth admin API to delete the duplicate account
-          const duplicateUser = existingUser.users.find((user: User) => user.id !== data.session.user.id);
-
-
-          if (duplicateUser) {
-            // Link the provider to the existing user
-            await supabase.auth.admin.deleteUser(data.session.user.id);
-
-            // Re-authenticate as the existing user
-            const { data: newSession, error: sessionError } = await supabase.auth.signInWithPassword({
-              email: userEmail,
-              password: password || '', // You might need to prompt the user for a password
-            });
-
-            if (sessionError) {
-              console.error('Error re-authenticating user:', sessionError);
-            } else {
-              await supabase.auth.updateUser({ email: userEmail });
-            }
-          }
-        }
-
-        // Handle Stripe customer creation/check
-        await handleStripeCustomer(userEmail);
-
-        await handleKlaviyoSubscription(userEmail);
-        await checkSession?.();
-        router.push('/');
+        await handleProfileSubscription(data.session.user.email); // Subscribe profile in Klaviyo
       }
-    };
 
-    if (window.location.pathname === '/auth/callback') {
-      handleAuthCallback();
+      await checkSession?.();
+      router.refresh();
+    } catch (error) {
+      console.error('Error during Google sign-in:', error);
+      setGoogleAuthError('An unexpected error occurred. Please try again.');
+      setIsPending(false);
     }
-  }, [supabase, checkSession, router]);
+  }, [checkSession, router, supabase]);
 
-  const handleForgotPassword = async () => {
-    setResetPasswordError(null);
-    setResetPasswordSuccess(null);
-    if (!email) {
-      setErrors((prev) => ({ ...prev, email: 'Email is required to reset password' }));
-      return;
-    }
+  const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
+    setIsPending(true);
+
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `https://app.woortec.com/auth/reset-password`,
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `http://app.woortec.com/auth/callback`,
+        },
       });
 
       if (error) {
-        setResetPasswordError(error.message);
-      } else {
-        setResetPasswordSuccess('Password reset email sent. Please check your inbox.');
+        console.log('Facebook auth error', error);
+        setFacebookAuthError(error.message);
+        setIsPending(false);
+        return;
       }
+
+      if (data?.session) {
+        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
+        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
+        await handleProfileSubscription(data.session.user.email); // Subscribe profile in Klaviyo
+      }
+
+      await checkSession?.();
+      router.refresh();
     } catch (error) {
-      setResetPasswordError('An unexpected error occurred. Please try again.');
+      console.error('Error during Facebook sign-in:', error);
+      setFacebookAuthError('An unexpected error occurred. Please try again.');
+      setIsPending(false);
     }
-  };
+  }, [checkSession, router, supabase]);
 
   return (
     <Stack spacing={4}>
+      <GTM gtmId="GTM-NXB5KPF3" />  {/* Add GTM component here */}
       <Stack spacing={1}>
-        <Typography
-          variant="h4"
-          sx={{
-            marginTop: '20px',
-          }}
-        >
-          Welcome back!
-        </Typography>
+        <Typography variant="h4">Sign in</Typography>
         <Typography color="text.secondary" variant="body2">
           Don&apos;t have an account?{' '}
           <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-            Sign Up
+            Sign up
           </Link>
         </Typography>
       </Stack>
@@ -305,12 +178,6 @@ export function SignInForm(): React.JSX.Element {
               onChange={(e) => setEmail(e.target.value)}
               label="Email address"
               type="email"
-              sx={{
-                borderRadius: '8px', // Add rounded corners
-                backgroundColor: '#FFFFFF', // Change the color
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
-              }}
             />
             {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
           </FormControl>
@@ -332,116 +199,40 @@ export function SignInForm(): React.JSX.Element {
               }
               label="Password"
               type={showPassword ? 'text' : 'password'}
-              sx={{
-                borderRadius: '8px', // Add rounded corners
-                backgroundColor: '#FFFFFF', // Change the color
-                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
-              }}
             />
             {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
           </FormControl>
           <div>
-            <Box sx={{ textAlign: 'right' }}>
-              <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
-                Forgot password?
-              </Link>
-            </Box>
-            {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
-            {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
+            <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
+              Forgot password?
+            </Link>
           </div>
-
           {errors.root && <Alert color="error">{errors.root}</Alert>}
-          <Button
-            disabled={isPending}
-            type="submit"
-            variant="contained"
-            sx={{
-              backgroundColor: '#15b79e', // Matching button color
-              borderRadius: '8px', // Add rounded corners
-              marginTop: '40px',
-            }}
-          >
-            Log In
+          <Button disabled={isPending} type="submit" variant="contained">
+            Sign in
           </Button>
         </Stack>
       </form>
-      <Stack spacing={2} justifyContent="center" alignItems="center">
-        {/* Horizontal line with "or continue with" text */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            marginTop: '20px',
-          }}
-        >
-          <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
-          <Typography
-            variant="body2"
-            sx={{
-              color: '#90a4ae',
-              paddingX: 2, // Adds spacing between the text and lines
-              fontSize: '14px',
-            }}
-          >
-            or continue with
-          </Typography>
-          <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
-        </Box>
-
-        {/* Google and Facebook circular buttons */}
-        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-          <Button
-            onClick={() => handleOAuthSignIn('google')}
-            disabled={isPending}
-            type="button"
-            variant="outlined"
-            sx={{
-              width: '50px',
-              height: '50px',
-              minWidth: '50px', // Ensures the button is circular
-              borderRadius: '50%',
-              borderColor: '#486A75',
-              color: '#486A75',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              '&:hover': {
-                backgroundColor: '#486A75',
-                borderColor: '#486A75',
-                color: '#ffffff',
-              },
-            }}
-          >
-            <GoogleIcon />
-          </Button>
-          <Button
-            onClick={() => handleOAuthSignIn('facebook')}
-            disabled={isPending}
-            type="button"
-            variant="outlined"
-            sx={{
-              width: '50px',
-              height: '50px',
-              minWidth: '50px', // Ensures the button is circular
-              borderRadius: '50%',
-              borderColor: '#486A75',
-              color: '#486A75',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              '&:hover': {
-                backgroundColor: '#486A75',
-                borderColor: '#486A75',
-                color: '#ffffff',
-              },
-            }}
-          >
-            <FacebookIcon />
-          </Button>
-        </Stack>
-      </Stack>
+      <Button
+        onClick={handleGoogleSignIn}
+        disabled={isPending}
+        type="button"
+        variant="contained"
+        startIcon={<GoogleIcon />}
+      >
+        Sign in with Google
+      </Button>
+      {googleAuthError && <Alert color="error">{googleAuthError}</Alert>}
+      <Button
+        onClick={handleFacebookSignIn}
+        disabled={isPending}
+        type="button"
+        variant="contained"
+        startIcon={<FacebookIcon />}
+      >
+        Sign in with Facebook
+      </Button>
+      {facebookAuthError && <Alert color="error">{facebookAuthError}</Alert>} 
     </Stack>
   );
 }
