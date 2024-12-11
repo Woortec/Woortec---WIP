@@ -60,6 +60,39 @@ const loadFacebookSDK = () => {
   });
 };
 
+const refreshLongLivedToken = async (token: string) => {
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v17.0/oauth/access_token?grant_type=fb_exchange_token&client_id=843123844562723&client_secret=YOUR_APP_SECRET&fb_exchange_token=${token}`
+    );
+    const data = await response.json();
+
+    if (data.access_token) {
+      const newExpiry = 60 * 24 * 60 * 60 * 1000; // 60 days in milliseconds
+      setItemWithExpiry('fbAccessToken', data.access_token, newExpiry);
+      return data.access_token;
+    }
+    throw new Error('Failed to refresh long-lived token');
+  } catch (error) {
+    console.error('Error refreshing long-lived token:', error);
+    return null;
+  }
+};
+
+const fetchPages = (userId: string, token: string, setPages: React.Dispatch<React.SetStateAction<{ id: string; name: string }[]>>) => {
+  if ((window as any).FB) {
+    const apiPath = `/me/accounts`;
+    (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
+      if (response && !response.error) {
+        const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
+        setPages(pages);
+      } else {
+        console.error('Error fetching pages:', response.error);
+      }
+    });
+  }
+};
+
 export interface ConnectProps {
   sx?: SxProps;
 }
@@ -91,7 +124,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const localUserId = localStorage.getItem('userid');
     if (!localUserId) return;
 
-    // Check Supabase if user is already connected
     const { data, error } = await supabase
       .from('facebookData')
       .select('*')
@@ -103,18 +135,19 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
 
     if (data && data.length > 0) {
-      // User is already connected, set state accordingly
-      setAccessToken(data[0].access_token);
+      const { access_token, expires_at } = data[0];
+      const now = new Date().getTime();
+
+      if (now > new Date(expires_at).getTime()) {
+        const refreshedToken = await refreshLongLivedToken(access_token);
+        if (refreshedToken) {
+          setAccessToken(refreshedToken);
+        }
+      } else {
+        setAccessToken(access_token);
+      }
+
       setUserId(data[0].fb_user_id);
-      setSelectedAdAccount({
-        id: data[0].account_id,
-        name: data[0].account_name,
-        currency: data[0].currency,
-      });
-      setSelectedPage({
-        id: data[0].page_id,
-        name: data[0].page_name,
-      });
       setIsConnected(true);
     }
   };
@@ -122,52 +155,33 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleFacebookLogin = () => {
     if ((window as any).FB) {
       (window as any).FB.login(
-        (response: any) => {
+        async (response: any) => {
           if (response.authResponse) {
             const token = response.authResponse.accessToken;
             const userId = response.authResponse.userID;
-            setAccessToken(token);
-            setUserId(userId);
 
-            // Store accessToken and userId for 24 hours
-            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
-            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
+            const longLivedToken = await refreshLongLivedToken(token);
+            if (longLivedToken) {
+              setAccessToken(longLivedToken);
+              setUserId(userId);
 
-            // Open the ad account selection modal after successful login
-            fetchAdAccounts(userId, token);
-            setModalOpen(true);
+              // Store in Supabase
+              const now = new Date();
+              const expiresAt = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
+
+              await supabase.from('facebookData').upsert({
+                user_id: localStorage.getItem('userid'),
+                access_token: longLivedToken,
+                fb_user_id: userId,
+                expires_at: expiresAt,
+              });
+
+              setIsConnected(true);
+            }
           }
         },
         { scope: 'ads_read, pages_show_list' }
       );
-    }
-  };
-
-  const fetchAdAccounts = (userId: string, token: string) => {
-    if ((window as any).FB) {
-      const apiPath = `/me/adaccounts?fields=id,name,currency`;
-      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const accounts = response.data.map((account: any) => ({
-            id: account.id,
-            name: account.name,
-            currency: account.currency,
-          }));
-          setAdAccounts(accounts);
-        }
-      });
-    }
-  };
-
-  const fetchPages = (userId: string, token: string) => {
-    if ((window as any).FB) {
-      const apiPath = `/me/accounts`;
-      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
-        if (response && !response.error) {
-          const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
-          setPages(pages);
-        }
-      });
     }
   };
 
@@ -181,7 +195,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
       // Close the ad account modal and open the page selection modal
       setModalOpen(false);
-      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
+      fetchPages(userId!, accessToken!, setPages); // Fetch pages once ad account is selected
       setPageModalOpen(true);
     }
   };
@@ -222,7 +236,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   }) => {
     const localUserId = localStorage.getItem('userid');
 
-    const { data, error } = await supabase.from('facebookData').insert({
+    const { data, error } = await supabase.from('facebookData').upsert({
       user_id: localUserId,
       access_token: accessToken,
       fb_user_id: userId,
@@ -231,6 +245,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       account_id: selectedAdAccount.id,
       account_name: selectedAdAccount.name,
       currency: selectedAdAccount.currency,
+      expires_at: new Date(new Date().getTime() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     });
 
     if (error) {
