@@ -155,35 +155,38 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleFacebookLogin = () => {
     if ((window as any).FB) {
       (window as any).FB.login(
-        async (response: any) => {
+        (response: any) => {
           if (response.authResponse) {
-            const token = response.authResponse.accessToken;
-            const userId = response.authResponse.userID;
-
-            const longLivedToken = await refreshLongLivedToken(token);
-            if (longLivedToken) {
-              setAccessToken(longLivedToken);
-              setUserId(userId);
-
-              // Store in Supabase
-              const now = new Date();
-              const expiresAt = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
-
-              await supabase.from('facebookData').upsert({
-                user_id: localStorage.getItem('userid'),
-                access_token: longLivedToken,
-                fb_user_id: userId,
-                expires_at: expiresAt,
-              });
-
-              setIsConnected(true);
-            }
+            (async () => {
+              const token = response.authResponse.accessToken;
+              const userId = response.authResponse.userID;
+  
+              const longLivedToken = await refreshLongLivedToken(token);
+              if (longLivedToken) {
+                setAccessToken(longLivedToken);
+                setUserId(userId);
+  
+                // Store in Supabase
+                const now = new Date();
+                const expiresAt = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
+  
+                await supabase.from('facebookData').upsert({
+                  user_id: localStorage.getItem('userid'),
+                  access_token: longLivedToken,
+                  fb_user_id: userId,
+                  expires_at: expiresAt,
+                });
+  
+                setIsConnected(true);
+              }
+            })(); // Self-invoking async function
           }
         },
         { scope: 'ads_read, pages_show_list' }
       );
     }
   };
+  
 
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find((account) => account.id === accountId);
