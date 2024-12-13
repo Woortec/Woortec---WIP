@@ -47,7 +47,7 @@ const loadFacebookSDK = () => {
         appId: '843123844562723',
         cookie: true,
         xfbml: true,
-        version: 'v21.0',
+        version: '21.0',
       });
       resolve();
     };
@@ -58,39 +58,6 @@ const loadFacebookSDK = () => {
     script.defer = true;
     document.body.appendChild(script);
   });
-};
-
-const refreshLongLivedToken = async (token: string) => {
-  try {
-    const response = await fetch(
-      `https://graph.facebook.com/v17.0/oauth/access_token?grant_type=fb_exchange_token&client_id=843123844562723&client_secret=YOUR_APP_SECRET&fb_exchange_token=${token}`
-    );
-    const data = await response.json();
-
-    if (data.access_token) {
-      const newExpiry = 60 * 24 * 60 * 60 * 1000; // 60 days in milliseconds
-      setItemWithExpiry('fbAccessToken', data.access_token, newExpiry);
-      return data.access_token;
-    }
-    throw new Error('Failed to refresh long-lived token');
-  } catch (error) {
-    console.error('Error refreshing long-lived token:', error);
-    return null;
-  }
-};
-
-const fetchPages = (userId: string, token: string, setPages: React.Dispatch<React.SetStateAction<{ id: string; name: string }[]>>) => {
-  if ((window as any).FB) {
-    const apiPath = `/me/accounts`;
-    (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
-      if (response && !response.error) {
-        const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
-        setPages(pages);
-      } else {
-        console.error('Error fetching pages:', response.error);
-      }
-    });
-  }
 };
 
 export interface ConnectProps {
@@ -124,6 +91,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     const localUserId = localStorage.getItem('userid');
     if (!localUserId) return;
 
+    // Check Supabase if user is already connected
     const { data, error } = await supabase
       .from('facebookData')
       .select('*')
@@ -135,19 +103,18 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
 
     if (data && data.length > 0) {
-      const { access_token, expires_at } = data[0];
-      const now = new Date().getTime();
-
-      if (now > new Date(expires_at).getTime()) {
-        const refreshedToken = await refreshLongLivedToken(access_token);
-        if (refreshedToken) {
-          setAccessToken(refreshedToken);
-        }
-      } else {
-        setAccessToken(access_token);
-      }
-
+      // User is already connected, set state accordingly
+      setAccessToken(data[0].access_token);
       setUserId(data[0].fb_user_id);
+      setSelectedAdAccount({
+        id: data[0].account_id,
+        name: data[0].account_name,
+        currency: data[0].currency,
+      });
+      setSelectedPage({
+        id: data[0].page_id,
+        name: data[0].page_name,
+      });
       setIsConnected(true);
     }
   };
@@ -157,36 +124,52 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       (window as any).FB.login(
         (response: any) => {
           if (response.authResponse) {
-            (async () => {
-              const token = response.authResponse.accessToken;
-              const userId = response.authResponse.userID;
-  
-              const longLivedToken = await refreshLongLivedToken(token);
-              if (longLivedToken) {
-                setAccessToken(longLivedToken);
-                setUserId(userId);
-  
-                // Store in Supabase
-                const now = new Date();
-                const expiresAt = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
-  
-                await supabase.from('facebookData').upsert({
-                  user_id: localStorage.getItem('userid'),
-                  access_token: longLivedToken,
-                  fb_user_id: userId,
-                  expires_at: expiresAt,
-                });
-  
-                setIsConnected(true);
-              }
-            })(); // Self-invoking async function
+            const token = response.authResponse.accessToken;
+            const userId = response.authResponse.userID;
+            setAccessToken(token);
+            setUserId(userId);
+
+            // Store accessToken and userId for 24 hours
+            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
+            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
+
+            // Open the ad account selection modal after successful login
+            fetchAdAccounts(userId, token);
+            setModalOpen(true);
           }
         },
         { scope: 'ads_read, pages_show_list' }
       );
     }
   };
-  
+
+  const fetchAdAccounts = (userId: string, token: string) => {
+    if ((window as any).FB) {
+      const apiPath = `/me/adaccounts?fields=id,name,currency`;
+      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
+        if (response && !response.error) {
+          const accounts = response.data.map((account: any) => ({
+            id: account.id,
+            name: account.name,
+            currency: account.currency,
+          }));
+          setAdAccounts(accounts);
+        }
+      });
+    }
+  };
+
+  const fetchPages = (userId: string, token: string) => {
+    if ((window as any).FB) {
+      const apiPath = `/me/accounts`;
+      (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
+        if (response && !response.error) {
+          const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
+          setPages(pages);
+        }
+      });
+    }
+  };
 
   const handleAdAccountSelect = (accountId: string) => {
     const selectedAccount = adAccounts.find((account) => account.id === accountId);
@@ -198,7 +181,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
       // Close the ad account modal and open the page selection modal
       setModalOpen(false);
-      fetchPages(userId!, accessToken!, setPages); // Fetch pages once ad account is selected
+      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
       setPageModalOpen(true);
     }
   };
@@ -239,7 +222,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   }) => {
     const localUserId = localStorage.getItem('userid');
 
-    const { data, error } = await supabase.from('facebookData').upsert({
+    const { data, error } = await supabase.from('facebookData').insert({
       user_id: localUserId,
       access_token: accessToken,
       fb_user_id: userId,
@@ -248,7 +231,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       account_id: selectedAdAccount.id,
       account_name: selectedAdAccount.name,
       currency: selectedAdAccount.currency,
-      expires_at: new Date(new Date().getTime() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     });
 
     if (error) {
@@ -361,6 +343,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         Connected Ad Account:
       </Typography>
       {renderAdAccounts()}
+
+      <Typography variant="body2" sx={{ marginTop: '35px' }}>
+        Your connected social accounts (0):
+      </Typography>
+
+      {/* New Feature Announcement */}
+      <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
+        New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
+      </Typography>
 
       {/* Modals for ad account and page selection */}
       <AdAccountSelectionModal
