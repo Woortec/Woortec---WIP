@@ -47,7 +47,7 @@ const loadFacebookSDK = () => {
         appId: '843123844562723',
         cookie: true,
         xfbml: true,
-        version: '21.0',
+        version: 'v21.0',
       });
       resolve();
     };
@@ -343,15 +343,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         Connected Ad Account:
       </Typography>
       {renderAdAccounts()}
-
-      <Typography variant="body2" sx={{ marginTop: '35px' }}>
-        Your connected social accounts (0):
-      </Typography>
-
-      {/* New Feature Announcement */}
-      <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
-        New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
-      </Typography>
 
       {/* Modals for ad account and page selection */}
       <AdAccountSelectionModal
