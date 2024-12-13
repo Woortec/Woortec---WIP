@@ -250,9 +250,25 @@ const ObjectivePage: React.FC = () => {
             <div className={styles.tabContainer}>
                 <StepIndicator />
             </div>
+
+            {/* Dropdown with Additional Guidance */}
+            <details className={styles.dropdown}>
+                <summary className={styles.dropdownSummary}>Additional Tips & Guidance</summary>
+                <div className={styles.dropdownContent}>
+                    <ul>
+                        <li><strong>Choosing an Objective:</strong> If you're aiming for brand recognition, select "Brand Awareness." For direct conversions, choose "Sales," and for building a lead database, pick "Lead Generation."</li>
+                        <li><strong>Budget Allocation:</strong> Minimum recommended: ~180 USD. Adjust according to the exchange rate and your desired reach.</li>
+                        <li><strong>Managing Inquiries:</strong> If you can respond to leads promptly, your campaign results will likely improve.</li>
+                        <li><strong>Traffic Direction:</strong> For Sales objectives, ensure the provided URL leads to an optimized landing page.</li>
+                    </ul>
+                </div>
+            </details>
+
             <div className={styles.formContainer}>
                 <div className={styles.formGroup}>
-                    <label htmlFor="objective" className={styles.label}>What is the primary objective you aim to achieve with this investment?</label>
+                    <label htmlFor="objective" className={styles.label}>
+                        What is the primary objective you aim to achieve with this investment?
+                    </label>
                     <select
                         id="objective"
                         name="objective"
@@ -263,9 +279,9 @@ const ObjectivePage: React.FC = () => {
                         aria-describedby={errors.objective ? 'objective-error' : undefined}
                     >
                         <option value="">Select the best option</option>
-                        <option value="Brand Awareness">Are you aiming to enhance your brand&apos;s visibility and foster community engagement?</option>
-                        <option value="Sales">Would you like to drive more traffic to your website and increase sales conversions?</option>
-                        <option value="Lead Generation">Are you seeking to gather information from potential customers via a quick form, creating a robust database of prospective clients, even if immediate conversions may vary?</option>
+                        <option value="Brand Awareness">Enhance brand visibility and engagement</option>
+                        <option value="Sales">Increase website traffic and sales conversions</option>
+                        <option value="Lead Generation">Collect prospective customer information via a form</option>
                     </select>
                     {errors.objective && (
                         <div id="objective-error" className={styles.errorMessage}>
@@ -274,7 +290,9 @@ const ObjectivePage: React.FC = () => {
                     )}
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="budget" className={styles.label}>What is the budget you are willing to allocate for this campaign?</label>
+                    <label htmlFor="budget" className={styles.label}>
+                        What is the budget you are willing to allocate for this campaign?
+                    </label>
                     <div className={styles.budgetInputContainer}>
                         <input
                             type="number"
@@ -306,7 +324,9 @@ const ObjectivePage: React.FC = () => {
                     )}
                 </div>
                 <div className={styles.formGroup}>
-                    <label className={styles.label}>Are you able to manage and respond to customer inquiries generated through this campaign?</label>
+                    <label className={styles.label}>
+                        Are you able to manage and respond to customer inquiries generated through this campaign?
+                    </label>
                     <div className={styles.radioGroup}>
                         <label className={styles.radioLabel}>
                             <input
@@ -344,7 +364,9 @@ const ObjectivePage: React.FC = () => {
                     )}
                 </div>
                 <div className={styles.formGroup}>
-                    <label htmlFor="trafficUrl" className={styles.label}>Where do you want to direct the traffic to?</label>
+                    <label htmlFor="trafficUrl" className={styles.label}>
+                        Where do you want to direct the traffic to?
+                    </label>
                     <input
                         type="url"
                         name="trafficUrl"

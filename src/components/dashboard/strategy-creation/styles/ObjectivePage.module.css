@@ -169,4 +169,39 @@
     width: 60px;
     text-align: center;
   }
+  .mainContent {
+    display: flex;
+    gap: 2rem;
+  }
   
+  .sidePanel {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .sideNote {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+  .dropdown {
+    margin-bottom: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.dropdownSummary {
+    font-weight: bold;
+    cursor: pointer;
+    list-style: none;
+}
+
+.dropdownContent {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
