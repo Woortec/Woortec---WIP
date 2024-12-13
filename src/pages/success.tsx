@@ -30,6 +30,14 @@ const SuccessPage = () => {
     }
   };
 
+  useEffect(() => {
+    //  if payment is successful
+    if (session && session.payment_status === 'paid') {
+      // Redirect to dashboard
+      router.push('/dashboard');
+    }
+  }, [session, router]);
+
   if (!session) {
     return <div className={styles.container}>Loading...</div>;
   }
