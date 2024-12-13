@@ -20,7 +20,6 @@ export function MainNav(): React.JSX.Element {
   const userPopover = usePopover<HTMLDivElement>();
   const theme = useTheme();
 
-
   return (
     <>
       <Box
@@ -35,6 +34,7 @@ export function MainNav(): React.JSX.Element {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          // Responsive header height
           minHeight: {
             xs: 56,
             sm: 64,
@@ -51,6 +51,7 @@ export function MainNav(): React.JSX.Element {
             lg: 5,
             xl: 6,
           },
+          // Constrain max width to keep layout readable on large screens
           maxWidth: {
             xs: '100%',
             sm: '100%',
@@ -63,7 +64,7 @@ export function MainNav(): React.JSX.Element {
       >
         {/* Left side: Logo and Menu Icon */}
         <Stack direction="row" spacing={2} alignItems="center">
-          {/* Menu Icon for mobile */}
+          {/* Menu Icon for mobile - shown only on smaller screens */}
           <IconButton
             onClick={() => setOpenNav(true)}
             sx={{
@@ -76,7 +77,7 @@ export function MainNav(): React.JSX.Element {
             <MenuIcon />
           </IconButton>
 
-          {/* Logo */}
+          {/* Logo - scales with breakpoints */}
           <Box
             component="img"
             src="/assets/logo.png"
@@ -89,11 +90,11 @@ export function MainNav(): React.JSX.Element {
                 lg: 44,
                 xl: 48,
               },
+              // Optionally set maxWidth or objectFit to maintain aspect ratio
+              objectFit: 'contain',
             }}
           />
         </Stack>
-
-        {/* Center: Navigation Links */}
 
         {/* Right side: Notifications and Avatar */}
         <Stack direction="row" spacing={2} alignItems="center">
@@ -105,7 +106,7 @@ export function MainNav(): React.JSX.Element {
             </Badge>
           </Tooltip>
 
-          {/* User Avatar */}
+          {/* User Avatar - clickable to open UserPopover */}
           <Avatar
             onClick={userPopover.handleOpen}
             ref={userPopover.anchorRef}
