@@ -153,7 +153,28 @@ export function SignInForm(): React.JSX.Element {
         await handleStripeCustomer(data.user.email);
 
         await handleKlaviyoSubscription(data.user.email, password);
-        await checkSession?.();
+
+        // --- Updated MYsession-check logic ---
+        // Before calling checkSession, we verify the presence and validity of keys.
+        try {
+          const accessToken = Cookies.get('accessToken');
+          if (!accessToken || typeof accessToken !== 'string') {
+            console.error('Invalid or missing access token');
+            // Handle invalid scenario, for example by clearing cookie:
+            Cookies.remove('accessToken');
+            setErrors((prev) => ({ ...prev, root: 'Session token is invalid. Please log in again.' }));
+            setIsPending(false);
+            return;
+          }
+          await checkSession?.();
+        } catch (err) {
+          console.error('Session check failed:', err);
+          // Handle scenario: possibly redirect to login or show error
+          setErrors((prev) => ({ ...prev, root: 'Session verification failed. Please try again.' }));
+          setIsPending(false);
+          return;
+        }
+
         router.push('/');
       }
     } catch (error) {
@@ -164,46 +185,45 @@ export function SignInForm(): React.JSX.Element {
   };
 
   const handleOAuthSignIn = React.useCallback(
-  async (provider: 'google' | 'facebook'): Promise<void> => {
-    setIsPending(true);
+    async (provider: 'google' | 'facebook'): Promise<void> => {
+      setIsPending(true);
 
-    try {
-      const options: any = {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      };
-
-      if (provider === 'facebook') {
-        options.scopes = 'email';
-        options.queryParams = {
-          config_id: '937709384919732', // Add your config_id here
+      try {
+        const options: any = {
+          redirectTo: `${window.location.origin}/auth/callback`,
         };
-      }
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options,
-      });
+        if (provider === 'facebook') {
+          options.scopes = 'email';
+          options.queryParams = {
+            config_id: '937709384919732', // Add your config_id here
+          };
+        }
 
-      if (error) {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options,
+        });
+
+        if (error) {
+          if (provider === 'google') {
+            setGoogleAuthError(error.message);
+          } else {
+            setFacebookAuthError(error.message);
+          }
+          setIsPending(false);
+        }
+      } catch (error) {
         if (provider === 'google') {
-          setGoogleAuthError(error.message);
+          setGoogleAuthError('An unexpected error occurred. Please try again.');
         } else {
-          setFacebookAuthError(error.message);
+          setFacebookAuthError('An unexpected error occurred. Please try again.');
         }
         setIsPending(false);
       }
-    } catch (error) {
-      if (provider === 'google') {
-        setGoogleAuthError('An unexpected error occurred. Please try again.');
-      } else {
-        setFacebookAuthError('An unexpected error occurred. Please try again.');
-      }
-      setIsPending(false);
-    }
-  },
-  [supabase]
-);
-
+    },
+    [supabase]
+  );
 
   React.useEffect(() => {
     const handleAuthCallback = async () => {
@@ -233,7 +253,6 @@ export function SignInForm(): React.JSX.Element {
           // Use Supabase Auth admin API to delete the duplicate account
           const duplicateUser = existingUser.users.find((user: User) => user.id !== data.session.user.id);
 
-
           if (duplicateUser) {
             // Link the provider to the existing user
             await supabase.auth.admin.deleteUser(data.session.user.id);
@@ -256,7 +275,26 @@ export function SignInForm(): React.JSX.Element {
         await handleStripeCustomer(userEmail);
 
         await handleKlaviyoSubscription(userEmail);
-        await checkSession?.();
+
+        // --- Updated MYsession-check logic ---
+        // Check and handle invalid accessToken or other keys before calling checkSession
+        try {
+          const accessToken = Cookies.get('accessToken') || data.session.access_token;
+          if (!accessToken || typeof accessToken !== 'string') {
+            console.error('Invalid or missing access token during OAuth callback');
+            Cookies.remove('accessToken');
+            setErrors((prev) => ({ ...prev, root: 'Session token is invalid after OAuth sign-in. Please log in again.' }));
+            setIsPending(false);
+            return;
+          }
+          await checkSession?.();
+        } catch (err) {
+          console.error('Session check failed after OAuth:', err);
+          setErrors((prev) => ({ ...prev, root: 'Session verification failed after OAuth sign-in. Please try again.' }));
+          setIsPending(false);
+          return;
+        }
+
         router.push('/');
       }
     };
