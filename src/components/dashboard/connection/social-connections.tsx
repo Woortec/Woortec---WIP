@@ -120,12 +120,18 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleFacebookLogin = () => {
+    if (!isSdkLoaded) {
+      console.error('Facebook SDK not loaded yet.');
+      return;
+    }
+
     if ((window as any).FB) {
       (window as any).FB.login(
         (response: any) => {
           if (response.authResponse) {
             const token = response.authResponse.accessToken;
             const userId = response.authResponse.userID;
+            console.log('Facebook login successful. Token:', token, 'UserId:', userId);
             setAccessToken(token);
             setUserId(userId);
 
@@ -136,6 +142,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             // Open the ad account selection modal after successful login
             fetchAdAccounts(userId, token);
             setModalOpen(true);
+          } else {
+            console.log('User canceled login or did not fully authorize.');
           }
         },
         { scope: 'ads_read, pages_show_list' }
@@ -144,34 +152,51 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const fetchAdAccounts = (userId: string, token: string) => {
+    if (!isSdkLoaded) {
+      console.error('Facebook SDK not loaded yet. Cannot fetch ad accounts.');
+      return;
+    }
     if ((window as any).FB) {
       const apiPath = `/me/adaccounts?fields=id,name,currency`;
+      console.log('Fetching ad accounts with token:', token);
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
+          console.log('Ad accounts fetched:', response);
           const accounts = response.data.map((account: any) => ({
             id: account.id,
             name: account.name,
             currency: account.currency,
           }));
           setAdAccounts(accounts);
+        } else {
+          console.error('Error fetching ad accounts:', response.error);
         }
       });
     }
   };
 
   const fetchPages = (userId: string, token: string) => {
+    if (!isSdkLoaded) {
+      console.error('Facebook SDK not loaded yet. Cannot fetch pages.');
+      return;
+    }
     if ((window as any).FB) {
       const apiPath = `/me/accounts`;
+      console.log('Fetching pages with token:', token);
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
+          console.log('Pages fetched:', response);
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
           setPages(pages);
+        } else {
+          console.error('Error fetching pages:', response.error);
         }
       });
     }
   };
 
   const handleAdAccountSelect = (accountId: string) => {
+    console.log('Ad account selected:', accountId);
     const selectedAccount = adAccounts.find((account) => account.id === accountId);
     if (selectedAccount) {
       setSelectedAdAccount(selectedAccount);
@@ -179,14 +204,21 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       // Store in localStorage
       setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
 
-      // Close the ad account modal and open the page selection modal
+      // Close the ad account modal
       setModalOpen(false);
-      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
-      setPageModalOpen(true);
+
+      // Fetch pages once ad account is selected
+      if (userId && accessToken) {
+        fetchPages(userId, accessToken);
+        setPageModalOpen(true);
+      } else {
+        console.error('UserId or AccessToken missing. Cannot fetch pages.');
+      }
     }
   };
 
   const handlePageSelect = (pageId: string) => {
+    console.log('Page selected:', pageId);
     const selectedPage = pages.find((page) => page.id === pageId);
     if (selectedPage) {
       setSelectedPage(selectedPage);
@@ -198,10 +230,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       setPageModalOpen(false);
 
       // Store both the ad account and page data into Supabase after both selections are made
-      if (selectedAdAccount && selectedPage) {
+      if (selectedAdAccount && selectedPage && accessToken && userId) {
         storeDataInSupabase({
-          accessToken: accessToken!,
-          userId: userId!,
+          accessToken: accessToken,
+          userId: userId,
           selectedAdAccount: selectedAdAccount,
           selectedPage: selectedPage,
         });
@@ -221,7 +253,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     selectedPage: { id: string; name: string };
   }) => {
     const localUserId = localStorage.getItem('userid');
-
+    console.log('Storing data in Supabase...');
     const { data, error } = await supabase.from('facebookData').insert({
       user_id: localUserId,
       access_token: accessToken,
@@ -242,6 +274,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleDisconnectAdAccount = async () => {
+    console.log('Disconnecting Ad Account...');
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
     localStorage.removeItem('fbAccessToken');
@@ -252,7 +285,12 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
     // Optionally delete the data from Supabase
     const localUserId = localStorage.getItem('userid');
-    await supabase.from('facebookData').delete().eq('user_id', localUserId);
+    const { error } = await supabase.from('facebookData').delete().eq('user_id', localUserId);
+    if (error) {
+      console.error('Error deleting data from Supabase:', error);
+    } else {
+      console.log('User data deleted from Supabase.');
+    }
   };
 
   const renderAdAccounts = () => {
