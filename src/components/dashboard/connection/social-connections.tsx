@@ -11,35 +11,6 @@ import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
 import styles from './styles/Connect.module.css';
 
-const setItemWithExpiry = (key: string, value: any, ttl: number) => {
-  const now = new Date();
-  const item = {
-    value: value,
-    expiry: now.getTime() + ttl,
-  };
-  localStorage.setItem(key, JSON.stringify(item));
-};
-
-const getItemWithExpiry = (key: string) => {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  try {
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return item.value;
-  } catch (error) {
-    console.error('Failed to parse item from localStorage', error);
-    localStorage.removeItem(key);
-    return null;
-  }
-};
-
 const loadFacebookSDK = () => {
   return new Promise<void>((resolve) => {
     (window as any).fbAsyncInit = function () {
@@ -124,7 +95,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       console.error('Facebook SDK not loaded yet.');
       return;
     }
-  
+
     if ((window as any).FB) {
       (window as any).FB.login(
         (response: any) => {
@@ -134,11 +105,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             console.log('Facebook login successful. Token:', token, 'UserId:', userId);
             setAccessToken(token);
             setUserId(userId);
-  
-            // Store accessToken and userId for 24 hours
-            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
-            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
-  
+
+            // Store accessToken and userId without expiry
+            localStorage.setItem('fbAccessToken', token);
+            localStorage.setItem('fbUserId', userId);
+
             // Open the ad account selection modal after successful login
             fetchAdAccounts(userId, token);
             setModalOpen(true);
@@ -150,7 +121,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       );
     }
   };
-  
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if (!isSdkLoaded) {
@@ -202,8 +172,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     if (selectedAccount) {
       setSelectedAdAccount(selectedAccount);
 
-      // Store in localStorage
-      setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
+      // Store in localStorage without expiry
+      localStorage.setItem('fbAdAccountObj', JSON.stringify(selectedAccount));
 
       // Close the ad account modal
       setModalOpen(false);
@@ -224,8 +194,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     if (selectedPage) {
       setSelectedPage(selectedPage);
 
-      // Store in localStorage
-      setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000);
+      // Store in localStorage without expiry
+      localStorage.setItem('fbPage', JSON.stringify(selectedPage));
 
       // Close the page modal
       setPageModalOpen(false);
