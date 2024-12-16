@@ -124,7 +124,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       console.error('Facebook SDK not loaded yet.');
       return;
     }
-
+  
     if ((window as any).FB) {
       (window as any).FB.login(
         (response: any) => {
@@ -134,11 +134,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             console.log('Facebook login successful. Token:', token, 'UserId:', userId);
             setAccessToken(token);
             setUserId(userId);
-
+  
             // Store accessToken and userId for 24 hours
             setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
             setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
-
+  
             // Open the ad account selection modal after successful login
             fetchAdAccounts(userId, token);
             setModalOpen(true);
@@ -146,10 +146,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             console.log('User canceled login or did not fully authorize.');
           }
         },
-        { scope: 'ads_read, pages_show_list' }
+        { scope: 'ads_read, pages_show_list, business_management' }
       );
     }
   };
+  
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if (!isSdkLoaded) {
