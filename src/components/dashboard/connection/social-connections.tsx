@@ -44,10 +44,10 @@ const loadFacebookSDK = () => {
   return new Promise<void>((resolve) => {
     (window as any).fbAsyncInit = function () {
       (window as any).FB.init({
-        appId: '961870345497057',
+        appId: '843123844562723',
         cookie: true,
         xfbml: true,
-        version: 'v19.0',
+        version: 'v21.0',
       });
       resolve();
     };
