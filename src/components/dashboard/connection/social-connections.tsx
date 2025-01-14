@@ -1,21 +1,51 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Facebook as FacebookIcon } from '@mui/icons-material';
-import { Button, Card, Grid, Stack, Typography } from '@mui/material';
+import { Close as CloseIcon, Facebook as FacebookIcon } from '@mui/icons-material';
+import { Button, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
+import type { SxProps } from '@mui/system';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { SxProps } from '@mui/system';
+
 import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
 import styles from './styles/Connect.module.css';
 
+const setItemWithExpiry = (key: string, value: any, ttl: number) => {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + ttl,
+  };
+  localStorage.setItem(key, JSON.stringify(item));
+};
+
+const getItemWithExpiry = (key: string) => {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch (error) {
+    console.error('Failed to parse item from localStorage', error);
+    localStorage.removeItem(key);
+    return null;
+  }
+};
+
 const loadFacebookSDK = () => {
   return new Promise<void>((resolve) => {
     (window as any).fbAsyncInit = function () {
       (window as any).FB.init({
-        appId: '843123844562723',
+        appId: '961870345497057',
         cookie: true,
         xfbml: true,
         version: 'v19.0',
@@ -39,105 +69,52 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [adAccounts, setAdAccounts] = useState<{ id: string; name: string; currency: string }[]>([]);
+  const [adAccounts, setAdAccounts] = useState<{ id: string; name: string }[]>([]);
   const [pages, setPages] = useState<{ id: string; name: string }[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [pageModalOpen, setPageModalOpen] = useState(false);
-  const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string; currency: string } | null>(null);
+  const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
-  const [isConnected, setIsConnected] = useState(false); // Track if the user is already connected
 
-  const supabase = createClient();
-
-  // Initialize Facebook SDK and state
   useEffect(() => {
+    const initializeState = () => {
+      const token = getItemWithExpiry('fbAccessToken');
+      const storedUserId = getItemWithExpiry('fbUserId');
+      const storedAdAccountId = getItemWithExpiry('fbAdAccount');
+      const storedAdAccount = getItemWithExpiry('fbAdAccountObj'); // This will store the object { id, name }
+      const storedPage = getItemWithExpiry('fbPage'); // This should be an object { id, name }
+      console.log('Initialize state:', { token, storedUserId, storedAdAccount, storedPage });
+
+      if (typeof token === 'string' && typeof storedUserId === 'string') {
+        setAccessToken(token);
+        setUserId(storedUserId);
+        fetchAdAccounts(storedUserId, token);
+        fetchPages(storedUserId, token); // Pass the token and userId after ensuring they are strings
+      }
+
+      // if (storedAdAccountId) {
+      //   setSelectedAdAccount(storedAdAccount || { id: storedAdAccountId, name: '' });
+      // }
+      if (storedPage) {
+        setSelectedPage(storedPage); // Directly use the stored object
+      }
+    };
+
     loadFacebookSDK().then(() => {
       setIsSdkLoaded(true);
+      initializeState();
     });
 
-    checkUserConnection(); // Check if the user is already connected on page load
+    initializeState();
   }, []);
 
-  const checkUserConnection = async () => {
-    const localUserId = localStorage.getItem('userid');
-    if (!localUserId) return;
-
-    // Check Supabase if user is already connected
-    const { data, error } = await supabase
-      .from('facebookData')
-      .select('*')
-      .eq('user_id', localUserId);
-
-    if (error) {
-      console.error('Error checking user connection:', error);
-      return;
-    }
-
-    if (data && data.length > 0) {
-      // User is already connected, set state accordingly
-      setAccessToken(data[0].access_token);
-      setUserId(data[0].fb_user_id);
-      setSelectedAdAccount({
-        id: data[0].account_id,
-        name: data[0].account_name,
-        currency: data[0].currency,
-      });
-      setSelectedPage({
-        id: data[0].page_id,
-        name: data[0].page_name,
-      });
-      setIsConnected(true);
-    }
-  };
-
-  const handleFacebookLogin = () => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet.');
-      return;
-    }
-
-    if ((window as any).FB) {
-      (window as any).FB.login(
-        (response: any) => {
-          if (response.authResponse) {
-            const token = response.authResponse.accessToken;
-            const userId = response.authResponse.userID;
-            console.log('Facebook login successful. Token:', token, 'UserId:', userId);
-            setAccessToken(token);
-            setUserId(userId);
-
-            // Store accessToken and userId without expiry
-            localStorage.setItem('fbAccessToken', token);
-            localStorage.setItem('fbUserId', userId);
-
-            // Open the ad account selection modal after successful login
-            fetchAdAccounts(userId, token);
-            setModalOpen(true);
-          } else {
-            console.log('User canceled login or did not fully authorize.');
-          }
-        },
-        { scope: 'ads_read, pages_show_list, business_management' }
-      );
-    }
-  };
-
   const fetchAdAccounts = (userId: string, token: string) => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet. Cannot fetch ad accounts.');
-      return;
-    }
     if ((window as any).FB) {
-      const apiPath = `/me/adaccounts?fields=id,name,currency`;
-      console.log('Fetching ad accounts with token:', token);
+      const apiPath = `/me/adaccounts?fields=id,name`;
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
-          console.log('Ad accounts fetched:', response);
-          const accounts = response.data.map((account: any) => ({
-            id: account.id,
-            name: account.name,
-            currency: account.currency,
-          }));
+          const accounts = response.data.map((account: any) => ({ id: account.id, name: account.name }));
+          console.log('Fetched ad accounts:', accounts);
           setAdAccounts(accounts);
         } else {
           console.error('Error fetching ad accounts:', response.error);
@@ -147,17 +124,15 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const fetchPages = (userId: string, token: string) => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet. Cannot fetch pages.');
-      return;
-    }
     if ((window as any).FB) {
+      console.log('Fetching pages for userId:', userId, 'with token:', token);
+
       const apiPath = `/me/accounts`;
-      console.log('Fetching pages with token:', token);
+
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
-          console.log('Pages fetched:', response);
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
+          console.log('Fetched pages:', pages);
           setPages(pages);
         } else {
           console.error('Error fetching pages:', response.error);
@@ -166,216 +141,239 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     }
   };
 
-  const handleAdAccountSelect = (accountId: string) => {
-    console.log('Ad account selected:', accountId);
-    const selectedAccount = adAccounts.find((account) => account.id === accountId);
-    if (selectedAccount) {
-      setSelectedAdAccount(selectedAccount);
-
-      // Store in localStorage without expiry
-      localStorage.setItem('fbAdAccountObj', JSON.stringify(selectedAccount));
-
-      // Close the ad account modal
-      setModalOpen(false);
-
-      // Fetch pages once ad account is selected
-      if (userId && accessToken) {
-        fetchPages(userId, accessToken);
-        setPageModalOpen(true);
-      } else {
-        console.error('UserId or AccessToken missing. Cannot fetch pages.');
+  const handleFacebookLogin = () => {
+    if (!isSdkLoaded) return;
+    (window as any).FB.login(
+      (response: any) => {
+        if (response.authResponse) {
+          const accessToken = response.authResponse.accessToken;
+          const userId = response.authResponse.userID;
+          console.log('Facebook login successful:', { accessToken, userId });
+          setAccessToken(accessToken);
+          setUserId(userId);
+          setItemWithExpiry('fbAccessToken', accessToken, 30 * 60 * 1000);
+          setItemWithExpiry('fbUserId', userId, 30 * 60 * 1000);
+          fetchAdAccounts(userId, accessToken);
+          fetchPages(userId, accessToken);
+          setModalOpen(true);
+        } else {
+          console.error('User cancelled login or did not fully authorize.');
+        }
+      },
+      {
+        scope:
+          'ads_management,ads_read,business_management,pages_manage_ads,pages_read_engagement,pages_show_list,read_insights',
       }
-    }
-  };
-
-  const handlePageSelect = (pageId: string) => {
-    console.log('Page selected:', pageId);
-    const selectedPage = pages.find((page) => page.id === pageId);
-    if (selectedPage) {
-      setSelectedPage(selectedPage);
-
-      // Store in localStorage without expiry
-      localStorage.setItem('fbPage', JSON.stringify(selectedPage));
-
-      // Close the page modal
-      setPageModalOpen(false);
-
-      // Store both the ad account and page data into Supabase after both selections are made
-      if (selectedAdAccount && selectedPage && accessToken && userId) {
-        storeDataInSupabase({
-          accessToken: accessToken,
-          userId: userId,
-          selectedAdAccount: selectedAdAccount,
-          selectedPage: selectedPage,
-        });
-      }
-    }
-  };
-
-  const storeDataInSupabase = async ({
-    accessToken,
-    userId,
-    selectedAdAccount,
-    selectedPage,
-  }: {
-    accessToken: string;
-    userId: string;
-    selectedAdAccount: { id: string; name: string; currency: string };
-    selectedPage: { id: string; name: string };
-  }) => {
-    const localUserId = localStorage.getItem('userid');
-    console.log('Storing data in Supabase...');
-    const { data, error } = await supabase.from('facebookData').insert({
-      user_id: localUserId,
-      access_token: accessToken,
-      fb_user_id: userId,
-      page_id: selectedPage.id,
-      page_name: selectedPage.name,
-      account_id: selectedAdAccount.id,
-      account_name: selectedAdAccount.name,
-      currency: selectedAdAccount.currency,
-    });
-
-    if (error) {
-      console.error('Error inserting data into Supabase:', error);
-    } else {
-      console.log('Data inserted into Supabase successfully:', data);
-      setIsConnected(true);
-    }
-  };
-
-  const handleDisconnectAdAccount = async () => {
-    console.log('Disconnecting Ad Account...');
-    setSelectedAdAccount(null);
-    localStorage.removeItem('fbAdAccountObj');
-    localStorage.removeItem('fbAccessToken');
-    localStorage.removeItem('fbUserId');
-    setAccessToken(null);
-    setUserId(null);
-    setIsConnected(false);
-
-    // Optionally delete the data from Supabase
-    const localUserId = localStorage.getItem('userid');
-    const { error } = await supabase.from('facebookData').delete().eq('user_id', localUserId);
-    if (error) {
-      console.error('Error deleting data from Supabase:', error);
-    } else {
-      console.log('User data deleted from Supabase.');
-    }
-  };
-
-  const renderAdAccounts = () => {
-    if (!selectedAdAccount) return null;
-    return (
-      <div>
-        <p>Ad Account: {selectedAdAccount.name}</p>
-        <p>Currency: {selectedAdAccount.currency}</p>
-      </div>
     );
   };
 
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleAdAccountSelect = (accountId: string) => {
+    const selectedAccount = adAccounts.find((account) => account.id === accountId) || null;
+    console.log('Ad account selected:', selectedAccount);
+    setSelectedAdAccount(selectedAccount);
+    if (selectedAccount) {
+      setItemWithExpiry('fbAdAccount', selectedAccount.id, 30 * 60 * 1000); // Store only the id
+      setItemWithExpiry('fbAdAccountObj', selectedAccount, 30 * 60 * 1000); // Store the full object with id and name
+      const uuid = localStorage.getItem('userId');
+    }
+    setModalOpen(false);
+  };
+
+  const handlePageSelect = (pageId: string) => {
+    const selectedPage = pages.find((page) => page.id === pageId) || null;
+    console.log('Page selected:', selectedPage);
+    setSelectedPage(selectedPage);
+    if (selectedPage) {
+      setItemWithExpiry('fbPage', selectedPage, 30 * 60 * 1000); // Store both id and name
+    }
+    setPageModalOpen(false);
+  };
+
+  const handleRemoveSelection = async () => {
+    const supabase = createClient();
+
+    console.log('Removing selection');
+    setSelectedAdAccount(null);
+    setSelectedPage(null);
+    localStorage.removeItem('fbAdAccount');
+    localStorage.removeItem('fbAdAccountObj');
+    localStorage.removeItem('fbAccessToken');
+    localStorage.removeItem('fbUserId');
+    localStorage.removeItem('fbPage');
+    setAccessToken(null);
+    setUserId(null);
+    setAdAccounts([]);
+    setPages([]);
+    const userId = localStorage.getItem('userid');
+    if (!userId) {
+      console.warn('No user ID found in localStorage. Skipping deletion.');
+      return;
+    }
+    const { data, error } = await supabase.from('facebookData').delete().eq('user_id', userId);
+
+    if (error) {
+      console.error('Error deleting row from facebookData:', error);
+    } else {
+      console.log('Successfully deleted row from facebookData:', data);
+    }
+  };
+
+  useEffect(() => {
+    const supabase = createClient();
+    const uuid = localStorage.getItem('userid');
+    const hehe = async () => {
+      const { data, error } = await supabase
+        .from('facebookData')
+        .select('*') // Specify the columns you want to fetch, or '*' for all columns
+        .eq('user_id', uuid);
+      console.log('thisishioh isod', data);
+      if (data) {
+        setAccessToken(data[0].access_token);
+        setUserId(data[0].fb_user_id);
+        setAdAccounts([
+          {
+            name: data[0].account_name,
+            id: data[0].account_id,
+          },
+        ]);
+        setSelectedAdAccount({
+          id: data[0].account_id,
+          name: data[0].account_name,
+        });
+        setSelectedPage({
+          id: data[0].page_id,
+          name: data[0].page_name,
+        });
+      }
+    };
+    hehe();
+  }, []);
+  console.log('selectedAdAccount', selectedAdAccount);
+  useEffect(() => {
+    if (accessToken && userId && adAccounts && selectedAdAccount && selectedPage) {
+      const supabase = createClient();
+
+      const inserData = async () => {
+        console.log(
+          'accessToken',
+          accessToken,
+          'userId',
+          userId,
+          'selectedAdAccount',
+          selectedAdAccount,
+          'selectedPage',
+          selectedPage
+        );
+//test
+        const localUserId = localStorage.getItem('userid');
+
+        // First, check if a row with the user_id already exists
+        const { data: existingData, error: selectError } = await supabase
+          .from('facebookData')
+          .select('*')
+          .eq('user_id', localUserId);
+
+        if (selectError) {
+          console.error('Error checking for existing data:', selectError);
+          return;
+        }
+
+        // If no existing data is found, proceed to insert
+        if (existingData.length === 0) {
+          const { data, error } = await supabase.from('facebookData').insert({
+            account_id: selectedAdAccount.id,
+            access_token: accessToken,
+            fb_user_id: userId,
+            user_id: localUserId,
+            page_id: selectedPage.id,
+            account_name: selectedAdAccount.name,
+            page_name: selectedPage.name,
+          });
+
+          if (error) {
+            console.error('Error inserting data:', error);
+          } else {
+            console.log('Data inserted successfully:', data);
+          }
+        } else {
+          console.log('Data already exists for this user_id, skipping insertion.');
+        }
+      };
+
+      inserData();
+    }
+  }, [accessToken, userId, adAccounts, selectedAdAccount, selectedPage]);
+
   return (
     <Stack className={styles.container}>
-      <Typography variant="h5" gutterBottom>
-        Connect with your social media accounts
-      </Typography>
-      <Typography variant="body2" gutterBottom>
-        Simplify your ad strategy by connecting your accounts effortlessly.
-      </Typography>
+    <Typography variant="h5" gutterBottom>
+      Connect with your social media accounts
+    </Typography>
+    <Typography variant="body2" gutterBottom>
+      Simplify your ad strategy by connecting your accounts effortlessly.
+    </Typography>
 
-      <Grid container spacing={3}>
-        {/* Facebook Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
-            <FacebookIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>Facebook</Typography>
-              <Typography className={styles.description}>
-                {isConnected ? 'Connected to Facebook' : 'Connect to Supercharge Your Ads!'}
-              </Typography>
-            </div>
-            {isConnected ? (
-              <Button
-                className={styles.button}
-                sx={{ backgroundColor: '#00c293', color: 'white' }}
-                onClick={handleDisconnectAdAccount}
-              >
-                DISCONNECT
-              </Button>
-            ) : (
-              <Button
-                className={styles.button}
-                sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
-                onClick={handleFacebookLogin}
-              >
-                CONNECT
-              </Button>
-            )}
-          </Card>
-        </Grid>
-
-        {/* Instagram Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
-            <InstagramIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>Instagram</Typography>
-              <Typography className={styles.description}>
-                Connect to Supercharge Your Ads!
-              </Typography>
-            </div>
-            <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
-              COMING SOON
-            </Button>
-          </Card>
-        </Grid>
-
-        {/* LinkedIn Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
-            <LinkedInIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>LinkedIn</Typography>
-              <Typography className={styles.description}>
-                We need to connect to your account
-              </Typography>
-            </div>
-            <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
-              COMING SOON
-            </Button>
-          </Card>
-        </Grid>
+    <Grid container spacing={3}>
+      {/* Facebook Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <FacebookIcon className={styles.cardIcon} />
+          <div className={styles.cardContent}>
+            <Typography className={styles.title}>Facebook</Typography>
+            <Typography className={styles.description}>
+              Connect to Supercharge Your Ads!
+            </Typography>
+          </div>
+          <Button className={styles.button}>CONNECTED</Button>
+        </Card>
       </Grid>
 
-      {/* Render fetched ad accounts with currency */}
-      <Typography variant="h6" sx={{ marginTop: '20px' }}>
-        Connected Ad Account:
-      </Typography>
-      {renderAdAccounts()}
+      {/* Instagram Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <InstagramIcon className={styles.cardIcon} />
+          <div className={styles.cardContent}>
+            <Typography className={styles.title}>Instagram</Typography>
+            <Typography className={styles.description}>
+              Connect to Supercharge Your Ads!
+            </Typography>
+          </div>
+          <Button className={styles.button} sx={{ backgroundColor:'#00c293',
+          color: 'white',
+           }}>Make the connection</Button>
+        </Card>
+      </Grid>
 
-      <Typography variant="body2" sx={{ marginTop: '35px' }}>
-        Your connected social accounts (0):
-      </Typography>
+      {/* LinkedIn Card */}
+      <Grid item xs={12} sm={4}>
+        <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <LinkedInIcon className={styles.cardIcon} />
+          <div className={styles.cardContent}>
+            <Typography className={styles.title}>LinkedIn</Typography>
+            <Typography className={styles.description}>
+              We need to connect to your account
+            </Typography>
+          </div>
+          <Button className={styles.button} sx={{ backgroundColor:'#00c293',
+          color: 'white',
+           }}>Make the connection</Button>
+        </Card>
+      </Grid>
+    </Grid>
 
-      {/* New Feature Announcement */}
-      <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
-        New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
-      </Typography>
+    {/* New Feature Announcement */}
+    <Typography variant="body2" sx={{ marginTop: '35px'}}>
+      Your connected social accounts (0):
+    </Typography>
 
-      {/* Modals for ad account and page selection */}
-      <AdAccountSelectionModal
-        open={modalOpen}
-        adAccounts={adAccounts}
-        onClose={() => setModalOpen(false)}
-        onSelect={handleAdAccountSelect}
-      />
-
-      <PageSelectionModal
-        open={pageModalOpen}
-        pages={pages}
-        onClose={() => setPageModalOpen(false)}
-        onSelect={handlePageSelect}
-      />
-    </Stack>
-  );
+    {/* New Feature Announcement */}
+    <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
+      New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
+    </Typography>
+  </Stack>
+);
 }

@@ -19,12 +19,8 @@ export const paths = {
     adsstrategies: '/dashboard/adsstrategies',
     analysistable: '/dashboard/strategies/analysis',
     campaign: '/dashboard/campaign',
-    CampaignSetup: '/dashboard/campaign-setup',
-    objective: '/dashboard/strategy',
-    strategycreation: '/dashboard/strategy/strategycreation',
-    strategyresult: '/dashboard/strategy/strategyresult',
-    buyerpersona: '/dashboard/buyerpersona',
-    setupcampaign: '/dashboard/setup-campaign',
+    CampaignSetup: '/dashboard/campaign-setup'
+    
   },
   errors: { notFound: '/errors/not-found' },
 } as const;

@@ -157,14 +157,13 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
   </Box>
 
   <Box className={styles.budgetCard}>
-  <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
-  <div className={styles.budgetValue}> {formatValue(Math.floor(adDetail?.impressions))}</div>
-</Box>
-
+    <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
+    <div className={styles.budgetValue}> {formatValue(adDetail?.impressions, 'N/A')}</div>
+  </Box>
 
   <Box className={styles.budgetCard}>
     <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.spend,)}</div>
+    <div className={styles.budgetValue}> {formatValue(adDetail?.spend, 'N/A')}</div>
   </Box>
   {/* Add more budget cards as needed */}
 </Box>

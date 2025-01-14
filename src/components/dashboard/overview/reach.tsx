@@ -76,7 +76,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
       }
 
       // Fetch the total reach, clicks, and messages started based on the user's selected date range
-      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
+      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'impressions,clicks,actions',

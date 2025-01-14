@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import styles from './Subscription.module.css';
-import { Typography, Button, Switch, FormControlLabel } from '@mui/material';
+import { Container, Card, CardContent, Typography, Button, Switch, FormControlLabel, Checkbox } from '@mui/material';
+import './styles.css'; // Import the CSS file
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -30,20 +30,32 @@ const Subscription = () => {
     }
 
     const session = await response.json();
-    await stripe.redirectToCheckout({ sessionId: session.id });
+
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      console.error(result.error.message);
+    }
   };
 
   const plans = [
     {
-      id: 'price_monthly_basic',
+      id: isYearly ? 'price_1Q002uHow0UPMFTyVx0Hv9aI' : 'price_1Q003JHow0UPMFTykx3LRZeV',
       name: 'Basic',
-      price: isYearly ? '299,99€ /year' : '29,99€ /month',
-      features: ['Daily report', 'Performance Optimization', 'Event Calendar Alerts', 'In-depth Ad Analysis'],
+      price: isYearly ? '$299.99/year' : '$29.99/month',
+      features: [
+        'Daily Report',
+        'Performance Optimization',
+        'Event Calendar Alerts',
+        'In-depth Ad Analysis',
+      ],
     },
     {
-      id: 'price_monthly_essential',
+      id: isYearly ? 'price_1Q008uHow0UPMFTyp6ifXtV3' : 'price_1Q009rHow0UPMFTyyxea5LzG',
       name: 'Essential',
-      price: isYearly ? '499,98€ /year' : '49,98€ /month',
+      price: isYearly ? '$499.98/year' : '$49.98/month',
       features: [
         'Personalized Advertising Roadmap',
         'Objective Definition and Alignment',
@@ -52,12 +64,11 @@ const Subscription = () => {
         'Budget Forecasting and Control',
         'Buyer Persona Generator',
       ],
-      popular: true,
     },
     {
-      id: 'price_monthly_advanced',
+      id: isYearly ? 'price_1Q00CeHow0UPMFTywnltJFXW' : 'price_1Q00D5How0UPMFTyI3zY6QCr',
       name: 'Advanced',
-      price: isYearly ? '699,97€ /year' : '69,97€ /month',
+      price: isYearly ? '$699.97/year' : '$69.97/month',
       features: [
         'Full-Service Advertising Management',
         'Monthly Performance Reports',
@@ -70,39 +81,53 @@ const Subscription = () => {
   ];
 
   return (
-    <div className={styles.container}>
-      <Typography variant="h4" className={styles.title}>
+    <Container className="container">
+      <Typography variant="h4" component="h1" gutterBottom>
         Choose Your Plan
       </Typography>
-      <div className={styles.toggleContainer}>
+      <div className="toggle">
         <FormControlLabel
-          control={<Switch checked={isYearly} onChange={() => setIsYearly(!isYearly)} />}
-          label="Monthly  |  Yearly"
+          control={
+            <Switch
+              checked={isYearly}
+              onChange={() => setIsYearly((prev) => !prev)}
+              name="togglePlan"
+              color="primary"
+            />
+          }
+          label="Yearly"
         />
       </div>
-      <div className={styles.plansGrid}>
+      <div className="grid-container">
         {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`${styles.planCard} ${plan.popular ? styles.popularCard : ''}`}
-          >
-            {plan.popular && <div className={styles.popularBadge}>Popular</div>}
-            <Typography className={styles.planName}>{plan.name}</Typography>
-            <Typography className={styles.planPrice}>{plan.price}</Typography>
-            <ul className={styles.featureList}>
-              {plan.features.map((feature, index) => (
-                <li key={index} className={styles.featureItem}>
-                  <span className={styles.checkmark}>✓</span> {feature}
-                </li>
-              ))}
-            </ul>
-            <Button variant="contained" className={styles.chooseButton} onClick={() => handleSubscribe(plan.id)}>
-              Choose Plan
+          <Card className="card" key={plan.id}>
+            <CardContent className="card-content">
+              <Typography variant="h5" component="h2" gutterBottom>
+                {plan.name}
+              </Typography>
+              <Typography variant="h6" component="p" className="price">
+                {plan.price}
+              </Typography>
+              <ul className="features">
+                {plan.features.map((feature, index) => (
+                  <li className="feature-item" key={index}>
+                    <Checkbox className="feature-checkbox" checked={true} disabled />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <Button
+              variant="contained"
+              className="button"
+              onClick={() => handleSubscribe(plan.id)}
+            >
+              Subscribe to this Plan
             </Button>
-          </div>
+          </Card>
         ))}
       </div>
-    </div>
+    </Container>
   );
 };
 

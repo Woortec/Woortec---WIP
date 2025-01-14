@@ -7,7 +7,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { config } from '@/config';
 import { AccountDetailsForm } from '@/components/dashboard/account/account-details-form';
 import { AccountInfo } from '@/components/dashboard/account/account-info';
-import { CancelSubscription } from '@/components/dashboard/account/subscription-details';
 
 export const metadata = { title: `Account | Dashboard | ${config.site.name}` } satisfies Metadata;
 
@@ -23,9 +22,6 @@ export default function Page(): React.JSX.Element {
         </Grid>
         <Grid lg={8} md={6} xs={12}>
           <AccountDetailsForm />
-        </Grid>
-        <Grid lg={4} md={6} xs={12}>
-          <CancelSubscription /> {/* Add CancelSubscription component here */}
         </Grid>
       </Grid>
     </Stack>

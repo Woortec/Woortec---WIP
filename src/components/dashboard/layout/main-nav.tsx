@@ -7,9 +7,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Bell as BellIcon } from '@phosphor-icons/react';
-import { useTheme } from '@mui/material/styles';
+import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 
 import { usePopover } from '@/hooks/use-popover';
 import { MobileNav } from './mobile-nav';
@@ -18,133 +16,57 @@ import { UserPopover } from './user-popover';
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const userPopover = usePopover<HTMLDivElement>();
-  const theme = useTheme();
 
   return (
-    <>
+    <React.Fragment>
       <Box
         component="header"
         sx={{
           borderBottom: '1px solid #E0E0E0',
-          backgroundColor: '#FFFFFF',
-          borderRadius: 4,
+          backgroundColor: '#F5F5F5',
+          borderRadius: '12px', // Adjust border radius to be more subtle
           position: 'sticky',
           top: 8,
-          zIndex: theme.zIndex.appBar,
+          zIndex: 'var(--mui-zIndex-appBar)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          // Responsive header height
-          minHeight: {
-            xs: 56,
-            sm: 64,
-            md: 72,
-            lg: 80,
-            xl: 88,
-          },
-          width: '100%',
-          margin: '0 auto',
-          px: {
-            xs: 2,
-            sm: 3,
-            md: 4,
-            lg: 5,
-            xl: 6,
-          },
-          // Constrain max width to keep layout readable on large screens
-          maxWidth: {
-            xs: '100%',
-            sm: '100%',
-            md: '100%',
-            lg: '1200px',
-            xl: '1500px',
-          },
-          overflow: 'hidden',
+          justifyContent: 'space-between', // Distribute items evenly across the width
+          minHeight: '64px',
+          width: '100%', // Make sure it takes full width
+          margin: '0 auto', // Center the navbar horizontally
+          px: 4, // Adjust padding for left and right to fit better
+          maxWidth: '100%', // Ensure full width
         }}
       >
-        {/* Left side: Logo and Menu Icon */}
-        <Stack direction="row" spacing={2} alignItems="center">
-          {/* Menu Icon for mobile - shown only on smaller screens */}
-          <IconButton
-            onClick={() => setOpenNav(true)}
-            sx={{
-              display: {
-                xs: 'inline-flex',
-                md: 'none',
-              },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-
-          {/* Logo - scales with breakpoints */}
-          <Box
-            component="img"
-            src="/assets/logo.png"
-            alt="Logo"
-            sx={{
-              height: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              // Optionally set maxWidth or objectFit to maintain aspect ratio
-              objectFit: 'contain',
-            }}
-          />
-        </Stack>
-
-        {/* Right side: Notifications and Avatar */}
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
-              <IconButton sx={{ color: 'text.primary' }}>
-                <BellIcon size={24} />
+              <IconButton sx={{ color: 'var(--mui-palette-text-primary)' }}>
+                <BellIcon />
               </IconButton>
             </Badge>
           </Tooltip>
 
-          {/* User Avatar - clickable to open UserPopover */}
+          {/* User Avatar */}
           <Avatar
             onClick={userPopover.handleOpen}
             ref={userPopover.anchorRef}
             src="/assets/avatar.png"
-            sx={{
-              cursor: 'pointer',
-              width: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              height: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              border: '1px solid #E0E0E0',
-            }}
+            sx={{ cursor: 'pointer', width: 40, height: 40 }}
           />
         </Stack>
       </Box>
 
       {/* User popover */}
-      <UserPopover
-        anchorEl={userPopover.anchorRef.current}
-        onClose={userPopover.handleClose}
-        open={userPopover.open}
-      />
+      <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
 
       {/* Mobile navigation drawer */}
       <MobileNav
-        onClose={() => setOpenNav(false)}
+        onClose={() => {
+          setOpenNav(false);
+        }}
         open={openNav}
       />
-    </>
+    </React.Fragment>
   );
 }
