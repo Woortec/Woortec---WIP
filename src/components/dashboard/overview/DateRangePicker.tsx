@@ -96,8 +96,15 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
                 />
               }
               dateFormat="dd MMM yyyy"
-              renderCustomHeader={({ monthDate }) => (
-                <div className={styles.customHeader}>
+              renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+                <div className={styles.customHeaderContainer}>
+                  <div className={styles.headerControls}>
+                    <button onClick={decreaseMonth} className={styles.navButton}>‹</button>
+                    <span className={styles.monthYearDisplay}>
+                      {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
+                    </span>
+                    <button onClick={increaseMonth} className={styles.navButton}>›</button>
+                  </div>
                   <button className={styles.todayButton} onClick={setTodayAsEndDate}>
                     TODAY
                   </button>

@@ -99,7 +99,7 @@ const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsConta
       }
 
       // Fetch the total impressions for the selected date range
-      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'impressions',
@@ -123,7 +123,7 @@ const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsConta
       const formattedImpressions = new Intl.NumberFormat('en-US').format(totalImpressions);
 
       // Fetch the previous total impressions for comparison
-      const previousResponse = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+      const previousResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'impressions',

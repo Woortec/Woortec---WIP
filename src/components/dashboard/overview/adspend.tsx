@@ -104,7 +104,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
       // Log the start and end date to make sure they are correct
       console.log(`Fetching data from ${getFormattedDate(start.toDate())} to ${getFormattedDate(end.toDate())}`);
 
-      const response = await axios.get(`https://graph.facebook.com/v19.0/${adAccountId}/insights`, {
+      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
           fields: 'spend,date_start',

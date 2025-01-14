@@ -249,7 +249,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           cursor: 'pointer',
           display: 'flex',
           flex: '0 0 auto',
-          gap: 1,
+          gap: 2,
           p: '6px 16px',
           position: 'relative',
           textDecoration: 'none',
