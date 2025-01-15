@@ -17,7 +17,8 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import Cookies from 'js-cookie';
 import Stripe from 'stripe';
-import Box from '@mui/material/Box'; // <-- Missing Box import
+import Box from '@mui/material/Box';
+import { User } from '@supabase/supabase-js';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
@@ -96,7 +97,7 @@ export function SignInForm(): React.JSX.Element {
 
       await supabase
         .from('user')
-        .update({ customerId: customer.id })
+        .upsert({ email, customerId: customer.id })
         .eq('email', email);
 
       console.log(`Stripe customer created with ID: ${customer.id}`);
@@ -118,9 +119,31 @@ export function SignInForm(): React.JSX.Element {
       });
 
       if (error) {
-        setErrors((prev) => ({ ...prev, root: error.message }));
-        setIsPending(false);
-        return;
+        // If the user doesn't exist or wrong password
+        if (error.message === 'Invalid login credentials') {
+          // Try to link the email/password to an existing OAuth user
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+
+          if (signUpError) {
+            setErrors((prev) => ({ ...prev, root: signUpError.message }));
+            setIsPending(false);
+            return;
+          }
+
+          if (signUpData.user) {
+            // User needs to confirm their email
+            setErrors((prev) => ({ ...prev, root: 'Check your email to confirm your account.' }));
+            setIsPending(false);
+            return;
+          }
+        } else {
+          setErrors((prev) => ({ ...prev, root: error.message }));
+          setIsPending(false);
+          return;
+        }
       }
 
       if (data.user) {
@@ -140,81 +163,108 @@ export function SignInForm(): React.JSX.Element {
     }
   };
 
-  const handleGoogleSignIn = React.useCallback(async (): Promise<void> => {
+  const handleOAuthSignIn = React.useCallback(
+  async (provider: 'google' | 'facebook'): Promise<void> => {
     setIsPending(true);
 
     try {
+      const options: any = {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      };
+
+      if (provider === 'facebook') {
+        options.scopes = 'email';
+        options.queryParams = {
+          config_id: '937709384919732', // Add your config_id here
+        };
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
+        provider,
+        options,
       });
 
       if (error) {
-        setGoogleAuthError(error.message);
+        if (provider === 'google') {
+          setGoogleAuthError(error.message);
+        } else {
+          setFacebookAuthError(error.message);
+        }
         setIsPending(false);
       }
     } catch (error) {
-      setGoogleAuthError('An unexpected error occurred. Please try again.');
+      if (provider === 'google') {
+        setGoogleAuthError('An unexpected error occurred. Please try again.');
+      } else {
+        setFacebookAuthError('An unexpected error occurred. Please try again.');
+      }
       setIsPending(false);
     }
-  }, [supabase]);
+  },
+  [supabase]
+);
+
 
   React.useEffect(() => {
     const handleAuthCallback = async () => {
       const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-  
+
       if (error) {
-        setGoogleAuthError('Failed to get session data after Google sign-in.');
+        setErrors((prev) => ({ ...prev, root: 'Failed to get session data after OAuth sign-in.' }));
         setIsPending(false);
         return;
       }
-  
+
       if (data?.session) {
         document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-  
-        // Ensure that we create or check Stripe customer after OAuth sign-in
-        await handleStripeCustomer(data.session.user.email);
-  
-        await handleKlaviyoSubscription(data.session.user.email);
+
+        const userEmail = data.session.user.email;
+
+        // Check if a user with this email already exists
+        const { data: existingUser, error: userError } = await supabase.auth.admin.listUsers({
+          email: userEmail,
+        });
+
+        if (userError) {
+          console.error('Error fetching user:', userError);
+        } else if (existingUser.users.length > 1) {
+          // More than one user with the same email, need to merge accounts
+          // Use Supabase Auth admin API to delete the duplicate account
+          const duplicateUser = existingUser.users.find((user: User) => user.id !== data.session.user.id);
+
+
+          if (duplicateUser) {
+            // Link the provider to the existing user
+            await supabase.auth.admin.deleteUser(data.session.user.id);
+
+            // Re-authenticate as the existing user
+            const { data: newSession, error: sessionError } = await supabase.auth.signInWithPassword({
+              email: userEmail,
+              password: password || '', // You might need to prompt the user for a password
+            });
+
+            if (sessionError) {
+              console.error('Error re-authenticating user:', sessionError);
+            } else {
+              await supabase.auth.updateUser({ email: userEmail });
+            }
+          }
+        }
+
+        // Handle Stripe customer creation/check
+        await handleStripeCustomer(userEmail);
+
+        await handleKlaviyoSubscription(userEmail);
         await checkSession?.();
         router.push('/');
       }
     };
-  
+
     if (window.location.pathname === '/auth/callback') {
       handleAuthCallback();
     }
   }, [supabase, checkSession, router]);
-  
-
-  const handleFacebookSignIn = React.useCallback(async (): Promise<void> => {
-    setIsPending(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          scopes: 'email,public_profile',
-          queryParams: {
-            response_type: 'code',
-            config_id: '460931022938058', // Replace with your actual config_id
-          },
-        },
-      });
-
-      if (error) {
-        setFacebookAuthError(error.message);
-        setIsPending(false);
-      }
-    } catch (error) {
-      setFacebookAuthError('An unexpected error occurred. Please try again.');
-      setIsPending(false);
-    }
-  }, [supabase]);
 
   const handleForgotPassword = async () => {
     setResetPasswordError(null);
@@ -240,162 +290,168 @@ export function SignInForm(): React.JSX.Element {
 
   return (
     <Stack spacing={4}>
-    <Stack spacing={1}>
-      <Typography variant="h4"
-        sx={{ marginTop: '20px',
-        }}>
-        Welcome back!</Typography>
-      <Typography color="text.secondary" variant="body2">
-        Don&apos;t have an account?{' '}
-        <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-          Sign Up
-        </Link>
-      </Typography>
-    </Stack>
-    <form onSubmit={handleSubmit}>
-      <Stack spacing={2}>
-        <FormControl error={Boolean(errors.email)}>
-          <InputLabel>Email address</InputLabel>
-          <OutlinedInput
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email address"
-            type="email"
-            sx={{ borderRadius: '8px', // Add rounded corners
-              backgroundColor: '#FFFFFF', // Change the color
-              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }  // Keep the border on focus
-             }}
-          />
-          {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
-        </FormControl>
-        <FormControl error={Boolean(errors.password)}>
-          <InputLabel>Password</InputLabel>
-          <OutlinedInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            endAdornment={
-              showPassword ? (
-                <EyeIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" onClick={() => setShowPassword(false)} />
-              ) : (
-                <EyeSlashIcon
-                  cursor="pointer"
-                  fontSize="var(--icon-fontSize-md)"
-                  onClick={() => setShowPassword(true)}
-                />
-              )
-            }
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            sx={{ borderRadius: '8px', // Add rounded corners
-              backgroundColor: '#FFFFFF', // Change the color
-              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },  // Remove the grey border
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }  // Keep the border on focus
-             }}
-          />
-          {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
-        </FormControl>
-        <div>
-  <Box sx={{ textAlign: 'right' }}>
-    <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
-      Forgot password?
-    </Link>
-  </Box>
-  {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
-  {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
-</div>
-
-        {errors.root && <Alert color="error">{errors.root}</Alert>}
-        <Button
-          disabled={isPending}
-          type="submit"
-          variant="contained"
+      <Stack spacing={1}>
+        <Typography
+          variant="h4"
           sx={{
-            backgroundColor: '#15b79e', // Matching button color
-            borderRadius: '8px', // Add rounded corners
-            marginTop: '40px'
+            marginTop: '20px',
           }}
         >
-          Log In
-        </Button>
+          Welcome back!
+        </Typography>
+        <Typography color="text.secondary" variant="body2">
+          Don&apos;t have an account?{' '}
+          <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
+            Sign Up
+          </Link>
+        </Typography>
       </Stack>
-    </form>
-    <Stack spacing={2} justifyContent="center" alignItems="center">
-  {/* Horizontal line with "or continue with" text */}
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%',
-      marginTop: '20px' 
-    }}
-  >
-    <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
-    <Typography
-      variant="body2"
-      sx={{
-        color: '#90a4ae',
-        paddingX: 2, // Adds spacing between the text and lines
-        fontSize: '14px',
-      }}
-    >
-      or continue with
-    </Typography>
-    <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
-  </Box>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={2}>
+          <FormControl error={Boolean(errors.email)}>
+            <InputLabel>Email address</InputLabel>
+            <OutlinedInput
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              label="Email address"
+              type="email"
+              sx={{
+                borderRadius: '8px', // Add rounded corners
+                backgroundColor: '#FFFFFF', // Change the color
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
+              }}
+            />
+            {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
+          </FormControl>
+          <FormControl error={Boolean(errors.password)}>
+            <InputLabel>Password</InputLabel>
+            <OutlinedInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              endAdornment={
+                showPassword ? (
+                  <EyeIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" onClick={() => setShowPassword(false)} />
+                ) : (
+                  <EyeSlashIcon
+                    cursor="pointer"
+                    fontSize="var(--icon-fontSize-md)"
+                    onClick={() => setShowPassword(true)}
+                  />
+                )
+              }
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              sx={{
+                borderRadius: '8px', // Add rounded corners
+                backgroundColor: '#FFFFFF', // Change the color
+                '& .MuiOutlinedInput-notchedOutline': { border: 'none' }, // Remove the grey border
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { border: '2px solid #15b79e' }, // Keep the border on focus
+              }}
+            />
+            {errors.password && <FormHelperText>{errors.password}</FormHelperText>}
+          </FormControl>
+          <div>
+            <Box sx={{ textAlign: 'right' }}>
+              <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
+                Forgot password?
+              </Link>
+            </Box>
+            {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
+            {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
+          </div>
 
-  {/* Google and Facebook circular buttons */}
-  <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
-    <Button
-      onClick={handleGoogleSignIn}
-      disabled={isPending}
-      type="button"
-      variant="outlined"
-      sx={{
-        width: '50px',
-        height: '50px',
-        minWidth: '50px', // Ensures the button is circular
-        borderRadius: '50%',
-        borderColor: '#486A75',
-        color: '#486A75',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '&:hover': {
-          backgroundColor: '#486A75',
-          borderColor: '#486A75',
-          color: '#ffffff',
-        },
-      }}
-    >
-      <GoogleIcon />
-    </Button>
-    <Button
-      onClick={handleFacebookSignIn}
-      disabled={isPending}
-      type="button"
-      variant="outlined"
-      sx={{
-        width: '50px',
-        height: '50px',
-        minWidth: '50px', // Ensures the button is circular
-        borderRadius: '50%',
-        borderColor: '#486A75',
-        color: '#486A75',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '&:hover': {
-          backgroundColor: '#486A75',
-          borderColor: '#486A75',
-          color: '#ffffff',
-        },
-      }}
-    >
-      <FacebookIcon />
-    </Button>
-  </Stack>
-</Stack>
-  </Stack>  
+          {errors.root && <Alert color="error">{errors.root}</Alert>}
+          <Button
+            disabled={isPending}
+            type="submit"
+            variant="contained"
+            sx={{
+              backgroundColor: '#15b79e', // Matching button color
+              borderRadius: '8px', // Add rounded corners
+              marginTop: '40px',
+            }}
+          >
+            Log In
+          </Button>
+        </Stack>
+      </form>
+      <Stack spacing={2} justifyContent="center" alignItems="center">
+        {/* Horizontal line with "or continue with" text */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: '20px',
+          }}
+        >
+          <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#90a4ae',
+              paddingX: 2, // Adds spacing between the text and lines
+              fontSize: '14px',
+            }}
+          >
+            or continue with
+          </Typography>
+          <Box sx={{ flexGrow: 1, borderBottom: '1px solid #ccd4d8' }}></Box>
+        </Box>
+
+        {/* Google and Facebook circular buttons */}
+        <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+          <Button
+            onClick={() => handleOAuthSignIn('google')}
+            disabled={isPending}
+            type="button"
+            variant="outlined"
+            sx={{
+              width: '50px',
+              height: '50px',
+              minWidth: '50px', // Ensures the button is circular
+              borderRadius: '50%',
+              borderColor: '#486A75',
+              color: '#486A75',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '&:hover': {
+                backgroundColor: '#486A75',
+                borderColor: '#486A75',
+                color: '#ffffff',
+              },
+            }}
+          >
+            <GoogleIcon />
+          </Button>
+          <Button
+            onClick={() => handleOAuthSignIn('facebook')}
+            disabled={isPending}
+            type="button"
+            variant="outlined"
+            sx={{
+              width: '50px',
+              height: '50px',
+              minWidth: '50px', // Ensures the button is circular
+              borderRadius: '50%',
+              borderColor: '#486A75',
+              color: '#486A75',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '&:hover': {
+                backgroundColor: '#486A75',
+                borderColor: '#486A75',
+                color: '#ffffff',
+              },
+            }}
+          >
+            <FacebookIcon />
+          </Button>
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
