@@ -1,3 +1,5 @@
+/* DatePickerComponent.module.css */
+
 .card {
   display: flex;
   align-items: center;
@@ -25,7 +27,7 @@
   text-transform: capitalize;
   transition: background-color 0.3s ease, color 0.3s ease;
   cursor: pointer;
-  margin: 0 12px;
+  margin: 0 12px; /* Adjust the margin between buttons */
 }
 
 .toggleButton:hover {
@@ -82,51 +84,32 @@
   border: none;
   cursor: pointer;
 }
-
-.customHeaderContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 5px;
-}
-
-.headerControls {
+.datePickerContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 5px 0;
-}
-
-.navButton {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  color: #007bff;
-  cursor: pointer;
-  padding: 0 10px;
-}
-
-.monthYearDisplay {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
 }
 
 .todayButton {
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 5px 0;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 0 0 4px 4px;
   font-size: 14px;
-  margin-top: 5px;
-  width: 90%;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 5px;
+  height: 40px; /* Adjust height if needed */
 }
 
 .todayButton:hover {
   background-color: #0056b3;
+}
+
+.customHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
 }
