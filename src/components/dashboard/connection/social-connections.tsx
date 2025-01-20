@@ -11,6 +11,35 @@ import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
 import styles from './styles/Connect.module.css';
 
+const setItemWithExpiry = (key: string, value: any, ttl: number) => {
+  const now = new Date();
+  const item = {
+    value: value,
+    expiry: now.getTime() + ttl,
+  };
+  localStorage.setItem(key, JSON.stringify(item));
+};
+
+const getItemWithExpiry = (key: string) => {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
+  }
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch (error) {
+    console.error('Failed to parse item from localStorage', error);
+    localStorage.removeItem(key);
+    return null;
+  }
+};
+
 const loadFacebookSDK = () => {
   return new Promise<void>((resolve) => {
     (window as any).fbAsyncInit = function () {
@@ -18,7 +47,7 @@ const loadFacebookSDK = () => {
         appId: '843123844562723',
         cookie: true,
         xfbml: true,
-        version: 'v19.0',
+        version: 'v21.0',
       });
       resolve();
     };
@@ -91,120 +120,88 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleFacebookLogin = () => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet.');
-      return;
-    }
-
     if ((window as any).FB) {
       (window as any).FB.login(
         (response: any) => {
           if (response.authResponse) {
             const token = response.authResponse.accessToken;
             const userId = response.authResponse.userID;
-            console.log('Facebook login successful. Token:', token, 'UserId:', userId);
             setAccessToken(token);
             setUserId(userId);
 
-            // Store accessToken and userId without expiry
-            localStorage.setItem('fbAccessToken', token);
-            localStorage.setItem('fbUserId', userId);
+            // Store accessToken and userId for 24 hours
+            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
+            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
 
             // Open the ad account selection modal after successful login
             fetchAdAccounts(userId, token);
             setModalOpen(true);
-          } else {
-            console.log('User canceled login or did not fully authorize.');
           }
         },
-        { scope: 'ads_read, pages_show_list, business_management' }
+        { scope: 'ads_read, pages_show_list' }
       );
     }
   };
 
   const fetchAdAccounts = (userId: string, token: string) => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet. Cannot fetch ad accounts.');
-      return;
-    }
     if ((window as any).FB) {
       const apiPath = `/me/adaccounts?fields=id,name,currency`;
-      console.log('Fetching ad accounts with token:', token);
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
-          console.log('Ad accounts fetched:', response);
           const accounts = response.data.map((account: any) => ({
             id: account.id,
             name: account.name,
             currency: account.currency,
           }));
           setAdAccounts(accounts);
-        } else {
-          console.error('Error fetching ad accounts:', response.error);
         }
       });
     }
   };
 
   const fetchPages = (userId: string, token: string) => {
-    if (!isSdkLoaded) {
-      console.error('Facebook SDK not loaded yet. Cannot fetch pages.');
-      return;
-    }
     if ((window as any).FB) {
       const apiPath = `/me/accounts`;
-      console.log('Fetching pages with token:', token);
       (window as any).FB.api(apiPath, { access_token: token }, (response: any) => {
         if (response && !response.error) {
-          console.log('Pages fetched:', response);
           const pages = response.data.map((page: any) => ({ id: page.id, name: page.name }));
           setPages(pages);
-        } else {
-          console.error('Error fetching pages:', response.error);
         }
       });
     }
   };
 
   const handleAdAccountSelect = (accountId: string) => {
-    console.log('Ad account selected:', accountId);
     const selectedAccount = adAccounts.find((account) => account.id === accountId);
     if (selectedAccount) {
       setSelectedAdAccount(selectedAccount);
 
-      // Store in localStorage without expiry
-      localStorage.setItem('fbAdAccountObj', JSON.stringify(selectedAccount));
+      // Store in localStorage
+      setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
 
-      // Close the ad account modal
+      // Close the ad account modal and open the page selection modal
       setModalOpen(false);
-
-      // Fetch pages once ad account is selected
-      if (userId && accessToken) {
-        fetchPages(userId, accessToken);
-        setPageModalOpen(true);
-      } else {
-        console.error('UserId or AccessToken missing. Cannot fetch pages.');
-      }
+      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
+      setPageModalOpen(true);
     }
   };
 
   const handlePageSelect = (pageId: string) => {
-    console.log('Page selected:', pageId);
     const selectedPage = pages.find((page) => page.id === pageId);
     if (selectedPage) {
       setSelectedPage(selectedPage);
 
-      // Store in localStorage without expiry
-      localStorage.setItem('fbPage', JSON.stringify(selectedPage));
+      // Store in localStorage
+      setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000);
 
       // Close the page modal
       setPageModalOpen(false);
 
       // Store both the ad account and page data into Supabase after both selections are made
-      if (selectedAdAccount && selectedPage && accessToken && userId) {
+      if (selectedAdAccount && selectedPage) {
         storeDataInSupabase({
-          accessToken: accessToken,
-          userId: userId,
+          accessToken: accessToken!,
+          userId: userId!,
           selectedAdAccount: selectedAdAccount,
           selectedPage: selectedPage,
         });
@@ -224,7 +221,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     selectedPage: { id: string; name: string };
   }) => {
     const localUserId = localStorage.getItem('userid');
-    console.log('Storing data in Supabase...');
+
     const { data, error } = await supabase.from('facebookData').insert({
       user_id: localUserId,
       access_token: accessToken,
@@ -245,7 +242,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleDisconnectAdAccount = async () => {
-    console.log('Disconnecting Ad Account...');
     setSelectedAdAccount(null);
     localStorage.removeItem('fbAdAccountObj');
     localStorage.removeItem('fbAccessToken');
@@ -256,12 +252,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
     // Optionally delete the data from Supabase
     const localUserId = localStorage.getItem('userid');
-    const { error } = await supabase.from('facebookData').delete().eq('user_id', localUserId);
-    if (error) {
-      console.error('Error deleting data from Supabase:', error);
-    } else {
-      console.log('User data deleted from Supabase.');
-    }
+    await supabase.from('facebookData').delete().eq('user_id', localUserId);
   };
 
   const renderAdAccounts = () => {
