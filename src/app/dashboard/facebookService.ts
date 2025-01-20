@@ -13,10 +13,10 @@ declare var FB: any;
 // Load the Facebook SDK for JavaScript
 window.fbAsyncInit = function() {
   FB.init({
-    appId: '961870345497057', // Replace with your Facebook app ID
+    appId: '843123844562723', // Replace with your Facebook app ID
     cookie: true, // Enable cookies to allow the server to access the session
     xfbml: true, // Parse social plugins on this webpage
-    version: 'v19.0' // Use this Graph API version
+    version: 'v21.0',
   });
 
   FB.AppEvents.logPageView();

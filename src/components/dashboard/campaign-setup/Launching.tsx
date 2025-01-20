@@ -31,18 +31,18 @@ function getWeekNumber(date: Date): string {
   return 'W' + Math.ceil((diff + ((start.getDay() + 1) % 7)) / 7);
 }
 
-function calculateNumAds(investAmount: number): number {
-  let numAds;
-  if (investAmount < 100) {
-    numAds = Math.ceil(investAmount / 3);
-  } else if (investAmount <= 400) {
-    numAds = Math.ceil(investAmount / 6);
-  } else {
-    numAds = Math.ceil(investAmount / 8);
-  }
+  function calculateNumAds(investAmount: number): number {
+    let numAds;
+    if (investAmount < 100) {
+      numAds = Math.ceil(investAmount / 3);
+    } else if (investAmount <= 400) {
+      numAds = Math.ceil(investAmount / 6);
+    } else {
+      numAds = Math.ceil(investAmount / 8);
+    }
 
-  return Math.ceil(numAds / 7);
-}
+    return Math.ceil(numAds / 7);
+  }
 
 function calculatePlan(input: PlanInput, answerMessages: string): WeeklyPlan[] {
   const Launchingpercentages = [0.06, 0.10, 0.10, 0.16, 0.16, 0.21, 0.21];

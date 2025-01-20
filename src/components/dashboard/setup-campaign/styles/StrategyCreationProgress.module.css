@@ -1,0 +1,57 @@
+/* Wrapper to center the progress container */
+.progressContainerWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+/* Main progress container - increased width and padding for a larger appearance */
+.progressContainer {
+    text-align: center;
+    padding: 60px; /* Increased padding */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    max-width: 1200px; /* Increased max-width for a larger container */
+    width: 100%;
+}
+
+/* Campaign image styling */
+.campaignImage {
+    width: 150px; /* Increased size */
+    height: auto;
+    margin-bottom: 30px; /* Increased margin for spacing */
+}
+
+/* Text for the status message */
+.progressContainer p {
+    font-size: 22px; /* Increased font size */
+    color: #333;
+    margin: 20px 0;
+}
+
+/* Progress bar container - increased height */
+.progressBar {
+    width: 90%; /* Increased width */
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 30px auto;
+    height: 15px; /* Increased height */
+}
+
+/* Progress bar (filled portion) */
+.progress {
+    height: 100%;
+    background-color: #00bfa6;
+    transition: width 0.5s ease; /* Smooth transition effect */
+}
+
+/* Loading text */
+.loadingText {
+    color: #666;
+    font-size: 18px; /* Slightly increased font size */
+    margin-top: 20px;
+}

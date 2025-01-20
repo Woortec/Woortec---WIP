@@ -5,19 +5,18 @@ import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
-import Joyride, { CallBackProps } from 'react-joyride'; // Import Joyride
+import Collapse from '@mui/material/Collapse';
+import { useState } from 'react';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import { useTour } from '@/contexts/TourContext'; // Import the useTour hook
 
 import { Logo } from '@/components/core/logo';
 
@@ -27,24 +26,9 @@ import { navIcons } from './nav-icons';
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const { runTour, startTour, stopTour, steps } = useTour(); // Added stopTour function from context
-  const [isMounted, setIsMounted] = React.useState(false); // State to track when the component is mounted
-
-  React.useEffect(() => {
-    setIsMounted(true); // Mark component as mounted
-  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-
-  // Handle Joyride callback for when tour steps are reached
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
-
-    if (status === 'finished' || status === 'skipped') {
-      stopTour(); // Close the tour if it is finished or skipped
-    }
   };
 
   const drawerContent = (
@@ -60,12 +44,7 @@ export function SideNav(): React.JSX.Element {
       }}
     >
       <Stack spacing={2} sx={{ p: 2, alignItems: 'center' }}>
-        <Box
-          component={RouterLink}
-          href={paths.home}
-          className="logo-step"
-          sx={{ display: 'inline-flex', justifyContent: 'center' }}
-        >
+        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex', justifyContent: 'center' }}>
           <Logo color="light" height={60} width={110} />
         </Box>
         <Box
@@ -90,48 +69,11 @@ export function SideNav(): React.JSX.Element {
       <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}>
         {renderNavItems({ pathname, items: navItems })}
       </Box>
-
-      {/* Button to start the Joyride tour */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={startTour} // This triggers the tour globally
-        sx={{ mt: 2 }}
-      >
-        Start Tour
-      </Button>
     </Box>
   );
 
   return (
     <>
-      {/* Joyride component for the tour */}
-      {isMounted && (
-        <Joyride
-          steps={steps}
-          run={runTour} // This checks the global state to run the tour
-          continuous={true}
-          scrollToFirstStep={true}
-          showProgress={true}
-          showSkipButton={false} // Disabled the Skip button
-          styles={{
-            options: {
-              zIndex: 10000, // Ensure the tour stays on top of other UI elements
-            },
-          }}
-          callback={handleJoyrideCallback} // Callback to handle tour events
-          locale={{
-            back: 'Back',
-            next: 'Next',
-            close: 'Close Tour', // This will now appear as the "Close" button
-          }}
-          floaterProps={{
-            disableAnimation: true,
-            hideArrow: true,
-          }}
-        />
-      )}
-
       <IconButton
         aria-label="open drawer"
         onClick={handleDrawerToggle}
@@ -194,7 +136,13 @@ export function SideNav(): React.JSX.Element {
   );
 }
 
-function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pathname: string }): React.JSX.Element {
+function renderNavItems({
+  items = [],
+  pathname,
+}: {
+  items?: NavItemConfig[];
+  pathname: string;
+}): React.JSX.Element {
   const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
     const { key, ...item } = curr;
 
@@ -210,38 +158,40 @@ function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pat
   );
 }
 
-interface NavItemProps extends Omit<NavItemConfig, 'items'> {
+interface NavItemProps extends Omit<NavItemConfig, 'key'> {
   pathname: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({
+  disabled,
+  external,
+  href,
+  icon,
+  matcher,
+  pathname,
+  title,
+  items,
+}: NavItemProps): React.JSX.Element {
+  const [open, setOpen] = useState(false);
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
 
-  // Define nav item classes for Joyride steps
-  const navItemClasses: { [key: string]: string } = {
-    Overview: 'overview-step',
-    'Ads Performance': 'ads-performance-step',
-    'Ads Strategies': 'ads-strategies-step',
-    'Campaign Setup': 'campaign-setup-step',
-    'Social Connections': 'social-connections-step',
-  };
+  const hasChildren = items && items.length > 0;
 
-  // Make sure title is a valid string before using it as a key
-  const className = typeof title === 'string' ? navItemClasses[title] || '' : '';
+  // Function to toggle submenu without navigating
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen((prev) => !prev);
+  };
 
   return (
     <li>
       <Box
-        {...(href
-          ? {
-              component: external ? 'a' : RouterLink,
-              href,
-              target: external ? '_blank' : undefined,
-              rel: external ? 'noreferrer' : undefined,
-            }
-          : { role: 'button' })}
-        className={className}
+        component={external ? 'a' : RouterLink}
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noreferrer' : undefined}
         sx={{
           alignItems: 'center',
           borderRadius: '4px',
@@ -249,7 +199,7 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
           cursor: 'pointer',
           display: 'flex',
           flex: '0 0 auto',
-          gap: 2,
+          gap: 1,
           p: '6px 16px',
           position: 'relative',
           textDecoration: 'none',
@@ -279,7 +229,27 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
             {title}
           </Typography>
         </Box>
+        {hasChildren && (
+          <CaretUpDownIcon
+            onClick={handleToggle}
+            style={{
+              cursor: 'pointer',
+              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.3s',
+            }}
+          />
+        )}
       </Box>
+      {hasChildren && (
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0, pl: 4 }}>
+            {items.map((childItem) => {
+              const { key, ...rest } = childItem;
+              return <NavItem key={key} {...rest} pathname={pathname} />;
+            })}
+          </Stack>
+        </Collapse>
+      )}
     </li>
   );
 }

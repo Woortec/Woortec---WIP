@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+/* Wrapper for the entire component */
+.wrapper {
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(to right, #2FDA77, #008369);
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  border-radius: 10px;
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* Left section */
+.leftSection {
+  width: 30%;
+  background-color: #215a4f;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+.leftContent {
+  margin-top: 5%;
+  text-align: left;
+  padding-bottom: 30%;
+}
+
+.leftContent h2 {
+  font-size: 15px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.leftContent p {
+  font-family: 'Open Sans', sans-serif; /* Use Open Sans font */
+  font-size: 10px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.backButton {
+  color: #ffffff;
+  padding: 2px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  bottom: -80px;
+  border: 2px solid #ffffff;
+  font-size: 12px;
+}
+
+.backButton:hover {
+  background-color: #ffffff;
+  color: #158774;
+}
+
+
+.selectedAvatarImage {
+  width: 100px; /* Control the size of the avatar */
+  height: 100px;
+  border-radius: 50%; /* If avatars are round */
+  border: 2px solid #ffcc60; /* Optional styling for the avatar */
+}
+
+.placeholderCircle {
+  width: 100px; /* Width of the placeholder */
+  height: 100px; /* Height of the placeholder */
+  border-radius: 50%; /* Make it a circle */
+  background-color: #ffcc60; /* Placeholder color */
+  border: 2px #ffcc60; /* Optional: border to indicate it's a placeholder */
+  text-align: center;
+  justify-content: center;
+}
+
+.circleContainer{
+  display: flex;
+  gap: 22px;
+}
+
+.circle {
+  width: 8px; /* Diameter of the circle */
+  height: 8px; /* Diameter of the circle */
+  background-color: white; /* Color of the circle */
+  border-radius: 50%; /* Make it a circle */
+  margin-right: 10px; /* Space between the circle and text */
+}
+
+.circleBorder{
+  width: 8px; /* Diameter of the circle */
+  height: 8px; /* Diameter of the circle */
+  background-color: #215a4f; /* Color of the circle */
+  border-radius: 50%; /* Make it a circle */
+  margin-right: 10px; /* Space between the circle and text */
+  border: 1px solid #ffffff;
+}
+
+.returnButton{
+  color: #ffffff;
+  font-size: 10px;
+  padding-bottom: 25px;
+}
+
+/* Right section */
+.rightSection {
+  width: 70%;
+  background: linear-gradient(to left, #2FDA77, #19B092);
+  padding: 40px;
+}
+
+.rightSection h1 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 600; /* Make the text bold */
+}
+
+.rightSection p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Add a class for the text input */
+.textInput {
+  width: 100%;
+  padding: 5px;
+  margin-top: 10px;
+  margin-bottom: 40px;
+  background-color: transparent; /* Set to transparent */
+  border: none;
+  border-bottom: 2px solid #ffffff; /* Only bottom border */
+  color: rgb(255, 255, 255);
+  font-size: 12px;
+}
+
+.textInput::placeholder {
+  color: #f2f2f2; /* Change to your desired placeholder color */
+}
+
+.textInput:focus {
+  outline: none; /* Remove default outline */
+  border-bottom: 2px solid #ffffff; /* Only bottom border */
+}
+
+/* Add a specific class for h3 elements */
+.avatarTitle {
+  margin-bottom: 20px;
+}
+
+/* Avatar grid */
+.avatarGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #ffcc60;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.avatarImage {
+  width: 100%; /* Image will fill the avatar */
+  height: 100%; /* Image will fill the avatar */
+  object-fit: cover; /* Cover the area without distortion */
+  border-radius: 50%; /* Make the image round */
+}
+
+/* Highlight selected avatar */
+.selectedAvatar {
+  border: 5px solid #215a4f;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: absolute;
+  bottom: -80px;
+  right: 50px;
+}
+
+.prevButton, .nextButton {
+  background-color: #ffffff;
+  color: #2dd2a0;
+  border: none;
+  padding: 2px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: 800; /* Make the text bold */
+}
+
+.nextButton:hover {
+  background-color: #158774;
+}
+
+/* Styles for the disabled button */
+.prevButton:disabled {
+  opacity: 0.6; /* Optional: make it less opaque */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s ease-in; /* Adjust duration as needed */
+}

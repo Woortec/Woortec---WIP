@@ -39,7 +39,10 @@ const Page = () => {
       });
 
       // Update the user with the new Stripe customer ID
-      await supabase.from('user').update({ customerId: customer.id }).eq('email', email);
+      await supabase
+        .from('user')
+        .update({ customerId: customer.id })
+        .eq('email', email);
 
       console.log(`Stripe customer created with ID: ${customer.id}`);
     } catch (error) {
@@ -56,7 +59,6 @@ const Page = () => {
         if (accessToken) {
           Cookies.set('accessToken', accessToken, { expires: 3 });
           const { data: sessionData } = await supabase.auth.getSession();
-          console.log('this is session Data', sessionData);
 
           if (sessionData?.session?.user) {
             const user = sessionData.session.user;
@@ -75,7 +77,7 @@ const Page = () => {
                   {
                     email,
                     provider,
-                    uuid: sessionData?.session?.user?.id,
+                    uuid,
                     firstName: fullName,
                     lastName: fullName,
                   },
@@ -92,7 +94,6 @@ const Page = () => {
               // If the user exists, check if they have a Stripe customer ID
               await handleStripeCustomer(email);
               router.push('/');
-              window.location.reload();
             }
           }
         } else {
