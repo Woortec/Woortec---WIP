@@ -1,5 +1,5 @@
+// src/components/dashboard/layout/main-nav.tsx
 'use client';
-
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -30,11 +30,23 @@ export function MainNav(): React.JSX.Element {
           borderRadius: 4,
           position: 'sticky',
           top: 8,
+          marginLeft: { lg: '20px' }, // Ensure MainNav accounts for SideNav width on large screens
           zIndex: theme.zIndex.appBar,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          // Responsive header height
+          // Ensuring MainNav spans full width
+          width: '97%',
+          paddingX: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+            lg: 5,
+            xl: 6,
+          },
+          // Ensure the header scales properly with the viewport width
+          maxWidth: '100%',
+          overflow: 'hidden',
           minHeight: {
             xs: 56,
             sm: 64,
@@ -42,24 +54,6 @@ export function MainNav(): React.JSX.Element {
             lg: 80,
             xl: 88,
           },
-          width: '100%',
-          margin: '0 auto',
-          px: {
-            xs: 2,
-            sm: 3,
-            md: 4,
-            lg: 5,
-            xl: 6,
-          },
-          // Constrain max width to keep layout readable on large screens
-          maxWidth: {
-            xs: '100%',
-            sm: '100%',
-            md: '100%',
-            lg: '1200px',
-            xl: '1500px',
-          },
-          overflow: 'hidden',
         }}
       >
         {/* Left side: Logo and Menu Icon */}
@@ -90,7 +84,6 @@ export function MainNav(): React.JSX.Element {
                 lg: 44,
                 xl: 48,
               },
-              // Optionally set maxWidth or objectFit to maintain aspect ratio
               objectFit: 'contain',
             }}
           />
