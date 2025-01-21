@@ -22,6 +22,14 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
       return;
     }
 
+    // Check for `userid` in localStorage
+    const localUserId = localStorage.getItem('userid');
+    if (localUserId) {
+      logger.debug('[GuestGuard]: userid found in localStorage, redirecting to dashboard');
+      router.replace(paths.dashboard.overview);
+      return;
+    }
+
     if (error) {
       setIsChecking(false);
       return;

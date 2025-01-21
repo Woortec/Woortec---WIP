@@ -59,34 +59,9 @@ export function MainNav(): React.JSX.Element {
         {/* Left side: Logo and Menu Icon */}
         <Stack direction="row" spacing={2} alignItems="center">
           {/* Menu Icon for mobile - shown only on smaller screens */}
-          <IconButton
-            onClick={() => setOpenNav(true)}
-            sx={{
-              display: {
-                xs: 'inline-flex',
-                md: 'none',
-              },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
 
           {/* Logo - scales with breakpoints */}
-          <Box
-            component="img"
-            src="/assets/logo.png"
-            alt="Logo"
-            sx={{
-              height: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              objectFit: 'contain',
-            }}
-          />
+          
         </Stack>
 
         {/* Right side: Notifications and Avatar */}
@@ -134,10 +109,6 @@ export function MainNav(): React.JSX.Element {
       />
 
       {/* Mobile navigation drawer */}
-      <MobileNav
-        onClose={() => setOpenNav(false)}
-        open={openNav}
-      />
     </>
   );
 }
