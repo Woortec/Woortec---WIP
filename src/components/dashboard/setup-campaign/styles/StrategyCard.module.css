@@ -1,16 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
 /* Container for the strategy section */
 .strategyContainer {
   text-align: center;
-  padding: 40px 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f9;
+  padding: 30px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 
-/* Heading */
-.strategyContainer h2 {
-  font-size: 24px;
+.headings{
+  font-weight: bold;
   color: #333;
-  margin-bottom: 30px;
+  margin: 20px;
+  text-align: left;
+  margin-top: 20px;
 }
 
 /* Group of cards */
@@ -20,10 +25,34 @@
   gap: 30px;
 }
 
+.buttonContainer {
+  padding: 25px;
+  padding-top: 45px;
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end; /* Push items to the right */
+  font-family: 'Poppins', sans-serif;
+}
+
+.dlButton, .conButton {
+  font-size: 14px;
+  padding: 5px;
+  width: 20%;
+  color: #486A75;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 2px solid #486A75; /* Adds a solid border */
+}
+
+.dlButton:hover, .conButton:hover {
+  background-color: #486A75; /* Darker green on hover */
+  color: #ffffff;
+}
+
 /* Individual card styles */
 .card {
   width: 30%;
-  padding: 25px;
+  padding: 40px;
   border: 1px solid transparent;
   border-radius: 15px;
   background-color: #fff;
@@ -44,11 +73,18 @@
   margin-bottom: 20px;
 }
 
+.cardTitle {
+  font-weight: 600;
+  color: #486A75;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
 /* Card hover effect */
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  border-color: #00bfa6;
+  border: 1px solid #486A75; /* 3px is the border thickness */
 }
 
 /* Locked card styles */
@@ -59,26 +95,20 @@
 }
 
 .locked h3, .locked p {
-  color: #999;
+  color: #486A75;
 }
 
 /* Active card styling */
 .active {
-  border-color: #4caf50;
-}
-
-/* Text styling for card titles */
-.card h3 {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 10px;
+  border-color: #BBCCD1;
 }
 
 /* Text styling for card descriptions */
 .card p {
-  font-size: 14px;
-  color: #666;
+  font-size: 12px;
+  color: #526067;
   line-height: 1.6;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* Adjustments for small screens */

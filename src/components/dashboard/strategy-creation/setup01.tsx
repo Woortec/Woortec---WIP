@@ -224,6 +224,7 @@ const ObjectivePage: React.FC = () => {
         // Validate the form before submission
         if (validateForm()) {
             await storeDataInSupabase(); // Store the form data in Supabase
+            console.log('Navigating to /strategycreation');
             router.push('/dashboard/strategy/strategycreation'); // Navigate to the next page
         } else {
             // Scroll to the first error field
@@ -265,134 +266,166 @@ const ObjectivePage: React.FC = () => {
             </details>
 
             <div className={styles.formContainer}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="objective" className={styles.label}>
-                        What is the primary objective you aim to achieve with this investment?
-                    </label>
-                    <select
-                        id="objective"
-                        name="objective"
-                        className={`${styles.select} ${errors.objective ? styles.errorInput : ''}`}
-                        value={formData.objective}
-                        onChange={handleInputChange}
-                        aria-invalid={!!errors.objective}
-                        aria-describedby={errors.objective ? 'objective-error' : undefined}
-                    >
-                        <option value="">Select the best option</option>
-                        <option value="Brand Awareness">Enhance brand visibility and engagement</option>
-                        <option value="Sales">Increase website traffic and sales conversions</option>
-                        <option value="Lead Generation">Collect prospective customer information via a form</option>
-                    </select>
-                    {errors.objective && (
-                        <div id="objective-error" className={styles.errorMessage}>
-                            {errors.objective}
-                        </div>
-                    )}
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="budget" className={styles.label}>
-                        What is the budget you are willing to allocate for this campaign?
-                    </label>
-                    <div className={styles.budgetInputContainer}>
-                        <input
-                            type="number"
-                            name="budget"
-                            id="budget"
-                            className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
-                            placeholder="Enter the amount"
-                            value={formData.budget}
-                            onChange={handleInputChange}
-                            aria-invalid={!!errors.budget}
-                            aria-describedby={errors.budget ? 'budget-error' : undefined}
-                            min="0"
-                            step="0.01"
-                        />
-                        {currency && (
-                            <input
-                                type="text"
-                                className={styles.currencyDisplay}
-                                value={currency}
-                                readOnly
-                                tabIndex={-1}
-                            />
-                        )}
-                    </div>
-                    {errors.budget && (
-                        <div id="budget-error" className={styles.errorMessage}>
-                            {errors.budget}
-                        </div>
-                    )}
-                </div>
-                <div className={styles.formGroup}>
-                    <label className={styles.label}>
-                        Are you able to manage and respond to customer inquiries generated through this campaign?
-                    </label>
-                    <div className={styles.radioGroup}>
-                        <label className={styles.radioLabel}>
-                            <input
-                                type="radio"
-                                id="yes"
-                                name="manageInquiries"
-                                value="yes"
-                                checked={formData.manageInquiries === 'yes'}
+                {/* Div for left column*/}
+                <div className={styles.leftColumn}>
+                        {/* Div for primary objective*/}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="objective" className={styles.label}>
+                                What is the primary objective you aim to achieve with this investment?
+                            </label>
+                            <select
+                                id="objective"
+                                name="objective"
+                                className={`${styles.select} ${errors.objective ? styles.errorInput : ''}`}
+                                value={formData.objective}
                                 onChange={handleInputChange}
-                                className={styles.radioInput}
-                                aria-invalid={!!errors.manageInquiries}
-                                aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
-                            />
-                            Yes
-                        </label>
-                        <label className={styles.radioLabel}>
+                                aria-invalid={!!errors.objective}
+                                aria-describedby={errors.objective ? 'objective-error' : undefined}
+                                
+                            >
+                                <option value="" disabled>Select the best option</option>
+                                <option value="Brand Awareness">Enhance brand visibility and engagement</option>
+                                <option value="Sales">Increase website traffic and sales conversions</option>
+                                <option value="Lead Generation">Collect prospective customer information via a form</option>
+                            </select>
+                            {errors.objective && (
+                                <div id="objective-error" className={styles.errorMessage}>
+                                    {errors.objective}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Div for Yes/No*/}
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>
+                                Are you able to manage and respond to customer inquiries generated through this campaign?
+                            </label>
+                            <div className={styles.radioGroup}>
+                                <label className={styles.radioLabel}>
+                                    <input
+                                        type="radio"
+                                        id="yes"
+                                        name="manageInquiries"
+                                        value="yes"
+                                        checked={formData.manageInquiries === 'yes'}
+                                        onChange={handleInputChange}
+                                        className={styles.radioInput}
+                                        aria-invalid={!!errors.manageInquiries}
+                                        aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
+                                    />
+                                    Yes
+                                </label>
+                                <label className={styles.radioLabel}>
+                                    <input
+                                        type="radio"
+                                        id="no"
+                                        name="manageInquiries"
+                                        value="no"
+                                        checked={formData.manageInquiries === 'no'}
+                                        onChange={handleInputChange}
+                                        className={styles.radioInput}
+                                        aria-invalid={!!errors.manageInquiries}
+                                        aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
+                                    />
+                                    No
+                                </label>
+                            </div>
+                            {errors.manageInquiries && (
+                                <div id="manageInquiries-error" className={styles.errorMessage}>
+                                    {errors.manageInquiries}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Div for traffic*/}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="trafficUrl" className={styles.label}>
+                                Where do you want to direct the traffic to?
+                            </label>
                             <input
-                                type="radio"
-                                id="no"
-                                name="manageInquiries"
-                                value="no"
-                                checked={formData.manageInquiries === 'no'}
+                                type="url"
+                                name="trafficUrl"
+                                id="trafficUrl"
+                                className={`${styles.input} ${errors.trafficUrl ? styles.errorInput : ''}`}
+                                placeholder="Please enter a URL"
+                                value={formData.trafficUrl}
                                 onChange={handleInputChange}
-                                className={styles.radioInput}
-                                aria-invalid={!!errors.manageInquiries}
-                                aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
+                                aria-invalid={!!errors.trafficUrl}
+                                aria-describedby={errors.trafficUrl ? 'trafficUrl-error' : undefined}
                             />
-                            No
-                        </label>
-                    </div>
-                    {errors.manageInquiries && (
-                        <div id="manageInquiries-error" className={styles.errorMessage}>
-                            {errors.manageInquiries}
+                            {errors.trafficUrl && (
+                                <div id="trafficUrl-error" className={styles.errorMessage}>
+                                    {errors.trafficUrl}
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="trafficUrl" className={styles.label}>
-                        Where do you want to direct the traffic to?
-                    </label>
-                    <input
-                        type="url"
-                        name="trafficUrl"
-                        id="trafficUrl"
-                        className={`${styles.input} ${errors.trafficUrl ? styles.errorInput : ''}`}
-                        placeholder="Please enter a URL"
-                        value={formData.trafficUrl}
-                        onChange={handleInputChange}
-                        aria-invalid={!!errors.trafficUrl}
-                        aria-describedby={errors.trafficUrl ? 'trafficUrl-error' : undefined}
-                    />
-                    {errors.trafficUrl && (
-                        <div id="trafficUrl-error" className={styles.errorMessage}>
-                            {errors.trafficUrl}
+                 </div>
+
+                {/* Div for right column*/}
+                 <div className={styles.rightColumn}>
+                        {/* Div for budget*/}
+                        <div className={styles.formGroup}> 
+                            <label htmlFor="budget" className={styles.label}>
+                                What is the budget you are willing to allocate for this campaign?
+                            </label>
+                            <div className={styles.budgetInputContainer}>
+                                <input
+                                    type="number"
+                                    name="budget"
+                                    id="budget"
+                                    className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
+                                    placeholder="Enter the amount"
+                                    value={formData.budget}
+                                    onChange={handleInputChange}
+                                    aria-invalid={!!errors.budget}
+                                    aria-describedby={errors.budget ? 'budget-error' : undefined}
+                                    min="0"
+                                    step="0.01"
+                                />
+                                {currency && (
+                                    <input
+                                        type="text"
+                                        className={styles.currencyDisplay}
+                                        value={currency}
+                                        readOnly
+                                        tabIndex={-1}
+                                    />
+                                )}
+                            </div>
+                            {errors.budget && (
+                                <div id="budget-error" className={styles.errorMessage}>
+                                    {errors.budget}
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
+
+                        {/* Div for Description*/}
+                        <div className={styles.formGroup}> 
+                            <label htmlFor="description" className={styles.label}>
+                                Please Describe your audience or upload the buyer persona
+                            </label>
+                            <div>
+                                <textarea
+                                name="description"
+                                id="description"
+                                className={styles.describePersona}
+                                placeholder="Enter a description">
+                                </textarea>
+                            </div>
+                        </div>
+                  </div>
             </div>
-            <button
-                className={styles.continueButton}
-                onClick={handleContinue}
-                disabled={!isFormValid}
-                aria-disabled={!isFormValid}
-            >
-                Continue
-            </button>
+            
+            <div className={styles.forconButton}>
+                <button
+                    className={styles.continueButton}
+                    onClick={handleContinue}
+                    disabled={!isFormValid}
+                    aria-disabled={!isFormValid}
+                >
+                    Continue
+                </button>
+            </div>
         </div>
     );
 };

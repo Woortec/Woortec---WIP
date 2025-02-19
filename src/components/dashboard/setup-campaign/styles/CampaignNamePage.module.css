@@ -1,42 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* Wrapper to center the nameContainer */
 .nameContainerWrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-}
-
-/* Main container styling - increased max-width and padding for larger appearance */
-.nameContainer {
-    text-align: center;
-    padding: 60px;
-    background-color: white;
+    height: 650px; /* Adjust as needed */
+    background-color: #ffffff;
+    padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 1200px; /* Increased width */
 }
 
-/* ProgressBar styling - to ensure it stays at the top */
-.nameContainer .progressBarContainer {
-    margin-bottom: 20px;
+.descriptionContainer{
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
 }
 
-/* Title styling */
-.nameContainer h2 {
-    font-size: 28px; /* Increased font size */
-    color: #333;
-    margin-bottom: 40px;
+.descriptionContainer h2{
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.inpContainer{
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensures container takes full width */
+    gap: 20px; /* Adds spacing between the label and input */
+}
+
+.secContainer h2{
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Ensures container takes full width */
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.inputWrapper input{
+    font-size: 10px;
+    font-weight: lighter;
+}
+
+.inputWrapper input::placeholder {
+    color: #222222;
+    font-weight: normal; /* Adjust weight if needed */
+    opacity: 1; /* Ensures the color is fully visible */
+}
+
+.secContainer{
+    padding-top: 90px;
+    padding-left: 160px;
+    padding-right: 160px;
+    padding-bottom: 140px;
+}
+
+.inputWrapper label{
+    margin-bottom: 10px;
+}
+
+.paragraph{
+    font-size: 15px;
+    color: #526067;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Input styling */
 .input {
-    padding: 20px; /* Increased padding */
+    padding: 10px; /* Increased padding */
     width: 100%;
     margin-bottom: 30px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid #526067;
     font-size: 18px; /* Increased font size */
     outline: none;
     transition: border-color 0.3s ease;
@@ -46,46 +90,39 @@
     border-color: #00bfa6;
 }
 
-/* Buttons container */
+/* Button group */
 .buttons {
     display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
+    justify-content: flex-end;
+    margin-top: 60px;
+    gap: 10px
 }
 
-/* Back button styling */
-.backButton {
-    background-color: #ccc;
-    padding: 15px 25px; /* Increased padding */
-    font-size: 18px; /* Increased font size */
+.backButton, .sendButton {
+    font-size: 14px;
+    padding: 5px;
+    width: 20%;
+    color: #486A75;
+    background-color: #ffffff;
     border-radius: 8px;
-    border: none;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    border: 2px solid #486A75; /* Adds a solid border */
+    font-family: 'Poppins', sans-serif;
 }
 
-.backButton:hover {
-    background-color: #bbb;
+.backButton:hover, .sendButton:hover {
+    background-color: #486A75; /* Darker green on hover */
+    color: #ffffff;
+  }
+
+.heading{
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Send button styling */
-.sendButton {
-    background-color: #4caf50;
-    color: white;
-    padding: 15px 25px; /* Increased padding */
-    font-size: 18px; /* Increased font size */
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.sendButton:hover {
-    background-color: #43a047;
-}
-
-.sendButton:disabled {
-    background-color: #80cbc4;
-    cursor: not-allowed;
+.paragraph{
+    font-size: 15px;
+    color: #526067;
+    font-family: 'Montserrat', sans-serif;
 }

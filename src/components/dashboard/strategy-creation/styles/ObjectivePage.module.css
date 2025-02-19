@@ -1,27 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .container {
     padding: 30px;
-    background-color: #f8fbf9;
+    background-color: #ffffff;
     border-radius: 10px;
     width: 100%;
     max-width: 1600px; /* Increased for larger screens */
     height: 100%;
     margin: 0 auto;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    font-family: 'Poppins', sans-serif;
 }
 
 .title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
-    color: #2c2c2c;
-    text-align: center;
+    color: #222222;
+    text-align: left;
 }
 
 .description {
-    font-size: 16px;
+    font-size: 14px;
     color: #7a7a7a;
     margin-top: 10px;
-    text-align: center;
+    text-align: left;
 }
 
 .tabContainer {
@@ -46,59 +48,86 @@
 }
 
 .formContainer {
-    margin-top: 30px;
-    padding: 25px;
-    background-color: #ffffff;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 16px;
+    padding: 50px;
+    background-color: #F2F4F5;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.leftColumn, .rightColumn{
+    width: 90%;
+}
+
 .formGroup {
-    margin-bottom: 20px;
+    margin-bottom: 45px;
+    font-size: 12px;
+    color: #222222;
 }
 
 .label {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 700;
     margin-bottom: 8px;
-    color: #4a4a4a;
+    color: #222222;
 }
 
 .select, .input {
     width: 100%;
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: 12px;
     border: 1px solid #d1d1d1;
     border-radius: 5px;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
+}
+
+.describePersona{
+    width: 100%;
+    height: 50%;
+    padding: 10px 15px;
+    font-size: 12px;
+    border: 1px solid #d1d1d1;
+    border-radius: 5px;
+    background-color: #ffffff;
 }
 
 .radioGroup {
     display: flex;
-    gap: 15px;
+    gap: 20px;
 }
 
 .radioLabel {
     margin-left: 5px;
     color: #4a4a4a;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adjust space between the radio button and text */
 }
 
 .continueButton {
-    background-color: #3b8070;
+    background-color: #486A75;
     color: white;
     padding: 12px 25px;
     border: none;
-    border-radius: 30px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
     display: block;
-    width: 100%;
+    width: 20%;
     margin-top: 20px;
     text-align: center;
 }
 
 .continueButton:hover {
     background-color: #349c7c;
+}
+
+.forconButton {
+    display: flex;
+    justify-content: flex-end; /* Aligns the button to the right */
 }
 
 /* Media Queries for Responsiveness */

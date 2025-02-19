@@ -49,7 +49,10 @@ const StrategyCreationPage: React.FC = () => {
             <p className={styles.description}>
                 Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.
             </p>
-            <StepIndicator />
+            <div className={styles.tabContainer}>
+                <StepIndicator />
+            </div>
+
             <div className={styles.loader}>
                 <img src="/path-to-your-image" alt="Creating strategy" className={styles.image} />
                 <p className={styles.loadingText}>Creating your ads strategy...</p>

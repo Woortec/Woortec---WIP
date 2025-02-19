@@ -21,25 +21,29 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
       {/* Progress Bar Section */}
       <ProgressBar currentStep={currentStep} /> {/* Progress Bar above cards */}
 
-      <h2>Choose your strategy:</h2>
+      <h4 className={styles.headings}>Choose your strategy:</h4>
 
       {/* Strategy Card Group */}
       <div className={styles.cardGroup}>
         <div className={`${styles.card} ${styles.active}`} onClick={handleStrategySelect}>
           <img src="/images/strategy.svg" alt="Launching Strategy" />
-          <h3>Launching Strategy</h3>
+          <h3 className={styles.cardTitle}>LAUNCHING STRATEGY</h3>
           <p>Introducing Woortec - the ultimate social media ads product designed to elevate your marketing.</p>
         </div>
         <div className={`${styles.card} ${styles.locked}`}>
           <img src="/images/strategy-locked.svg" alt="Locked Strategy" />
-          <h3>(This strategy is locked)</h3>
+          <h3 className={styles.cardTitle}>(THIS STRATEGY IS LOCKED)</h3>
           <p>This strategy will be unlocked once you finish the first strategy that we gave you.</p>
         </div>
         <div className={`${styles.card} ${styles.locked}`}>
-          <img src="/images/strategy-locked.svg" alt="Locked Strategy" />
-          <h3>(This strategy is locked)</h3>
+          <img src="/images/teamwork.svg" alt="Locked Strategy" />
+          <h3 className={styles.cardTitle}>(THIS STRATEGY IS LOCKED)</h3>
           <p>This strategy will be unlocked once you finish the first strategy that we gave you.</p>
         </div>
+      </div>
+      <div className={styles.buttonContainer}>
+        <button className={styles.dlButton}>Download Strategy</button>
+        <button className={styles.conButton}>Continue</button>
       </div>
     </div>
   );

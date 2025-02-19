@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .stepsContainer {
   display: flex;
   align-items: center;
@@ -6,30 +8,33 @@
   padding: 0 20px;
   width: 100%;
   max-width: 800px; /* Adjust based on your layout */
+  font-family: 'Poppins', sans-serif;
 }
 
 .stepWrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1; /* Ensures all steps are evenly spaced */
+  flex-direction: row; /* Change from column to row */
+  align-items: center; /* Align icon and text vertically */
+  padding-right: 20px;
+  padding-left: 10px;
 }
 
 .stepIcon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
+  border-radius: 50%; 
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #e0e0e0;
-  margin-bottom: 8px;
 }
 
-.active .stepIcon {
-  background-color: #ffffff; /* White for active */
-  border-color: #2F80ED; /* Blue border for active step */
+.stepWrapper.active {
+  background-color: #F2F4F5;
+  border-radius: 50px; 
+}
+
+.stepIcon svg.active{
+  background-color: #486A75;
 }
 
 .stepIcon img {
@@ -40,12 +45,9 @@
 .stepLabel {
   font-size: 14px;
   font-weight: 500;
-  color: #BDBDBD; /* Grey for inactive step */
-  text-align: center;
-}
-
-.active .stepLabel {
-  color: #2F80ED; /* Blue for active step label */
+  color:   #486A75;
+  text-align: left; /* Align text properly */
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .stepLine {
@@ -60,5 +62,11 @@
 }
 
 .active + .stepLine {
-  background-color: #2F80ED; /* Blue line for active */
+  background-color: #7C9BA5; /* Blue line for active */
+}
+
+.checkIcon{
+  background-color: #486A75; /* Blue line for active */
+  padding: 3px;
+  border-radius: 45px;
 }
