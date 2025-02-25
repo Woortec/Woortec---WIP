@@ -1,8 +1,6 @@
 .adTableContainer {
   width: 100%; /* Full width with padding */
   margin: 0 auto;
-  padding: 16px;
-  background-color: #f5f5f5;
   border-radius: 8px;
 }
 
@@ -19,8 +17,14 @@
 
 .tableHeaderCell {
   flex: 1;
-  text-align: center;
+  text-align: center; /* Keeps all other cells centered */
 }
+
+.tableHeaderCell:first-child {
+  flex: 2;
+  text-align: left; /* Now this will work */
+}
+
 
 .tableRow {
   display: flex;

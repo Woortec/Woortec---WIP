@@ -57,39 +57,49 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
 
   return (
     <div className={styles.nameContainerWrapper}>
-      <div className={styles.nameContainer}>
-        {/* Progress Bar Section - Place at the top of the name container */}
-        <ProgressBar currentStep={3} />
+      <div className={styles.descriptionContainer}>
+              <h2 className={styles.heading}>Campaign Setup: Choose your Campaign Name</h2>
+              <p className={styles.paragraph}>
+              Effortlessly set up your campaign name with Woortec. By default, it will be named "Woortec," 
+              but you can easily add a custom label to reflect your unique branding. Enjoy a straightforward 
+              process that ensures your campaigns are personalized and ready to make an impact.
+              </p>
 
+       <div className={styles.secContainer}>       
         {/* Campaign Name and Labels Form */}
-        <h2>Choose your Campaign Name</h2>
-        <input
-          type="text"
-          placeholder="Campaign Name"
-          className={styles.input}
-          value={campaignName}
-          onChange={(e) => setCampaignNameLocal(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Label One"
-          className={styles.input}
-          value={labelOne}
-          onChange={(e) => setLabelOne(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Label Two"
-          className={styles.input}
-          value={labelTwo}
-          onChange={(e) => setLabelTwo(e.target.value)}
-        />
+        <h2>By default, your campaign will be named "Woortec." 
+          Want to personalize it? Add a custom label to tailor the 
+          campaign name to your specific needs and make it stand out</h2>
+
+        <div className={styles.inpContainer}>
+          <div className={styles.inputWrapper}>
+            <label>Label One</label>
+            <input
+              type="text"
+              placeholder="Text"
+              className={styles.input}
+              value={labelOne}
+              onChange={(e) => setLabelOne(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.inputWrapper}>
+            <label>Label Two</label>
+            <input
+              type="text"
+              placeholder="Text"
+              className={styles.input}
+              value={labelTwo}
+              onChange={(e) => setLabelTwo(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+
         <div className={styles.buttons}>
-          <button className={styles.backButton} onClick={onBack} disabled={loading}>
-            Go Back
-          </button>
           <button className={styles.sendButton} onClick={handleNext} disabled={loading}>
-            {loading ? 'Saving...' : 'Next'}
+            Send
           </button>
         </div>
       </div>

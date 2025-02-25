@@ -1,14 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .container {
     width: 100% !important;
     padding: 20px !important;
     box-sizing: border-box !important;
     overflow-x: auto !important;
+    background-color: #ffffff !important;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
 }
 
-.title {
-    font-size: 1.2em !important;
-    font-weight: bold !important;
-    margin-bottom: 20px !important;
+.headContainer{
+    display: flex; /* Enables flexbox */
+    align-items: center; /* Vertically centers children (h2 and label) */
+    gap: 10px; /* Adds spacing between h2 and label */
+    padding-bottom: 20px;
+
+}
+
+.headContainer label {
+    background-color: #F2F4F5;
+    color: #000;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center; /* Centers text horizontally */
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    width: 9.42%;
+    padding: 0;
+    height: 30px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.continueButton {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #486A75;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px; /* Adds spacing from the content above */
+    text-align: center;
+    align-self: flex-end; /* Pushes button to the right inside a flex container */
+}
+
+.continueButton:hover {
+    background-color: #349c7c; /* Lighter red on hover */
+}
+
+.headContainer h2{
+    padding: 5px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    display: flex; /* Enables flexbox */
+    text-align: center; /* Centers text horizontally */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+}
+
+.secondheadContainer{
+    display: flex;
+    gap: 10px;
+    flex-direction: column; /* Stacks items vertically */
+}
+
+.firstsecHeader{
+    background-color: #1C252A;
+    color: #ffffff;
+    text-align: center; /* Centers text horizontally */
+    justify-content: center; /* Centers content horizontally */
+    padding: 10px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.secondsecHeader{
+    background-color: #F2F4F5;
+    color: #526067;
+    text-align: center; /* Centers text horizontally */
+    justify-content: center; /* Centers content horizontally */
+    padding: 10px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 8px;
 }
 
 .details {
@@ -18,7 +102,6 @@
 }
 
 .detailsBox {
-    background-color: #f5f5f5 !important;
     padding: 10px !important;
     border-radius: 18px !important;
     margin-bottom: 10px !important;
@@ -85,6 +168,16 @@
     font-weight: bold !important;
     background-color: #1C252A !important;
     color: #FFFFFF !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+.tableCellBox{
+    font-family: 'Montserrat', sans-serif !important;
+    background-color: #F2F4F5 !important;
+    color: #526067 !important;
+    border: 1px solid white !important;
+    font-weight: bold;
+    font-size: 12px !important;
 }
 
 .levelHeader {
@@ -113,41 +206,69 @@
 .planWeek {
     background-color: #ffffff !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .startingDay {
     background-color: #ffffff !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .invest {
     background-color: #BBCCD1 !important;
     font-weight: bold !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .numAds {
     background-color: #BBCCD1 !important;
     font-weight: bold !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .toMessages {
     background-color: #BBCCD1 !important;
     font-weight: bold !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .toLink {
     background-color: #BBCCD1 !important;
     font-weight: bold !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .dailyBudget {
     background-color: #BBCCD1 !important;
     font-weight: bold !important;
     color: black !important;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
 }
 
 .analysisTable {
@@ -171,3 +292,4 @@
     border: none !important;
     cursor: pointer !important;
 }
+

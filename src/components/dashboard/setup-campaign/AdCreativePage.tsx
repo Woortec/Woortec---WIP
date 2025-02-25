@@ -75,40 +75,52 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
 
   return (
     <div className={styles.adCreativeContainer}>
-      <ProgressBar currentStep={currentStep} />
+        <div className={styles.descriptionContainer}>
+          <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creative</h2>
+          <p className={styles.paragraph}>
+            Seamlessly integrate your visual assets with Facebook’s Marketing API using Woortec. 
+            Simply upload your images, configure your ad creative settings, and Woortec handles the rest. 
+            Enjoy a streamlined process that ensures your ads are live and optimized for maximum impact.
+          </p>
+        </div>
 
-      <div className={styles.uploadSection}>
-        {!imageFileLocal ? (
-          <>
-            <label htmlFor="file-upload" className={styles.uploadLabel}>
-              <img src="/path-to-image/upload-icon.png" alt="Upload" />
-              <p>Drag your image(s) to start uploading</p>
-              <span>or</span>
-              <button className={styles.uploadButton}>Upload from your Desktop</button>
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className={styles.fileInput}
-            />
-          </>
-        ) : (
-          <div className={styles.imagePreview}>
-            <img src={URL.createObjectURL(imageFileLocal)} alt="Preview" />
-            <div className={styles.fileInfo}>
-              <p>{imageFileLocal.name}</p>
-              <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
-            </div>
-            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
-              X
-            </button>
-          </div>
-        )}
+      <div className={styles.headContainer}>
+        <h2 className={styles.headingUpload}>Upload your images</h2>
       </div>
+      <div className={styles.container}>
+      <div className={styles.uploadSection}>
+  <label htmlFor="file-upload" className={styles.uploadLabel}>
+    <div className={styles.divimg}><img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" /></div>
+    <p>Drag your image(s) to start uploading</p>
+    <span>or</span>
+    <button className={styles.uploadButton}>Upload from your Desktop</button>
+  </label>
+  <input
+    id="file-upload"
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    className={styles.fileInput}
+  />
+</div>
 
-      {loading && <div className={styles.progressText}>{uploadProgress}%</div>}
+{/* Image preview is only displayed when there's an image uploaded */}
+{imageFileLocal && (
+  <div className={styles.imagePreview}>
+    <img src={URL.createObjectURL(imageFileLocal)} alt="Preview" />
+    <div className={styles.fileInfo}>
+      <p>{imageFileLocal.name}</p>
+      <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
+    </div>
+    <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
+      X
+    </button>
+  </div>
+)}
+</div>
+
+
+      {/* {loading && <div className={styles.progressText}>{uploadProgress}%</div>} */}
 
       <div className={styles.buttons}>
         <button className={styles.backButton} onClick={onBack}>Go Back</button>

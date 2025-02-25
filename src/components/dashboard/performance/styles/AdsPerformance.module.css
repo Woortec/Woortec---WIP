@@ -1,9 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px 80px 79px;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center;
+  padding: 16px 80px 79px;
   }
+
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
   
   @media (max-width: 991px) {
     .container {
@@ -15,10 +26,9 @@
     border-radius: 16px;
     background-color: #fff;
     display: flex;
-    width: 113%;
+    width: 100%;
     max-width: 5600px;
-    gap: 20px;
-    justify-content: space-between;
+    gap: 50px;
     padding: 24px;
     border: 1px solid #e1e8eb;
   }
@@ -34,6 +44,8 @@
   .summaryItem {
     display: flex;
     gap: 16px;
+    align-items: center; /* Centers items vertically */
+    justify-content: center; /* Centers items horizontally */
   }
   
   .iconWrapper {
@@ -62,13 +74,17 @@
   
   .summaryLabel {
     color: #526067;
-    font: 500 10px Montserrat, sans-serif;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
   }
   
   .summaryValue {
     color: #1c252a;
     margin-top: 4px;
-    font: 600 24px Montserrat, sans-serif;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 24px !important;
   }
   
   .warningIcon {
@@ -93,14 +109,13 @@
   
   .legend {
     border-radius: 8px;
-    background-color: #fff;
-    align-self: flex-end;
-    display: flex;
-    margin-top: 30px;
-    flex-direction: column;
+    background-color: #ffffff;
     font-size: 10px;
     color: #526067;
     font-weight: 400;
+    margin-top: auto; /* Push to bottom */
+    align-self: flex-end; /* Align to the right */
+    width: 49%;
   }
   
   @media (max-width: 991px) {
@@ -112,7 +127,7 @@
   .legendItems {
     display: flex;
     gap: 20px;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
   
   .legendItem {

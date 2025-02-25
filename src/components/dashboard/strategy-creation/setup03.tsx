@@ -321,70 +321,81 @@ const StrategyResultPage: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h2>Personalized Strategy</h2>
-            {campaignDetails.map((campaign, index) => (
-                <Box key={index} className={styles.detailsBox}>
-                    <Typography variant="body1">
-                        <strong>Objective:</strong> {campaign.objective}
-                    </Typography>
-                    <Typography variant="body1">
-                        <strong>Start Date:</strong>{' '}
-                        {new Date(campaign.created_at).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body1">
-                        <strong>Ad Link:</strong> {campaign.traffic_url}
-                    </Typography>
-                    <Typography variant="body1">
-                        <strong>Budget:</strong> {campaign.budget} {currency}
-                    </Typography>
-                </Box>
-            ))}
+            <div className={styles.headContainer}>
+                <h2>Personalized Strategy</h2>
+                <label>4 Levels</label>
+            </div>
+
+            <div className={styles.secondheadContainer}>
+                <div className={styles.firstsecHeader}>Analysis</div>
+                <div className={styles.secondsecHeader}>Performance Analysis</div>
+            </div>
 
             <Paper className={styles.tableContainer}>
                 <div className={styles.table}>
                     <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
-                    {planOutput.map((level, index) => (
-                        <TableCellBox key={index} className={styles.levelHeader}>
-                            LEVEL {Math.ceil((index + 1) / 2)}
+
+                    {/*For level headers*/}
+                    {planOutput.map((level, index) => {
+                    const levelNumber = 
+                        index === 0 ? 1 :  // W1 → Level 1
+                        index <= 2 ? 2 :   // W2, W3 → Level 2
+                        3;                 // W4, W5, W6, W7 → Level 3
+
+                    // Avoid duplicate Level 2 header (render only for W2)
+                    if (levelNumber === 2 && index > 1) return null; 
+
+                    // Avoid duplicate Level 3 header (render only for W4)
+                    if (levelNumber === 3 && index > 3) return null;
+
+                    return (
+                        <TableCellBox 
+                        key={index} 
+                        className={`${styles.levelHeader} ${styles[`levelHeader${levelNumber}`]}`}
+                        colSpan={levelNumber === 2 ? 2 : levelNumber === 3 ? 4 : 1} // Apply colSpan to Level 2 and Level 3
+                        >
+                        LEVEL {levelNumber.toString().padStart(2, '0')}
                         </TableCellBox>
-                    ))}
-                    <TableCellBox>Starting Day</TableCellBox>
+                    );
+                    })}
+
+                    <TableCellBox className={styles.tableCellBox}>Starting Day</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.startingDay}>
                             {level.startingDay}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>Week Plans</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>Week Plans</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.planWeek}>
                             {level.plansWeek}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>Invest Amount ({currency})</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>Invest Amount ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.invest}>
                             {level.investAmount.toFixed(2)} {currency}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>Number of Ads</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>Number of Ads</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.numAds}>
                             {level.numberOfAds}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>To Messages</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>To Messages</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.toMessages}>
                             {level.toMessages}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>To Link</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>To Link</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.toLink}>
                             {level.toLink}
                         </TableCellBox>
                     ))}
-                    <TableCellBox>Daily Budget / Ad ({currency})</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>Daily Budget / Ad ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.dailyBudget}>
                             {level.dailyBudgetPerAd.toFixed(2)} {currency}
