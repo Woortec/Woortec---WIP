@@ -76,7 +76,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
   return (
     <div className={styles.adCreativeContainer}>
         <div className={styles.descriptionContainer}>
-          <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creative</h2>
+          <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creatives</h2>
           <p className={styles.paragraph}>
             Seamlessly integrate your visual assets with Facebook’s Marketing API using Woortec. 
             Simply upload your images, configure your ad creative settings, and Woortec handles the rest. 
