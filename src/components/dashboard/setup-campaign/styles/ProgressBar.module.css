@@ -1,8 +1,8 @@
 .container {
   width: 100%;
-  padding: 40px 20px;
-  background-color: #ffffff;
+  background-color: #ff3131;
   box-sizing: border-box;
+  align-items: center; /* Center horizontally */
 }
 
 /* Align the text to the left, but inside the container */

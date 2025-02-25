@@ -18,6 +18,13 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
 
   return (
     <div className={styles.strategyContainer}>
+      <h1 className={styles.headerLabel}>Campaign Setup</h1>
+        <div>
+          Introducing woortec - the ultimate social media ads
+          product designed to elevate your online presence and drive results
+          like never before. With woortec, you can effortlessly create and
+          manage ads across multiple social media platforms, all in one place.
+        </div>
       {/* Progress Bar Section */}
       <ProgressBar currentStep={currentStep} /> {/* Progress Bar above cards */}
 

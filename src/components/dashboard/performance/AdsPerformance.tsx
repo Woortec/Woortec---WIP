@@ -80,6 +80,7 @@ const AdsPerformance: React.FC = () => {
             <Typography className={styles.summaryValue}>{successAds}</Typography>
           </Box>
         </Box>
+        
         <Box className={styles.legend}>
           <Box className={styles.legendItems}>
             <Box className={styles.legendItem}>

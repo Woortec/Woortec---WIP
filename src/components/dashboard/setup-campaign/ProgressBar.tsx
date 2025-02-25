@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Check from '@mui/icons-material/Check';
+import styles from './styles/ProgressBar.module.css';
 
 interface ProgressBarProps {
   currentStep: number;
@@ -94,17 +95,8 @@ function StepIcon(props: any) {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
   return (
-    <Container sx={{ margin:0, padding: 0}}>
+    <Container className={styles.container}>
         <Box py={0} sx={{ margin: 0, padding: 0 }}>
-        {/* Title and Description */}
-        <Title variant="h6">Campaign Setup</Title>
-        <Description >
-          Introducing woortec - the ultimate social media ads
-          product designed to elevate your online presence and drive results
-          like never before. With woortec, you can effortlessly create and
-          manage ads across multiple social media platforms, all in one place.
-        </Description>
-
         {/* Progress Bar */}
         <Stepper activeStep={currentStep - 1} alternativeLabel connector={<Connector />} 
         sx={{ marginTop: '20px'}} // Adding margin to the entire Stepper component

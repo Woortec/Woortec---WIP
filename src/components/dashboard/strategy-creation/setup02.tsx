@@ -54,7 +54,7 @@ const StrategyCreationPage: React.FC = () => {
             </div>
 
             <div className={styles.loader}>
-                <img src="/path-to-your-image" alt="Creating strategy" className={styles.image} />
+                <img src="/images/analyze.svg" alt="Creating strategy" className={styles.image} />
                 <p className={styles.loadingText}>Creating your ads strategy...</p>
                 <div className={styles.progressBar}>
                     <div className={styles.progress} style={{ width: `${progress}%` }}></div>

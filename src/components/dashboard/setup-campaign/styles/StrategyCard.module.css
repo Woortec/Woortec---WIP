@@ -4,13 +4,14 @@
 /* Container for the strategy section */
 .strategyContainer {
   text-align: center;
-  padding: 30px;
-  font-family: 'Poppins', sans-serif;
-  background-color: #ffffff;
+  padding: 50px; /* Increased padding */
+  background-color: white;
   border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
-.headings{
+.headings{ /* "CHOOSE YOUR STRATEGY" */
   font-weight: bold;
   color: #333;
   margin: 20px;
@@ -109,6 +110,13 @@
   color: #526067;
   line-height: 1.6;
   font-family: 'Montserrat', sans-serif;
+}
+
+.headerLabel {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Adjustments for small screens */

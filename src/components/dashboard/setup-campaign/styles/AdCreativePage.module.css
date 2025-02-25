@@ -1,30 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
-/* Overall container to ensure the form is centered */
-.adCreativeContainerWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-    overflow: hidden;
-}
 
 /* Container for the ad creative page */
 .adCreativeContainer {
     text-align: center;
-    padding: 2vw;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #fff;
+    padding: 50px; /* Increased padding */
+    background-color: white;
     border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    max-width: 80vw;
-    max-height: 80vh;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
-    height: auto;
-    margin: 0 auto;
-    transition: all 0.3s ease;
 }
 
 .descriptionContainer {
@@ -32,9 +17,9 @@
 }
 
 .heading {
-    font-size: 1.2vw;
-    font-weight: 700;
-    margin-bottom: 1vh;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
     font-family: 'Poppins', sans-serif;
 }
 

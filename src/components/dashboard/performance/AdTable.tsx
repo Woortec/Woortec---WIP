@@ -27,10 +27,10 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   return (
     <Box className={styles.adTableContainer}>
       <Box className={styles.tableHeader}>
-        <Box className={styles.tableHeaderCell}>AD NAMES</Box>
+        <Box className={styles.tableHeaderCell}>AD SET NAMES</Box>
+        <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
         <Box className={styles.tableHeaderCell}>CPC</Box>
-        <Box className={styles.tableHeaderCell}>CTR (%)</Box> {/* Changed from CPM to CTR */}
-        <Box className={styles.tableHeaderCell}>REACH</Box> {/* Changed from Impressions to Reach */}
+        <Box className={styles.tableHeaderCell}>CTR</Box> 
         <Box className={styles.tableHeaderCell}>SPENT</Box>
       </Box>
 
