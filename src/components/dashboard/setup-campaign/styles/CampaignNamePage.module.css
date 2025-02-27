@@ -1,128 +1,174 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Wrapper to center the nameContainer */
+/* Wrapper */
 .nameContainerWrapper {
-    display: flex;
-    height: 650px; /* Adjust as needed */
-    background-color: #ffffff;
-    padding: 40px;
+    text-align: center;
+    padding: 3vw;
+    background-color: white;
     border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: auto;
+    min-height: 300px;
 }
 
-.descriptionContainer{
+/* Description */
+.descriptionContainer {
     text-align: left;
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
 }
 
-.descriptionContainer h2{
+.descriptionContainer h2 {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 10px;
     font-family: 'Poppins', sans-serif;
 }
 
-.inpContainer{
-    display: flex;
-    align-items: center;
-    width: 100%; /* Ensures container takes full width */
-    gap: 20px; /* Adds spacing between the label and input */
+/* Form Section */
+.secContainer {
+    padding: 90px 160px 140px;
 }
 
-.secContainer h2{
+.secContainer h2 {
     font-weight: bold;
     font-family: 'Montserrat', sans-serif;
     margin-bottom: 30px;
     font-size: 14px;
 }
 
+/* Input Containers */
+.inpContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
 .inputWrapper {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Ensures container takes full width */
+    width: 100%;
     font-family: 'Poppins', sans-serif;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
 }
 
-.inputWrapper input{
-    font-size: 10px;
-    font-weight: lighter;
-}
-
-.inputWrapper input::placeholder {
-    color: #222222;
-    font-weight: normal; /* Adjust weight if needed */
-    opacity: 1; /* Ensures the color is fully visible */
-}
-
-.secContainer{
-    padding-top: 90px;
-    padding-left: 160px;
-    padding-right: 160px;
-    padding-bottom: 140px;
-}
-
-.inputWrapper label{
-    margin-bottom: 10px;
-}
-
-.paragraph{
-    font-size: 15px;
-    color: #526067;
-    font-family: 'Montserrat', sans-serif;
-}
-
-/* Input styling */
-.input {
-    padding: 10px; /* Increased padding */
-    width: 100%;
-    margin-bottom: 30px;
+.inputWrapper input {
+    font-size: 14px;
+    padding: 10px;
     border-radius: 8px;
     border: 2px solid #526067;
-    font-size: 18px; /* Increased font size */
     outline: none;
     transition: border-color 0.3s ease;
 }
 
-.input:focus {
+.inputWrapper input:focus {
     border-color: #00bfa6;
 }
 
-/* Button group */
+.inputWrapper label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Buttons */
 .buttons {
     display: flex;
     justify-content: flex-end;
-    margin-top: 60px;
-    gap: 10px
+    margin-top: 40px;
+    gap: 10px;
 }
 
 .backButton, .sendButton {
     font-size: 14px;
-    padding: 5px;
-    width: 20%;
+    padding: 8px 15px;
+    width: auto;
+    min-width: 120px;
     color: #486A75;
     background-color: #ffffff;
     border-radius: 8px;
-    border: 2px solid #486A75; /* Adds a solid border */
+    border: 2px solid #486A75;
     font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
 }
 
 .backButton:hover, .sendButton:hover {
-    background-color: #486A75; /* Darker green on hover */
+    background-color: #486A75;
     color: #ffffff;
-  }
+}
 
-.heading{
-    font-size: 18px;
+/* Headings */
+.heading {
+    font-size: 20px;
     font-weight: 700;
     margin-bottom: 10px;
     font-family: 'Poppins', sans-serif;
 }
 
-.paragraph{
+.paragraph {
     font-size: 15px;
     color: #526067;
     font-family: 'Montserrat', sans-serif;
+}
+
+/* 🌟 Responsive Styles */
+@media (max-width: 1024px) {
+    .secContainer {
+        padding: 60px 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nameContainerWrapper {
+        padding: 5vw;
+    }
+
+    .secContainer {
+        padding: 40px 60px;
+    }
+
+    .buttons {
+        justify-content: center;
+    }
+
+    .backButton, .sendButton {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    .nameContainerWrapper {
+        padding: 6vw;
+        border-radius: 5px;
+    }
+
+    .secContainer {
+        padding: 50px 20px;
+        font-size: 12px;
+    }
+
+    .inpContainer {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .inputWrapper {
+        width: 100%;
+    }
+
+    .buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .backButton, .sendButton {
+        width: 90%;
+        max-width: 300px;
+        font-size: 14px;
+    }
 }

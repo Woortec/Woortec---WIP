@@ -83,39 +83,39 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
             Enjoy a streamlined process that ensures your ads are live and optimized for maximum impact.
           </p>
         </div>
-
-      <div className={styles.headContainer}>
-        <h2 className={styles.headingUpload}>Upload your images</h2>
+      <div className={styles.divider}>
+      <h2 className={styles.headingUpload}>Upload your images</h2>
       </div>
-      <div className={styles.container}>
-      <div className={styles.uploadSection}>
-  <label htmlFor="file-upload" className={styles.uploadLabel}>
-    <div className={styles.divimg}><img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" /></div>
-    <p>Drag your image(s) to start uploading</p>
-    <span>or</span>
-    <button className={styles.uploadButton}>Upload from your Desktop</button>
-  </label>
-  <input
-    id="file-upload"
-    type="file"
-    accept="image/*"
-    onChange={handleImageChange}
-    className={styles.fileInput}
-  />
-</div>
 
-{/* Image preview is only displayed when there's an image uploaded */}
-{imageFileLocal && (
-  <div className={styles.imagePreview}>
-    <img src={URL.createObjectURL(imageFileLocal)} alt="Preview" />
-    <div className={styles.fileInfo}>
-      <p>{imageFileLocal.name}</p>
-      <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
-    </div>
-    <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
-      X
-    </button>
-  </div>
+      <div className={styles.uploadContainer}>
+        <div className={styles.uploadSection}>
+          <label htmlFor="file-upload" className={styles.uploadLabel}>
+            <div className={styles.divimg}><img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" /></div>
+              <p>Drag your image(s) to start uploading</p>
+              <span>or</span>
+              <button className={styles.uploadButton}>Upload from your Desktop</button>
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className={styles.fileInput}
+          />
+        </div>
+
+        {/* Image preview is only displayed when there's an image uploaded */}
+        {imageFileLocal && (
+          <div className={styles.imagePreview}>
+            <img src={URL.createObjectURL(imageFileLocal)} alt="Preview" />
+            <div className={styles.fileInfo}>
+              <p>{imageFileLocal.name}</p>
+              <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
+            </div>
+            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
+              X
+            </button>
+        </div>
 )}
 </div>
 

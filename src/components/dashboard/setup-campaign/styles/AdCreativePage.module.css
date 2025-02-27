@@ -5,11 +5,34 @@
 /* Container for the ad creative page */
 .adCreativeContainer {
     text-align: center;
-    padding: 50px; /* Increased padding */
+    padding: 3vw;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
+    margin: auto;
+    min-height: 300px;
+}
+
+.divider{
+
+    width: 100%;
+    height: 14vh;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    margin-top: auto;
+}
+
+.headingUpload {
+
+    width: 100%;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    margin: 20px;
+    margin-top: auto;
 }
 
 .descriptionContainer {
@@ -21,55 +44,44 @@
     font-weight: 600;
     text-align: left;
     font-family: 'Poppins', sans-serif;
+    padding-bottom: 10px;
 }
 
 .paragraph {
-    font-size: 1vw;
+    font-weight: 400;
     color: #526067;
+    font-size: 14px;
+    text-align: left;
     font-family: 'Montserrat', sans-serif;
 }
 
-.container {
+.uploadContainer{
+    width: 100%;
+    padding: 3.1%;
+    padding-right: 50px;
+    padding-left: 50px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 1.5vw;
-    height: auto;
-    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
 /* Upload section */
 .uploadSection {
-    margin-top: 1vh;
     border: 2px dashed #526067;
-    padding: 2vw;
+    padding-top: 2vw;
+    padding-bottom: 2vw;
+    padding-right: 8vw;
+    padding-left: 8vw;
     border-radius: 12px;
     background-color: #ffffff;
     position: relative;
     text-align: center;
     transition: border-color 0.3s ease;
-    width: 45%;
     flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.headingUpload {
-    text-align: left;
-    padding-top: 2vh;
-    margin-left: 2vw;
-    font-weight: bold;
-}
-
-.progressContainer {
-    padding: 1vw;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-}
-.uploadSection:hover {
-    border-color: #00bfa6;
 }
 
 .imagePreview {
@@ -82,6 +94,16 @@
     padding: 1vw;
     border-radius: 8px;
 }
+
+.progressContainer {
+    padding: 1vw;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+}
+.uploadSection:hover {
+    border-color: #00bfa6;
+}
+
 
 .imagePreview img {
     width: 4vw;
@@ -107,11 +129,12 @@
     border: none;
     color: #486A75;
     cursor: pointer;
-    font-size: 1vw;
+    font-size: 12px;
     padding: 0.5vw;
-    width: 2vw;
+    width: 35px;
     border-radius: 50%;
     font-family: 'Poppins', sans-serif;
+    margin-left: auto; /* Pushes the button to the right */
 }
 
 .uploadLabel {
@@ -167,24 +190,61 @@
 }
 
 .buttons {
+    padding: 25px;
+    padding-top: 45px;
     display: flex;
-    justify-content: flex-end;
-    margin-top: 5vh;
-    gap: 1vw;
+    gap: 5px;
+    justify-content: flex-end; /* Push items to the right */
+    font-family: 'Poppins', sans-serif;
 }
 
 .backButton, .continueButton {
-    font-size: 1vw;
-    padding: 0.5vw;
-    width: 15%;
+    font-size: 14px;
+    padding: 5px;
+    width: 20%;
     color: #486A75;
     background-color: #ffffff;
     border-radius: 8px;
-    border: 2px solid #486A75;
-    font-family: 'Poppins', sans-serif;
+    border: 2px solid #486A75; /* Adds a solid border */
 }
 
 .backButton:hover, .continueButton:hover {
     background-color: #486A75;
     color: #ffffff;
 }
+
+@media (max-width: 768px) {
+
+    .adCreativeContainer {
+      padding: 8vw;
+    }
+  
+    .buttons {
+      justify-content: center; /* Center buttons on tablets */
+    }
+  
+    .backButton, .continueButton {
+      width: 100%; /* Adjust button width */
+      font-size: 0.9rem;
+    }
+  } 
+  
+  @media (max-width: 480px) {
+    .adCreativeContainer {
+      padding: 10vw; /* Reduce padding */
+      border-radius: 5px;
+    }
+  
+    .buttons {
+      flex-direction: column; /* Stack buttons */
+      align-items: center;
+      padding-top: 30vw;
+      gap: 10px; /* More spacing */
+    }
+  
+    .backButton, .continueButton {
+      width: 90%; /* Prevent full stretch */
+      max-width: 300px; /* Avoid extra-wide buttons */
+      font-size: 0.85rem;
+    }
+  }

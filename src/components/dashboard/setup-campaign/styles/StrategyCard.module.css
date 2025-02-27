@@ -4,11 +4,13 @@
 /* Container for the strategy section */
 .strategyContainer {
   text-align: center;
-  padding: 50px; /* Increased padding */
+  padding: 3vw;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 100%;
+  margin: auto;
+  min-height: 300px;
 }
 
 .headings{ /* "CHOOSE YOUR STRATEGY" */
@@ -113,14 +115,36 @@
 }
 
 .headerLabel {
+  padding-bottom: 10px;
   font-size: 20px;
   font-weight: 600;
   text-align: left;
   font-family: 'Poppins', sans-serif;
 }
 
-/* Adjustments for small screens */
+.description {
+  font-weight: 400;
+  color: #526067;
+  font-size: 14px;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+}
+
 @media (max-width: 768px) {
+
+  .strategyContainer {
+    padding: 8vw;
+  }
+
+  .buttonContainer {
+    justify-content: center; /* Center buttons on tablets */
+  }
+
+  .dlButton, .conButton {
+    width: 100%; /* Adjust button width */
+    font-size: 0.9rem;
+  }
+
   .cardGroup {
       flex-direction: column;
       gap: 20px;
@@ -128,5 +152,29 @@
 
   .card {
       width: 100%;
+  }
+} 
+
+@media (max-width: 480px) {
+  .strategyContainer {
+    padding: 10vw; /* Reduce padding */
+    border-radius: 5px;
+  }
+
+  .buttonContainer {
+    flex-direction: column; /* Stack buttons */
+    align-items: center;
+    padding-top: 5vw;
+    gap: 10px; /* More spacing */
+  }
+
+  .dlButton, .conButton {
+    width: 90%; /* Prevent full stretch */
+    max-width: 300px; /* Avoid extra-wide buttons */
+    font-size: 0.85rem;
+  }
+
+  .card {
+    padding: 20px; /* Reduce padding */
   }
 }

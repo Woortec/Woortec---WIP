@@ -45,15 +45,13 @@ const Brand = styled('span')(({ theme }) => ({
 
 const Connector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 22,
+    top: 18,
   },
   [`& .${stepConnectorClasses.line}`]: {
     height: 2,
     border: 0,
-    marginTop: theme.spacing(2.4),
     backgroundColor:
       theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-    borderRadius: 1,
   },
 }));
 
@@ -64,15 +62,14 @@ const StepIconRoot = styled('div')<{
   backgroundColor: '#FFFFFF',
   zIndex: 1,
   color: '#7C9BA5',
-  width: 130,
-  height: 35,
+  width: '12vw',
+  height: '5vh', // Responsive height
   display: 'flex',
   borderRadius: '24px',
   justifyContent: 'center',
-  marginTop: theme.spacing(3),
   alignItems: 'center',
   fontWeight: 'bold',
-  padding: '5px', // Add padding to create a gap between the border and the content
+  fontSize: '1rem', // Adjust text size responsively
   border: '3px solid #FFFFFF',
   ...(ownerState.active && {
     backgroundColor: '#F2F4F5',
@@ -80,6 +77,20 @@ const StepIconRoot = styled('div')<{
   ...(ownerState.completed && {
     backgroundColor: theme.palette.primary.main,
   }),
+  
+    // Media Queries for smaller screens
+    [`@media (max-width: 768px)`]: {
+      width: '16vw',
+      minWidth: '60px',
+      fontSize: '0.9rem',
+    },
+  
+    [`@media (max-width: 480px)`]: {
+      width: '20vw',
+      minWidth: '50px',
+      fontSize: '0.8rem',
+      height: '4vh',
+    },
 }));
 
 function StepIcon(props: any) {

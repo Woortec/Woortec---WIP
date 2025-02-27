@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  background-color: #ff3131;
+  padding: 2%;
   box-sizing: border-box;
   align-items: center; /* Center horizontally */
 }
