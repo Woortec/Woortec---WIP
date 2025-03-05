@@ -4,6 +4,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './styles/CampaignSetup.module.css';
 import { createClient } from '../../../../utils/supabase/client';
+import { Box, Typography } from '@mui/material';
 
 function CampaignSetup() {
   const [objective, setObjective] = useState('');
@@ -57,8 +58,8 @@ function CampaignSetup() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Strategy Creation</h1>
+    <Box>
+      <h1 className={styles.title}></h1>
       <p className={styles.description}>Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.</p>
       <form onSubmit={handleSubmit} className={styles.formContainer}>
         <div className={styles.formGroup}>
@@ -131,7 +132,7 @@ function CampaignSetup() {
           </div>
         </div>
       )}
-    </div>
+    </Box>
   );
 }
 

@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 .adTableContainer {
   width: 100%; /* Full width with padding */
   margin: 0 auto;
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 .tableHeader {
@@ -11,8 +16,8 @@
   border-radius: 8px;
   color: #f2f4f5;
   font-weight: 600;
-  padding: 16px;
-  font-size: 14px;
+  padding: 40px;
+  border-radius: 30px;
 }
 
 .tableHeaderCell {
@@ -30,49 +35,42 @@
   display: flex;
   justify-content: space-between; /* Space between cells */
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 30px;
   margin-top: 8px;
-  font-size: 14px;
-  padding: 16px;
+  padding: 35px;
   align-items: center;
   cursor: pointer; /* Add pointer cursor to indicate clickability */
+  gap: 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
 }
 
-.detailRow {
+.detailRow { /*back of adsetdetails*/
   display: flex;
   justify-content: center;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   border-radius: 8px;
   margin-top: 8px;
   padding: 16px;
   align-items: center;
+  border-radius: 30px;
 }
 
 .tableCell {
-  flex: 1;
-  text-align: center;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  flex: 1;
+  justify-content: center;  /* Center text horizontally */
+  align-items: center;      /* Center text vertically */
+  text-align: center;
 }
 
-.tableCellFirst {
-  text-align: left;
-}
-
-.tableCellLast {
-  text-align: right;
-}
-
-.adSetName {
-  font-family: Poppins, sans-serif;
-  color: #1c252a;
-  padding: 4px 8px;
+.tableCell:first-child {
+  flex: 2;
+  display: flex; /* Ensure it follows flexbox */
+  justify-content: flex-start; /* Align content to the left */
+  align-items: center; /* Keep vertical alignment */
 }
 
 .metricValue {
-  font-family: Poppins, sans-serif;
   padding: 4px 8px;
 }
 
@@ -85,7 +83,7 @@
 }
 
 .badMetric {
-  color: #c70e0e;
+  color: #C70E0E;
 }
 
 .adSetDetailContainer {
@@ -118,13 +116,19 @@
   background-color: #ff6b81;
 }
 
-.metric {
+/* .metric {
   display: flex;
   align-items: center;
   background-color: #f9f9f9;
   border-radius: 8px;
   padding: 8px 16px;
   margin-bottom: 8px;
+} */
+
+.adValues{
+  font-size: 35px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
 }
 
 .metricIcon {
@@ -132,21 +136,28 @@
   margin-right: 8px;
 }
 
-.metricLabel {
-  font-family: Poppins, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+/* .metricLabel {
   color: #1c252a;
   flex: 1;
 }
 
 .metricValue {
-  font-family: Poppins, sans-serif;
-  font-size: 14px;
   color: #333;
-}
+} */
+
 .adCreative {
   max-width: 50%;
   height: auto;
   margin-top: 10px;
+}
+
+/*FOR EXTRA LARGE SCREENS*/
+@media (min-width: 2560px) {
+
+  .adValues{
+    font-size: 35px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+  }
+
 }

@@ -5,6 +5,7 @@ import { Box, Button, CircularProgress, IconButton, Typography } from '@mui/mate
 import { createClient } from '../../../../utils/supabase/client';
 import { addMessageToThread, createRun, createThread, fetchAdData, getAIResponse, waitForRunCompletion } from './api';
 import styles from './styles/AdSetDetail.module.css';
+import { styled } from '@mui/material/styles';
 
 interface AdDetailProps {
   adId: string;
@@ -129,10 +130,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
     <Box className={styles.adSetDetailContainer}>
       {/* Header Section */}
       <Box className={styles.adSetDetailHeader}>
-        <Typography className={styles.adSetName}>{adDetail?.name}</Typography>
+        <Typography variant="h2" sx={{fontFamily: 'Poppins', fontWeight: '600', paddingBottom: '10px',
+          fontSize: {xl:'45px'},
+        }}>AD SET NAME</Typography>
         <IconButton className={styles.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
+            <CloseIcon />
+          </IconButton>
       </Box>
 
       {/* Main Content Section: Image and Metrics */}
@@ -143,35 +146,117 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
           className={styles.adCreative}
         />
 
-<Box className={styles.budgetContainer}>
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} green`}>CPC</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.cpc)}</div> {/* Display CPC */}
-  </Box>
+      <Box className={styles.budgetContainer}>
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper} sx={{
+            backgroundColor:'#02B194',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+            <Box className={styles.budgetInfo}>
+                <Typography 
+                sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>CPC
+                </Typography>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{formatValue(adDetail?.cpc)}
+                </Typography>
+            </Box> {/* Display CPC */}
+        </Box>
 
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} yellow`}>CTR (%)</div> {/* Changed from CPM to CTR */}
-    <div className={styles.budgetValue}>
-      {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
-    </div> {/* Display CTR */}
-  </Box>
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper} 
+            sx={{
+            backgroundColor:'#FFDDA0',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+            <Box className={styles.budgetInfo}>
+              <Typography className={styles.budgetLabel}
+              sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>CPC</Typography>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, 
+                                 fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{formatValue(adDetail?.cpc)}</Typography>
+            </Box>
+        </Box>
 
-  <Box className={styles.budgetCard}>
-  <div className={`${styles.budgetIcon} yellow`}>IMPRESSIONS</div>
-  <div className={styles.budgetValue}> {formatValue(Math.floor(adDetail?.impressions))}</div>
-</Box>
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper}             
+            sx={{
+            backgroundColor:'#D3346E',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+          <Box className={styles.budgetInfo}>
+            <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>CPC</Typography>
+            <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{formatValue(adDetail?.cpc)}</Typography>
+          </Box>
+        </Box>
 
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper}             
+            sx={{
+            backgroundColor:'#E97476',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+            <Box className={styles.budgetInfo}>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>CTR (%)</Typography>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
+            </Box>
+        </Box>
 
-  <Box className={styles.budgetCard}>
-    <div className={`${styles.budgetIcon} yellow`}>SPEND</div>
-    <div className={styles.budgetValue}> {formatValue(adDetail?.spend,)}</div>
-  </Box>
-  {/* Add more budget cards as needed */}
-</Box>
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper}             
+            sx={{
+            backgroundColor:'#02B194',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+            <Box className={styles.budgetInfo}>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>IMPRESSIONS</Typography>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
+            </Box>
+        </Box>
 
+        <Box className={styles.budgetCard}>
+          <Box className={styles.iconWrapper}             
+            sx={{
+            backgroundColor:'#02B194',
+            width: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 }, // Adjust size for each screen
+            height: { xs: 50, sm: 60, md: 70, lg: 80, xl: 90 },
+            }}>
+            <img className={styles.dollarSign} src="/assets/attach_money.png" alt="Budget Icon" style={{ width: "30px", height: "50px" }}/>
+          </Box>
+            <Box className={styles.budgetInfo}>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "2rem" }, fontFamily: 'Montserrat'
+                }}>SPEND</Typography>
+              <Typography sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "3rem" }, fontWeight:'800', fontFamily: 'Montserrat'
+                }}>{formatValue(adDetail?.spend,)}</Typography>
+            </Box>
+        </Box>
+        {/* Add more budget cards as needed */}
+        </Box>
       </Box>
 
-      {/* AI Response Section */}
+      {/* AI Response Section
       <Box className={styles.aiResponseContainer}>
         <Typography className={styles.aiResponseTitle}>Woortec Team Response:</Typography>
         {aiResponse ? (
@@ -193,9 +278,9 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
         ) : (
           <Typography className={styles.aiResponseContent}>.</Typography>
         )}
-      </Box>
+      </Box> */}
 
-      {/* Button to request expert's advice */}
+      {/* Button to request expert's advice
       {canRequestAdvice ? (
         <Button variant="contained" color="primary" onClick={handleRequestAdvice} disabled={requestingAdvice}>
           {requestingAdvice ? 'Requesting Advice...' : "Ask for Expert's Advice"}
@@ -204,7 +289,21 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
         <Typography variant="body2" color="error" style={{ marginTop: '16px' }}>
           You can only request advice once per week.
         </Typography>
-      )}
+      )} */}
+
+      <Box>
+        <Typography 
+        sx ={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.9rem" }, paddingTop: '20px',
+        fontFamily: 'Montserrat',
+        }}>
+        Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
+        drive results like never before.
+        With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place. 
+        Say goodbye to the hassle of switching between different platforms and hello to a streamlined and efficient ad 
+        management experience.
+        </Typography>
+      </Box>
+
     </Box>
   );
 };
