@@ -17,47 +17,46 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
   const { user, error, isLoading } = useUser();
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
-  const checkPermissions = async (): Promise<void> => {
-    if (isLoading) {
-      return;
-    }
-
-    // Check for `userid` in localStorage
-    const localUserId = localStorage.getItem('userid');
-    if (localUserId) {
-      logger.debug('[GuestGuard]: userid found in localStorage, redirecting to dashboard');
-      router.replace(paths.dashboard.overview);
-      return;
-    }
-
-    if (error) {
-      setIsChecking(false);
-      return;
-    }
-
-    if (user) {
-      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
-      router.replace(paths.dashboard.overview);
-      return;
-    }
-
-    setIsChecking(false);
-  };
-
   React.useEffect(() => {
-    checkPermissions().catch(() => {
-      // noop
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Expected
-  }, [user, error, isLoading]);
+    const checkPermissions = async (): Promise<void> => {
+      if (isLoading) return;
 
-  if (isChecking) {
-    return null;
-  }
+      try {
+        // Check for `userid` in localStorage
+        const localUserId = localStorage.getItem('userid');
+        if (localUserId) {
+          logger.debug('[GuestGuard]: userid found in localStorage, removing it and redirecting...');
+          localStorage.removeItem('userid'); // Ensure it's deleted
+          router.replace(paths.dashboard.overview);
+          return;
+        }
+
+        if (error) {
+          setIsChecking(false);
+          return;
+        }
+
+        if (user) {
+          logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
+          router.replace(paths.dashboard.overview);
+          return;
+        }
+
+        setIsChecking(false);
+      } catch (err) {
+        logger.error('[GuestGuard]: Error checking permissions', err);
+        setIsChecking(false);
+      }
+    };
+
+    checkPermissions();
+  }, [user, error, isLoading, router]);
+
+  if (isChecking) return null;
 
   if (error) {
-    return <Alert color="error">{error}</Alert>;
+    return <Alert severity="error">{error}</Alert>;
   }
 
-  return <React.Fragment>{children}</React.Fragment>;
+  return <>{children}</>;
 }
