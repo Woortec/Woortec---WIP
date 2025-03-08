@@ -51,61 +51,64 @@ const AdsPerformance: React.FC = () => {
   };
 
   return (
-    <Box className={`${styles.container} custom-perm-item`}>
+    <Box className={styles.container}>
       <Box className={styles.summaryCard}>
-        <Box className={styles.summaryItem}>
-          <Box className={styles.iconWrapper}>
-            <img src="/assets/attach_money.png" alt="Budget Icon" />
+
+        <Box className={styles.summaryContainer}>
+
+          <Box className={styles.summaryItem}>
+          <Box className={`${styles.iconWrapper} ${styles.budgetIcon}`}>
+              <img src="/assets/attach_money.svg" alt="Budget Icon"/>
+            </Box>
+            <Box className={styles.summaryContent}>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}> Monthly Budget </Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>${budget}</Typography>
+            </Box>
           </Box>
-          <Box className={styles.summaryContent}>
-            <Typography className={styles.summaryLabel}>Monthly Budget</Typography>
-            <Typography className={styles.summaryValue}>${budget}</Typography>
+
+          <Box className={styles.summaryItem}>
+            <Box className={`${styles.iconWrapper} ${styles.warningIcon}`}>
+              <img src="/assets/error.svg" alt="Warning Icon"/>
+            </Box>
+            <Box className={styles.summaryContent}>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}>Warning Ads</Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>{warningAds}</Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box className={styles.summaryItem}>
-          <Box className={`${styles.iconWrapper} ${styles.warningIcon}`}>
-            <img src="/assets/error.png" alt="Warning Icon" />
+          
+          <Box className={styles.summaryItem}>
+            <Box className={`${styles.iconWrapper} ${styles.successIcon}`}>
+              <img src="/assets/editor_choice.svg" alt="Success Icon" />
+            </Box>
+            <Box className={styles.summaryContent}>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}>Success Ads</Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>{successAds}</Typography>
+            </Box>
           </Box>
-          <Box className={styles.summaryContent}>
-            <Typography className={styles.summaryLabel}>Warning Ads</Typography>
-            <Typography className={styles.summaryValue}>{warningAds}</Typography>
-          </Box>
-        </Box>
-        <Box className={styles.summaryItem}>
-          <Box className={`${styles.iconWrapper} ${styles.successIcon}`}>
-            <img src="/assets/editor_choice.png" alt="Success Icon" />
-          </Box>
-          <Box className={styles.summaryContent}>
-            <Typography className={styles.summaryLabel}>Success Ads</Typography>
-            <Typography className={styles.summaryValue}>{successAds}</Typography>
-          </Box>
+
         </Box>
         
         <Box className={styles.legend}>
           <Box className={styles.legendItems}>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotGood}`} />
-              <Typography className={styles.legendText}>Good</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+            }}>Good</Typography>
             </Box>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotAverage}`} />
-              <Typography className={styles.legendText}>Average</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+            }}>Average</Typography>
             </Box>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
-              <Typography className={styles.legendText}>Bad</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+            }}>Bad</Typography>
             </Box>
           </Box>
         </Box>
       </Box>
-      <Box display="flex" justifyContent="center" alignItems="center" marginBottom={3}></Box>
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-          <CircularProgress />
-        </Box>
-      ) : (
         <AdTable adData={adData} currency={currency} budget={budget} />
-      )}
     </Box>
   );
 };

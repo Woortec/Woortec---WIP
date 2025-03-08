@@ -13,20 +13,6 @@
     min-height: 300px;
 }
 
-/* Description */
-.descriptionContainer {
-    text-align: left;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-}
-
-.descriptionContainer h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-family: 'Poppins', sans-serif;
-}
-
 /* Form Section */
 .secContainer {
     padding: 90px 160px 140px;
@@ -116,6 +102,104 @@
 }
 
 /* 🌟 Responsive Styles */
+
+/*LARGER SCREEN*/
+@media (min-width: 1920px) {
+    .nameContainerWrapper {
+        text-align: center;
+        padding: 3vw;
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        min-height: 91.5vh;
+        margin: auto;
+    }
+
+    .heading{
+        padding-bottom: 10px;
+        font-size: 45px;
+        font-weight: 600;
+        text-align: left;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .paragraph{
+        font-weight: 400;
+        color: #526067;
+        font-size: 28px;
+        text-align: left;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .secContainer{
+        padding: 200px 160px 140px;
+    }
+
+    .secContainer h2 {
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+        margin-bottom: 30px;
+        font-size: 32px;
+        text-align: left;
+    }
+
+    .inpContainer {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
+    }
+
+    .inputWrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        font-family: 'Poppins', sans-serif;
+        font-size: 100px;
+        font-weight: 600;
+    }
+
+    .inputWrapper label {
+        padding-top: 20px;
+        text-align: left;
+        margin-bottom: 10px;
+        font-size: 28px;
+        font-weight: 500;
+    }
+
+    .inputWrapper input {
+        font-size: 25px;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #526067;
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+    
+    .inputWrapper input:focus {
+        border-color: #00bfa6;
+    }
+
+    .buttons{
+        padding: 25px;
+        padding-top: 180px;
+        display: flex;
+        justify-content: flex-end; /* Push items to the right */
+        font-family: 'Poppins', sans-serif; 
+    }
+
+    .sendButton{
+        font-size: 28px;
+        padding: 10px;
+        width: 20%;
+        color: #486A75;
+        background-color: #ffffff;
+        border-radius: 8px;
+        border: 2px solid #486A75; /* Adds a solid border */
+    }
+
+}
 @media (max-width: 1024px) {
     .secContainer {
         padding: 60px 100px;

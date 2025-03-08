@@ -5,6 +5,9 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
+          {/* Viewport Meta Tag for Responsive Design */}
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          
           <script
             async
             defer

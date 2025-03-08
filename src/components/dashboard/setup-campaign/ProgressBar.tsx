@@ -10,116 +10,82 @@ import {
   stepConnectorClasses,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Check from '@mui/icons-material/Check';
 import styles from './styles/ProgressBar.module.css';
 
 interface ProgressBarProps {
   currentStep: number;
 }
 
-const steps = [
-  'Strategy',
-  'Images',
-  'More Information',
-];
-
-const Title = styled(Typography)(({ theme }) => ({
-  fontWeight: 700,
-  marginBottom: theme.spacing(2),
-  textAlign: 'left', // Align text to the left
-  maxWidth: 800,
-}));
-
-const Description = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  marginBottom: theme.spacing(2),
-  textAlign: 'left', // Align text to the left
-  margin: 0, // No auto margin
-  fontSize: 15,
-}));
-
-const Brand = styled('span')(({ theme }) => ({
-  color: theme.palette.primary.main,
-  fontWeight: 700,
-}));
+const steps = ['Strategy', 'Images', 'More Information'];
 
 const Connector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 18,
+    width: '100%', // Ensure full width
+    flexGrow: 1, // Allow expansion
   },
   [`& .${stepConnectorClasses.line}`]: {
     height: 2,
     border: 0,
     backgroundColor:
-      theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+    theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+    width: '100%', // Make sure it covers full width
   },
 }));
-
 
 const StepIconRoot = styled('div')<{
   ownerState: { active?: boolean; completed?: boolean };
 }>(({ theme, ownerState }) => ({
-  backgroundColor: '#FFFFFF',
-  zIndex: 1,
-  color: '#7C9BA5',
-  width: '12vw',
-  height: '5vh', // Responsive height
-  display: 'flex',
-  borderRadius: '24px',
-  justifyContent: 'center',
-  alignItems: 'center',
-  fontWeight: 'bold',
-  fontSize: '1rem', // Adjust text size responsively
-  border: '3px solid #FFFFFF',
+  backgroundColor: '#FFFFFF !important',
+  color: '#7C9BA5 !important',
+  width: '100% !important',
+  height: '5vh !important',
+  borderRadius: '24px !important',
+  display: 'flex !important',
+  justifyContent: 'center !important',
+  alignItems: 'center !important',
+  padding: '1vh',
+  fontSize: '24px',
+
   ...(ownerState.active && {
-    backgroundColor: '#F2F4F5',
+    backgroundColor: '#F2F4F5 !important',
   }),
+
   ...(ownerState.completed && {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main + ' !important',
   }),
-  
-    // Media Queries for smaller screens
-    [`@media (max-width: 768px)`]: {
-      width: '16vw',
-      minWidth: '60px',
-      fontSize: '0.9rem',
-    },
-  
-    [`@media (max-width: 480px)`]: {
-      width: '20vw',
-      minWidth: '50px',
-      fontSize: '0.8rem',
-      height: '4vh',
-    },
 }));
 
 function StepIcon(props: any) {
-  const { active, completed, className, label } = props; // Destructure the label prop
+  const { active, completed, className, label } = props;
   return (
     <StepIconRoot ownerState={{ completed, active }} className={className}>
-      <Typography variant="body2" style={{ fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}>
-        {label}  {/* Display the step label inside the circle */}
-      </Typography>
+      <Typography>{label}</Typography>
     </StepIconRoot>
   );
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
   return (
-    <Container className={styles.container}>
-        <Box py={0} sx={{ margin: 0, padding: 0 }}>
-        {/* Progress Bar */}
-        <Stepper activeStep={currentStep - 1} alternativeLabel connector={<Connector />} 
-        sx={{ marginTop: '20px'}} // Adding margin to the entire Stepper component
-        >
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel StepIconComponent={(props) => <StepIcon {...props} label={label} />}>
-              {/* Optionally, you can still show the label as a tooltip or outside the circle */}
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+    <Container className={styles.Container}
+      maxWidth={false}>
+      <Box>
+        
+<Stepper
+  activeStep={currentStep - 1}
+  alternativeLabel
+  connector={<Connector />}
+  sx={{
+    width: '100%', // Make sure it takes the full viewport width
+    display: 'flex',
+  }}
+>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel StepIconComponent={(props) => <StepIcon {...props} label={label} />} />
+            </Step>
+          ))}
+        </Stepper>
       </Box>
     </Container>
   );

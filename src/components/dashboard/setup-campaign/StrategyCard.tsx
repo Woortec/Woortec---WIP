@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import ProgressBar from './ProgressBar'; // Import the progress bar component
 import styles from './styles/StrategyCard.module.css';
+import { styled } from '@mui/material/styles';
+import { Button, Box } from '@mui/material';
+
 
 interface StrategyCardProps {
   onNext: () => void;
@@ -48,10 +51,38 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
           <p>This strategy will be unlocked once you finish the first strategy that we gave you.</p>
         </div>
       </div>
-      <div className={styles.buttonContainer}>
-        <button className={styles.dlButton}>Download Strategy</button>
-        <button className={styles.conButton}>Continue</button>
-      </div>
+      <Box
+          display="flex"
+          gap={1}
+          sx={{
+            flexDirection: { xs: "column", sm: "row" }, // Column on small screens, row on larger
+            justifyContent: "center", // Center on larger screens
+            alignItems: "center", // Align buttons when stacked
+          }}
+          >
+        <Button
+          variant="outlined"
+          sx={{
+            fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.5rem" }, // Increase font size on larger screens
+            padding: { xs: "8px 12px", sm: "10px 16px", md: "12px 20px" }, // Adjust padding
+            backgroundColor: '#FFFFFF', // Add '#' before the hex code
+            '&:hover': { backgroundColor: '#486A75', color: '#FFFFFF', }, // Optional: Change color on hover
+            color: '#486A75',
+            border: "1px solid #486A75", // Increased border thickness
+          }}>Delete</Button>
+
+        <Button
+          variant="outlined"
+          sx={{
+            fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.5rem" },
+            padding: { xs: "8px 12px", sm: "10px 16px", md: "12px 20px" },
+            backgroundColor: '#FFFFFF', // Add '#' before the hex code
+            '&:hover': { backgroundColor: '#486A75', color: '#FFFFFF', }, // Optional: Change color on hover
+            color: '#486A75',
+            border: "1px solid #486A75", // Increased border thickness
+          }}>Continue</Button>
+      </Box>
+
     </div>
   );
 };

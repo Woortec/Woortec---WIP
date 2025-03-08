@@ -1,13 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 .adSetDetailContainer {
-  padding: 24px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 1000px; /* Increase max-width to accommodate the layout */
-  margin: 24px auto;
   display: flex;
+  padding: 1rem;
+  background-color: #ffffff;
+  width: 100%;
   flex-direction: column;
   align-items: flex-start;
+  border-radius: 10px;
 }
 
 .adSetDetailHeader {
@@ -15,14 +15,6 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 24px;
-}
-
-.adSetName {
-  font-family: 'Poppins', sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  color: #1c252a;
 }
 
 .closeButton {
@@ -35,38 +27,66 @@
 .adSetDetailContent {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
-  margin-bottom: 24px; /* Space between content and AI response */
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .adCreative {
-  width: 300px;
+  display: flex;
+}
+
+.adCreative img {
+  width: 500px;
   height: 300px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-right: 24px;
-  background-color: #e0e0e0;
+  object-fit: contain;
 }
 
 .budgetContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  display: flex;
   width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.leftBudgetContainer{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+}
+
+.rightBudgetContainer{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
 }
 
 .budgetCard {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
   display: flex;
-  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0.8rem;
+  gap: 1rem;
+}
+
+.iconWrapper {
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 3rem;
+  height: 3rem;
+}
+
+.budgetInfo{
+  display: flex;
+  flex-direction: column;
+  text-align: left !important;
+  padding: 0;
 }
 
 .budgetIcon {
@@ -109,4 +129,8 @@
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
   line-height: 1.5;
+}
+
+.adDescription {
+  padding: 0.5rem;
 }
