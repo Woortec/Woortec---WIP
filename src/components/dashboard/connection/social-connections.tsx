@@ -122,45 +122,51 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const handleFacebookLogin = () => {
     if ((window as any).FB) {
       (window as any).FB.login(
-        async (response: any) => {
+        (response: any) => {
           if (response.authResponse) {
             const shortLivedToken = response.authResponse.accessToken;
             const userId = response.authResponse.userID;
   
-            // Exchange for long-lived token
-            try {
-              const exchangeResponse = await fetch(
-                `https://graph.facebook.com/v21.0/oauth/access_token?  
-                 grant_type=fb_exchange_token&
-                 client_id=843123844562723&
-                 client_secret=5df1c6be88e88e4d9b9936bbaeaff10d&
-                 fb_exchange_token=${shortLivedToken}`
-              );
-  
-              const tokenData = await exchangeResponse.json();
-              const longLivedToken = tokenData.access_token;
-  
-              if (longLivedToken) {
-                setAccessToken(longLivedToken);
-                setUserId(userId);
-  
-                // Store in localStorage with expiry
-                setItemWithExpiry('fbAccessToken', longLivedToken, 60 * 60 * 1000 * 60); // 60 days
-                setItemWithExpiry('fbUserId', userId, 60 * 60 * 1000 * 60);
-  
-                // Fetch Ad Accounts
-                fetchAdAccounts(userId, longLivedToken);
-                setModalOpen(true);
-              }
-            } catch (error) {
-              console.error('Error exchanging token:', error);
-            }
+            // Call a separate async function to handle token exchange
+            exchangeLongLivedToken(shortLivedToken, userId);
           }
         },
         { scope: 'ads_read, pages_show_list' }
       );
     }
   };
+  
+  // Separate async function
+  const exchangeLongLivedToken = async (shortLivedToken: string, userId: string) => {
+    try {
+      const exchangeResponse = await fetch(
+        `https://graph.facebook.com/v21.0/oauth/access_token?  
+         grant_type=fb_exchange_token&
+         client_id=843123844562723&
+         client_secret=5df1c6be88e88e4d9b9936bbaeaff10d&
+         fb_exchange_token=${shortLivedToken}`
+      );
+  
+      const tokenData = await exchangeResponse.json();
+      const longLivedToken = tokenData.access_token;
+  
+      if (longLivedToken) {
+        setAccessToken(longLivedToken);
+        setUserId(userId);
+  
+        // Store in localStorage with expiry
+        setItemWithExpiry('fbAccessToken', longLivedToken, 60 * 60 * 1000 * 60); // 60 days
+        setItemWithExpiry('fbUserId', userId, 60 * 60 * 1000 * 60);
+  
+        // Fetch Ad Accounts
+        fetchAdAccounts(userId, longLivedToken);
+        setModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error exchanging token:', error);
+    }
+  };
+  
   
 
   const fetchAdAccounts = (userId: string, token: string) => {
