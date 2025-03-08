@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 .adSetDetailContainer {
+<<<<<<< HEAD
+=======
+  padding: 24px;
+  background-color: #ffffff;
+  width: 100%;
+  margin: 24px auto;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
   display: flex;
   padding: 1rem;
   background-color: #ffffff;
@@ -15,6 +22,18 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+<<<<<<< HEAD
+=======
+  margin-bottom: 24px;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.adSetName {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1c252a;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .closeButton {
@@ -33,6 +52,7 @@
 }
 
 .adCreative {
+<<<<<<< HEAD
   display: flex;
 }
 
@@ -44,6 +64,22 @@
 
 .budgetContainer {
   display: flex;
+=======
+  width: 750px;
+  height: 750px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 24px;
+  background-color: #e0e0e0;
+  padding: right 50px;
+}
+
+.budgetContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  padding-left: 50px;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
   width: 100%;
   align-items: center;
   justify-content: center;
@@ -65,6 +101,7 @@
 }
 
 .budgetCard {
+<<<<<<< HEAD
   display: flex;
   background-color: #ffffff;
   border-radius: 16px;
@@ -80,6 +117,27 @@
   justify-content: center;
   width: 3rem;
   height: 3rem;
+=======
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 55px 50px;
+  display: flex;
+  justify-content: left;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 30px;
+}
+
+.iconWrapper {
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px; /* Increased size */
+  height: 70px; /* Increased size */
+  margin: auto 0;
+  padding: 0 20px; /* Adjusted padding */
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .budgetInfo{

@@ -5,7 +5,11 @@
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 1rem;
+=======
+  gap: 25px;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .tableHeader {
@@ -16,6 +20,11 @@
   border-radius: 10px;
   padding: 1.1rem;
   font-weight: 600;
+<<<<<<< HEAD
+=======
+  padding: 40px;
+  border-radius: 30px;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .tableHeaderCell {
@@ -33,28 +42,60 @@
   display: flex;
   justify-content: space-between; /* Space between cells */
   background-color: #fff;
+<<<<<<< HEAD
   border-radius: 10px;
   margin-top: 8px;
   padding: 1.9rem;
   align-items: center;
   cursor: pointer; /* Add pointer cursor to indicate clickability */
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+=======
+  border-radius: 30px;
+  margin-top: 8px;
+  padding: 35px;
+  align-items: center;
+  cursor: pointer; /* Add pointer cursor to indicate clickability */
+  gap: 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+}
+
+.detailRow { /*back of adsetdetails*/
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  margin-top: 8px;
+  padding: 16px;
+  align-items: center;
+  border-radius: 30px;
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .tableCell {
   display: flex;
   flex: 1;
+<<<<<<< HEAD
   justify-content: center; 
   align-items: center; 
+=======
+  justify-content: center;  /* Center text horizontally */
+  align-items: center;      /* Center text vertically */
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
   text-align: center;
 }
 
 .tableCell:first-child {
   flex: 2;
+<<<<<<< HEAD
   display: flex; 
   justify-content: flex-start; 
   align-items: center; 
   padding-right: 0.5rem;
+=======
+  display: flex; /* Ensure it follows flexbox */
+  justify-content: flex-start; /* Align content to the left */
+  align-items: center; /* Keep vertical alignment */
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 }
 
 .metricValue {
@@ -111,6 +152,15 @@
   padding: 8px 16px;
   margin-bottom: 8px;
 } */
+<<<<<<< HEAD
+=======
+
+.adValues{
+  font-size: 35px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
 
 
 /* .metricLabel {
@@ -122,6 +172,7 @@
   color: #333;
 } */
 
+<<<<<<< HEAD
 /* @media (max-width: 1920px){
   .tableHeader {
     padding: 15px;
@@ -136,3 +187,21 @@
   }
 } */
 
+=======
+.adCreative {
+  max-width: 50%;
+  height: auto;
+  margin-top: 10px;
+}
+
+/*FOR EXTRA LARGE SCREENS*/
+@media (min-width: 2560px) {
+
+  .adValues{
+    font-size: 35px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+  }
+
+}
+>>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
