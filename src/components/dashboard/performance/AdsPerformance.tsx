@@ -53,7 +53,6 @@ const AdsPerformance: React.FC = () => {
   return (
     <Box className={styles.container}>
       <Box className={styles.summaryCard}>
-<<<<<<< HEAD
 
         <Box className={styles.summaryContainer}>
 
@@ -85,33 +84,6 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}>Success Ads</Typography>
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>{successAds}</Typography>
             </Box>
-=======
-        <Box className={styles.summaryItem}>
-          <Box className={`${styles.iconWrapper} ${styles.moneyIcon}`}>
-            <img src="/assets/attach_money.png" alt="Budget Icon" />
-          </Box>
-          <Box className={styles.summaryContent}>
-            <Typography sx={{ fontSize: {xl: '25px'}, fontWeight:'400', fontFamily:'Montserrat', }}>Monthly Budget</Typography>
-            <Typography sx={{ fontSize: {xl: '55px'}, fontWeight:'600', fontFamily:'Montserrat', }}>${budget}</Typography>
-          </Box>
-        </Box>
-        <Box className={styles.summaryItem}>
-          <Box className={`${styles.iconWrapper} ${styles.warningIcon}`}>
-            <img src="/assets/error.png" alt="Warning Icon" />
-          </Box>
-          <Box className={styles.summaryContent}>
-            <Typography sx={{ fontSize: {xl: '25px'}, fontWeight:'400', fontFamily:'Montserrat', }}>Warning Ads</Typography>
-            <Typography sx={{ fontSize: {xl: '55px'}, fontWeight:'600', fontFamily:'Montserrat', }}>{warningAds}</Typography>
-          </Box>
-        </Box>
-        <Box className={styles.summaryItem}>
-          <Box className={`${styles.iconWrapper} ${styles.successIcon}`}>
-            <img src="/assets/editor_choice.png" alt="Success Icon" />
-          </Box>
-          <Box className={styles.summaryContent}>
-            <Typography sx={{ fontSize: {xl: '25px'}, fontWeight:'400', fontFamily:'Montserrat', }}>Success Ads</Typography>
-            <Typography sx={{ fontSize: {xl: '55px'}, fontWeight:'600', fontFamily:'Montserrat', }}>{successAds}</Typography>
->>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
           </Box>
 
         </Box>
@@ -120,7 +92,6 @@ const AdsPerformance: React.FC = () => {
           <Box className={styles.legendItems}>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotGood}`} />
-<<<<<<< HEAD
               <Typography sx={{ fontSize: '0.8rem', color: '#526067',
             }}>Good</Typography>
             </Box>
@@ -133,23 +104,6 @@ const AdsPerformance: React.FC = () => {
               <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
               <Typography sx={{ fontSize: '0.8rem', color: '#526067',
             }}>Bad</Typography>
-=======
-              <Typography
-              sx={{ fontSize: { xl:'1.5rem' }, fontFamily: 'Poppins' }}
-              >Good</Typography>
-            </Box>
-            <Box className={styles.legendItem}>
-              <Box className={`${styles.legendDot} ${styles.legendDotAverage}`} />
-              <Typography
-               sx={{ fontSize: { xl:'1.5rem' }, fontFamily: 'Poppins' }}
-               >Average</Typography>
-            </Box>
-            <Box className={styles.legendItem}>
-              <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
-              <Typography 
-              sx={{ fontSize: { xl:'1.5rem' }, fontFamily: 'Poppins' }}
-              >Bad</Typography>
->>>>>>> ee711c7505f0cef07f0dce9b4e958597aa3b7706
             </Box>
           </Box>
         </Box>
