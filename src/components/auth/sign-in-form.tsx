@@ -124,7 +124,7 @@ export function SignInForm(): React.JSX.Element {
       }
 
       if (data.user) {
-        Cookies.set('accessToken', data.session.access_token, { expires: 365 * 10 });
+        Cookies.set('accessToken', data.session.access_token, { expires: 365 });
 
         // Handle Stripe customer creation/check
         await handleStripeCustomer(data.user.email);
