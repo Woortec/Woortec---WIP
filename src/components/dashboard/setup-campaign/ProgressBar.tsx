@@ -36,10 +36,9 @@ const Connector = styled(StepConnector)(({ theme }) => ({
 const StepIconRoot = styled('div')<{
   ownerState: { active?: boolean; completed?: boolean };
 }>(({ theme, ownerState }) => ({
-  backgroundColor: '#FFFFFF !important',
+  backgroundColor: '#b30000',
   color: '#7C9BA5 !important',
   width: '100% !important',
-  height: '5vh !important',
   borderRadius: '24px !important',
   display: 'flex !important',
   justifyContent: 'center !important',
@@ -48,7 +47,7 @@ const StepIconRoot = styled('div')<{
   fontSize: '24px',
 
   ...(ownerState.active && {
-    backgroundColor: '#F2F4F5 !important',
+    backgroundColor: '#F2F4F5',
   }),
 
   ...(ownerState.completed && {
@@ -67,8 +66,7 @@ function StepIcon(props: any) {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
   return (
-    <Container className={styles.Container}
-      maxWidth={false}>
+    <Box className={styles.Container}sx={{width:'100%'}}>
       <Box>
         
 <Stepper
@@ -85,9 +83,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
               <StepLabel StepIconComponent={(props) => <StepIcon {...props} label={label} />} />
             </Step>
           ))}
-        </Stepper>
+  </Stepper>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

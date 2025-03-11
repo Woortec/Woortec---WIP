@@ -4,58 +4,49 @@
 /* Container for the strategy section */
 .strategyContainer {
   text-align: center;
-  padding: 3vw;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 100%;
   margin: auto;
-  min-height: 300px;
+  height: 90vh;
+  padding: 3.125rem;
+}
+
+.headerLabel {
+  padding-bottom: 0.625rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+}
+
+.description {
+  font-weight: 400;
+  color: #526067;
+  font-size: 1rem;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
 }
 
 .headings{ /* "CHOOSE YOUR STRATEGY" */
   font-weight: bold;
   color: #333;
-  margin: 20px;
+  margin: 1.25rem;
   text-align: left;
-  margin-top: 20px;
+  margin-top: 1.25rem;
 }
 
 /* Group of cards */
 .cardGroup {
   display: flex;
-  justify-content: space-around;
-  gap: 30px;
-}
-
-.buttonContainer {
-  padding: 25px;
-  padding-top: 45px;
-  display: flex;
-  gap: 5px;
-  justify-content: flex-end; /* Push items to the right */
-  font-family: 'Poppins', sans-serif;
-}
-
-.dlButton, .conButton {
-  font-size: 14px;
-  padding: 5px;
-  width: 20%;
-  color: #486A75;
-  background-color: #ffffff;
-  border-radius: 8px;
-  border: 2px solid #486A75; /* Adds a solid border */
-}
-
-.dlButton:hover, .conButton:hover {
-  background-color: #486A75; /* Darker green on hover */
-  color: #ffffff;
+  gap: 1.875rem;
 }
 
 /* Individual card styles */
 .card {
   width: 30%;
-  padding: 40px;
+  padding: 2.5rem;
   border: 1px solid transparent;
   border-radius: 15px;
   background-color: #fff;
@@ -72,15 +63,15 @@
 
 /* Image within the card */
 .card img {
-  max-width: 100px;
-  margin-bottom: 20px;
+  max-width: 6.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .cardTitle {
   font-weight: 600;
   color: #486A75;
-  font-size: 12px;
-  margin-bottom: 10px;
+  font-size: 0.8rem;
+  margin-bottom: 0.625rem;
 }
 
 /* Card hover effect */
@@ -99,6 +90,7 @@
 
 .locked h3, .locked p {
   color: #486A75;
+  font-size: 0.75rem;
 }
 
 /* Active card styling */
@@ -108,199 +100,23 @@
 
 /* Text styling for card descriptions */
 .card p {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #526067;
   line-height: 1.6;
   font-family: 'Montserrat', sans-serif;
-}
-
-.headerLabel {
-  padding-bottom: 10px;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: left;
-  font-family: 'Poppins', sans-serif;
-}
-
-.description {
-  font-weight: 400;
-  color: #526067;
-  font-size: 14px;
-  text-align: left;
-  font-family: 'Montserrat', sans-serif;
-}
-
-@media (max-width: 768px) {
-
-  .strategyContainer {
-    padding: 8vw;
-  }
-
-  .buttonContainer {
-    justify-content: center; /* Center buttons on tablets */
-  }
-
-  .dlButton, .conButton {
-    width: 100%; /* Adjust button width */
-    font-size: 0.9rem;
-  }
-
-  .cardGroup {
-      flex-direction: column;
-      gap: 20px;
-  }
-
-  .card {
-      width: 100%;
-  }
-} 
-
-@media (max-width: 480px) {
-  .strategyContainer {
-    padding: 10vw; /* Reduce padding */
-    border-radius: 5px;
-  }
-
-  .buttonContainer {
-    flex-direction: column; /* Stack buttons */
-    align-items: center;
-    padding-top: 5vw;
-    gap: 10px; /* More spacing */
-  }
-
-  .dlButton, .conButton {
-    width: 90%; /* Prevent full stretch */
-    max-width: 300px; /* Avoid extra-wide buttons */
-    font-size: 0.85rem;
-  }
-
-  .card {
-    padding: 20px; /* Reduce padding */
-  }
-}
-
-/*LARGER SCREEN*/
-@media (min-width: 1920px) {
-/* Container for the strategy section */
-.strategyContainer {
-  text-align: center;
-  padding: 3vw;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  margin: auto;
-  min-height: 942px;
-}
-
-.headerLabel {
-  padding-bottom: 10px;
-  font-size: 32px;
-  font-weight: 600;
-  text-align: left;
-  font-family: 'Poppins', sans-serif;
-}
-
-.description {
-  font-weight: 400;
-  color: #526067;
-  font-size: 20px;
-  text-align: left;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.headings{ /* "CHOOSE YOUR STRATEGY" */
-  font-weight: bold;
-  font-size: 36px;
-  color: #333;
-  margin: 20px;
-  text-align: left;
-  margin-top: 20px;
-}
-
-/* Group of cards */
-.cardGroup {
-  display: flex;
-  justify-content: space-around;
-  gap: 30px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  height: 200px;
-}
-
-/* Individual card styles
-.card {
-  width: 60%;
-  padding: 80px;
-  border: 1px solid transparent;
-  border-radius: 15px;
-  background-color: #fff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: auto;
-} */
-
-.card img {
-  max-width: 150px;
-  width: 100%; /* Ensures it scales properly */
-}
-
-.cardTitle {
-  font-weight: 600;
-  color: #486A75;
-  font-size: 25px;
-  margin-bottom: 10px;
-}
-
-/* Text styling for card descriptions */
-.card p {
-  font-size: 25px;
-  color: #526067;
-  line-height: 1.6;
-  font-family: 'Montserrat', sans-serif;
-}
-
-/* Card hover effect */
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  border: 1px solid #486A75; /* 3px is the border thickness */
-}
-
-/* Locked card styles */
-.locked {
-  opacity: 0.6;
-  pointer-events: none;
-  border-color: #e0e0e0;
-}
-
-.locked h3, .locked p {
-  color: #486A75;
-}
-
-/* Active card styling */
-.active {
-  border-color: #BBCCD1;
 }
 
 .buttonContainer {
-  padding: 25px;
-  padding-top: 45px;
+  padding: 2.8rem;
   display: flex;
-  gap: 25px;
+  gap: 1rem;
   justify-content: flex-end; /* Push items to the right */
   font-family: 'Poppins', sans-serif;
 }
 
 .dlButton, .conButton {
-  font-size: 28px;
-  padding: 10px;
+  font-size: 0.9rem;
+  padding: 0.31rem;
   width: 20%;
   color: #486A75;
   background-color: #ffffff;
@@ -313,36 +129,3 @@
   color: #ffffff;
 }
 
-}
-
-/*FOR EXTRA LARGE SCREENS*/
-@media (min-width: 2560px) {
-/* Container for the strategy section */
-  .strategyContainer {
-    text-align: center;
-    padding: 3vw;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    margin: auto;
-    min-height: 1295px;
-  }
-
-  .headerLabel {
-    padding-bottom: 10px;
-    font-size: 45px;
-    font-weight: 600;
-    text-align: left;
-    font-family: 'Poppins', sans-serif;
-  }
-
-  .headings{ /* "CHOOSE YOUR STRATEGY" */
-    font-weight: bold;
-    color: #333;
-    margin: 20px;
-    text-align: left;
-    margin-top: 20px;
-  }
-
-}

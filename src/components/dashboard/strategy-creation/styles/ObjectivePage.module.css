@@ -1,45 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .container {
-    padding: 30px;
-    background-color: #ffffff;
+    padding: 1.875rem; 
     border-radius: 10px;
     width: 100%;
-    max-width: 1600px; /* Increased for larger screens */
-    height: 100%;
     margin: 0 auto;
+    height: 90vh;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     font-family: 'Poppins', sans-serif;
 }
 
 .title {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #222222;
     text-align: left;
 }
 
 .description {
-    font-size: 14px;
+    font-size: 0.9rem;
     color: #7a7a7a;
-    margin-top: 10px;
+    margin-top: 0.7rem;
     text-align: left;
 }
 
 .tabContainer {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
-    gap: 15px;
+    margin-top: 1.25rem;
+    gap: 1rem;
 }
 
 .tab {
-    padding: 10px 20px;
+    padding: 0.625rem 1.25rem;
     background-color: #eef5f0;
-    color: #6c756c;
+    color: #001500;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 0.75rem;
 }
 
 .activeTab {
@@ -50,35 +48,35 @@
 .formContainer {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 16px;
-    padding: 50px;
+    gap: 4rem;
+    padding: 3.125rem;
     background-color: #F2F4F5;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .leftColumn, .rightColumn{
-    width: 90%;
+    width: 100%;
 }
 
 .formGroup {
-    margin-bottom: 45px;
-    font-size: 12px;
+    margin-bottom: 2.8rem;
+    font-size: 0.75rem;
     color: #222222;
 }
 
 .label {
     display: block;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     color: #222222;
 }
 
 .select, .input {
     width: 100%;
-    padding: 10px 15px;
-    font-size: 12px;
+    padding: 0.625rem 0.94rem;
+    font-size: 0.8rem;
     border: 1px solid #d1d1d1;
     border-radius: 5px;
     background-color: #ffffff;
@@ -87,8 +85,8 @@
 .describePersona{
     width: 100%;
     height: 50%;
-    padding: 10px 15px;
-    font-size: 12px;
+    padding: 0.63rem 0.94rem;
+    font-size: 0.75rem;
     border: 1px solid #d1d1d1;
     border-radius: 5px;
     background-color: #ffffff;
@@ -96,28 +94,28 @@
 
 .radioGroup {
     display: flex;
-    gap: 20px;
+    gap: 1.25rem;
 }
 
 .radioLabel {
-    margin-left: 5px;
+    margin-left: 0.4rem;
     color: #4a4a4a;
     display: flex;
     align-items: center;
-    gap: 8px; /* Adjust space between the radio button and text */
+    gap: 0.5rem; /* Adjust space between the radio button and text */
 }
 
 .continueButton {
     background-color: #486A75;
     color: white;
-    padding: 12px 25px;
+    padding: 0.75rem 1.6rem;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
     display: block;
     width: 20%;
-    margin-top: 20px;
+    margin-top: 1.25rem;
     text-align: center;
 }
 
@@ -126,13 +124,28 @@
 }
 
 .forconButton {
+    padding-top: 2.5rem;
     display: flex;
-    justify-content: flex-end; /* Aligns the button to the right */
+    justify-content: flex-end;
 }
 
-/* Media Queries for Responsiveness */
+.budgetInputContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .currencyDisplay {
+    margin-left: 0.625rem;
+    padding: 0.625rem;
+    background-color: #f0f0f0;
+    border: none;
+    font-size: 1rem;
+    width: 3.75rem;
+    text-align: center;
+  }
 
-@media (max-width: 1200px) {
+
+/* @media (max-width: 1200px) {
     .container {
         max-width: 900px;
     }
@@ -151,7 +164,7 @@
 
 @media (max-width: 768px) {
     .container {
-        max-width: 100%; /* Full width on smaller screens */
+        max-width: 100%;
         padding: 20px;
     }
 
@@ -233,4 +246,4 @@
     margin-top: 0.5rem;
     font-size: 0.9rem;
     color: #555;
-}
+} */

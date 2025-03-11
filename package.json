@@ -39,6 +39,7 @@
     "apexcharts": "3.46.0",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
+    "cookie": "^1.0.2",
     "dayjs": "^1.11.10",
     "disposable-email-domains": "^1.0.62",
     "facebook-nodejs-business-sdk": "^20.0.0",

@@ -187,8 +187,8 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Montserrat'}}>CTR (%)</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
+              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins'}}>CTR (%)</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
             </Box>
         </Box>
 
@@ -197,8 +197,8 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Montserrat'}}>IMPRESSIONS</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
+              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins'}}>IMPRESSIONS</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
             </Box>
         </Box>
 
@@ -208,7 +208,7 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
           </Box>
             <Box className={styles.budgetInfo}>
               <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Montserrat'}}>SPEND</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>${formatValue(adDetail?.spend,)}</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>${formatValue(adDetail?.spend,)}</Typography>
             </Box>
           </Box>
          </Box>
@@ -252,7 +252,7 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
 
       <Box className={styles.adDescription}>
         <Typography 
-        sx ={{ fontSize: '100%', fontFamily: 'Montserrat'}}>
+        sx ={{ fontSize: '100%', fontFamily: 'Poppins'}}>
         Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
         drive results like never before.
         With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place. 

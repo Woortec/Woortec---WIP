@@ -249,32 +249,19 @@ const ObjectivePage: React.FC = () => {
         (formData.objective !== 'sales' || formData.trafficUrl);
 
     return (
-        <Box sx={{
-            width: '100%',
-            minHeight: '90vh',
-            backgroundColor: "#FFFFFF",
-            padding: '50px',
+        <Box sx={{ width: '100%', minHeight: '90vh', backgroundColor: "#FFFFFF",
+            padding: '3.125rem',
             borderRadius: '30px',
         }}>
             <Typography 
-            variant="h2" 
-            sx={{ 
-            fontWeight: 'bold',
-            }}
-            >
-            Strategy Creation
+            variant="h2" sx={{ fontSize: '1.5rem',fontWeight: 'bold',}}>Strategy Creation
             </Typography>
-            <Typography sx={{
-                fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.8rem" },
-                color: '#7a7a7a',
-                marginTop: '15px',
-                textAlign: 'left',
-                }}>
+            <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left',}}>
                 Introducing Woortec - the ultimate social media ads product designed to elevate your 
                 online presence and drive results like never before. With Woortec, you can effortlessly 
                 create and manage ads across multiple social media platforms, all in one place.
             </Typography>
-            <div className={styles.tabContainer}>
+            <div>
                 <StepIndicator />
             </div>
 
