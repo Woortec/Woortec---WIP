@@ -57,7 +57,7 @@ const Page = () => {
         const accessToken = hashParams.get('access_token');
 
         if (accessToken) {
-          Cookies.set('accessToken', accessToken, { expires: 365 * 10 });
+          Cookies.set('accessToken', accessToken, { expires: 3 });
           const { data: sessionData } = await supabase.auth.getSession();
 
           if (sessionData?.session?.user) {
