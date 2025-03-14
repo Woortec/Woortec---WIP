@@ -6,9 +6,13 @@ import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import InputBase from '@mui/material/InputBase';
 import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Bell as BellIcon } from '@phosphor-icons/react';
+import { Users as UsersIcon } from '@phosphor-icons/react';
+import { CaretDown as DownMenuIcon } from '@phosphor-icons/react';
+import { MagnifyingGlass as SearchIcon } from '@phosphor-icons/react';
 import { useTheme } from '@mui/material/styles';
 
 import { usePopover } from '@/hooks/use-popover';
@@ -22,82 +26,71 @@ export function MainNav(): React.JSX.Element {
 
   return (
     <>
+
       <Box
-        component="header"
-        sx={{
-          borderBottom: '1px solid #E0E0E0',
+      sx={{width: '100%', display: 'flex', padding:'0 1.3rem',
+        top: 8, position: 'sticky', zIndex: theme.zIndex.appBar, gap: '0.5rem', 
+      }}>
+
+        {/* Left side: Search */}
+        <Box sx={{width:'100%', backgroundColor:'#FFFFFF', borderRadius: '1rem', display: 'flex',
+             padding: '2rem 0.5rem', height: '2rem', }}>
+          <Stack direction="row" spacing={2} alignItems="center" sx={{display: { xs: 'none', sm: 'none', md: 'none', lg: 'flex' }}}>
+            <Tooltip title="Notif">
+                <IconButton sx={{ color: 'text.primary' }}>
+                  <SearchIcon size="1.7rem"/>
+                </IconButton>
+            </Tooltip>
+
+            <InputBase placeholder="Search" sx={{ flex: 1 }}/>
+          </Stack>
+        </Box>
+
+        <Box sx={{
           backgroundColor: '#FFFFFF',
-          borderRadius: 4,
-          position: 'sticky',
-          top: 8,
-          marginLeft: { lg: '20px' }, // Ensure MainNav accounts for SideNav width on large screens
-          zIndex: theme.zIndex.appBar,
+          borderRadius: '1rem',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          // Ensuring MainNav spans full width
-          width: '97%',
-          paddingX: {
-            xs: 2,
-            sm: 3,
-            md: 4,
-            lg: 5,
-            xl: 6,
-          },
-          // Ensure the header scales properly with the viewport width
-          maxWidth: '100%',
-          overflow: 'hidden',
-          minHeight: {
-            xs: 56,
-            sm: 64,
-            md: 72,
-            lg: 80,
-            xl: 88,
-          },
-        }}
-      >
-        {/* Left side: Logo and Menu Icon */}
-        <Stack direction="row" spacing={2} alignItems="center">
-          {/* Menu Icon for mobile - shown only on smaller screens */}
-
-          {/* Logo - scales with breakpoints */}
-          
-        </Stack>
+          width: '15rem',
+          padding: '2rem', 
+          height: '2rem',
+        }}>
 
         {/* Right side: Notifications and Avatar */}
         <Stack direction="row" spacing={2} alignItems="center">
           <Tooltip title="Notifications">
             <Badge badgeContent={4} color="success" variant="dot">
               <IconButton sx={{ color: 'text.primary' }}>
-                <BellIcon size={24} />
+                <BellIcon size="1.7rem" />
               </IconButton>
             </Badge>
           </Tooltip>
 
-          {/* User Avatar - clickable to open UserPopover */}
-          <Avatar
-            onClick={userPopover.handleOpen}
-            ref={userPopover.anchorRef}
-            src="/assets/avatar.png"
-            sx={{
-              cursor: 'pointer',
-              width: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              height: {
-                xs: 32,
-                sm: 36,
-                md: 40,
-                lg: 44,
-                xl: 48,
-              },
-              border: '1px solid #E0E0E0',
-            }}
-          />
+          <Tooltip title="Users">
+              <IconButton sx={{ color: 'text.primary' }}>
+                <UsersIcon size="1.7rem" />
+              </IconButton>
+          </Tooltip>
+
+          {/* Group Avatar & DownMenuIcon closer together */}
+          <Box display="flex" alignItems="center" gap={0.2}>
+            <Avatar
+              ref={userPopover.anchorRef}
+              src="/assets/avatar.png"
+              sx={{
+                cursor: 'pointer',
+                width: '2.5rem',
+                height: '2.5rem',
+                border: '1px solid #E0E0E0',
+              }}
+            />
+            
+            <Tooltip title="Menu">
+              <IconButton sx={{ color: 'text.primary' }}>
+                <DownMenuIcon size="1rem" onClick={userPopover.handleOpen}/>
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Stack>
       </Box>
 
@@ -107,8 +100,10 @@ export function MainNav(): React.JSX.Element {
         onClose={userPopover.handleClose}
         open={userPopover.open}
       />
+      </Box>
 
       {/* Mobile navigation drawer */}
     </>
+
   );
 }

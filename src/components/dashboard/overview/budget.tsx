@@ -13,6 +13,11 @@ import axios from 'axios';
 import type { SxProps } from '@mui/system';
 import dayjs from 'dayjs';
 import { createClient } from '../../../../utils/supabase/client'; // Ensure the correct path to your Supabase client
+import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
+import { Tooltip } from 'react-bootstrap';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 
 export interface BudgetProps {
   diff?: number;
@@ -26,35 +31,40 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
-      <CardContent>
-        <Stack spacing={3}>
-          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-            <Stack spacing={1}>
-              <Typography color="text.secondary" variant="overline">
-                Budget
-              </Typography>
-              <Typography variant="h4">{value}</Typography>
+    <Card sx={{ height: '10.7rem', padding:'1rem' }}>
+      <Box>
+    
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Avatar sx={{ backgroundColor: '#02B194', height: '2rem', width: '2rem' }}>
+            <CurrencyDollarIcon fontSize="1.5rem" style={{ color: 'white' }} />
+          </Avatar>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '4.5rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
+            <IconButton><LikeIcon size="1.2rem" /></IconButton>
+            <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
+          </Box>
+
+        </Box>
+          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <Stack>
+              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">BUDGET</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: '#02B194', height: '56px', width: '56px' }}>
-              <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
-            </Avatar>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography color={trendColor} variant="body2">
+                <Typography color={trendColor} variant="body2" sx={{fontSize:'1rem'}}>
                   {diff.toFixed(2)}%
                 </Typography>
               </Stack>
-              <Typography color="text.secondary" variant="caption">
-                Since last month
+              <Typography color="text.secondary" variant="caption" sx={{fontSize:'0.65rem'}}>
+                Last month
               </Typography>
             </Stack>
           ) : null}
-        </Stack>
-      </CardContent>
+      </Box>
     </Card>
   );
 }

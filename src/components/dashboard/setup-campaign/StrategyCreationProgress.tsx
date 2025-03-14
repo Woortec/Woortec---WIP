@@ -109,22 +109,23 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
 
   return (
     <div className={styles.progressContainerWrapper}>
-      <div className={styles.progressContainer}>
-        {/* Progress Bar Section - Displaying the 4th step */}
-        <ProgressBar currentStep={4} />
+      <h1 className={styles.headerLabel}>Strategy Creation</h1>
+        <div className={styles.description}>
+        Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
+        drive results like never before. With woortec, you can effortlessly create and manage ads across multiple 
+        social media platforms, all in one place. 
+        </div>
 
-        <img
-          src="/path-to-image/campaign-creation-icon.png"
+        <center><img
+          src="/assets/analyzedata.svg"
           alt="Campaign Creation Icon"
           className={styles.campaignImage}
-        />
+        /></center>
         <p>Creating your campaign...</p>
         <div className={styles.progressBar}>
           <div className={styles.progress} style={{ width: `${progress}%` }}></div>
         </div>
         <p>{progress}%</p>
-        {loading && <p className={styles.loadingText}>Setting up your campaign, please wait...</p>}
-      </div>
     </div>
   );
 };

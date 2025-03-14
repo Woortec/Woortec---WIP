@@ -11,6 +11,11 @@ import axios from 'axios';
 import { useDate } from './date/DateContext';
 import type { SxProps } from '@mui/system';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust the path to your Supabase client
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import { ArrowUDownRight as RunningIcon } from '@phosphor-icons/react';
+import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+
 
 export interface TotalAdsProps {
   sx?: SxProps;
@@ -19,20 +24,39 @@ export interface TotalAdsProps {
 
 export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
   return (
-    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
-      <CardContent>
-        <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-          <Stack spacing={1}>
-            <Typography color="text.secondary" variant="overline">
-              Total Ads
-            </Typography>
-            <Typography variant="h4">{value}</Typography>
+    <Card sx={{ height: '10.7rem'}}>
+      <Box sx={{padding:'1rem'}}>
+
+        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <Avatar sx={{ backgroundColor: '#D3346E', height: '2rem', width: '2rem', }}>
+              <RunningIcon fontSize="1.5rem" style={{ color: 'white' }} />
+            </Avatar>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '2.3rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
+               <IconButton><LikeIcon size="1.2rem" /></IconButton>
+             </Box>
+
+        </Box>
+
+          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <Stack>
+              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">ADS RUNNING</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
+            </Stack>
           </Stack>
-          <Avatar sx={{ backgroundColor: '#D3346E', height: '56px', width: '56px' }}>
-            <Binoculars fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
-          </Avatar>
-        </Stack>
-      </CardContent>
+
+            <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
+                <Typography variant="body2" sx={{fontSize:'0.9rem', color:'red',}}>
+                ↓ 52.67%
+                </Typography>
+              </Stack>
+              <Typography color="text.secondary" variant="caption" sx={{fontSize:'0.7rem'}}>
+                Last month
+              </Typography>
+            </Stack>
+
+      </Box>
     </Card>
   );
 }

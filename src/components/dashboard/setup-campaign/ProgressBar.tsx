@@ -54,7 +54,7 @@ const StepIconRoot = styled('div')<{
   }),
 
   ...(ownerState.completed && {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: '#F2F4F5',
   }),
 }));
 
