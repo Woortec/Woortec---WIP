@@ -8,7 +8,7 @@ interface StrategyConfirmationProps {
 const StrategyConfirmation: React.FC<StrategyConfirmationProps> = ({ campaignId }) => {
     return (
         <div className={styles.confirmationContainer}>
-            <h1 className={styles.headerLabel}>Strategy Creation</h1>
+            <h1 className={styles.headerLabel}>Campaign Setup</h1>
                 <div className={styles.description}>
                 Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
                 drive results like never before. With woortec, you can effortlessly create and manage ads across multiple 
@@ -20,7 +20,7 @@ const StrategyConfirmation: React.FC<StrategyConfirmationProps> = ({ campaignId 
                       alt="Projection Icon"
                       className={styles.campaignImage}
                     /></center>
-            <h2>Your ads have just been set up in the platform!</h2>
+            <h2>Your campaign have just been set up in the platform!</h2>
             <p>Please check everything </p>
             <button>Check out here</button>
             {/* {campaignId ? (

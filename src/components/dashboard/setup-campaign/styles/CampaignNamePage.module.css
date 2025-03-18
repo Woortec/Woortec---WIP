@@ -99,3 +99,18 @@
     color: #526067;
     font-family: 'Poppins', sans-serif;
 }
+
+.required {
+  color: red;
+  margin-left: 5px;
+}
+
+.errorText {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.errorBorder {
+  border: 1px solid red !important;
+}
