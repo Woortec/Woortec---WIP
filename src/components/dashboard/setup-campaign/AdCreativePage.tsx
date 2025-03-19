@@ -3,9 +3,10 @@ import { createClient } from '../../../../utils/supabase/client';
 import styles from './styles/AdCreativePage.module.css';
 
 interface AdCreativePageProps {
-  onNext: () => void;
+  onNext: (uploadedImageUrl: string) => void;
   onBack: () => void;
 }
+
 
 const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
   const [imageFileLocal, setImageFileLocal] = useState<File | null>(null);
@@ -88,17 +89,20 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       alert('Please upload an image.');
       return;
     }
-
+  
     setLoading(true);
     try {
       const result = await uploadImageToSupabase(imageFileLocal);
-
+  
       if (result?.error) {
         alert('Failed to upload the image. Please try again.');
         return;
       }
-
-      onNext();
+  
+      const uploadedImageUrl = result?.publicUrl; // Ensure you get the public URL here
+      if (uploadedImageUrl) {
+        onNext(uploadedImageUrl); // Pass the URL to onNext
+      }
     } catch (err) {
       console.error('❌ Unexpected error uploading image:', err);
       alert('An error occurred. Please try again.');
@@ -106,6 +110,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className={styles.adCreativeContainer}>
