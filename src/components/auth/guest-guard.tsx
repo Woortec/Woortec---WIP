@@ -22,6 +22,23 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
       if (isLoading) return;
 
       try {
+        // Check for `sb-uvhvgcrczfdfvoujarga-auth-token` in localStorage
+        const authToken = localStorage.getItem('sb-uvhvgcrczfdfvoujarga-auth-token');
+
+        if (authToken) {
+          const parsedToken = JSON.parse(authToken); // Assuming it's stored as a JSON string
+          
+          if (parsedToken?.expires_at) {
+            const expiryTime = parsedToken.expires_at * 1000; // Convert to milliseconds
+            const currentTime = Date.now();
+
+            if (currentTime >= expiryTime) {
+              logger.debug('[GuestGuard]: Auth token expired, removing it...');
+              localStorage.removeItem('sb-uvhvgcrczfdfvoujarga-auth-token');
+            }
+          }
+        }
+
         // Check for `userid` in localStorage
         const localUserId = localStorage.getItem('userid');
         if (localUserId) {
