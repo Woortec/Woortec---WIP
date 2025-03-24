@@ -15,14 +15,12 @@ const relevantEvents = new Set([
   "checkout.session.completed",
 ]);
 
-export const config = {
-  api: {
-    bodyParser: false, // ✅ Disable Next.js automatic JSON parsing
-  },
-};
+// ✅ New Next.js 14+ config
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const rawBody = await req.text(); // ✅ Use raw request body
+  const rawBody = await req.text(); // ✅ Ensure raw request body
   const sig = headers().get("Stripe-Signature");
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
