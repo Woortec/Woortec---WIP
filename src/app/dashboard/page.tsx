@@ -34,7 +34,6 @@ const style = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
-  borderRadius: 5, 
   outline: 'none', 
 };
 
@@ -131,7 +130,7 @@ export default function Page(): React.JSX.Element {
 
 
           {/* Submit Button */}
-                        <Button 
+              <Button 
                 variant="contained" 
                 color="primary" 
                 onClick={handleIndustry} 
@@ -157,7 +156,9 @@ export default function Page(): React.JSX.Element {
             }}
           />
         )}
-        <Grid container spacing={2}>
+
+        {/*overview part*/}
+        <Grid container spacing={2}> 
           <Grid item lg={3} md={6} xs={12} className="budget-container">
             <BudgetContainer startDate={startDate} endDate={endDate} />
           </Grid>
@@ -178,11 +179,11 @@ export default function Page(): React.JSX.Element {
               setEndDate={setEndDate}
             />
           </Grid>
-          <Grid item lg={8} xs={12} className="ad-spend-chart">
-            <Sales timeRange="custom" startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
+          <Grid item lg={8} md={6} xs={12} className="ad-spend-chart">
+            <Sales timeRange="custom" startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid item lg={4} md={6} xs={12} className="total-reach">
-            <TotalReach startDate={startDate} endDate={endDate} sx={{ height: '570px' }} />
+            <TotalReach startDate={startDate} endDate={endDate}/>
           </Grid>
         </Grid>
       </DateProvider>

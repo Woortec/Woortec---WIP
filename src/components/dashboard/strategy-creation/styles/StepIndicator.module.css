@@ -4,10 +4,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 30px 0;
-  padding: 0 20px;
+  padding: 4.125rem;;
   width: 100%;
-  max-width: 800px; /* Adjust based on your layout */
   font-family: 'Poppins', sans-serif;
 }
 
@@ -15,15 +13,16 @@
   display: flex;
   flex-direction: row; /* Change from column to row */
   align-items: center; /* Align icon and text vertically */
-  padding-right: 20px;
-  padding-left: 10px;
+  padding-right: 1.25rem;
+  padding-left: 0.625rem;
+
 }
 
 .stepIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; 
   display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%; 
   align-items: center;
   justify-content: center;
 }
@@ -38,12 +37,12 @@
 }
 
 .stepIcon img {
-  width: 24px; /* Adjust the icon size */
-  height: 24px;
+  width: 1.5rem; /* Adjust the icon size */
+  height: 1.5rem;
 }
 
 .stepLabel {
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 500;
   color:   #486A75;
   text-align: left; /* Align text properly */
@@ -52,9 +51,9 @@
 
 .stepLine {
   width: 100%;
-  height: 2px;
+  height: 0.125rem;
   background-color: #e0e0e0;
-  margin: 0 10px;
+  margin: 0 0.625rem;
 }
 
 .stepWrapper:not(:last-child) .stepLine {
@@ -67,6 +66,6 @@
 
 .checkIcon{
   background-color: #486A75; /* Blue line for active */
-  padding: 3px;
+  padding: 0.1875rem;
   border-radius: 45px;
 }

@@ -12,6 +12,9 @@ import { Target } from '@phosphor-icons/react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust path to Supabase client
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
 
 export interface TotalImpressionsProps {
   diff?: number;
@@ -25,35 +28,50 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={{ ...sx, height: '170px', overflow: 'hidden' }}>
-      <CardContent>
-        <Stack spacing={2}>
-          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-            <Stack spacing={1}>
-              <Typography color="text.secondary" variant="overline">
-                Total Impressions
-              </Typography>
-              <Typography variant="h4">{value}</Typography>
-            </Stack>
-            <Avatar sx={{ backgroundColor: '#E86A6D', height: '56px', width: '56px' }}>
-              <Target fontSize="var(--icon-fontSize-lg)" style={{ color: 'white' }} />
+    <Card sx={{ height: '10.7rem',}}>
+      <Box sx={{padding:'1rem'}}>
+         <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <Avatar sx={{ backgroundColor: '#E86A6D', height: '2rem', width: '2rem'}}>
+              <Target fontSize="1.5rem" style={{ color: 'white' }} />
             </Avatar>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '2.3rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
+               <IconButton><LikeIcon size="1.2rem" /></IconButton>
+             </Box>
+          </Box>
+
+        <Box sx={{display:'flex',}}>
+          <Box sx={{width:'100%',}}>
+          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+            <Stack>
+              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">IMPRESSIONS</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
+            </Stack>
           </Stack>
           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography color={trendColor} variant="body2">
+                <Typography color={trendColor} sx={{fontSize:'1rem'}}>
                   {diff.toFixed(2)}%
                 </Typography>
               </Stack>
-              <Typography color="text.secondary" variant="caption">
-                Since last month
+              <Typography color="text.secondary" sx={{fontSize:'0.7rem'}}>
+                Last month
               </Typography>
             </Stack>
           ) : null}
-        </Stack>
-      </CardContent>
+          </Box>
+
+          <Box sx={{width: '35%', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ marginTop: 'auto',}}>
+              <Box sx={{ color: '#859096', textAlign:'center'}}>0</Box>
+              <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign:'center' }}>N Clicks</Box>
+            </Box>
+          </Box>
+
+        </Box>
+      </Box>
     </Card>
   );
 }

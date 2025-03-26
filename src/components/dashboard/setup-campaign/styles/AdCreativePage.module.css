@@ -5,19 +5,18 @@
 /* Container for the ad creative page */
 .adCreativeContainer {
     text-align: center;
-    padding: 3vw;
+    padding: 3.125rem;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin: auto;
-    min-height: 300px;
+    height: 95vh;
 }
 
 .divider{
-
     width: 100%;
-    height: 14vh;
+    height: 7rem;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -31,7 +30,7 @@
     text-align: left;
     font-weight: bold;
     color: #333;
-    margin: 20px;
+    margin: 1.25rem;
     margin-top: auto;
 }
 
@@ -40,30 +39,29 @@
 }
 
 .heading {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     text-align: left;
     font-family: 'Poppins', sans-serif;
-    padding-bottom: 10px;
+    padding-bottom: 0.625rem;
 }
 
 .paragraph {
     font-weight: 400;
     color: #526067;
-    font-size: 14px;
+    font-size: 1rem;
     text-align: left;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .uploadContainer{
     width: 100%;
-    padding: 3.1%;
-    padding-right: 50px;
-    padding-left: 50px;
+    padding: 0.5rem;
+    padding-left: 3.125rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 1.25rem;
 }
 
 /* Upload section */
@@ -124,14 +122,23 @@
     color: #333;
 }
 
+.buttons{
+    padding: 2.9rem;
+    padding-top: 3.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end; /* Push items to the right */
+    font-family: 'Poppins', sans-serif;
+}
+
 .removeButton {
     background-color: #F2F4F5;
     border: none;
     color: #486A75;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 0.75rem;
     padding: 0.5vw;
-    width: 35px;
+    width: 2.19rem;
     border-radius: 50%;
     font-family: 'Poppins', sans-serif;
     margin-left: auto; /* Pushes the button to the right */
@@ -148,14 +155,14 @@
 }
 
 .uploadLabel p {
-    font-size: 1vw;
+    font-size: 1rem;
     color: #666;
-    margin-bottom: 1vh;
+    margin-bottom: 1rem;
 }
 
 .uploadLabel span {
     display: block;
-    margin-bottom: 1vh;
+    margin-bottom: 1rem;
     color: #999;
 }
 
@@ -168,7 +175,7 @@
 .divimg {
     background-color: #F2F4F5;
     border-radius: 50%;
-    margin-bottom: 1.5vh;
+    margin-bottom: 1.5rem;
 }
 
 .fileInput {
@@ -181,7 +188,7 @@
     padding: 1vw 2vw;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1vw;
+    font-size: 1rem;
     transition: background-color 0.3s ease;
 }
 
@@ -189,17 +196,8 @@
     background-color: #f5f5f5;
 }
 
-.buttons {
-    padding: 25px;
-    padding-top: 45px;
-    display: flex;
-    gap: 5px;
-    justify-content: flex-end; /* Push items to the right */
-    font-family: 'Poppins', sans-serif;
-}
-
 .backButton, .continueButton {
-    font-size: 14px;
+    font-size: 0.875;
     padding: 5px;
     width: 20%;
     color: #486A75;
@@ -213,38 +211,6 @@
     color: #ffffff;
 }
 
-@media (max-width: 768px) {
-
-    .adCreativeContainer {
-      padding: 8vw;
-    }
-  
-    .buttons {
-      justify-content: center; /* Center buttons on tablets */
-    }
-  
-    .backButton, .continueButton {
-      width: 100%; /* Adjust button width */
-      font-size: 0.9rem;
-    }
-  } 
-  
-  @media (max-width: 480px) {
-    .adCreativeContainer {
-      padding: 10vw; /* Reduce padding */
-      border-radius: 5px;
-    }
-  
-    .buttons {
-      flex-direction: column; /* Stack buttons */
-      align-items: center;
-      padding-top: 30vw;
-      gap: 10px; /* More spacing */
-    }
-  
-    .backButton, .continueButton {
-      width: 90%; /* Prevent full stretch */
-      max-width: 300px; /* Avoid extra-wide buttons */
-      font-size: 0.85rem;
-    }
-  }
+.fileInfo p{
+    font-size: 1rem;
+}

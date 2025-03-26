@@ -7,6 +7,12 @@ import { useRouter } from 'next/navigation';
 import styles from './styles/ObjectivePage.module.css';
 import StepIndicator from './StepIndicator';
 import { createClient } from '../../../../utils/supabase/client';
+import { styled } from '@mui/material/styles';
+import {Box, Typography, Button, Accordion, AccordionSummary, AccordionDetails,
+FormControl, InputLabel, Select, MenuItem, FormHelperText, FormLabel, RadioGroup, FormControlLabel, Radio, TextField
+} from '@mui/material';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 
 const ObjectivePage: React.FC = () => {
     const router = useRouter();
@@ -243,29 +249,52 @@ const ObjectivePage: React.FC = () => {
         (formData.objective !== 'sales' || formData.trafficUrl);
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>Strategy Creation</h2>
-            <p className={styles.description}>
-                Introducing Woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With Woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.
-            </p>
-            <div className={styles.tabContainer}>
+        <Box sx={{ width: '100%', minHeight: '90vh', backgroundColor: "#FFFFFF",
+            padding: '3.125rem',
+            borderRadius: '30px',
+        }}>
+            <Typography 
+            variant="h2" sx={{ fontSize: '1.5rem',fontWeight: 'bold',}}>Strategy Creation
+            </Typography>
+            <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left',}}>
+                Introducing Woortec - the ultimate social media ads product designed to elevate your 
+                online presence and drive results like never before. With Woortec, you can effortlessly 
+                create and manage ads across multiple social media platforms, all in one place.
+            </Typography>
+            <div>
                 <StepIndicator />
             </div>
 
-            {/* Dropdown with Additional Guidance */}
-            <details className={styles.dropdown}>
-                <summary className={styles.dropdownSummary}>Additional Tips & Guidance</summary>
-                <div className={styles.dropdownContent}>
+            {/* <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography 
+                    sx={{
+                      fontWeight: '600',
+                      fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.8rem" },
+                    }}
+                    >Additional Tips & Guidance</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
                     <ul>
-                        <li><strong>Choosing an Objective:</strong> If you're aiming for brand recognition, select "Brand Awareness." For direct conversions, choose "Sales," and for building a lead database, pick "Lead Generation."</li>
-                        <li><strong>Budget Allocation:</strong> Minimum recommended: ~180 USD. Adjust according to the exchange rate and your desired reach.</li>
-                        <li><strong>Managing Inquiries:</strong> If you can respond to leads promptly, your campaign results will likely improve.</li>
-                        <li><strong>Traffic Direction:</strong> For Sales objectives, ensure the provided URL leads to an optimized landing page.</li>
+                    <Typography
+                        sx={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.5rem" }, }}
+                    >
+                        <strong>Choosing an Objective:</strong> If you're aiming for brand recognition, select "Brand Awareness." For direct conversions, choose "Sales," and for building a lead database, pick "Lead Generation."
+                        </Typography>
+                    <li>
+                        <strong>Budget Allocation:</strong> Minimum recommended: ~180 USD. Adjust according to the exchange rate and your desired reach.
+                    </li>
+                    <li>
+                        <strong>Managing Inquiries:</strong> If you can respond to leads promptly, your campaign results will likely improve.
+                    </li>
+                    <li>
+                        <strong>Traffic Direction:</strong> For Sales objectives, ensure the provided URL leads to an optimized landing page.
+                    </li>
                     </ul>
-                </div>
-            </details>
+                </AccordionDetails>
+            </Accordion> */}
 
-            <div className={styles.formContainer}>
+            <Box className={styles.formContainer}>
                 {/* Div for left column*/}
                 <div className={styles.leftColumn}>
                         {/* Div for primary objective*/}
@@ -414,7 +443,7 @@ const ObjectivePage: React.FC = () => {
                             </div>
                         </div>
                   </div>
-            </div>
+            </Box>
             
             <div className={styles.forconButton}>
                 <button
@@ -426,7 +455,7 @@ const ObjectivePage: React.FC = () => {
                     Continue
                 </button>
             </div>
-        </div>
+        </Box>
     );
 };
 

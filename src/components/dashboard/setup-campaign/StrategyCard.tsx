@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import ProgressBar from './ProgressBar'; // Import the progress bar component
 import styles from './styles/StrategyCard.module.css';
+import { styled } from '@mui/material/styles';
+import { Button, Box } from '@mui/material';
+
 
 interface StrategyCardProps {
   onNext: () => void;
@@ -25,6 +28,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
           like never before. With woortec, you can effortlessly create and
           manage ads across multiple social media platforms, all in one place.
         </div>
+        
       {/* Progress Bar Section */}
       <ProgressBar currentStep={currentStep} /> {/* Progress Bar above cards */}
 
@@ -49,7 +53,7 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <button className={styles.dlButton}>Download Strategy</button>
+        <button className={styles.dlButton}>Delete</button>
         <button className={styles.conButton}>Continue</button>
       </div>
     </div>

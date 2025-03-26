@@ -5,6 +5,10 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
+
+         {/* Viewport Meta Tag */}
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          
           {/* Google Tag Manager */}
           <script
             dangerouslySetInnerHTML={{

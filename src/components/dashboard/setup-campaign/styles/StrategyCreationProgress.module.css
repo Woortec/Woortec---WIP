@@ -1,35 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
 /* Wrapper to center the progress container */
 .progressContainerWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-}
-
-/* Main progress container - increased width and padding for a larger appearance */
-.progressContainer {
     text-align: center;
-    padding: 60px; /* Increased padding */
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    max-width: 1200px; /* Increased max-width for a larger container */
     width: 100%;
+    margin: auto;
+    height: 94vh;
+    padding: 3.125rem;
 }
 
-/* Campaign image styling */
-.campaignImage {
-    width: 150px; /* Increased size */
-    height: auto;
-    margin-bottom: 30px; /* Increased margin for spacing */
-}
+
+.headerLabel {
+    padding-bottom: 0.625rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.description {
+    font-weight: 400;
+    color: #526067;
+    font-size: 1rem;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+  }
 
 /* Text for the status message */
-.progressContainer p {
-    font-size: 22px; /* Increased font size */
-    color: #333;
-    margin: 20px 0;
+.progressContainerWrapper p {
+    font-size: 1.375rem; /* Increased font size */
+    color: #526067;
+    margin: 1.25rem 0;
+    font-weight: 600;
+}
+
+.campaignImage {
+    padding-top: 5rem;
+    width: 15rem; /* Increased size */
+    height: auto;
+    margin-bottom: 1.9rem; /* Increased margin for spacing */
 }
 
 /* Progress bar container - increased height */
@@ -38,20 +51,20 @@
     background-color: #ddd;
     border-radius: 10px;
     overflow: hidden;
-    margin: 30px auto;
-    height: 15px; /* Increased height */
+    margin: 1.9rem auto;
+    height: 1rem; /* Increased height */
 }
 
 /* Progress bar (filled portion) */
 .progress {
     height: 100%;
-    background-color: #00bfa6;
+    background-color: #526067;
     transition: width 0.5s ease; /* Smooth transition effect */
 }
 
 /* Loading text */
 .loadingText {
     color: #666;
-    font-size: 18px; /* Slightly increased font size */
-    margin-top: 20px;
+    font-size: 1.1rem; /* Slightly increased font size */
+    margin-top: 1.25rem;
 }

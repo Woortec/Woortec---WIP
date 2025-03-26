@@ -1,23 +1,62 @@
 /* StrategyConfirmation.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
 .confirmationContainer {
     text-align: center;
-    padding: 60px;
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin: 0 auto;
-    margin-top: 100px;
+    width: 100%;
+    margin: auto;
+    height: 94vh;
+    padding: 3.125rem;
+}
+
+.headerLabel {
+    padding-bottom: 0.625rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.description {
+    font-weight: 400;
+    color: #526067;
+    font-size: 1rem;
+    text-align: left;
+    font-family: 'Poppins', sans-serif;
+  }
+
+.campaignImage {
+    padding-top: 5rem;
+    width: 15rem; /* Increased size */
+    height: auto;
+    margin-bottom: 1.9rem; /* Increased margin for spacing */
 }
 
 .confirmationContainer h2 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #526067;
+    margin-bottom: 1rem;
+    font-family: 'Poppins', sans-serif;
 }
 
 .confirmationContainer p {
-    font-size: 18px;
-    color: #666;
+    font-size: 1rem;
+    color: #526067;
+    margin-bottom: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.confirmationContainer button {
+    font-size: 0.875rem;
+    color: #ffffff;
+    background-color: #486A75;
+    padding: 0.5rem 2.8rem;
+    font-size: 1rem;
+    border-radius: 9px;
+    font-family: 'Poppins', sans-serif;
 }

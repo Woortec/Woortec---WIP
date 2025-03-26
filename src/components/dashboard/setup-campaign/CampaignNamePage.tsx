@@ -12,9 +12,9 @@ interface CampaignNamePageProps {
 }
 
 const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, setCampaignData }) => {
-  const [labelOne, setLabelOne] = useState<string>('');
-  const [labelTwo, setLabelTwo] = useState<string>('');
-  const [campaignName, setCampaignNameLocal] = useState<string>('');
+  const [labelOne, setLabelOne] = useState<string>('Woortec');
+  const [labelTwo, setLabelTwo] = useState<string>('Woortec');
+  const [campaignName, setCampaignNameLocal] = useState<string>('Woortec');
   const [loading, setLoading] = useState<boolean>(false); // Added loading state
 
   const handleNext = async () => {

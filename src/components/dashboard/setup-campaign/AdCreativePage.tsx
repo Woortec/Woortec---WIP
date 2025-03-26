@@ -25,53 +25,74 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
 
   const uploadImageToSupabase = async (file: File) => {
     const supabase = createClient();
-    const filePath = `images/${file.name}`;
-
+    const userId = localStorage.getItem('userid'); // Get the user ID
+  
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      alert('User ID is required to upload images.');
+      return { error: 'User ID not found' };
+    }
+  
+    const filePath = `images/${userId}/${file.name}`; // Store images per user
+  
     // Upload the image to Supabase Storage
     const { data, error } = await supabase.storage.from('adcreatives').upload(filePath, file);
-
+  
     if (error) {
       console.error('Error uploading image:', error.message);
       return { error };
     }
-
-    const { data: urlData, error: urlError } = supabase.storage.from('adcreatives').getPublicUrl(filePath);
-
-    if (urlError || !urlData) {
-      console.error('Error fetching public URL:', urlError?.message);
-      return { error: urlError || 'Public URL not available' };
+  
+    // Get the public URL of the uploaded image
+    const { data: urlData } = supabase.storage.from('adcreatives').getPublicUrl(filePath);
+  
+    if (!urlData) {
+      console.error('Error fetching public URL');
+      return { error: 'Public URL not available' };
     }
-
-    return { publicUrl: urlData.publicUrl };
+  
+    const imageUrl = urlData.publicUrl;
+  
+    // ✅ Store image URL in the correct row in `facebook_campaign_data`
+    const { error: updateError } = await supabase
+      .from('facebook_campaign_data')
+      .update({ image_path: imageUrl }) // Update the image_path field
+      .eq('user_id', userId); // Match the correct user
+  
+    if (updateError) {
+      console.error('Error updating database with image URL:', updateError.message);
+      return { error: updateError };
+    }
+  
+    console.log('Image uploaded and URL saved successfully:', imageUrl);
+    return { publicUrl: imageUrl };
   };
-
+  
   const handleNext = async () => {
     if (!imageFileLocal) {
       alert('Please upload an image.');
       return;
     }
-
+  
     setLoading(true);
-    setUploadProgress(0); // Progress is not currently tracked by upload()
-
     try {
       const { publicUrl, error } = await uploadImageToSupabase(imageFileLocal);
-
+  
       if (error) {
         alert('Failed to upload the image. Please try again.');
         return;
       }
-
-      // Move to next step
-      setCurrentStep(2);
+  
       console.log('Image uploaded successfully with URL:', publicUrl);
-      onNext();
+      onNext(); // Move to the next step
     } catch (err) {
       console.error('Unexpected error uploading image:', err);
+      alert('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className={styles.adCreativeContainer}>

@@ -124,24 +124,50 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       (window as any).FB.login(
         (response: any) => {
           if (response.authResponse) {
-            const token = response.authResponse.accessToken;
+            const shortLivedToken = response.authResponse.accessToken;
             const userId = response.authResponse.userID;
-            setAccessToken(token);
-            setUserId(userId);
-
-            // Store accessToken and userId for 24 hours
-            setItemWithExpiry('fbAccessToken', token, 24 * 60 * 60 * 1000);
-            setItemWithExpiry('fbUserId', userId, 24 * 60 * 60 * 1000);
-
-            // Open the ad account selection modal after successful login
-            fetchAdAccounts(userId, token);
-            setModalOpen(true);
+  
+            // Call a separate async function to handle token exchange
+            exchangeLongLivedToken(shortLivedToken, userId);
           }
         },
         { scope: 'ads_read, pages_show_list' }
       );
     }
   };
+  
+  // Separate async function
+  const exchangeLongLivedToken = async (shortLivedToken: string, userId: string) => {
+    try {
+      const exchangeResponse = await fetch(
+        `https://graph.facebook.com/v21.0/oauth/access_token?  
+         grant_type=fb_exchange_token&
+         client_id=843123844562723&
+         client_secret=5df1c6be88e88e4d9b9936bbaeaff10d&
+         fb_exchange_token=${shortLivedToken}`
+      );
+  
+      const tokenData = await exchangeResponse.json();
+      const longLivedToken = tokenData.access_token;
+  
+      if (longLivedToken) {
+        setAccessToken(longLivedToken);
+        setUserId(userId);
+  
+        // Store in localStorage with expiry
+        setItemWithExpiry('fbAccessToken', longLivedToken, 60 * 60 * 1000 * 60); // 60 days
+        setItemWithExpiry('fbUserId', userId, 60 * 60 * 1000 * 60);
+  
+        // Fetch Ad Accounts
+        fetchAdAccounts(userId, longLivedToken);
+        setModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error exchanging token:', error);
+    }
+  };
+  
+  
 
   const fetchAdAccounts = (userId: string, token: string) => {
     if ((window as any).FB) {

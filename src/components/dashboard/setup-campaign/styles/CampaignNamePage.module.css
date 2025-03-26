@@ -3,40 +3,26 @@
 
 /* Wrapper */
 .nameContainerWrapper {
-    text-align: center;
-    padding: 3vw;
+    text-align: left;
+    padding: 3.125rem;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
+    height: 95vh;
     margin: auto;
-    min-height: 300px;
-}
-
-/* Description */
-.descriptionContainer {
-    text-align: left;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-}
-
-.descriptionContainer h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-family: 'Poppins', sans-serif;
 }
 
 /* Form Section */
 .secContainer {
-    padding: 90px 160px 140px;
+    padding: 5.625rem 10rem 8.75rem;
 }
 
 .secContainer h2 {
     font-weight: bold;
-    font-family: 'Montserrat', sans-serif;
-    margin-bottom: 30px;
-    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 1.875rem;
+    font-size: 0.875rem;
 }
 
 /* Input Containers */
@@ -44,7 +30,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    gap: 20px;
+    gap: 1.25rem;
 }
 
 .inputWrapper {
@@ -52,13 +38,13 @@
     flex-direction: column;
     width: 100%;
     font-family: 'Poppins', sans-serif;
-    font-size: 12px;
+    font-size: 1rem;
     font-weight: 600;
 }
 
 .inputWrapper input {
-    font-size: 14px;
-    padding: 10px;
+    font-size: 1rem;
+    padding: 0.625rem;
     border-radius: 8px;
     border: 2px solid #526067;
     outline: none;
@@ -70,8 +56,8 @@
 }
 
 .inputWrapper label {
-    margin-bottom: 5px;
-    font-size: 14px;
+    margin-bottom: 0.31rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -79,15 +65,14 @@
 .buttons {
     display: flex;
     justify-content: flex-end;
-    margin-top: 40px;
-    gap: 10px;
+    margin-top: 2.5rem;
+    gap: 0.625rem;
 }
 
 .backButton, .sendButton {
-    font-size: 14px;
-    padding: 8px 15px;
-    width: auto;
-    min-width: 120px;
+    font-size: 0.9rem;
+    padding: 0.31rem;
+    width: 20%;
     color: #486A75;
     background-color: #ffffff;
     border-radius: 8px;
@@ -103,72 +88,14 @@
 
 /* Headings */
 .heading {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.625rem;
     font-family: 'Poppins', sans-serif;
 }
 
 .paragraph {
-    font-size: 15px;
+    font-size: 0.93rem;
     color: #526067;
-    font-family: 'Montserrat', sans-serif;
-}
-
-/* 🌟 Responsive Styles */
-@media (max-width: 1024px) {
-    .secContainer {
-        padding: 60px 100px;
-    }
-}
-
-@media (max-width: 768px) {
-    .nameContainerWrapper {
-        padding: 5vw;
-    }
-
-    .secContainer {
-        padding: 40px 60px;
-    }
-
-    .buttons {
-        justify-content: center;
-    }
-
-    .backButton, .sendButton {
-        width: 45%;
-    }
-}
-
-@media (max-width: 480px) {
-    .nameContainerWrapper {
-        padding: 6vw;
-        border-radius: 5px;
-    }
-
-    .secContainer {
-        padding: 50px 20px;
-        font-size: 12px;
-    }
-
-    .inpContainer {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .inputWrapper {
-        width: 100%;
-    }
-
-    .buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .backButton, .sendButton {
-        width: 90%;
-        max-width: 300px;
-        font-size: 14px;
-    }
+    font-family: 'Poppins', sans-serif;
 }

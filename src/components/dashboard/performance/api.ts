@@ -47,8 +47,8 @@
     // Get user info and access token from Supabase
     const uuid = localStorage.getItem('userid');
     const { data, error } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
-    const accessToken = data[0]?.access_token;
-    const adAccountId = data[0]?.account_id;
+    const accessToken = data?.[0]?.access_token;
+    const adAccountId = data?.[0]?.account_id;
   
     if (!accessToken || !adAccountId) {
       console.error('Access token or ad account ID not found');
@@ -56,90 +56,53 @@
     }
   
     try {
-      // Fetch the currency for the ad account
-      const accountResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}`, {
-        params: {
-          access_token: accessToken,
-          fields: 'currency',
-        },
-      });
-      cachedCurrency = accountResponse.data.currency;
+      // Define batch request
+      const batchRequest = [
+        { method: 'GET', relative_url: `${adAccountId}?fields=currency` }, // Fetch currency
+        { method: 'GET', relative_url: `${adAccountId}/ads?fields=id,name,status&limit=50` }, // Fetch active ads
+        { method: 'GET', relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50` }, // Fetch insights
+      ];
   
-      // Fetch active ads
-      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/ads`, {
-        params: {
-          access_token: accessToken,
-          fields: 'id,name,status',
-        },
-      });
+      // Execute batch request
+      const batchResponse = await axios.post(
+        `https://graph.facebook.com/v21.0`,
+        { access_token: accessToken, batch: batchRequest },
+      );
   
-      const activeAds = response.data.data.filter((ad: any) => ad.status === 'ACTIVE');
+      // Parse batch response
+      const accountData = JSON.parse(batchResponse.data[0]?.body);
+      const adData = JSON.parse(batchResponse.data[1]?.body);
+      const insightsData = JSON.parse(batchResponse.data[2]?.body);
+  
+      // Extract currency
+      cachedCurrency = accountData?.currency || 'USD';
+  
+      // Filter active ads
+      const activeAds = adData?.data?.filter((ad: any) => ad.status === 'ACTIVE') || [];
       const adNames = activeAds.reduce((acc: { [key: string]: string }, ad: any) => {
         acc[ad.id] = ad.name;
         return acc;
       }, {});
   
-      // Fetch ad insights for the active ads
-      const insightsResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'ad_id,impressions,spend,actions,cpc',
-          date_preset: 'last_7d',
-          level: 'ad',
-          limit: 100,
-        },
-      });
-  
-      // Process the insights data and fetch creative images for each ad
+      // Process insights data
       const insights = await Promise.all(
-        insightsResponse.data.data.map(async (insight: any) => {
-          const clicks = insight.actions.find((action: any) => action.action_type === 'link_click')?.value || 0;
+        insightsData?.data?.map(async (insight: any) => {
+          const clicks = insight.actions?.find((action: any) => action.action_type === 'link_click')?.value || 0;
           const impressions = insight.impressions || 0;
           const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
-          const cpc = insight.cpc || 0; // Fetch CPC directly from the API response
-  
-          // Fetch ad creative
-          const adCreativeResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/adcreatives`, {
-            params: {
-              access_token: accessToken,
-              fields: 'object_story_spec{link_data{image_hash}},image_hash',
-              ad_id: insight.ad_id,
-            },
-          });
-  
-          const adCreative = adCreativeResponse.data.data.find(
-            (creative: any) => creative.object_story_spec?.link_data?.image_hash
-          );
-  
-          let imageUrl = null;
-          const imageHash = adCreative?.object_story_spec?.link_data?.image_hash || adCreative?.image_hash;
-  
-          if (imageHash) {
-            const imageResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/adimages`, {
-              params: {
-                access_token: accessToken,
-                hashes: [imageHash],
-                fields: 'url',
-              },
-            });
-  
-            const imagesData = imageResponse.data.data;
-            if (imagesData.length > 0 && imagesData[0].url) {
-              imageUrl = imagesData[0].url;
-            }
-          }
+          const cpc = insight.cpc || 0;
+          const adId = insight.ad_id;
   
           return {
             ...insight,
-            name: adNames[insight.ad_id], // Ad name from active ads
-            clicks, // Number of clicks from insights
-            impressions, // Number of impressions from insights
-            ctr, // Calculated CTR (Click-Through Rate)
-            cpc, // Cost per click from insights
-            spend: insight.spend, // Spend from insights
-            imageUrl, // Image URL from the creative
+            name: adNames[adId] || 'Unknown Ad',
+            clicks,
+            impressions,
+            ctr,
+            cpc,
+            spend: insight.spend,
           };
-        })
+        }) || []
       );
   
       // Cache data for future requests
@@ -152,6 +115,7 @@
       return { adData: [], currency: 'USD' };
     }
   };
+  
 
 
 
