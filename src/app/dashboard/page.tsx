@@ -130,7 +130,7 @@ export default function Page(): React.JSX.Element {
 
 
           {/* Submit Button */}
-                        <Button 
+              <Button 
                 variant="contained" 
                 color="primary" 
                 onClick={handleIndustry} 
@@ -179,10 +179,10 @@ export default function Page(): React.JSX.Element {
               setEndDate={setEndDate}
             />
           </Grid>
-          <Grid item lg={8} xs={12} className="ad-spend-chart" sx={{ height:'90vh'}}>
+          <Grid item lg={8} md={6} xs={12} className="ad-spend-chart">
             <Sales timeRange="custom" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item lg={4} md={6} xs={12} className="total-reach" sx={{ height:'72.5vh'}}>
+          <Grid item lg={4} md={6} xs={12} className="total-reach">
             <TotalReach startDate={startDate} endDate={endDate}/>
           </Grid>
         </Grid>

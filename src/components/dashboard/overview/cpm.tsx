@@ -12,6 +12,7 @@ import { createClient } from '../../../../utils/supabase/client'; // Adjust the 
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+import styles from './date/style/DatePickerComponent.module.css';
 
 export interface TotalCostPerMessageProps {
   diff?: number;
@@ -43,7 +44,8 @@ export function TotalCostPerMessage({ diff, trend, sx, value }: TotalCostPerMess
           <Box sx={{width:'100%',}}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack>
-              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">CLICK THROUGH RATE
+              <Typography sx={{paddingTop: '0.7rem',fontSize: {sm: '0.7rem', md: '0.7rem'}, 
+              '@media (min-width: 1200px) and (max-width: 1256px)': {fontSize: '0.6rem'}}} color="text.secondary">CLICK THROUGH RATE
               </Typography>
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
             </Stack>

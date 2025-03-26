@@ -18,7 +18,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
       <GlobalStyles
         styles={{
           body: {
-            '--MainNav-height': '56px',
+            '--MainNav-height': '90px',
             '--MainNav-width': '56px',
             '--SideNav-width': '370px',
             '--SideNav-zIndex': 1000,
@@ -44,10 +44,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
             flexDirection: 'column', // Stack elements in a column
             flex: '1 1 auto', // Fill available space
             ml: { lg: 'var(--SideNav-width)' }, // Leave space for SideNav
-            width: '100vw', // Full width
-            maxWidth: '100%', // Ensure full width across screen
-            height: '100vh',
-            px: 0, // Remove horizontal padding
+            width: '100%', // Full width
+            paddingTop:'10px',
+            height: '90vh',
           }}
         >
           <MainNav />
@@ -57,10 +56,8 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
             <Container
               maxWidth={false} // Full width container
               sx={{
-                pt: 4, // Padding on top
-                pb: 4, // Padding on bottom
+                padding: 2,
                 width: '100%', // Take up full width
-                px: 0, // Remove padding
               }}
             >
               {children}

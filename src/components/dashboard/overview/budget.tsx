@@ -59,7 +59,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
                   {diff.toFixed(2)}%
                 </Typography>
               </Stack>
-              <Typography color="text.secondary" variant="caption" sx={{fontSize:'0.65rem'}}>
+              <Typography color="text.secondary" variant="caption" sx={{fontSize:'0.7rem'}}>
                 Last month
               </Typography>
             </Stack>

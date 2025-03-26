@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardActions, CardContent, CardHeader, Divider, CircularProgress } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Divider, CircularProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/system';
 import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react';
-import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react';
+import { ArrowElbowRight as ArrowRightIcon } from '@phosphor-icons/react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -181,8 +181,8 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   }, [startDate, endDate, timeRange]);
 
   return (
-    <Card sx={sx}>
-      <CardHeader
+    <Card sx={{height: '77vh', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
+      <CardHeader sx={{color:'#404D54'}}
         title="Ad Spend"
         action={
           <Button
@@ -195,7 +195,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           </Button>
         }
       />
-      <CardContent>
+      <CardContent sx={{height:'100%'}}>
         {loading ? (
           <CircularProgress />
         ) : (
@@ -229,9 +229,8 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           />
         )}
       </CardContent>
-      <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button color="inherit" endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />} size="small">
+        <Button sx={{color:'#486A75'}} startIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" color='#486A75' />} size="small">
           Overview
         </Button>
       </CardActions>
