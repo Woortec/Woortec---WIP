@@ -1,60 +1,56 @@
-import { headers } from 'next/headers';
-import Stripe from 'stripe';
+import { headers } from "next/headers";
+import Stripe from "stripe";
 
-import { createSubscription, renewSubscription } from '../../../lib/webhook';
+import { createSubscription, renewSubscription } from "../../../lib/webhook";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: "2024-06-20",
 });
 
 const relevantEvents = new Set([
-  'customer.subscription.created',
-  'payment_intent.succeeded',
-  'invoice.payment_succeeded',
-  'invoice.paid',
-  'checkout.session.completed',
+  "customer.subscription.created",
+  "payment_intent.succeeded",
+  "invoice.payment_succeeded",
+  "invoice.paid",
+  "checkout.session.completed",
 ]);
 
-export async function POST(req: Request) {
-  const body = await req.text();
-  const sig = headers().get('Stripe-Signature') as string;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-  let event: Stripe.Event;
+// ✅ New Next.js 14+ config
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
+export async function POST(req: Request) {
+  const rawBody = await req.text(); // ✅ Ensure raw request body
+  const sig = headers().get("Stripe-Signature");
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+  if (!sig || !webhookSecret) {
+    return new Response("Missing signature or webhook secret", { status: 400 });
+  }
+
+  let event: Stripe.Event;
   try {
-    if (!sig || !webhookSecret) return;
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err: any) {
-    console.log(`❌ Error message: ${err.message}`);
+    console.error(`❌ Webhook signature verification failed: ${err.message}`);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   if (relevantEvents.has(event.type)) {
     try {
       switch (event.type) {
-        case 'customer.subscription.created':
-          // console.log('subscription_created', event.data.object);
-          break;
-        case 'payment_intent.succeeded':
-          // console.log('payment_intent.succeeded', event.data.object);
-          break;
-        case 'invoice.payment_succeeded':
+        case "invoice.payment_succeeded":
           await renewSubscription(event.data.object);
           break;
-        case 'invoice.paid':
-          break;
-        case 'checkout.session.completed':
+        case "checkout.session.completed":
           await createSubscription(event.data.object);
           break;
-        default:
-          throw new Error('Unhandled relevant event!');
       }
     } catch (error) {
-      console.log(error);
-      return new Response('Webhook handler failed. View logs.', {
-        status: 400,
-      });
+      console.error("❌ Webhook processing error:", error);
+      return new Response("Webhook handler failed. View logs.", { status: 400 });
     }
   }
-  return new Response(JSON.stringify({ received: true }));
+
+  return new Response(JSON.stringify({ received: true }), { status: 200 });
 }

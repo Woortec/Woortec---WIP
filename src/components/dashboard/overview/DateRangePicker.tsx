@@ -2,11 +2,10 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import DatePicker from 'react-datepicker';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import { CalendarBlank as CalIcon } from '@phosphor-icons/react';
-import Box from '@mui/material/Box';
+
+import { CalendarToday as CalendarTodayIcon } from '@mui/icons-material';
 
 import styles from './date/style/DatePickerComponent.module.css';
-import { bgcolor, display } from '@mui/system';
 
 interface DatePickerComponentProps {
   startDate: Date | null;
@@ -55,9 +54,9 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.toggleButtonGroup}>
-        {['Day', 'Week', 'Month', '6 Month', 'Year'].map((label) => (
+    <div className={`${styles.card} cus-filt-prnt`}>
+      <div className={`${styles.toggleButtonGroup} cus-filter`}>
+        {['Today', 'This Week', 'This Month', 'This Year'].map((label) => (
           <button
             key={label}
             className={`${styles.toggleButton} ${preset === label ? styles.selected : ''}`}
@@ -67,9 +66,10 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
           </button>
         ))}
       </div>
-      {/* Calendar Picker */}
-      <div className={styles.datePickerBox}>
-          <CalIcon></CalIcon>
+      <div className={`${styles.datePickerBox} cus-date-time`}>
+        <CalendarTodayIcon className={styles.calendarIcon} />
+        <div className={styles.cardContent}>
+          <div className={styles.datePickerContainer}>
             <DatePicker
               selected={startDate}
               onChange={(date: Date | null) => setStartDate(date)}
@@ -83,9 +83,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
               }
               dateFormat="dd MMM yyyy"
             />
-
-            <div>↔</div>
-
+            <span className={styles.datePickerSeparator}>↔</span>
             <DatePicker
               selected={endDate}
               onChange={(date: Date | null) => setEndDate(date)}
@@ -113,8 +111,12 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
                 </div>
               )}
             />
-          <button><CalIcon></CalIcon></button>
           </div>
+          <button className={styles.iconButton}>
+            <CalendarTodayIcon />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

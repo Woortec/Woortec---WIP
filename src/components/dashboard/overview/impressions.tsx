@@ -56,7 +56,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
                   {diff.toFixed(2)}%
                 </Typography>
               </Stack>
-              <Typography color="text.secondary" sx={{fontSize:'0.7rem'}}>
+              <Typography color="text.secondary" sx={{fontSize:'0.65rem'}}>
                 Last month
               </Typography>
             </Stack>

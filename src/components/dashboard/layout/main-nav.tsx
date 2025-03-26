@@ -20,125 +20,90 @@ import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 
 export function MainNav(): React.JSX.Element {
+  const [openNav, setOpenNav] = React.useState<boolean>(false);
   const userPopover = usePopover<HTMLDivElement>();
   const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   return (
     <>
+
       <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          padding: '0 1.3rem',
-          zIndex: theme.zIndex.appBar,
-          gap: '0.5rem',
-        }}
-      >
+      sx={{width: '100%', display: 'flex', padding:'0 1.3rem',
+        top: 8, position: 'sticky', zIndex: theme.zIndex.appBar, gap: '0.5rem', 
+      }}>
 
         {/* Left side: Search */}
-        <Box
-          sx={{
-            width: '100%',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '1rem',
-            display: 'flex',
-            padding: '2rem 0.5rem',
-            height: '2rem',
-            alignItems: 'center', 
-          }}
-        >
-
-          {/* Menu Button for Mobile */}
-        <IconButton
-          sx={{ display: { xs: 'flex', sm: 'flex', md:'none'},
-          '@media (max-width: 1200px)': {
-            display: 'flex', // Show when screen width is 1280px or smaller
-          },
-          alignItems: 'center',
-           // Only show on mobile
-        }}
-          onClick={() => setMobileOpen(true)}
-        >
-          <MenuIcon />
-        </IconButton>
-        
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            sx={{ display: { xs: 'none', sm: 'flex', md: 'flex', lg: 'flex' } }}
-          >
+        <Box sx={{width:'100%', backgroundColor:'#FFFFFF', borderRadius: '1rem', display: 'flex',
+             padding: '2rem 0.5rem', height: '2rem', }}>
+          <Stack direction="row" spacing={2} alignItems="center" sx={{display: { xs: 'none', sm: 'none', md: 'none', lg: 'flex' }}}>
             <Tooltip title="Notif">
-              <IconButton sx={{ color: 'text.primary' }}>
-                <SearchIcon size="1.7rem" />
-              </IconButton>
+                <IconButton sx={{ color: 'text.primary' }}>
+                  <SearchIcon size="1.7rem"/>
+                </IconButton>
             </Tooltip>
 
-            <InputBase placeholder="Search" sx={{ flex: 1 }} />
+            <InputBase placeholder="Search" sx={{ flex: 1 }}/>
           </Stack>
         </Box>
 
-        {/* Right side: Notifications and Avatar */}
-        <Box
-          sx={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            width: '15rem',
-            padding: '2rem',
-            height: '2rem',
-          }}
-        >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton sx={{ color: 'text.primary' }}>
-                  <BellIcon size="1.7rem" />
-                </IconButton>
-              </Badge>
-            </Tooltip>
+        <Box sx={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          width: '15rem',
+          padding: '2rem', 
+          height: '2rem',
+        }}>
 
-            <Tooltip title="Users">
+        {/* Right side: Notifications and Avatar */}
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Tooltip title="Notifications">
+            <Badge badgeContent={4} color="success" variant="dot">
+              <IconButton sx={{ color: 'text.primary' }}>
+                <BellIcon size="1.7rem" />
+              </IconButton>
+            </Badge>
+          </Tooltip>
+
+          <Tooltip title="Users">
               <IconButton sx={{ color: 'text.primary' }}>
                 <UsersIcon size="1.7rem" />
               </IconButton>
+          </Tooltip>
+
+          {/* Group Avatar & DownMenuIcon closer together */}
+          <Box display="flex" alignItems="center" gap={0.2}>
+            <Avatar
+              ref={userPopover.anchorRef}
+              src="/assets/avatar.png"
+              sx={{
+                cursor: 'pointer',
+                width: '2.5rem',
+                height: '2.5rem',
+                border: '1px solid #E0E0E0',
+              }}
+            />
+            
+            <Tooltip title="Menu">
+              <IconButton sx={{ color: 'text.primary' }}>
+                <DownMenuIcon size="1rem" onClick={userPopover.handleOpen}/>
+              </IconButton>
             </Tooltip>
-
-            {/* Group Avatar & DownMenuIcon closer together */}
-            <Box display="flex" alignItems="center" gap={0.2}>
-              <Avatar
-                ref={userPopover.anchorRef}
-                src="/assets/avatar.png"
-                sx={{
-                  cursor: 'pointer',
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  border: '1px solid #E0E0E0',
-                }}
-              />
-
-              <Tooltip title="Menu">
-                <IconButton sx={{ color: 'text.primary' }} onClick={userPopover.handleOpen}>
-                  <DownMenuIcon size="1rem" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Stack>
-        </Box>
+          </Box>
+        </Stack>
       </Box>
 
       {/* User popover */}
-      <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
+      <UserPopover
+        anchorEl={userPopover.anchorRef.current}
+        onClose={userPopover.handleClose}
+        open={userPopover.open}
+      />
+      </Box>
 
       {/* Mobile navigation drawer */}
-      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
+
   );
 }
-

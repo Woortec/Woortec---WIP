@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
@@ -12,24 +11,12 @@ import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend, CategoryScale, LinearScale, BarElement, Title,
+  Legend,
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { Box, SxProps } from '@mui/material';
 import dayjs from 'dayjs';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust the path to your Supabase client
-import InsertChartIcon from '@mui/icons-material/InsertChart'; // Example icon
-import { PlusCircle as PlusIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
-import { MinusCircle as MinusIcon } from '@phosphor-icons/react/dist/ssr/MinusCircle';
-import { MagnifyingGlassPlus as MagnifyIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlassPlus';
-import { Hand as HandIcon } from '@phosphor-icons/react/dist/ssr/Hand';
-import { House as HomeIcon } from '@phosphor-icons/react/dist/ssr/House';
-import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
-import { Button } from 'react-bootstrap';
-import { Bar } from 'react-chartjs-2';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -179,50 +166,12 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
 
   return (
-  <Card sx={{height: '77vh', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
-<CardHeader
-  sx={{ color:'#404D54', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-  title={
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%' }}>
-      <Typography sx={{ width:'100%', fontSize: '1.1rem', color: '#404D54', fontWeight:'500' }}>
-        Total Reach
-      </Typography>
-      <Box sx={{ width:'100%', display: 'flex', gap: '0.3rem', color: '#486A75', justifyContent: 'flex-end'}}>
-        <Button><PlusIcon size={17} /></Button>
-        <Button><MinusIcon size={17} /></Button>
-        <Button><MagnifyIcon size={17} /></Button>
-        <Button><HandIcon size={17} /></Button>
-        <Button><HomeIcon size={17} /></Button>
-        <Button><ListIcon size={17} /></Button>
-      </Box>
-    </Box>
-  }
-/>
-      <CardContent sx={{height:'100%'}}>
-            <Bar
-                      data={chartData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            display: false,
-                          },
-                        },
-                        scales: {
-                          x: {
-                            title: {
-                              display: false,
-                            },
-                          },
-                          y: {
-                            beginAtZero: true,
-                            max: 3500,
-                          },
-                        },
-                      }}
-                    />
-            {/* <Doughnut
+    <Card sx={{ ...sx, height: '570px', overflow: 'hidden' }}>
+      <CardHeader title="Total Reach" />
+      <CardContent sx={{ position: 'relative' }}>
+        <Stack spacing={2} alignItems="center">
+          <Box sx={{ position: 'relative', display: 'inline-block' }}>
+            <Doughnut
               data={chartData}
               options={{
                 responsive: true,
@@ -243,12 +192,24 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
                 },
                 cutout: '70%',
               }}
-            /> */}
-          </CardContent>
-          <CardContent sx={{ width:'100%', display:'flex', justifyContent: 'center', flexDirection:'column' }}>
-            <Typography sx={{ fontSize:'1rem', color:'#404D54', fontWeight:'600', textAlign:'center' }}>2024 - 07 - 20</Typography>
-            <Typography sx={{ fontSize:'1rem', color:'#79758B', textAlign:'center'}}>41302852</Typography>
-          </CardContent>
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h5" component="div">{formatNumber(totalReach)}</Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Total Reach
+              </Typography>
+            </Box>
+          </Box>
+        </Stack>
+      </CardContent>
     </Card>
   );
 }

@@ -1,73 +1,89 @@
 import React, { useState } from 'react';
 import { createClient } from '../../../../utils/supabase/client';
-import ProgressBar from './ProgressBar';
 import styles from './styles/AdCreativePage.module.css';
 
 interface AdCreativePageProps {
-  onNext: () => void;
+  onNext: (uploadedImageUrl: string) => void;
   onBack: () => void;
-  setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
-const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImageFile }) => {
+
+const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
   const [imageFileLocal, setImageFileLocal] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImageFileLocal(file);
-      setImageFile(file);
     }
   };
 
   const uploadImageToSupabase = async (file: File) => {
+    setShowPopup(true);
     const supabase = createClient();
-    const userId = localStorage.getItem('userid'); // Get the user ID
+    const userId = localStorage.getItem("userid");
   
     if (!userId) {
-      console.error('User ID not found in localStorage');
-      alert('User ID is required to upload images.');
-      return { error: 'User ID not found' };
+      alert("User ID is required to upload images.");
+      setShowPopup(false);
+      return { error: "User ID not found" };
     }
   
-    const filePath = `images/${userId}/${file.name}`; // Store images per user
+    // ✅ Generate a unique filename using week number + timestamp
+    const generateUniqueFilename = (originalName: string) => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const oneJan = new Date(year, 0, 1);
+      const dayOfYear = ((now.getTime() - oneJan.getTime()) / 86400000) + 1;
+      const weekNumber = Math.ceil(dayOfYear / 7);
+      const yearLastTwoDigits = year.toString().slice(-2);
+      const timestamp = now.getTime();
+      const extension = originalName.split(".").pop();
+      return `W${weekNumber}${yearLastTwoDigits}_${timestamp}.${extension}`;
+    };
   
-    // Upload the image to Supabase Storage
-    const { data, error } = await supabase.storage.from('adcreatives').upload(filePath, file);
+    const uniqueFilename = generateUniqueFilename(file.name);
+    const filePath = `images/${userId}/${uniqueFilename}`;
+  
+    const { error } = await supabase.storage.from("adcreatives").upload(filePath, file);
   
     if (error) {
-      console.error('Error uploading image:', error.message);
+      console.error("❌ Error uploading image:", error.message);
+      setShowPopup(false);
       return { error };
     }
   
-    // Get the public URL of the uploaded image
-    const { data: urlData } = supabase.storage.from('adcreatives').getPublicUrl(filePath);
-  
-    if (!urlData) {
-      console.error('Error fetching public URL');
-      return { error: 'Public URL not available' };
+    // ✅ Get public URL
+    const { data } = supabase.storage.from("adcreatives").getPublicUrl(filePath);
+    if (!data) {
+      console.error("❌ Error fetching public URL");
+      setShowPopup(false);
+      return { error: "Public URL not available" };
     }
   
-    const imageUrl = urlData.publicUrl;
+    const imageUrl = data.publicUrl;
+    console.log("✅ Image uploaded successfully:", imageUrl);
   
-    // ✅ Store image URL in the correct row in `facebook_campaign_data`
-    const { error: updateError } = await supabase
-      .from('facebook_campaign_data')
-      .update({ image_path: imageUrl }) // Update the image_path field
-      .eq('user_id', userId); // Match the correct user
+    // ✅ Store the image URL in the database
+    const { error: dbError } = await supabase
+      .from("facebook_campaign_data")
+      .update({ image_path: imageUrl })
+      .eq("user_id", userId);
   
-    if (updateError) {
-      console.error('Error updating database with image URL:', updateError.message);
-      return { error: updateError };
+    if (dbError) {
+      console.error("❌ Error saving image URL to database:", dbError.message);
+      setShowPopup(false);
+      return { error: dbError.message };
     }
   
-    console.log('Image uploaded and URL saved successfully:', imageUrl);
+    console.log("✅ Image URL saved to database:", imageUrl);
+    setShowPopup(false);
     return { publicUrl: imageUrl };
   };
   
+
   const handleNext = async () => {
     if (!imageFileLocal) {
       alert('Please upload an image.');
@@ -76,17 +92,19 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
   
     setLoading(true);
     try {
-      const { publicUrl, error } = await uploadImageToSupabase(imageFileLocal);
+      const result = await uploadImageToSupabase(imageFileLocal);
   
-      if (error) {
+      if (result?.error) {
         alert('Failed to upload the image. Please try again.');
         return;
       }
   
-      console.log('Image uploaded successfully with URL:', publicUrl);
-      onNext(); // Move to the next step
+      const uploadedImageUrl = result?.publicUrl; // Ensure you get the public URL here
+      if (uploadedImageUrl) {
+        onNext(uploadedImageUrl); // Pass the URL to onNext
+      }
     } catch (err) {
-      console.error('Unexpected error uploading image:', err);
+      console.error('❌ Unexpected error uploading image:', err);
       alert('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -96,25 +114,33 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
 
   return (
     <div className={styles.adCreativeContainer}>
-        <div className={styles.descriptionContainer}>
-          <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creatives</h2>
-          <p className={styles.paragraph}>
-            Seamlessly integrate your visual assets with Facebook’s Marketing API using Woortec. 
-            Simply upload your images, configure your ad creative settings, and Woortec handles the rest. 
-            Enjoy a streamlined process that ensures your ads are live and optimized for maximum impact.
-          </p>
+      {showPopup && (
+        <div className={styles.popup}>
+          <p>Uploading image...</p>
         </div>
+      )}
+
+      <div className={styles.descriptionContainer}>
+        <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creatives</h2>
+        <p className={styles.paragraph}>
+          Seamlessly integrate your visual assets with Facebook’s Marketing API using Woortec.
+        </p>
+      </div>
       <div className={styles.divider}>
-      <h2 className={styles.headingUpload}>Upload your images</h2>
+        <h2 className={styles.headingUpload}>Upload your images</h2>
       </div>
 
       <div className={styles.uploadContainer}>
         <div className={styles.uploadSection}>
           <label htmlFor="file-upload" className={styles.uploadLabel}>
-            <div className={styles.divimg}><img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" /></div>
-              <p>Drag your image(s) to start uploading</p>
-              <span>or</span>
-              <button className={styles.uploadButton}>Upload from your Desktop</button>
+            <div className={styles.divimg}>
+              <img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" />
+            </div>
+            <p>Drag your image(s) to start uploading</p>
+            <span>or</span>
+            <button className={styles.uploadButton} onClick={() => document.getElementById('file-upload')?.click()}>
+              Upload from your Desktop
+            </button>
           </label>
           <input
             id="file-upload"
@@ -124,8 +150,6 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
             className={styles.fileInput}
           />
         </div>
-
-        {/* Image preview is only displayed when there's an image uploaded */}
         {imageFileLocal && (
           <div className={styles.imagePreview}>
             <img src={URL.createObjectURL(imageFileLocal)} alt="Preview" />
@@ -133,15 +157,10 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack, setImag
               <p>{imageFileLocal.name}</p>
               <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
             </div>
-            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
-              X
-            </button>
-        </div>
-)}
-</div>
-
-
-      {/* {loading && <div className={styles.progressText}>{uploadProgress}%</div>} */}
+            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>X</button>
+          </div>
+        )}
+      </div>
 
       <div className={styles.buttons}>
         <button className={styles.backButton} onClick={onBack}>Go Back</button>
