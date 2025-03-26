@@ -132,7 +132,7 @@ export function SideNav(): React.JSX.Element {
         />
       )}
 
-      {/* <IconButton
+      <IconButton
         aria-label="open drawer"
         onClick={handleDrawerToggle}
         edge="start"
@@ -142,10 +142,10 @@ export function SideNav(): React.JSX.Element {
           top: 16,
           left: 15,
           zIndex: 1300,
-        }} 
+        }}
       >
         <MenuIcon />
-      </IconButton> */}
+      </IconButton>
 
       {/* Desktop side nav */}
       <Box

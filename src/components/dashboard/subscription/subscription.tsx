@@ -9,40 +9,54 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 const Subscription = () => {
   const [isYearly, setIsYearly] = useState(false);
-
   const handleSubscribe = async (priceId: string) => {
     const stripe = await stripePromise;
-
+  
     if (!stripe) {
       console.error('Stripe has not loaded yet.');
       return;
     }
-
+  
+    const userUuid = localStorage.getItem('userid'); // Retrieve UUID from localStorage
+  
+    if (!userUuid) {
+      console.error('User UUID not found in localStorage');
+      return;
+    }
+  
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId }),
+      body: JSON.stringify({ priceId, uuid: userUuid }), // Send uuid
     });
-
-    if (response.status !== 200) {
+  
+    if (!response.ok) {
       console.error('Failed to create checkout session');
       return;
     }
-
-    const session = await response.json();
-
+  
+    const data = await response.json();
+  
+    if (!data || !data.sessionId) {
+      console.error('Invalid session response:', data);
+      return;
+    }
+  
+    // Ensure sessionId is correctly used
     const result = await stripe.redirectToCheckout({
-      sessionId: session.id,
+      sessionId: data.sessionId, 
     });
-
+  
     if (result.error) {
       console.error(result.error.message);
     }
   };
+  
+  
 
   const plans = [
     {
-      id: isYearly ? 'price_1QDjDqHow0UPMFTyFVrpzNPc' : 'price_1QDjDqHow0UPMFTyFVrpzNPc',
+      id: isYearly ? 'price_1P90eAHow0UPMFTymffkim7t' : 'price_1P90eAHow0UPMFTyqjjSmILe',
       name: 'Basic',
       price: isYearly ? '$299.99/year' : '$29.99/month',
       features: [

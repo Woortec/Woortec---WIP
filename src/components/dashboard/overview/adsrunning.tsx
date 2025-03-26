@@ -41,9 +41,7 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Stack>
               <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">ADS RUNNING</Typography>
-              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', 
-                 '@media (min-width: 1200px) and (max-width: 1256px)': {fontSize: '1.4rem'},
-                fontWeight:'600'}}>{value}</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
             </Stack>
           </Stack>
 

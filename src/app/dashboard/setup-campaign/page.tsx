@@ -11,7 +11,7 @@ import { createClient } from '../../../../utils/supabase/client'; // Supabase cl
 const CampaignSetupPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [planOutput, setPlanOutput] = useState<any[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [campaignData, setCampaignData] = useState<{
     campaignName: string;
     labelOne: string;
@@ -109,10 +109,14 @@ const CampaignSetupPage: React.FC = () => {
         {currentStep === 1 && <StrategyCard onNext={handleNextStep} />}
         {currentStep === 2 && (
           <AdCreativePage
-            onNext={handleNextStep}
-            onBack={handlePreviousStep}
-            setImageFile={setImageFile}
-          />
+  onNext={(uploadedImageUrl: string) => {
+    setImageUrl(uploadedImageUrl); // Make sure you store the URL if necessary
+    handleNextStep(); // Move to the next step
+  }}
+  onBack={handlePreviousStep}
+/>
+
+
         )}
         {currentStep === 3 && (
           <CampaignNamePage
@@ -124,7 +128,7 @@ const CampaignSetupPage: React.FC = () => {
         {currentStep === 4 && (
           <StrategyCreationProgress
             planOutput={planOutput}
-            imageFile={imageFile}
+            imageUrl={imageUrl}
             campaignData={campaignData}
             onNext={handleCampaignCreationSuccess}
           />
