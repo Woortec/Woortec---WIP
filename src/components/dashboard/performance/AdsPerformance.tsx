@@ -61,8 +61,15 @@ const AdsPerformance: React.FC = () => {
               <img src="/assets/attach_money.svg" alt="Budget Icon"/>
             </Box>
             <Box className={styles.summaryContent}>
-              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}> Monthly Budget </Typography>
-              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>${budget}</Typography>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',
+                    '@media (max-width: 675px)': {fontSize: '0.6rem',},
+                    '@media (max-width: 465px)': {fontSize: '0.5rem',},
+                    '@media (max-width: 440px)': {fontSize: '0.4rem',},
+              }}> Monthly Budget </Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
+                '@media (max-width: 675px)': {fontSize: '1.1rem',},
+                '@media (max-width: 440px)': {fontSize: '1rem',},
+              }}>${budget}</Typography>
             </Box>
           </Box>
 
@@ -71,8 +78,14 @@ const AdsPerformance: React.FC = () => {
               <img src="/assets/error.svg" alt="Warning Icon"/>
             </Box>
             <Box className={styles.summaryContent}>
-              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}>Warning Ads</Typography>
-              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>{warningAds}</Typography>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',
+                '@media (max-width: 675px)': {fontSize: '0.6rem',},
+                '@media (max-width: 440px)': {fontSize: '0.4rem',},
+              }}>Warning Ads</Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
+                '@media (max-width: 675px)': {fontSize: '1.1rem',},
+                '@media (max-width: 440px)': {fontSize: '1rem',},
+              }}>{warningAds}</Typography>
             </Box>
           </Box>
           
@@ -81,8 +94,14 @@ const AdsPerformance: React.FC = () => {
               <img src="/assets/editor_choice.svg" alt="Success Icon" />
             </Box>
             <Box className={styles.summaryContent}>
-              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',}}>Success Ads</Typography>
-              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',}}>{successAds}</Typography>
+              <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',
+                '@media (max-width: 675px)': {fontSize: '0.6rem',},
+                '@media (max-width: 440px)': {fontSize: '0.4rem',},
+              }}>Success Ads</Typography>
+              <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
+                '@media (max-width: 675px)': {fontSize: '1.1rem',},
+                '@media (max-width: 440px)': {fontSize: '1rem',},
+              }}>{successAds}</Typography>
             </Box>
           </Box>
 
@@ -93,16 +112,19 @@ const AdsPerformance: React.FC = () => {
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotGood}`} />
               <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+                              '@media (max-width: 675px)': {fontSize: '0.6rem',},
             }}>Good</Typography>
             </Box>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotAverage}`} />
               <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+                              '@media (max-width: 675px)': {fontSize: '0.6rem',},
             }}>Average</Typography>
             </Box>
             <Box className={styles.legendItem}>
               <Box className={`${styles.legendDot} ${styles.legendDotBad}`} />
               <Typography sx={{ fontSize: '0.8rem', color: '#526067',
+                              '@media (max-width: 675px)': {fontSize: '0.6rem',},
             }}>Bad</Typography>
             </Box>
           </Box>

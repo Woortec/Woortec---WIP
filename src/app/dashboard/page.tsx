@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid'; 
+import Grid from '@mui/material/Grid';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Joyride from 'react-joyride';
-import { useTour } from '@/contexts/TourContext'; 
+import { useTour } from '@/contexts/TourContext';
 import { userData } from '@/contexts/user-context';
 import { Sales } from '@/components/dashboard/overview/adspend';
 import TotalProfitContainer from '@/components/dashboard/overview/adsrunning';
@@ -29,16 +29,16 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '100vh', 
+  width: '100vh',
   height: '500px',
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
-  outline: 'none', 
+  outline: 'none',
 };
 
 export default function Page(): React.JSX.Element {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -79,7 +79,6 @@ export default function Page(): React.JSX.Element {
     <>
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
         <Box sx={style}>
-          {/* Modal Title */}
           <Typography id="modal-title" variant="h5" component="h2" gutterBottom sx={{ mt: 5 }}>
             You’re almost there!
           </Typography>
@@ -88,23 +87,20 @@ export default function Page(): React.JSX.Element {
             To ensure a more personalized and efficient experience, we just need a few more details from you.
           </Typography>
 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-            {/* Date of Birth Input */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
             <TextField
               label="Date of Birth"
               type="date"
               variant="outlined"
-              fullWidth={false}  // Disable fullWidth to customize the width
               margin="normal"
               InputLabelProps={{
                 shrink: true,
               }}
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              sx={{ width: '250px' }}  // Set the custom width here
+              sx={{ width: '250px' }}
             />
 
-            {/* Industry Name Dropdown with FormControl */}
             <FormControl variant="outlined" sx={{ width: '400px' }}>
               <InputLabel id="industry-select-label">Industry Occupation</InputLabel>
               <Select
@@ -128,50 +124,42 @@ export default function Page(): React.JSX.Element {
             </FormControl>
           </Box>
 
-
-          {/* Submit Button */}
-              <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleIndustry} 
-                sx={{ mt: 7, width: '200px' }} // Added custom width of 250px
-              >
-                Continue
-              </Button>
+          <Button variant="contained" color="primary" onClick={handleIndustry} sx={{ mt: 7, width: '200px' }}>
+            Continue
+          </Button>
         </Box>
       </Modal>
+
       <DateProvider>
-        {/* Conditionally render Joyride only after mounting */}
         {isMounted && (
           <Joyride
-            steps={steps} // Use global steps
-            run={runTour} // Use the global runTour state
+            steps={steps}
+            run={runTour}
             continuous
             showSkipButton
             showProgress
             styles={{
               options: {
-                zIndex: 10000, // Ensure the tour stays on top of other UI elements
+                zIndex: 10000,
               },
             }}
           />
         )}
 
-        {/*overview part*/}
-        <Grid container spacing={2}> 
-          <Grid item lg={3} md={6} xs={12} className="budget-container">
+        <Grid container spacing={2}>
+          <Grid item lg={3} md={6} xs={12}>
             <BudgetContainer startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item lg={3} md={6} xs={12} className="impressions-container">
+          <Grid item lg={3} md={6} xs={12}>
             <TotalImpressionsContainer startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item lg={3} md={6} xs={12} className="cpm-container">
+          <Grid item lg={3} md={6} xs={12}>
             <TotalCostPerMessageContainer startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item lg={3} md={6} xs={12} className="profit-container">
+          <Grid item lg={3} md={6} xs={12}>
             <TotalProfitContainer />
           </Grid>
-          <Grid item lg={12} xs={12} className="date-picker">
+          <Grid item lg={12} xs={12}>
             <DatePickerComponent
               startDate={startDate}
               endDate={endDate}
@@ -179,11 +167,11 @@ export default function Page(): React.JSX.Element {
               setEndDate={setEndDate}
             />
           </Grid>
-          <Grid item lg={8} md={6} xs={12} className="ad-spend-chart">
+          <Grid item lg={8} md={6} xs={12}>
             <Sales timeRange="custom" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item lg={4} md={6} xs={12} className="total-reach">
-            <TotalReach startDate={startDate} endDate={endDate}/>
+          <Grid item lg={4} md={6} xs={12}>
+            <TotalReach startDate={startDate} endDate={endDate} />
           </Grid>
         </Grid>
       </DateProvider>

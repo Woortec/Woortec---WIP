@@ -155,8 +155,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Montserrat', color: '#526067',}}>BUDGET</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>${formatValue(adDetail?.cpc)}</Typography>
+              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins', color: '#526067',
+                                '@media (max-width: 445px)': {fontSize: '0.6rem',},
+              }}>BUDGET</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.9rem',},
+              }}>${formatValue(adDetail?.cpc)}</Typography>
             </Box> {/* Display CPC */}
         </Box>
 
@@ -165,8 +169,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Montserrat'}}>BUDGET</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>${formatValue(adDetail?.cpc)}</Typography>
+              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.6rem',},
+              }}>BUDGET</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.9rem',},
+              }}>${formatValue(adDetail?.cpc)}</Typography>
             </Box>
         </Box>
 
@@ -175,8 +183,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
           <Box className={styles.budgetInfo}>
-            <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Montserrat'}}>BUDGET</Typography>
-            <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Montserrat'}}>${formatValue(adDetail?.cpc)}</Typography>
+            <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+                              '@media (max-width: 445px)': {fontSize: '0.6rem',},
+            }}>BUDGET</Typography>
+            <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                              '@media (max-width: 445px)': {fontSize: '0.9rem',},
+            }}>${formatValue(adDetail?.cpc)}</Typography>
           </Box>
         </Box>
       </Box>
@@ -187,8 +199,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins'}}>CTR (%)</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
+              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.6rem',},
+              }}>CTR (%)</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.9rem',},
+              }}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
             </Box>
         </Box>
 
@@ -197,8 +213,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins'}}>IMPRESSIONS</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
+              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins',
+                '@media (max-width: 445px)': {fontSize: '0.6rem',},
+              }}>IMPRESSIONS</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                                '@media (max-width: 445px)': {fontSize: '0.9rem',},
+              }}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
             </Box>
         </Box>
 
@@ -207,8 +227,12 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img className={styles.dollarSign} src="/assets/attach_money.png" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Montserrat'}}>SPEND</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins'}}>${formatValue(adDetail?.spend,)}</Typography>
+              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins',
+                '@media (max-width: 445px)': {fontSize: '0.6rem',},
+              }}>SPEND</Typography>
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+                '@media (max-width: 445px)': {fontSize: '0.9rem',},
+              }}>${formatValue(adDetail?.spend,)}</Typography>
             </Box>
           </Box>
          </Box>

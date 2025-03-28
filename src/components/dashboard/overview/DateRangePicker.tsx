@@ -1,12 +1,9 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { CalendarBlank as CalIcon } from '@phosphor-icons/react';
-import Box from '@mui/material/Box';
-
 import styles from './date/style/DatePickerComponent.module.css';
-import { bgcolor, display } from '@mui/system';
 
 interface DatePickerComponentProps {
   startDate: Date | null;
@@ -20,8 +17,15 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   endDate,
   setStartDate,
   setEndDate,
-}: DatePickerComponentProps) => {
-  const [preset, setPreset] = useState<string>('day');
+}) => {
+  const [preset, setPreset] = useState<string>('This Week');
+
+  useEffect(() => {
+    // Set "This Week" as the default selection
+    const today = new Date();
+    setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
+    setEndDate(today);
+  }, [setStartDate, setEndDate]);
 
   const handlePresetChange = (newPreset: string) => {
     setPreset(newPreset);
@@ -29,7 +33,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
 
     switch (newPreset) {
       case 'Today':
-        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 0));
+        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
         setEndDate(today);
         break;
       case 'This Week':
@@ -50,71 +54,47 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   };
 
   const setTodayAsEndDate = () => {
-    const today = new Date();
-    setEndDate(today);
+    setEndDate(new Date());
   };
 
   return (
     <div className={styles.card}>
       <div className={styles.toggleButtonGroup}>
-        {['Day', 'Week', 'Month', '6 Month', 'Year'].map((label) => (
+        {['Today', 'This Week', 'This Month', 'This Year'].map((label) => (
           <button
             key={label}
             className={`${styles.toggleButton} ${preset === label ? styles.selected : ''}`}
             onClick={() => handlePresetChange(label)}
           >
-            {label.charAt(0).toUpperCase() + label.slice(1)}
+            {label}
           </button>
         ))}
       </div>
+
       {/* Calendar Picker */}
       <div className={styles.datePickerBox}>
-          <CalIcon></CalIcon>
-            <DatePicker
-              selected={startDate}
-              onChange={(date: Date | null) => setStartDate(date)}
-              customInput={
-                <input
-                  type="text"
-                  className={styles.datePickerInput}
-                  value={startDate ? startDate.toDateString() : ''}
-                  readOnly
-                />
-              }
-              dateFormat="dd MMM yyyy"
-            />
+        <CalIcon />
+        
+        {/* Start Date Picker */}
+        <DatePicker
+          selected={startDate}
+          onChange={(date: Date | null) => setStartDate(date)}
+          dateFormat="dd MMM yyyy"
+        />
 
-            <div>↔</div>
+        <div>↔</div>
 
-            <DatePicker
-              selected={endDate}
-              onChange={(date: Date | null) => setEndDate(date)}
-              customInput={
-                <input
-                  type="text"
-                  className={styles.datePickerInput}
-                  value={endDate ? endDate.toDateString() : ''}
-                  readOnly
-                />
-              }
-              dateFormat="dd MMM yyyy"
-              renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
-                <div className={styles.customHeaderContainer}>
-                  <div className={styles.headerControls}>
-                    <button onClick={decreaseMonth} className={styles.navButton}>‹</button>
-                    <span className={styles.monthYearDisplay}>
-                      {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
-                    </span>
-                    <button onClick={increaseMonth} className={styles.navButton}>›</button>
-                  </div>
-                  <button className={styles.todayButton} onClick={setTodayAsEndDate}>
-                    TODAY
-                  </button>
-                </div>
-              )}
-            />
-          <button><CalIcon></CalIcon></button>
-          </div>
+        {/* End Date Picker */}
+        <DatePicker
+          selected={endDate}
+          onChange={(date: Date | null) => setEndDate(date)}
+          dateFormat="dd MMM yyyy"
+        />
+
+        <button onClick={setTodayAsEndDate}>
+          <CalIcon />
+        </button>
+      </div>
     </div>
   );
 };

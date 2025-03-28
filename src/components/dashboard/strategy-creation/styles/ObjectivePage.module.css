@@ -1,62 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .container {
-    padding: 1.875rem; 
+    padding: 2rem; 
     border-radius: 10px;
     width: 100%;
-    margin: 0 auto;
-    height: 90vh;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    font-family: 'Poppins', sans-serif;
-}
-
-.title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #222222;
-    text-align: left;
-}
-
-.description {
-    font-size: 0.9rem;
-    color: #7a7a7a;
-    margin-top: 0.7rem;
-    text-align: left;
-}
-
-.tabContainer {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.25rem;
-    gap: 1rem;
-}
-
-.tab {
-    padding: 0.625rem 1.25rem;
-    background-color: #eef5f0;
-    color: #001500;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.75rem;
-}
-
-.activeTab {
-    background-color: #daf1e1;
-    color: #2c5f49;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 4px 12px rgba(223, 37, 37, 0.05);
 }
 
 .formContainer {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two equal columns */
-    gap: 4rem;
-    padding: 3.125rem;
+    display: flex;
+    padding: 2rem;
     background-color: #F2F4F5;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.leftColumn, .rightColumn{
-    width: 100%;
+    gap: 1rem;
 }
 
 .formGroup {
@@ -64,6 +23,13 @@
     font-size: 0.75rem;
     color: #222222;
 }
+
+.select {
+  width: 20rem;
+}
+
+
+/*
 
 .label {
     display: block;
@@ -102,7 +68,7 @@
     color: #4a4a4a;
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* Adjust space between the radio button and text */
+    gap: 0.5rem;
 }
 
 .continueButton {
@@ -123,12 +89,6 @@
     background-color: #349c7c;
 }
 
-.forconButton {
-    padding-top: 2.5rem;
-    display: flex;
-    justify-content: flex-end;
-}
-
 .budgetInputContainer {
     display: flex;
     align-items: center;
@@ -142,108 +102,4 @@
     font-size: 1rem;
     width: 3.75rem;
     text-align: center;
-  }
-
-
-/* @media (max-width: 1200px) {
-    .container {
-        max-width: 900px;
-    }
-}
-
-@media (max-width: 992px) {
-    .container {
-        max-width: 750px;
-    }
-
-    .tab {
-        font-size: 12px;
-        padding: 8px 15px;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        max-width: 100%;
-        padding: 20px;
-    }
-
-    .tabContainer {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .tab {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .continueButton {
-        width: 100%;
-    }
-}
-
-@media (max-width: 576px) {
-    .title {
-        font-size: 20px;
-    }
-
-    .description {
-        font-size: 14px;
-    }
-
-    .select, .input {
-        font-size: 13px;
-    }
-}
-.budgetInputContainer {
-    display: flex;
-    align-items: center;
-  }
-  
-  .currencyDisplay {
-    margin-left: 10px;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: none;
-    font-size: 16px;
-    width: 60px;
-    text-align: center;
-  }
-  .mainContent {
-    display: flex;
-    gap: 2rem;
-  }
-  
-  .sidePanel {
-    flex: 1;
-    background: #f9f9f9;
-    padding: 1rem;
-    border-radius: 8px;
-  }
-  
-  .sideNote {
-    display: block;
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 0.25rem;
-  }
-  .dropdown {
-    margin-bottom: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 0.5rem;
-}
-
-.dropdownSummary {
-    font-weight: bold;
-    cursor: pointer;
-    list-style: none;
-}
-
-.dropdownContent {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #555;
-} */
+  } */

@@ -402,6 +402,23 @@
   }
 }
 
+@media (max-width: 414px) {
+  .datePickerInput {
+    width: 7rem !important;
+  }
+
+  .toggleButton {
+    background-color: transparent;
+    color: #859096;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+    padding: 0.31rem 1rem;
+  }
+}
+
 @media (max-width: 382px) {
   .datePickerInput {
     width: 7rem !important;

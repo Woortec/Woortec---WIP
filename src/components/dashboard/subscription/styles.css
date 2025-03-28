@@ -6,8 +6,11 @@ body {
   }
   
   .container {
-    margin-top: 2rem;
+    padding-top: 2rem;
     text-align: center;
+    height: 92.5vh;
+    background-color: #FFFFFF;
+    border-radius: 1rem;
   }
   
   .grid-container {
@@ -23,10 +26,11 @@ body {
     padding: 1rem;
     transition: transform 0.3s ease;
     margin: 1rem;
-    width: 300px;
+    width: 20rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 30rem;
   }
   
   .card:hover {
@@ -37,47 +41,84 @@ body {
     text-align: left;
     padding: 1rem;
   }
-  
-  .button {
-    margin-top: 1rem;
-    background-color: #4caf50;
-    color: #fff;
-    align-self: center;
-  }
-  
-  .button:hover {
-    background-color: #45a049;
-  }
-  
+
   .toggle {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
+    width: 100%;
+    padding-top: 1rem;
   }
   
   .price {
     margin: 0.5rem 0;
   }
   
-  .features {
-    padding-left: 1rem;
-    list-style: none;
-    margin: 0;
-  }
-  
   .feature-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1rem;
+    padding-bottom: 0.8rem;
   }
-  
-  .feature-checkbox {
-    margin-right: 0.5rem;
-  }
-  
-  @media (max-width: 600px) {
-    .card {
-      margin-bottom: 2rem;
+ 
+  @media (max-width: 554px){
+    .container {
+      height: 100vh;
     }
   }
+
+  @media (max-width: 1522px) {
+    .card {
+      width: 30%;
+    }
+  }
+
+  @media (max-width: 1426px) {
+    .card {
+      width: 29.5%;
+      height: 35rem;
+    }
+  }
+
+  @media (max-width: 1301px) {
+    .card {
+      width: 29%;
+    }
+  }
+
+  @media (max-width: 1206px) {
+    .card {
+      width: 28%;
+      height: 38rem;
+    }
+  }
+
+  @media (max-width: 930px) {
+    .card {
+      width: 70%;
+      height: 30rem;
+      overflow: 'auto';
+    }
+
+    .container {
+      height: 100%;
+      padding-bottom: 1rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .card {
+      height: 36rem;
+      width: 100%;
+      overflow: 'auto'
+    }
+  }
+
   
+  @media (max-height: 900px) {
+    .container{
+      height: 100%;
+    }
+  }

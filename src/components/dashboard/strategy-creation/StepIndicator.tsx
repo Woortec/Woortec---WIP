@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'; // Use Next.js's usePathname to get current path
 import styles from './styles/StepIndicator.module.css';
+import {Box} from '@mui/material';
 
 
 const StepIndicator: React.FC = () => {
@@ -21,36 +22,41 @@ const StepIndicator: React.FC = () => {
   }, [pathname]); // Re-run when pathname changes
 
   return (
-    <div className={styles.stepsContainer}>
-      <div className={`${styles.stepWrapper} ${activeStep === 1 ? styles.active : ''}`}>
-        <div className={styles.stepIcon}>
+    <Box className={styles.stepsContainer} sx={{
+      padding: {xs:'3rem 2rem', sm:'3rem 2rem', md:'3rem 3rem'}}}>
+
+      <Box className={`${styles.stepWrapper} ${activeStep === 1 ? styles.active : ''}`}
+      sx={{width:'60%'}}>
+        <Box className={styles.stepIcon}>
               {activeStep >= 2 ? (
             <img src="/images/check.svg" alt="Check Icon" className={styles.checkIcon} />
           ) : (
             <img src="/images/objective.svg" alt="Objective Icon" />
           )}
-        </div>
+        </Box>
         <span className={styles.stepLabel}>Objective</span>
-      </div>
+      </Box>
       
-      <div className={styles.stepLine}></div>
+      <Box className={styles.stepLine}></Box>
       
-      <div className={`${styles.stepWrapper} ${activeStep === 2 ? styles.active : ''}`}>
-        <div className={styles.stepIcon}>
+      <Box className={`${styles.stepWrapper} ${activeStep === 2 ? styles.active : ''}`}
+      sx={{width:'90%'}}>
+        <Box className={styles.stepIcon}>
           <img src="/images/strategy-info.svg" alt="Strategy Creation Icon" />
-        </div>
+        </Box>
         <span className={styles.stepLabel}>Strategy Creation</span>
-      </div>
+      </Box>
       
-      <div className={styles.stepLine}></div>
+      <Box className={styles.stepLine}></Box>
       
-      <div className={`${styles.stepWrapper} ${activeStep === 3 ? styles.active : ''}`}>
-        <div className={styles.stepIcon}>
+      <Box className={`${styles.stepWrapper} ${activeStep === 3 ? styles.active : ''}`}
+      sx={{width:'80%'}}>
+        <Box className={styles.stepIcon}>
           <img src="/images/strategy-result.svg" alt="Strategy Result Icon" />
-        </div>
+        </Box>
         <span className={styles.stepLabel}>Strategy Result</span>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

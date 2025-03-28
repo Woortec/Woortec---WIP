@@ -89,17 +89,17 @@ export function SideNav(): React.JSX.Element {
 
       <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}>
         {renderNavItems({ pathname, items: navItems })}
-      </Box>
 
-      {/* Button to start the Joyride tour */}
+              {/* Button to start the Joyride tour */}
       <Button
         variant="contained"
         color="primary"
         onClick={startTour} // This triggers the tour globally
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, width:'100%' }}
       >
         Start Tour
       </Button>
+      </Box>
     </Box>
   );
 

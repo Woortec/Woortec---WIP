@@ -14,11 +14,14 @@
     width: 100%;
     border-radius: 15px;
     height: 100%;
+    flex-wrap: wrap;
   }
 
   .summaryContainer{
     display: flex;
     gap: 1rem;
+    background-color: #ffffff;
+    padding-bottom: 1.25rem;
   }
 
   .summaryItem{
@@ -96,68 +99,17 @@
   .legendDotBad {
     background-color: #a60909;
   }
-/* 
-  @media (min-width: 1440px){ */
 
-    /* .summaryContent{
-      width: 180px;
-    } */
-
-    /* .iconWrapper {
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40%;
-      height: 75%; 
-      height: 55px;
-      margin: auto 0;
-    } */
-
-    /* .budgetIcon{
-      background-color: #F2F4F5;
-    }
-
-    .warningIcon {
-      background-color: #ffefef;
-    }
-
-    .successIcon {
-      background-color: #eaffeb;
-    } */
-
-    /* .successIcon img {
-      width: 35%;
-      height: 55%;
-    } */
-
-    /* .legendItems {
-      display: flex;
-      gap: 15px;
-    }
-     */
-    /* .legendItem {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    } */
-    
-    /* .legendDot {
-      border-radius: 50%;
-      width: 8px;
-      height: 8px;
-    }
-  } */
-
-  /* FOR EXTRA LARGER SCREENS
-  @media (min-width: 1920px){
-
-    .summaryItem{
-      gap: 15px;
+  @media (max-width: 675px){
+    .summaryContainer{
+      background-color: #ffffff;
+      width: 100%;
     }
 
     .summaryContent{
-      width: 180px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
     }
 
     .iconWrapper {
@@ -165,48 +117,134 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40%;
+      width: 30%; 
       height: 75%;
-      height: 55px;
+      height: 40px;
       margin: auto 0;
     }
-
-    .budgetIcon{
-      background-color: #F2F4F5;
+  
+    .budgetIcon img{
+      width: 35%;
+      height: 40%;
     }
-
+  
     .warningIcon {
       background-color: #ffefef;
     }
-
+  
     .successIcon {
       background-color: #eaffeb;
     }
-
+  
     .successIcon img {
       width: 35%;
       height: 55%;
     }
 
-    .legend{
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .legendItems {
-      display: flex;
-      gap: 15px;
-    }
-    
-    .legendItem {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    
     .legendDot {
       border-radius: 50%;
-      width: 8px;
-      height: 8px;
+      width: 0.4rem;
+      height: 0.4rem;
     }
-  } */
+  }
+
+  @media (max-width: 520px){
+
+    .summaryItem{
+      display: flex;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    .iconWrapper {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 55%; 
+      height: 50%;
+      height: 40px;
+      margin: auto 0;
+    }
+  
+    .budgetIcon img{
+      width: 35%;
+      height: 45%;
+    }
+  
+    .warningIcon {
+      background-color: #ffefef;
+    }
+  
+    .successIcon {
+      background-color: #eaffeb;
+    }
+  
+    .successIcon img {
+      width: 40%;
+      height: 55%;
+    }
+
+    .legendDot {
+      border-radius: 50%;
+      width: 0.4rem;
+      height: 0.4rem;
+    }
+  }
+
+  @media (max-width: 440px){
+    .summaryContainer{
+      background-color: #ffffff;
+      width: 100%;
+      padding-bottom: 0.8rem;
+    }
+
+    .summaryContent{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .summaryItem{
+      display: flex;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    .iconWrapper {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 70%; 
+      height: 50%;
+      height: 35px;
+      margin: auto 0;
+    }
+  
+    .budgetIcon img{
+      width: 35%;
+      height: 45%;
+    }
+  
+    .warningIcon {
+      background-color: #ffefef;
+    }
+  
+    .successIcon {
+      background-color: #eaffeb;
+    }
+  
+    .successIcon img {
+      width: 40%;
+      height: 55%;
+    }
+
+    .legendDot {
+      border-radius: 50%;
+      width: 0.4rem;
+      height: 0.4rem;
+    }
+  }
+
+  

@@ -33,18 +33,9 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
     <Drawer
       PaperProps={{
         sx: {
-          '--MobileNav-background': 'var(--mui-palette-neutral-950)',
-          '--MobileNav-color': 'var(--mui-palette-common-white)',
-          '--NavItem-color': 'var(--mui-palette-neutral-300)',
-          '--NavItem-hover-background': 'rgba(226, 11, 11, 0.04)',
-          '--NavItem-active-background': 'var(--mui-palette-primary-main)',
-          '--NavItem-active-color': 'var(--mui-palette-primary-contrastText)',
-          '--NavItem-disabled-color': 'var(--mui-palette-neutral-500)',
-          '--NavItem-icon-color': 'var(--mui-palette-neutral-400)',
-          '--NavItem-icon-active-color': 'var(--mui-palette-primary-contrastText)',
-          '--NavItem-icon-disabled-color': 'var(--mui-palette-neutral-600)',
+
           bgcolor: 'white',
-          color: '#333333',
+          color: 'var(--SideNav-color)',
           display: 'flex',
           flexDirection: 'column',
           maxWidth: '100%',
@@ -57,63 +48,42 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
       onClose={onClose}
       open={open}
     >
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
+      <Stack spacing={2} sx={{ p: 3, alignItems: 'center' }}>
+        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex', justifyContent:'center', paddingTop:'1rem' }}>
+          <Logo color="light" height={70} width={122} />
         </Box>
         <Box
           sx={{
+            display: 'flex',
             alignItems: 'center',
-            backgroundColor: 'var(--mui-palette-neutral-950)',
-            border: '1px solid var(--mui-palette-neutral-700)',
+            justifyContent: 'center',
             borderRadius: '12px',
             cursor: 'pointer',
-            display: 'flex',
             p: '4px 12px',
           }}
         >
           <Box sx={{ flex: '1 1 auto' }}>
-            <Typography color="var(--mui-palette-neutral-400)" variant="body2">
+            <Typography color="black">
               Woortec
             </Typography>
           </Box>
           <CaretUpDownIcon />
         </Box>
       </Stack>
-      <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
-      <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
+      <Divider sx={{ width:'18rem', borderColor: 'lightgrey', mx: 'auto' }} />
+      <Box component="nav" sx={{ flex: '1 1 auto', p: '0.8rem' }}>
         {renderNavItems({ pathname, items: navItems })}
-      </Box>
-      <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
-      <Stack spacing={2} sx={{ p: '12px' }}>
-        <div>
-          <Typography color="var(--mui-palette-neutral-100)" variant="subtitle2">
-            Need more features?
-          </Typography>
-          <Typography color="var(--mui-palette-neutral-400)" variant="body2">
-            Check out our Subscrition Plan.
-          </Typography>
-        </div>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box
-            component="img"
-            alt="Subscribe Here"
-            src="/assets/devias-kit-pro.png"
-            sx={{ height: 'auto', width: '160px' }}
-          />
-        </Box>
         <Button
           component="a"
-          endIcon={<ArrowSquareUpRightIcon fontSize="var(--icon-fontSize-md)" />}
           fullWidth
           href="https://www.app.woortec.com/dashboard/subscription"
-          sx={{ mt: 2 }}
+          sx={{ mt: 3, width:'100%' }}
           target="_blank"
           variant="contained"
         >
-          Subscribe Here
+          Start Tour
         </Button>
-      </Stack>
+      </Box>
     </Drawer>
   );
 }

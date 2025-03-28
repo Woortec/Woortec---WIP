@@ -249,89 +249,54 @@ const ObjectivePage: React.FC = () => {
         (formData.objective !== 'sales' || formData.trafficUrl);
 
     return (
-        <Box sx={{ width: '100%', minHeight: '90vh', backgroundColor: "#FFFFFF",
-            padding: '3.125rem',
-            borderRadius: '30px',
-        }}>
-            <Typography 
-            variant="h2" sx={{ fontSize: '1.5rem',fontWeight: 'bold',}}>Strategy Creation
-            </Typography>
-            <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left',}}>
-                Introducing Woortec - the ultimate social media ads product designed to elevate your 
-                online presence and drive results like never before. With Woortec, you can effortlessly 
-                create and manage ads across multiple social media platforms, all in one place.
-            </Typography>
-            <div>
-                <StepIndicator />
-            </div>
-
-            {/* <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Box sx={{height:'92.5vh', display:'flex'}}>
+            <Box className={styles.container}>
+                <Box>
                     <Typography 
-                    sx={{
-                      fontWeight: '600',
-                      fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.8rem" },
-                    }}
-                    >Additional Tips & Guidance</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <ul>
-                    <Typography
-                        sx={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.5rem" }, }}
-                    >
-                        <strong>Choosing an Objective:</strong> If you're aiming for brand recognition, select "Brand Awareness." For direct conversions, choose "Sales," and for building a lead database, pick "Lead Generation."
-                        </Typography>
-                    <li>
-                        <strong>Budget Allocation:</strong> Minimum recommended: ~180 USD. Adjust according to the exchange rate and your desired reach.
-                    </li>
-                    <li>
-                        <strong>Managing Inquiries:</strong> If you can respond to leads promptly, your campaign results will likely improve.
-                    </li>
-                    <li>
-                        <strong>Traffic Direction:</strong> For Sales objectives, ensure the provided URL leads to an optimized landing page.
-                    </li>
-                    </ul>
-                </AccordionDetails>
-            </Accordion> */}
+                    variant="h2" sx={{ fontSize: '1.5rem',fontWeight: 'bold',}}>Strategy Creation
+                    </Typography>
+                    <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left',}}>
+                        Introducing Woortec - the ultimate social media ads product designed to elevate your 
+                        online presence and drive results like never before. With Woortec, you can effortlessly 
+                        create and manage ads across multiple social media platforms, all in one place.
+                    </Typography>
+                </Box>
+                <Box sx={{border:'2px solid black'}}><StepIndicator/></Box>
 
-            <Box className={styles.formContainer}>
-                {/* Div for left column*/}
-                <div className={styles.leftColumn}>
-                        {/* Div for primary objective*/}
-                        <div className={styles.formGroup}>
+                <Box className={styles.formContainer}>
+                    <Box sx={{width:'50%', bgcolor:'red'}}> {/* Left Column */}
+                        <Box className={styles.formGroup}>
                             <label htmlFor="objective" className={styles.label}>
-                                What is the primary objective you aim to achieve with this investment?
+                            What is the primary objective you aim to achieve with this investment?
                             </label>
-                            <select
-                                id="objective"
-                                name="objective"
-                                className={`${styles.select} ${errors.objective ? styles.errorInput : ''}`}
-                                value={formData.objective}
-                                onChange={handleInputChange}
-                                aria-invalid={!!errors.objective}
-                                aria-describedby={errors.objective ? 'objective-error' : undefined}
-                                
-                            >
-                                <option value="" disabled>Select the best option</option>
-                                <option value="Brand Awareness">Enhance brand visibility and engagement</option>
-                                <option value="Sales">Increase website traffic and sales conversions</option>
-                                <option value="Lead Generation">Collect prospective customer information via a form</option>
-                            </select>
-                            {errors.objective && (
-                                <div id="objective-error" className={styles.errorMessage}>
-                                    {errors.objective}
-                                </div>
-                            )}
-                        </div>
+                                <select
+                                 id="objective"
+                                 name="objective"
+                                 className={`${styles.select} ${errors.objective ? styles.errorInput : ''}`}
+                                 value={formData.objective}
+                                 onChange={handleInputChange}
+                                 aria-invalid={!!errors.objective}
+                                 aria-describedby={errors.objective ? 'objective-error' : undefined}
+                                >
+                                        <option value="" disabled>Select the best option</option>
+                                        <option value="Brand Awareness">Enhance brand visibility and engagement</option>
+                                        <option value="Sales">Increase website traffic and sales conversions</option>
+                                        <option value="Lead Generation">Collect prospective customer information via a form</option>
+                                    </select>
+                                    {errors.objective && (
+                                        <div id="objective-error" className={styles.errorMessage}>
+                                            {errors.objective}
+                                        </div>
+                                    )}
+                        </Box>
 
-                        {/* Div for Yes/No*/}
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Are you able to manage and respond to customer inquiries generated through this campaign?
-                            </label>
-                            <div className={styles.radioGroup}>
-                                <label className={styles.radioLabel}>
-                                    <input
+                        <Box className={styles.formGroup}>
+                             <label className={styles.label}>
+                                 Are you able to manage and respond to customer inquiries generated through this campaign?
+                             </label>
+                             <div className={styles.radioGroup}>
+                                 <label className={styles.radioLabel}>
+                                     <input
                                         type="radio"
                                         id="yes"
                                         name="manageInquiries"
@@ -364,14 +329,13 @@ const ObjectivePage: React.FC = () => {
                                     {errors.manageInquiries}
                                 </div>
                             )}
-                        </div>
+                        </Box>
 
-                        {/* Div for traffic*/}
-                        <div className={styles.formGroup}>
-                            <label htmlFor="trafficUrl" className={styles.label}>
-                                Where do you want to direct the traffic to?
-                            </label>
-                            <input
+                        <Box className={styles.formGroup}>
+                             <label htmlFor="trafficUrl" className={styles.label}>
+                                 Where do you want to direct the traffic to?
+                             </label>
+                             <input
                                 type="url"
                                 name="trafficUrl"
                                 id="trafficUrl"
@@ -387,76 +351,150 @@ const ObjectivePage: React.FC = () => {
                                     {errors.trafficUrl}
                                 </div>
                             )}
-                        </div>
-                 </div>
+                        </Box>
+           
+                    </Box>
 
-                {/* Div for right column*/}
-                 <div className={styles.rightColumn}>
-                        {/* Div for budget*/}
-                        <div className={styles.formGroup}> 
-                            <label htmlFor="budget" className={styles.label}>
-                                What is the budget you are willing to allocate for this campaign?
-                            </label>
-                            <div className={styles.budgetInputContainer}>
-                                <input
-                                    type="number"
-                                    name="budget"
-                                    id="budget"
-                                    className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
-                                    placeholder="Enter the amount"
-                                    value={formData.budget}
-                                    onChange={handleInputChange}
-                                    aria-invalid={!!errors.budget}
-                                    aria-describedby={errors.budget ? 'budget-error' : undefined}
-                                    min="0"
-                                    step="0.01"
-                                />
-                                {currency && (
-                                    <input
-                                        type="text"
-                                        className={styles.currencyDisplay}
-                                        value={currency}
-                                        readOnly
-                                        tabIndex={-1}
-                                    />
-                                )}
-                            </div>
-                            {errors.budget && (
-                                <div id="budget-error" className={styles.errorMessage}>
-                                    {errors.budget}
-                                </div>
-                            )}
-                        </div>
+                    <Box sx={{width:'50%', bgcolor:'green'}}> {/* Right Column */}
+                        SAMPLE
+                    </Box>
 
-                        {/* Div for Description*/}
-                        <div className={styles.formGroup}> 
-                            <label htmlFor="description" className={styles.label}>
-                                Please Describe your audience or upload the buyer persona
-                            </label>
-                            <div>
-                                <textarea
-                                name="description"
-                                id="description"
-                                className={styles.describePersona}
-                                placeholder="Enter a description">
-                                </textarea>
-                            </div>
-                        </div>
-                  </div>
+                </Box>
+
+
             </Box>
-            
-            <div className={styles.forconButton}>
-                <button
-                    className={styles.continueButton}
-                    onClick={handleContinue}
-                    disabled={!isFormValid}
-                    aria-disabled={!isFormValid}
-                >
-                    Continue
-                </button>
-            </div>
+
         </Box>
+            
     );
 };
 
 export default ObjectivePage;
+
+{/* <Box sx={{width:'100%'}}>
+                <StepIndicator />
+            </Box> */}
+
+            {/* <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography 
+                    sx={{
+                      fontWeight: '600',
+                      fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.8rem" },
+                    }}
+                    >Additional Tips & Guidance</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <ul>
+                    <Typography
+                        sx={{ fontSize: { xs: "0.75rem", sm: "1rem", md: "1.125rem", lg: "1.25rem", xl: "1.5rem" }, }}
+                    >
+                        <strong>Choosing an Objective:</strong> If you're aiming for brand recognition, select "Brand Awareness." For direct conversions, choose "Sales," and for building a lead database, pick "Lead Generation."
+                        </Typography>
+                    <li>
+                        <strong>Budget Allocation:</strong> Minimum recommended: ~180 USD. Adjust according to the exchange rate and your desired reach.
+                    </li>
+                    <li>
+                        <strong>Managing Inquiries:</strong> If you can respond to leads promptly, your campaign results will likely improve.
+                    </li>
+                    <li>
+                        <strong>Traffic Direction:</strong> For Sales objectives, ensure the provided URL leads to an optimized landing page.
+                    </li>
+                    </ul>
+                </AccordionDetails>
+            </Accordion> */}
+
+        //     <Box className={styles.formContainer} sx={{
+        //         height: {md:'60%', lg:'60%'}
+        //     }}>
+         
+        //         <div className={styles.leftColumn}>
+ 
+        //                 <div className={styles.formGroup}>
+        //                     <label htmlFor="trafficUrl" className={styles.label}>
+        //                         Where do you want to direct the traffic to?
+        //                     </label>
+        //                     <input
+        //                         type="url"
+        //                         name="trafficUrl"
+        //                         id="trafficUrl"
+        //                         className={`${styles.input} ${errors.trafficUrl ? styles.errorInput : ''}`}
+        //                         placeholder="Please enter a URL"
+        //                         value={formData.trafficUrl}
+        //                         onChange={handleInputChange}
+        //                         aria-invalid={!!errors.trafficUrl}
+        //                         aria-describedby={errors.trafficUrl ? 'trafficUrl-error' : undefined}
+        //                     />
+        //                     {errors.trafficUrl && (
+        //                         <div id="trafficUrl-error" className={styles.errorMessage}>
+        //                             {errors.trafficUrl}
+        //                         </div>
+        //                     )}
+        //                 </div>
+        //          </div>
+
+   
+        //          <div className={styles.rightColumn}>
+          
+        //                 <div className={styles.formGroup}> 
+        //                     <label htmlFor="budget" className={styles.label}>
+        //                         What is the budget you are willing to allocate for this campaign?
+        //                     </label>
+        //                     <div className={styles.budgetInputContainer}>
+        //                         <input
+        //                             type="number"
+        //                             name="budget"
+        //                             id="budget"
+        //                             className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
+        //                             placeholder="Enter the amount"
+        //                             value={formData.budget}
+        //                             onChange={handleInputChange}
+        //                             aria-invalid={!!errors.budget}
+        //                             aria-describedby={errors.budget ? 'budget-error' : undefined}
+        //                             min="0"
+        //                             step="0.01"
+        //                         />
+        //                         {currency && (
+        //                             <input
+        //                                 type="text"
+        //                                 className={styles.currencyDisplay}
+        //                                 value={currency}
+        //                                 readOnly
+        //                                 tabIndex={-1}
+        //                             />
+        //                         )}
+        //                     </div>
+        //                     {errors.budget && (
+        //                         <div id="budget-error" className={styles.errorMessage}>
+        //                             {errors.budget}
+        //                         </div>
+        //                     )}
+        //                 </div>
+
+
+        //                 <div className={styles.formGroup}> 
+        //                     <label htmlFor="description" className={styles.label}>
+        //                         Please Describe your audience or upload the buyer persona
+        //                     </label>
+        //                     <div>
+        //                         <textarea
+        //                         name="description"
+        //                         id="description"
+        //                         className={styles.describePersona}
+        //                         placeholder="Enter a description">
+        //                         </textarea>
+        //                     </div>
+        //                 </div>
+        //           </div>
+        //     </Box>
+        //     <div className={styles.forconButton}>
+        //         <button
+        //             className={styles.continueButton}
+        //             onClick={handleContinue}
+        //             disabled={!isFormValid}
+        //             aria-disabled={!isFormValid}
+        //         >
+        //             Continue
+        //         </button>
+        //     </div>
+        // </Box>

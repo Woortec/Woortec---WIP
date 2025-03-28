@@ -44,14 +44,14 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
         if (localUserId) {
           logger.debug('[GuestGuard]: userid found in localStorage, removing it and redirecting...');
           localStorage.removeItem('userid'); // Ensure it's deleted
-          router.replace(paths.dashboard.overview);
+        
+          setTimeout(() => {
+            router.replace(paths.dashboard.overview);
+          }, 0);
+        
           return;
         }
-
-        if (error) {
-          setIsChecking(false);
-          return;
-        }
+        
 
         if (user) {
           logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');

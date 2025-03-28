@@ -73,65 +73,28 @@
   color: #C70E0E;
 }
 
-/* .adSetDetailContainer {
-  padding: 16px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 320px;
-  margin: 16px auto;
-}
-
-.adSetDetailHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.closeButton {
-  background-color: #ff4757;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.closeButton:hover {
-  background-color: #ff6b81;
-} */
-
-/* .metric {
-  display: flex;
-  align-items: center;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 8px 16px;
-  margin-bottom: 8px;
-} */
-
-
-/* .metricLabel {
-  color: #1c252a;
-  flex: 1;
-}
-
-.metricValue {
-  color: #333;
-} */
-
-/* @media (max-width: 1920px){
-  .tableHeader {
-    padding: 15px;
-    font-weight: 600;
+@media (max-width: 770px) {
+  
+  .tableHeaderCell {
+    font-size: 0.8rem;
   }
+  
+  .tableHeaderCell:first-child {
+    font-size: 0.8rem;
+
+  }
+  .adTableContainer {
+    width: 100%;
+    overflow-x: auto; /* Enables horizontal scrolling */
+  }
+  
+  .tableHeader {
+    display: none; /* Hide table headers on small screens */
+  }
+  
+  .tableCell{
+    padding-bottom: 10px;
+  }
+
 }
 
-@media (min-width: 1921px) and (max-width: 2560px){
-  .tableHeader {
-    padding: 20px;
-    font-weight: 600;
-  }
-} */

@@ -134,3 +134,21 @@
 .adDescription {
   padding: 0.5rem;
 }
+
+ @media (max-width: 445px){
+  .budgetContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .iconWrapper {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+  }
+ }
