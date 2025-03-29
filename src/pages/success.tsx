@@ -1,59 +1,80 @@
 'use client';
 
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Stripe from 'stripe';
-import styles from './SuccessPage.module.css';
+import { useSearchParams } from 'next/navigation';
+import { Dialog, DialogContent, DialogActions, Button, CircularProgress, Typography } from '@mui/material';
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY as string, {
-  apiVersion: '2024-06-20',
-});
+interface SuccessModalProps {
+  sessionId: string | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-const SuccessPage = () => {
-  const router = useRouter();
-  const { session_id } = router.query;
+const SuccessModal = ({ sessionId, isOpen, onClose }: SuccessModalProps) => {
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Start with URL param session_id or prop sessionId, then update to session.id
+  const [session_id, setSessionId] = useState<string | null>(
+    sessionId || searchParams?.get('session_id') || null
+  );
 
   useEffect(() => {
     if (session_id) {
-      fetchSessionDetails(session_id as string);
+      fetchSessionDetails(session_id);
     }
   }, [session_id]);
 
   const fetchSessionDetails = async (sessionId: string) => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch(`/api/stripe-session/${sessionId}`);
+      if (!response.ok) throw new Error('Failed to fetch session details');
       const sessionData = await response.json();
+      
       setSession(sessionData);
+      setSessionId(sessionData.id); // Update session_id to the actual session.id
     } catch (error) {
-      console.error('Error fetching session details:', error);
+      setError('Error fetching session details. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    //  if payment is successful
-    if (session && session.payment_status === 'paid') {
-      // Redirect to dashboard
-      router.push('/dashboard');
-    }
-  }, [session, router]);
-
-  if (!session) {
-    return <div className={styles.container}>Loading...</div>;
-  }
-
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.heading}>Payment Successful!</h1>
-        <p className={styles.message}>Thank you for your payment!</p>
-        <div className={styles.details}>
-          <p><strong>Session ID:</strong> {session.id}</p>
-          <p><strong>Amount Paid:</strong> ${(session.amount_total / 100).toFixed(2)} {session.currency.toUpperCase()}</p>
-        </div>
-      </div>
-    </div>
+    <Dialog open={Boolean(isOpen)} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogContent sx={{ textAlign: 'center', p: 3 }}>
+        {loading ? (
+          <CircularProgress />
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          session && (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Payment Successful! 🎉
+              </Typography>
+              <Typography variant="body1">Thank you for your payment!</Typography>
+              <Typography variant="body2">
+                <strong>Session ID:</strong> {session_id}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Amount Paid:</strong> ${(session.amount_total / 100).toFixed(2)} {session.currency.toUpperCase()}
+              </Typography>
+            </>
+          )
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} variant="contained" color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default SuccessPage;
+export default SuccessModal;

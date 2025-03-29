@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -24,6 +25,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
+// Import SuccessModal
+import SuccessModal from '@/pages/success';
+
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -38,6 +42,7 @@ const style = {
 };
 
 export default function Page(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -50,6 +55,10 @@ export default function Page(): React.JSX.Element {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  // SuccessModal state
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -74,6 +83,20 @@ export default function Page(): React.JSX.Element {
       setOpen(true);
     }
   }, [userInfo]);
+
+  // Function to open SuccessModal
+  const handlePaymentSuccess = (sessionId: string) => {
+    setSessionId(sessionId);
+    setIsSuccessModalOpen(true);
+  };
+
+  // Automatically detect session_id from URL and trigger modal
+  useEffect(() => {
+    const session_id = searchParams?.get('session_id');
+    if (session_id) {
+      handlePaymentSuccess(session_id);
+    }
+  }, [searchParams]);
 
   return (
     <>
@@ -129,6 +152,13 @@ export default function Page(): React.JSX.Element {
           </Button>
         </Box>
       </Modal>
+
+      {/* SuccessModal - Automatically opens after payment */}
+      <SuccessModal
+        sessionId={sessionId}
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+      />
 
       <DateProvider>
         {isMounted && (

@@ -15,7 +15,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useUser } from '@/hooks/use-user'; // Custom hook for fetching user data
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../../utils/supabase/client';
 import axios from 'axios';
 
@@ -23,15 +24,16 @@ const supabase = createClient();
 
 export function CancelSubscription(): React.JSX.Element {
   const { user, isLoading } = useUser();
+  const router = useRouter();
   const [loading, setLoading] = React.useState(false);
   const [showDialog, setShowDialog] = React.useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = React.useState(false);
   const [subscriptionId, setSubscriptionId] = React.useState<string | null>(null);
   const [userId, setUserId] = React.useState<number | null>(null);
+  const [subscriptionDetails, setSubscriptionDetails] = React.useState<any>(null);
 
-  // Fetch userId and active subscription status
   React.useEffect(() => {
-    const fetchUserId = async () => {
+    const fetchUserSubscription = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) return;
 
@@ -46,7 +48,7 @@ export function CancelSubscription(): React.JSX.Element {
 
       const { data: subscription, error: subError } = await supabase
         .from('subscriptions_details')
-        .select('subscriptionId')
+        .select('*, planid:Plan (plan_name)')
         .eq('userId', userRecord.id)
         .eq('isActive', true)
         .single();
@@ -54,10 +56,11 @@ export function CancelSubscription(): React.JSX.Element {
       if (!subError && subscription) {
         setSubscriptionId(subscription.subscriptionId);
         setHasActiveSubscription(true);
+        setSubscriptionDetails(subscription);
       }
     };
 
-    fetchUserId();
+    fetchUserSubscription();
   }, []);
 
   const handleCancelSubscription = async () => {
@@ -99,9 +102,20 @@ export function CancelSubscription(): React.JSX.Element {
           </Stack>
         </Stack>
       </CardContent>
+      {hasActiveSubscription && subscriptionDetails && (
+        <CardContent>
+          <Typography variant="h6" sx={{ textAlign: 'center' }}>Subscription Details</Typography>
+          <Stack spacing={1}>
+          <Typography variant="body2"><strong>Plan:</strong> {subscriptionDetails.planid?.plan_name || 'Unknown Plan'}</Typography>
+            <Typography variant="body2"><strong>Start Date:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
+            <Typography variant="body2"><strong>Expiration Date:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : 'Ongoing'}</Typography>
+            <Typography variant="body2"><strong>Next Payment Date:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
+          </Stack>
+        </CardContent>
+      )}
       <Divider />
       <CardActions>
-        {hasActiveSubscription && (
+        {hasActiveSubscription ? (
           <Button
             fullWidth
             variant="outlined"
@@ -111,10 +125,18 @@ export function CancelSubscription(): React.JSX.Element {
           >
             Cancel Subscription
           </Button>
+        ) : (
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={() => router.push('/dashboard/subscription')}
+          >
+            Subscribe Here
+          </Button>
         )}
       </CardActions>
 
-      {/* Confirmation Dialog */}
       <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
         <DialogTitle>Confirm Cancellation</DialogTitle>
         <DialogContent>
