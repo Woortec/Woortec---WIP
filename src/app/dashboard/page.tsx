@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -41,8 +41,20 @@ const style = {
   outline: 'none',
 };
 
-export default function Page(): React.JSX.Element {
+function SearchParamsHandler({ onSessionId }: { onSessionId: (sessionId: string) => void }) {
   const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    const session_id = searchParams?.get('session_id');
+    if (session_id) {
+      onSessionId(session_id);
+    }
+  }, [searchParams]);
+
+  return null;
+}
+
+export default function Page(): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -90,16 +102,12 @@ export default function Page(): React.JSX.Element {
     setIsSuccessModalOpen(true);
   };
 
-  // Automatically detect session_id from URL and trigger modal
-  useEffect(() => {
-    const session_id = searchParams?.get('session_id');
-    if (session_id) {
-      handlePaymentSuccess(session_id);
-    }
-  }, [searchParams]);
-
   return (
     <>
+      <Suspense fallback={null}>
+        <SearchParamsHandler onSessionId={handlePaymentSuccess} />
+      </Suspense>
+
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
         <Box sx={style}>
           <Typography id="modal-title" variant="h5" component="h2" gutterBottom sx={{ mt: 5 }}>
