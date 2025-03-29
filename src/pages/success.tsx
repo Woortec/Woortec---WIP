@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { Dialog, DialogContent, DialogActions, Button, CircularProgress, Typography } from '@mui/material';
 
 interface SuccessModalProps {
@@ -11,15 +10,18 @@ interface SuccessModalProps {
 }
 
 const SuccessModal = ({ sessionId, isOpen, onClose }: SuccessModalProps) => {
-  const searchParams = useSearchParams();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [session_id, setSessionId] = useState<string | null>(sessionId);
 
-  // Start with URL param session_id or prop sessionId, then update to session.id
-  const [session_id, setSessionId] = useState<string | null>(
-    sessionId || searchParams?.get('session_id') || null
-  );
+  useEffect(() => {
+    if (!sessionId && typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlSessionId = urlParams.get('session_id');
+      if (urlSessionId) setSessionId(urlSessionId);
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     if (session_id) {
@@ -34,9 +36,7 @@ const SuccessModal = ({ sessionId, isOpen, onClose }: SuccessModalProps) => {
       const response = await fetch(`/api/stripe-session/${sessionId}`);
       if (!response.ok) throw new Error('Failed to fetch session details');
       const sessionData = await response.json();
-      
       setSession(sessionData);
-      setSessionId(sessionData.id); // Update session_id to the actual session.id
     } catch (error) {
       setError('Error fetching session details. Please try again.');
     } finally {
