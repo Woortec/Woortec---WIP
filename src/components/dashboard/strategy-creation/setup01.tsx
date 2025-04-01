@@ -249,8 +249,8 @@ const ObjectivePage: React.FC = () => {
         (formData.objective !== 'sales' || formData.trafficUrl);
 
     return (
-        <Box sx={{height:'92.5vh', display:'flex'}}>
-            <Box className={styles.container}>
+        <Box className={styles.container}>
+            <Box>
                 <Box>
                     <Typography 
                     variant="h2" sx={{ fontSize: '1.5rem',fontWeight: 'bold',}}>Strategy Creation
@@ -261,13 +261,13 @@ const ObjectivePage: React.FC = () => {
                         create and manage ads across multiple social media platforms, all in one place.
                     </Typography>
                 </Box>
-                <Box sx={{border:'2px solid black'}}><StepIndicator/></Box>
+                <Box><StepIndicator/></Box>
 
                 <Box className={styles.formContainer}>
-                    <Box sx={{width:'50%', bgcolor:'red'}}> {/* Left Column */}
+                    <Box sx={{width:'45%', fontFamily:'Poppins', '@media (max-width: 1200px)':{width: '100%'}}}> {/* Left Column */}
                         <Box className={styles.formGroup}>
                             <label htmlFor="objective" className={styles.label}>
-                            What is the primary objective you aim to achieve with this investment?
+                            What is your Objective with this investment?
                             </label>
                                 <select
                                  id="objective"
@@ -290,9 +290,9 @@ const ObjectivePage: React.FC = () => {
                                     )}
                         </Box>
 
-                        <Box className={styles.formGroup}>
+                        <Box className={styles.formGroup} sx={{fontFamily:'Poppins'}}>
                              <label className={styles.label}>
-                                 Are you able to manage and respond to customer inquiries generated through this campaign?
+                                Are you able to answer messages?
                              </label>
                              <div className={styles.radioGroup}>
                                  <label className={styles.radioLabel}>
@@ -331,9 +331,9 @@ const ObjectivePage: React.FC = () => {
                             )}
                         </Box>
 
-                        <Box className={styles.formGroup}>
+                        <Box className={styles.formGroup} sx={{fontFamily:'Poppins'}}>
                              <label htmlFor="trafficUrl" className={styles.label}>
-                                 Where do you want to direct the traffic to?
+                                Where do you want to direct the traffic to?
                              </label>
                              <input
                                 type="url"
@@ -355,15 +355,70 @@ const ObjectivePage: React.FC = () => {
            
                     </Box>
 
-                    <Box sx={{width:'50%', bgcolor:'green'}}> {/* Right Column */}
-                        SAMPLE
+                    <Box sx={{width:'45%', fontFamily:'Poppins', '@media (max-width: 1200px)':{width: '100%'}
+                    }}> {/* Right Column */}
+                        
+                         <Box className={styles.formGroup}> 
+                             <label htmlFor="budget" className={styles.label}>
+                                 What is the budget you are willing to allocate for this campaign?
+                             </label>
+                             <div className={styles.budgetInputContainer}>
+                                 <input
+                                    type="number"
+                                    name="budget"
+                                    id="budget"
+                                    className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
+                                    placeholder="Enter the amount"
+                                    value={formData.budget}
+                                    onChange={handleInputChange}
+                                    aria-invalid={!!errors.budget}
+                                    aria-describedby={errors.budget ? 'budget-error' : undefined}
+                                    min="0"
+                                    step="0.01"
+                                />
+                                {/* {currency && (
+                                    <input
+                                        type="text"
+                                        className={styles.currencyDisplay}
+                                        value={currency}
+                                        readOnly
+                                        tabIndex={-1}
+                                    />
+                                )} */}
+                            </div>
+                            {errors.budget && (
+                                <div id="budget-error" className={styles.errorMessage}>
+                                    {errors.budget}
+                                </div>
+                            )}
+                        </Box>
+
+                     <div className={styles.formGroup}> 
+                     <label htmlFor="description" className={styles.label}>
+                                Please Describe your audience or upload the buyer persona
+                           </label>
+                         <div>
+                            <textarea
+                                name="description"
+                                id="description"
+                                className={styles.describePersona}
+                                placeholder="Enter a description">
+                            </textarea>
+                          </div>
+                        </div>
                     </Box>
-
                 </Box>
-
-
             </Box>
-
+            <div className={styles.forconButton}>
+                <button
+                    className={styles.continueButton}
+                    onClick={handleContinue}
+                    disabled={!isFormValid}
+                    aria-disabled={!isFormValid}
+                >
+                    Continue
+                </button>
+             </div>
         </Box>
             
     );

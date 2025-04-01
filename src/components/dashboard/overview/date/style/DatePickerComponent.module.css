@@ -1,20 +1,19 @@
 /* DatePickerComponent.module.css */
 
-
 .card {
   display: flex;
   align-items: center;
   width:100%;
   border-radius: 10px;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .toggleButtonGroup {
   display: flex;
   padding: 0.3rem;
-  border-radius: 10px;
-  width: 64%;
+  border-radius: 15px;
+  width: 66.5%;
   background-color: #ffffff;
   gap: 0.3rem;
   justify-content: space-between;
@@ -45,9 +44,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between; /* Centers everything */
-  border-radius: 10px;
+  border-radius: 15px;
   background-color: #ffffff;
-  width: 35%;
+  width: 32.7%;
   flex-wrap: wrap; /* Allow wrapping on small screens */
   padding: 0.3rem 0.5rem;
 }
@@ -65,13 +64,19 @@
 }
 
 .datePickerInput {
-  width: 10rem;
+  width: 250px;
   border-radius: 10px;
   font-size: 0.9rem;
-  color: #333;
+  color: #859096;
   background-color: #fff;
-  padding: 0.2rem 2rem;
+  padding: 0.2rem;
   font-family: 'Poppins', sans-serif;
+  text-align: center;
+  cursor: pointer;
+}
+
+.datePickerInput:hover {
+  border: 1px solid rgb(178, 197, 202);
 }
 
 .datePickerSeparator {
@@ -111,20 +116,88 @@
   margin-top: 5px;
 }
 
+.calButton {
+  padding: 0rem 0.6rem;
+  cursor: default;
+}
+
 /* Apply styles when screen width is 375px or below */
+@media (max-width: 2360px) {
+  .datePickerInput {
+    width: 230px;
+  }
+}
+
+@media (max-width: 2235px) {
+  .datePickerInput {
+    width: 200px;
+  }
+}
+
+@media (max-width: 2061px) {
+  .datePickerInput {
+    width: 180px;
+  }
+}
+
+@media (max-width: 1930px) {
+  .datePickerInput {
+    width: 130px;
+  }
+}
+
+@media (max-width: 1686px) {
+  .datePickerInput {
+    width: 110px;
+  }
+}
+
 @media (max-width: 1508px) {
+
+  .datePickerBox {
+    width: 39%;
+  }
+
+  .datePickerInput {
+    width: 8rem;
+  }
+
+  .toggleButtonGroup {
+    width: 60%;
+  }
+
+  .toggleButton {
+    padding: 0.31rem 1rem;
+  }
+}
+
+@media (max-width: 1420px) {
+
+  .datePickerBox {
+    width: 44%;
+  }
+
+  .datePickerInput {
+    width: 8rem;
+  }
+
+  .toggleButtonGroup {
+    width: 55%;
+  }
+
+  .toggleButton {
+    padding: 0.31rem 1rem;
+  }
+}
+
+@media (max-width: 1306px) {
 
   .datePickerBox {
     width: 49%;
   }
 
   .datePickerInput {
-    width: 10rem !important;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 8rem;
   }
 
   .toggleButtonGroup {
@@ -146,27 +219,18 @@
 
   .card {
     display: flex;
-    align-items: center;
-    width:100%;
-    border-radius: 10px;
-    gap: 0.6rem;
   }
 
   .datePickerBox {
-    width: 48%;
+    width: 47%;
   }
 
   .datePickerInput {
-    width: 9rem !important;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 7rem;
   }
 
   .toggleButtonGroup {
-    width: 50%;
+    width: 52%;
   }
 
   .toggleButton {
@@ -174,22 +238,14 @@
   }
 }
 
-@media (max-width: 1199px) {
-
-  .card {
-    display: flex;
-    align-items: center;
-    width:100%;
-    border-radius: 10px;
-    gap: 0.7rem;
-  }
+@media (max-width: 1200px) {
 
   .datePickerBox {
     width: 49%;
   }
 
   .datePickerInput {
-    width: 15rem !important;
+    width: 12rem;
     border-radius: 10px;
     font-size: 0.9rem;
     color: #333;
@@ -206,14 +262,10 @@
   }
 }
 
-@media (max-width: 1167px) {
+@media (max-width: 1145px) {
 
-  .card {
-    display: flex;
-    align-items: center;
-    width:100%;
-    border-radius: 10px;
-    gap: 0.7rem;
+  .card{
+    gap: 0.5rem;
   }
 
   .datePickerBox {
@@ -221,12 +273,7 @@
   }
 
   .datePickerInput {
-    width: 30rem !important;
-    border-radius: 10px;
-    font-size: 1rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 25rem;
   }
 
   .toggleButtonGroup {
@@ -238,14 +285,10 @@
   }
 }
 
-@media (max-width: 1070px) {
+@media (max-width: 1145px) {
 
-  .card {
-    display: flex;
-    align-items: center;
-    width:100%;
-    border-radius: 10px;
-    gap: 0.7rem;
+  .card{
+    gap: 0.5rem;
   }
 
   .datePickerBox {
@@ -253,12 +296,7 @@
   }
 
   .datePickerInput {
-    width: 25rem !important;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 25rem;
   }
 
   .toggleButtonGroup {
@@ -270,13 +308,10 @@
   }
 }
 
-@media (max-width: 921px){
-  .card {
-    display: flex;
-    align-items: center;
-    width:100%;
-    border-radius: 10px;
-    gap: 0.7rem;
+@media (max-width: 980px) {
+
+  .card{
+    gap: 0.5rem;
   }
 
   .datePickerBox {
@@ -284,12 +319,7 @@
   }
 
   .datePickerInput {
-    width: 20rem !important;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 20rem;
   }
 
   .toggleButtonGroup {
@@ -301,32 +331,10 @@
   }
 }
 
+@media (max-width: 822px) {
 
-@media (max-width: 847px) {
-  .card {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 10px;
-  }
-
-  .toggleButtonGroup {
-    display: flex;
-    width: 100%;
-    background-color: #ffffff;
-    justify-content: space-between;
-  }
-  
-  .toggleButton {
-    background-color: transparent;
-    color: #859096;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-    padding: 0.31rem 2rem;
+  .card{
+    gap: 0.5rem;
   }
 
   .datePickerBox {
@@ -334,40 +342,14 @@
   }
 
   .datePickerInput {
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 15rem;
   }
-
 }
 
-@media (max-width: 756px) {
-  .card {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 10px;
-  }
+@media (max-width: 662px) {
 
-  .toggleButtonGroup {
-    display: flex;
-    width: 100%;
-    background-color: #ffffff;
-    justify-content: space-between;
-  }
-  
-  .toggleButton {
-    background-color: transparent;
-    color: #859096;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-    padding: 0.31rem 2rem;
+  .card{
+    gap: 0.5rem;
   }
 
   .datePickerBox {
@@ -375,63 +357,106 @@
   }
 
   .datePickerInput {
-    width: 15rem !important;
-    border-radius: 10px;
-    font-size: 1rem;
-    color: #333;
-    background-color: #fff;
-    font-family: 'Poppins', sans-serif;
+    width: 12rem;
   }
-
 }
 
-@media (max-width: 552px) {
+@media (max-width: 662px) {
+
+  .card{
+    gap: 0.5rem;
+  }
+
+  .datePickerBox {
+    width: 100%;
+  }
+
   .datePickerInput {
-    width: 10rem !important;
+    width: 10rem;
+  }
+}
+
+@media (max-width: 486px) {
+
+  .card{
+    gap: 0.5rem;
+  }
+
+  .datePickerBox {
+    width: 100%;
+  }
+
+  .datePickerInput {
+    width: 7rem;
+  }
+}
+
+@media (max-width: 390px) {
+
+  .card{
+    gap: 0.5rem;
+  }
+
+  .datePickerBox {
+    width: 100%;
+  }
+
+  .datePickerInput {
+    width: 6rem;
+  }
+
+  .toggleButtonGroup {
+    width: 100%;
   }
 
   .toggleButton {
-    background-color: transparent;
-    color: #859096;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-    padding: 0.31rem 1.2rem;
+    padding: 0.31rem 0.5rem;
   }
 }
 
-@media (max-width: 414px) {
+@media (max-width: 360px) {
+
+  .card{
+    gap: 0.5rem;
+  }
+
+  .datePickerBox {
+    width: 100%;
+  }
+
   .datePickerInput {
-    width: 7rem !important;
+    width: 5rem;
+  }
+
+  .toggleButtonGroup {
+    width: 100%;
   }
 
   .toggleButton {
-    background-color: transparent;
-    color: #859096;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-    padding: 0.31rem 1rem;
+    padding: 0.31rem 0.5rem;
   }
 }
 
-@media (max-width: 382px) {
+@media (max-width: 326px) {
+
+  .card{
+    gap: 0.5rem;
+  }
+
+  .datePickerBox {
+    width: 100%;
+  }
+
   .datePickerInput {
-    width: 7rem !important;
+    width: 3rem;
+  }
+
+  .toggleButtonGroup {
+    width: 100%;
   }
 
   .toggleButton {
-    background-color: transparent;
-    color: #859096;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-    padding: 0.31rem 0.6rem;
+    padding: 0.31rem 0.5rem;
   }
 }
+

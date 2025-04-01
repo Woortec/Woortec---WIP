@@ -73,27 +73,33 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
 
       {/* Calendar Picker */}
       <div className={styles.datePickerBox}>
-        <CalIcon />
-        
-        {/* Start Date Picker */}
-        <DatePicker
-          selected={startDate}
-          onChange={(date: Date | null) => setStartDate(date)}
-          dateFormat="dd MMM yyyy"
-        />
-
-        <div>↔</div>
-
-        {/* End Date Picker */}
-        <DatePicker
-          selected={endDate}
-          onChange={(date: Date | null) => setEndDate(date)}
-          dateFormat="dd MMM yyyy"
-        />
-
-        <button onClick={setTodayAsEndDate}>
+        <div className={styles.datePickerContainer}>
           <CalIcon />
-        </button>
+          
+          {/* Start Date Picker */}
+          <DatePicker
+            selected={startDate}
+            onChange={(date: Date | null) => setStartDate(date)}
+            dateFormat="dd MMM yyyy"
+            className={styles.datePickerInput}
+          />
+        </div>
+
+        <div className={styles.datePickerSeparator}>↔</div>
+
+        <div className={styles.datePickerContainer}>
+          {/* End Date Picker */}
+          <DatePicker
+            selected={endDate}
+            onChange={(date: Date | null) => setEndDate(date)}
+            dateFormat="dd MMM yyyy"
+            className={styles.datePickerInput}
+          />
+
+          <button onClick={setTodayAsEndDate}>
+            <CalIcon />
+          </button>
+        </div>
       </div>
     </div>
   );

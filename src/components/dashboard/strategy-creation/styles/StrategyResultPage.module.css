@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .container {
-    width: 100% !important;
-    height: 90vh;
+    width: 100%;
+    height: 100%;
     padding: 1.25rem !important;
     box-sizing: border-box !important;
     background-color: #ffffff !important;
@@ -291,5 +291,11 @@
     margin: 0.625rem !important;
     border: none !important;
     cursor: pointer !important;
+}
+
+@media (min-height: 1080px) {
+    .container {
+        height: 92.5vh;
+    }
 }
 

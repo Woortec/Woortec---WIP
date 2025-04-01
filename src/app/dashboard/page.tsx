@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -12,6 +13,7 @@ import { useTour } from '@/contexts/TourContext';
 import { userData } from '@/contexts/user-context';
 import { Sales } from '@/components/dashboard/overview/adspend';
 import TotalProfitContainer from '@/components/dashboard/overview/adsrunning';
+import TotalAdsContainer from '@/components/dashboard/overview/adsrunning';
 import BudgetContainer from '@/components/dashboard/overview/budget';
 import TotalCostPerMessageContainer from '@/components/dashboard/overview/cpm';
 import { DateProvider } from '@/components/dashboard/overview/date/DateContext';
@@ -40,14 +42,16 @@ const style = {
 };
 
 export default function Page(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const { runTour, steps } = useTour();
-  const { user, fetchApiData, userInfo, addIndustry } = userData();
+  const { user, fetchApiData, isIndustryFilled, userInfo, addIndustry } = userData();
   const [industryName, setIndustryName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -61,6 +65,8 @@ export default function Page(): React.JSX.Element {
   }, []);
 
   const handleIndustry = () => {
+    console.log('Industry Name:', industryName);
+    console.log('Date of Birth:', dateOfBirth);
     addIndustry(industryName, dateOfBirth, userInfo.uuid);
     handleClose();
   };
@@ -84,16 +90,13 @@ export default function Page(): React.JSX.Element {
     setIsSuccessModalOpen(true);
   };
 
-  // Detect session_id from URL manually (without `useSearchParams`)
+  // Automatically detect session_id from URL and trigger modal
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const session_id = urlParams.get('session_id');
-      if (session_id) {
-        handlePaymentSuccess(session_id);
-      }
+    const session_id = searchParams?.get('session_id');
+    if (session_id) {
+      handlePaymentSuccess(session_id);
     }
-  }, []);
+  }, [searchParams]);
 
   return (
     <>

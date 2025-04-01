@@ -331,7 +331,7 @@ const StrategyResultPage: React.FC = () => {
                 <div className={styles.secondsecHeader}>Performance Analysis</div>
             </div>
 
-            <Paper className={styles.tableContainer}>
+            <Box className={styles.tableContainer}>
                 <div className={styles.table}>
                     <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
 
@@ -402,7 +402,7 @@ const StrategyResultPage: React.FC = () => {
                         </TableCellBox>
                     ))}
                 </div>
-            </Paper>
+            </Box>
 
             <button className={styles.continueButton} onClick={handleBackToStart}>
                 Start Over

@@ -67,8 +67,8 @@ const AdsPerformance: React.FC = () => {
                     '@media (max-width: 440px)': {fontSize: '0.4rem',},
               }}> Monthly Budget </Typography>
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
-                '@media (max-width: 675px)': {fontSize: '1.1rem',},
-                '@media (max-width: 440px)': {fontSize: '1rem',},
+                '@media (max-width: 675px)': {fontSize: '1.2rem',},
+                '@media (max-width: 440px)': {fontSize: '1.1rem',},
               }}>${budget}</Typography>
             </Box>
           </Box>
@@ -83,8 +83,8 @@ const AdsPerformance: React.FC = () => {
                 '@media (max-width: 440px)': {fontSize: '0.4rem',},
               }}>Warning Ads</Typography>
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
-                '@media (max-width: 675px)': {fontSize: '1.1rem',},
-                '@media (max-width: 440px)': {fontSize: '1rem',},
+                '@media (max-width: 675px)': {fontSize: '1.2rem',},
+                '@media (max-width: 440px)': {fontSize: '1.1rem',},
               }}>{warningAds}</Typography>
             </Box>
           </Box>
@@ -99,8 +99,8 @@ const AdsPerformance: React.FC = () => {
                 '@media (max-width: 440px)': {fontSize: '0.4rem',},
               }}>Success Ads</Typography>
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontFamily:'Poppins', fontSize: '1.9rem',
-                '@media (max-width: 675px)': {fontSize: '1.1rem',},
-                '@media (max-width: 440px)': {fontSize: '1rem',},
+                '@media (max-width: 675px)': {fontSize: '1.2rem',},
+                '@media (max-width: 440px)': {fontSize: '1.1rem',},
               }}>{successAds}</Typography>
             </Box>
           </Box>
