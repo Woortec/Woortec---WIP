@@ -6,6 +6,7 @@ import ObjectivePage from '@/components/dashboard/strategy-creation/setup01';
 import StrategyCreationPage from '@/components/dashboard/strategy-creation/setup02';
 import StrategyResultPage from '@/components/dashboard/strategy-creation/setup03';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust the import path as necessary
+import './page.css'; // Import the CSS file for styles
 
 function App() {
   const [isClient, setIsClient] = useState(false);
@@ -32,11 +33,10 @@ function App() {
 
         if (session) {
           const user_id = session.user.id; // User's UUID
-          // Fetch the user's planId from the 'user' table
           const { data, error } = await supabase
-            .from('user') // Use 'user' or 'users' depending on your table name
+            .from('user') // Adjust table name accordingly
             .select('planId')
-            .eq('uuid', user_id) // Use the correct column that stores the user's UUID
+            .eq('uuid', user_id) // Ensure correct column name
             .single();
 
           if (error) {
@@ -65,8 +65,8 @@ function App() {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      <div style={{ filter: hasPlan ? 'none' : 'blur(5px)' }}>
+    <div className="app-container">
+      <div className={hasPlan ? '' : 'blurred-content'}>
         <Router>
           <div className="App">
             <Routes>
@@ -78,29 +78,12 @@ function App() {
         </Router>
       </div>
       {!hasPlan && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.8)',
-              padding: '20px',
-              borderRadius: '8px',
-              pointerEvents: 'auto',
-              textAlign: 'center',
-            }}
-          >
-            <p>You need to subscribe in order to use our services</p>
+        <div className="cta-overlay">
+          <div className="cta-container">
+            <img src="/assets/ads-strategies.svg" alt="Unlock Access" className="cta-image" />
+            <h2>Unlock Full Access</h2>
+            <p>Subscribe now to access premium tools and strategy insights.</p>
+            <button className="cta-button">Upgrade Now</button>
           </div>
         </div>
       )}
