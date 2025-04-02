@@ -127,7 +127,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
         </p>
       </div>
       <div className={styles.divider}>
-        <h2 className={styles.headingUpload}>Upload your images</h2>
+      <h2 className={styles.headingUpload}>Upload your images</h2>
       </div>
 
       <div className={styles.uploadContainer}>
@@ -139,7 +139,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
             <p>Drag your image(s) to start uploading</p>
             <span>or</span>
             <button className={styles.uploadButton} onClick={() => document.getElementById('file-upload')?.click()}>
-              Upload from your Desktop
+              Upload from your Device
             </button>
           </label>
           <input

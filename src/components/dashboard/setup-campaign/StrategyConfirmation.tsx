@@ -22,7 +22,7 @@ const StrategyConfirmation: React.FC<StrategyConfirmationProps> = ({ campaignId 
                     /></center>
             <h2>Your campaign have just been set up in the platform!</h2>
             <p>Please check everything </p>
-            <button>Check out here</button>
+            <div className={styles.buttons}><button>Check out here</button></div>
             {/* {campaignId ? (
                 <p>Campaign successfully created with ID: <strong>{campaignId}</strong></p>
             ) : (

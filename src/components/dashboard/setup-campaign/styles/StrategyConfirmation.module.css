@@ -4,13 +4,14 @@
 
 .confirmationContainer {
     text-align: center;
-    background-color: #ffffff;
+    padding: 2rem;
+    background-color: rgb(255, 255, 255);
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
-    margin: auto;
-    height: 94vh;
-    padding: 3.125rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .headerLabel {
@@ -36,6 +37,12 @@
     margin-bottom: 1.9rem; /* Increased margin for spacing */
 }
 
+.buttons{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 4rem;
+}
+
 .confirmationContainer h2 {
     font-size: 1.2rem;
     font-weight: 600;
@@ -55,8 +62,14 @@
     font-size: 0.875rem;
     color: #ffffff;
     background-color: #486A75;
-    padding: 0.5rem 2.8rem;
+    padding: 0.5rem 4.5rem;
     font-size: 1rem;
     border-radius: 9px;
     font-family: 'Poppins', sans-serif;
 }
+
+@media (min-height: 1080px) {
+    .confirmationContainer {
+        height: 92.5vh;
+    }
+  }

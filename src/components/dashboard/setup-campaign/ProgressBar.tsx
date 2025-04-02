@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import styles from './styles/ProgressBar.module.css';
+import { fontSize } from '@mui/system';
 
 interface ProgressBarProps {
   currentStep: number;
@@ -20,7 +21,7 @@ const steps = ['Strategy', 'Images', 'More Information'];
 
 const Connector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: '35%', // Center the connector
+    top: '50%', // Center the connector
     position: 'absolute',
     zIndex: 0, // Ensures it's behind the labels
   },
@@ -56,6 +57,15 @@ const StepIconRoot = styled('div')<{
   ...(ownerState.completed && {
     backgroundColor: '#F2F4F5',
   }),
+
+    // Media Queries with specific pixel values
+    [theme.breakpoints.down(800)]: {
+      width: '7rem',
+    },
+
+    [theme.breakpoints.down(495)]: {
+      width: '5rem',
+    },
 }));
 
 function StepIcon(props: any) {
@@ -68,6 +78,7 @@ function StepIcon(props: any) {
                 fontWeight: '600',
                 fontFamily: 'Poppins, sans-serif',
                 color:'#7C9BA5',
+                '@media (max-width: 500px)': {fontSize: '0.6rem'},
               }}
       >{label}</Typography>
     </StepIconRoot>
@@ -76,20 +87,20 @@ function StepIcon(props: any) {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
   return (
-    <Box className={styles.container} sx={{ width: '100%', padding: '2rem 0 1rem 0' }}>
+    <Box className={styles.container} sx={{ width: '100%', padding: '3rem 0rem',     
+      '@media (max-width: 625px)': {padding: '3rem 0rem'},
+      '@media (max-width: 500px)': {padding: '2rem 0rem'}, }}>
       <Stepper
         activeStep={currentStep - 1}
         alternativeLabel
         connector={<Connector />}
-        sx={{ width: '100%', position: 'relative' }}
+        sx={{ width: '100%' }}
       >
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel
               StepIconComponent={(props) => <StepIcon {...props} label={label} />}
               sx={{
-                position: 'relative',
-                top: '-5px', // Slight adjustment for alignment
               }}
             />
           </Step>

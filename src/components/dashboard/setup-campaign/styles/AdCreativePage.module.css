@@ -5,33 +5,32 @@
 /* Container for the ad creative page */
 .adCreativeContainer {
     text-align: center;
-    padding: 3.125rem;
-    background-color: white;
+    padding: 2rem;
+    background-color: rgb(255, 255, 255);
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     width: 100%;
-    margin: auto;
-    height: 95vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .divider{
     width: 100%;
-    height: 7rem;
+    height: 8rem;
     align-items: center;
     justify-content: center;
     display: flex;
     width: 100%;
-    margin-top: auto;
 }
 
 .headingUpload {
-
     width: 100%;
     text-align: left;
     font-weight: bold;
     color: #333;
     margin: 1.25rem;
-    margin-top: auto;
+    margin-top: 1rem;
 }
 
 .descriptionContainer {
@@ -57,7 +56,6 @@
 .uploadContainer{
     width: 100%;
     padding: 0.5rem;
-    padding-left: 3.125rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,16 +65,11 @@
 /* Upload section */
 .uploadSection {
     border: 2px dashed #526067;
-    padding-top: 2vw;
-    padding-bottom: 2vw;
-    padding-right: 8vw;
-    padding-left: 8vw;
+    padding: 2vw 8vw;
     border-radius: 12px;
     background-color: #ffffff;
-    position: relative;
     text-align: center;
     transition: border-color 0.3s ease;
-    flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -123,12 +116,12 @@
 }
 
 .buttons{
-    padding: 2.9rem;
-    padding-top: 3.5rem;
     display: flex;
-    gap: 1rem;
-    justify-content: flex-end; /* Push items to the right */
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 5rem;
     font-family: 'Poppins', sans-serif;
+    gap: 1rem;
 }
 
 .removeButton {
@@ -197,9 +190,8 @@
 }
 
 .backButton, .continueButton {
-    font-size: 0.875;
-    padding: 5px;
-    width: 20%;
+    font-size: 0.9rem;
+    padding: 0.5rem 5%;
     color: #486A75;
     background-color: #ffffff;
     border-radius: 8px;
@@ -214,3 +206,23 @@
 .fileInfo p{
     font-size: 1rem;
 }
+
+@media (min-height: 1080px) {
+    .adCreativeContainer {
+        height: 92.5vh;
+    }
+  }
+
+@media (max-width: 900px) {
+    .uploadContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .imagePreview {
+        padding: 2vw 8vw;
+        width: 90%;
+        height: 1rem;
+    }
+
+  }

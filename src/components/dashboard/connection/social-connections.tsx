@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Facebook as FacebookIcon } from '@mui/icons-material';
-import { Button, Card, Grid, Stack, Typography } from '@mui/material';
+import { Button, Card, Grid, Stack, Typography, Box } from '@mui/material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { SxProps } from '@mui/system';
@@ -292,7 +292,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   return (
-    <Stack className={styles.container}>
+    <Box className={styles.container}>
       <Typography variant="h5" gutterBottom>
         Connect with your social media accounts
       </Typography>
@@ -365,19 +365,34 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
       </Grid>
 
       {/* Render fetched ad accounts with currency */}
-      <Typography variant="h6" sx={{ marginTop: '20px' }}>
-        Connected Ad Account:
+      <Typography variant="body2" sx={{ marginTop: '20px', pb:'9rem' }}>
+      Your connected social accounts (0):
       </Typography>
-      {renderAdAccounts()}
-
-      <Typography variant="body2" sx={{ marginTop: '35px' }}>
-        Your connected social accounts (0):
-      </Typography>
+      {/* {renderAdAccounts()} */}
 
       {/* New Feature Announcement */}
-      <Typography variant="body2" style={{ marginTop: '280px', marginBottom: '32px' }}>
-        New Feature Around the Corner! Google Ads coming soon - Stay Tuned for More Power.
-      </Typography>
+      <Box sx={{width:'100%', display:'flex', padding:'2rem', border:'1px solid #F2F4F5', gap:'10px',
+            marginTop: 'auto',
+      }}>
+      
+        <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', width:'3rem', height:'3rem', bgcolor: '#F2F4F5',
+          borderRadius:'10px'
+        }}>
+          <img
+             src="/assets/googleads.svg"
+             alt="Google Ads Icon"
+             className={styles.icon}
+            />
+        </Box>
+        <Box sx={{display:'flex', flexDirection:'column'}}>
+        <Typography sx={{fontWeight:'600'}}>
+          New Feature Around the Corner! 
+        </Typography> 
+        <Typography sx={{color:'#859096'}}>
+          Google Ads coming soon - Stay Tuned for More Power.
+        </Typography>
+        </Box>
+      </Box>
 
       {/* Modals for ad account and page selection */}
       <AdAccountSelectionModal
@@ -393,6 +408,6 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         onClose={() => setPageModalOpen(false)}
         onSelect={handlePageSelect}
       />
-    </Stack>
+    </Box>
   );
 }

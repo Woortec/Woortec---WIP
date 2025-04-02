@@ -4,13 +4,14 @@
 /* Container for the strategy section */
 .strategyContainer {
   text-align: center;
-  background-color: #ffffff;
+  padding: 2rem;
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 100%;
-  margin: auto;
-  height: 94vh;
-  padding: 3.125rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .headerLabel {
@@ -41,6 +42,8 @@
 .cardGroup {
   display: flex;
   gap: 1.875rem;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Individual card styles */
@@ -58,7 +61,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
+  height: 17rem;
 }
 
 /* Image within the card */
@@ -107,17 +110,18 @@
 }
 
 .buttonContainer {
-  padding: 2.8rem;
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end; /* Push items to the right */
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 5rem;
   font-family: 'Poppins', sans-serif;
+  gap: 1rem;
 }
+
 
 .dlButton, .conButton {
   font-size: 0.9rem;
-  padding: 0.31rem;
-  width: 20%;
+  padding: 0.5rem 5%;
   color: #486A75;
   background-color: #ffffff;
   border-radius: 8px;
@@ -127,5 +131,40 @@
 .dlButton:hover, .conButton:hover {
   background-color: #486A75; /* Darker green on hover */
   color: #ffffff;
+}
+
+@media (min-height: 1079px) {
+  .strategyContainer {
+      height: 92.5vh;
+  }
+}
+
+@media (max-width: 1456px) {
+  .strategyContainer {
+    height: 100%;
+}
+
+  .cardGroup {
+    display: flex;
+    gap: 1.875rem;
+    flex-direction: column;
+  }
+  /* Individual card styles */
+  .card {
+    width: 100%;
+    padding: 2.5rem;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 17rem;
+  }
 }
 

@@ -56,7 +56,7 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
   };
 
   return (
-    <div className={styles.nameContainerWrapper}>
+    <div className={styles.nameContainer}>
       <div className={styles.descriptionContainer}>
               <h2 className={styles.heading}>Campaign Setup: Choose your Campaign Name</h2>
               <p className={styles.paragraph}>
@@ -95,14 +95,12 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
           </div>
         </div>
       </div>
-
-
-        <div className={styles.buttons}>
+      </div>
+      <div className={styles.buttons}>
           <button className={styles.sendButton} onClick={handleNext} disabled={loading}>
             Send
           </button>
         </div>
-      </div>
     </div>
   );
 };

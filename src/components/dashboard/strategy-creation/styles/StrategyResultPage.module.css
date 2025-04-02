@@ -4,18 +4,16 @@
 .container {
     width: 100%;
     height: 100%;
-    padding: 1.25rem !important;
-    box-sizing: border-box !important;
     background-color: #ffffff !important;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
+    padding: 2rem;
 }
 
 .headContainer{
     display: flex; /* Enables flexbox */
     align-items: center; /* Vertically centers children (h2 and label) */
-    gap: 0.625rem; /* Adds spacing between h2 and label */
     padding-bottom: 1.25rem;
 
 }
@@ -69,6 +67,7 @@
 .secondheadContainer{
     display: flex;
     gap: 0.625rem;
+    padding-bottom: 1rem;
     flex-direction: column; /* Stacks items vertically */
 }
 
@@ -102,7 +101,6 @@
 }
 
 .detailsBox {
-    padding: 0.625rem !important;
     border-radius: 18px !important;
     margin-bottom: 0.625rem !important;
     display: flex !important;
@@ -152,16 +150,13 @@
 
 .tableContainer {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
-    background-color: white !important;
     border-radius: 18px !important;
-    padding: 0.94rem !important;
-    overflow-x: auto !important;
+    overflow-x: auto;
 }
 
 .table {
     display: grid !important;
     grid-template-columns: repeat(8, 1fr) !important; /* Adjust based on the number of columns */
-    gap: 0.625rem !important;
 }
 
 .metaAds {
@@ -296,6 +291,18 @@
 @media (min-height: 1080px) {
     .container {
         height: 92.5vh;
+    }
+}
+
+@media (max-width: 850px) {
+    .headContainer{
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .headContainer label {
+        width: 30%;
     }
 }
 
