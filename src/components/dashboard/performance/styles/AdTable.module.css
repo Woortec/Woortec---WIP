@@ -94,7 +94,13 @@
   
   .tableCell{
     padding-bottom: 10px;
+    border: 2px solid black;
   }
 
+  .tableRow {
+    display: flex;
+    justify-content: space-between; /* Space between cells */
+    background-color: #b05f5f;
+  }
 }
 

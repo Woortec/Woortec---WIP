@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { useMediaQuery } from '@mui/material';
 
 ChartJS.register(
   CategoryScale,
@@ -45,6 +46,8 @@ interface ChartData {
     backgroundColor: string;
     fill: boolean;
     barThickness: number;
+    borderWidth?: number; // Add borderWidth as an optional property
+    borderRadius?: number;
   }[];
 }
 
@@ -53,11 +56,19 @@ const getFormattedDate = (date: Date | null): string => {
 };
 
 export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
 
   const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const getFormattedDateRange = (startDate: Date | null, endDate: Date | null): string => {
+    if (startDate && endDate) {
+      return `${dayjs(startDate).format('MMM DD, YYYY')} - ${dayjs(endDate).format('MMM DD, YYYY')}`;
+    }
+    return '';
+  };
 
   const fetchAdSpendData = async () => {
     try {
@@ -99,7 +110,11 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
       if (monthDifference >= 2) {
         timeIncrement = 'monthly'; // Use monthly aggregation if the difference is 2 months or more
         labelFormat = 'MMM'; // Format to show short month names like "Jan", "Feb", etc.
-      }
+      } else if (monthDifference >= 1){
+        labelFormat = 'DD';
+      } else if (monthDifference >= 0){
+        labelFormat = 'ddd, DD';
+      } 
 
       // Log the start and end date to make sure they are correct
       console.log(`Fetching data from ${getFormattedDate(start.toDate())} to ${getFormattedDate(end.toDate())}`);
@@ -156,12 +171,14 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           datasets: [{
             label: 'Ad Spend',
             data,
-            borderColor: '#486A75',
+            borderColor: 'rgba(255, 255, 255, 0.8)',
+            borderWidth: 2, 
             backgroundColor: '#486A75',
             fill: true,
-            barThickness: 20,
+            barThickness: isMobile ? 10 : (timeRange === 'month' ? 10 : 40),
           }],
         };
+        
         setChartData(formattedData);
       } else {
         console.log('No data found in the response:', response.data);
@@ -177,8 +194,11 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   };
 
   useEffect(() => {
+    console.log("Effect triggered with:", { startDate, endDate, timeRange });
     fetchAdSpendData();
   }, [startDate, endDate, timeRange]);
+
+  console.log('timeRange:', timeRange);
 
   return (
     <Card sx={{height: '77vh', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
@@ -195,7 +215,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           </Button>
         }
       />
-      <CardContent sx={{height:'100%'}}>
+      <CardContent sx={{height:'100%',}}>
         {loading ? (
           <CircularProgress />
         ) : (
@@ -212,14 +232,27 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
               scales: {
                 x: {
                   title: {
-                    display: true,
-                    text: timeRange === 'month' || timeRange === 'year' ? 'Month' : 'Date',
+                    display: true, 
+                    text: getFormattedDateRange(startDate, endDate),
+                    padding: {
+                      top: 50, 
+                    },
+                    font: {
+                      size: 14,
+                    },
+                  },
+                  ticks: {
+                    font: {
+                      size: isMobile ? 9 : 14, // Smaller font for mobile
+                    },
+                      // Set rotation to 0 to avoid slanted labels
+                      maxRotation: 0,
+                      minRotation: 0,
                   },
                 },
                 y: {
                   title: {
                     display: true,
-                    text: 'Ad Spend',
                   },
                   beginAtZero: true,
                 },
