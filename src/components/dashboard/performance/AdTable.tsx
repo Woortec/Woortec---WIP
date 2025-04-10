@@ -36,6 +36,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
 
       {adData.map((ad, index) => (
         <React.Fragment key={ad.ad_id}>
+          
           <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
             <Box className={styles.tableCell}>
             <Typography sx={{paddingRight:'3rem', fontFamily:'Poppins',fontWeight:'600', 
@@ -48,7 +49,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
                             paddingBottom:'1rem'},
                 textAlign: 'left', }}>{ad.name}</Typography>
             </Box>
-
+            <Box>SAMPLE</Box>
             <Box className={styles.tableCell}>
               <Box sx={{ backgroundColor: ad.cpc >= convertedThresholds.cpc ? "#FFEFEF" : "transparent" ,
                 padding:'0.5rem', borderRadius:'10px', 

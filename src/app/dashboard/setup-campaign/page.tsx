@@ -7,6 +7,9 @@ import CampaignNamePage from '@/components/dashboard/setup-campaign/CampaignName
 import StrategyConfirmation from '@/components/dashboard/setup-campaign/StrategyConfirmation';
 import StrategyCreationProgress from '@/components/dashboard/setup-campaign/StrategyCreationProgress';
 import { createClient } from '../../../../utils/supabase/client'; // Supabase client
+import {Box, Typography, Button} from '@mui/material';
+import { SketchLogo as DiamondIcon } from '@phosphor-icons/react/dist/ssr/SketchLogo';
+import './page.css'; // Import the CSS file for styles
 
 const CampaignSetupPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -136,30 +139,35 @@ const CampaignSetupPage: React.FC = () => {
         {currentStep === 5 && <StrategyConfirmation campaignId={campaignId} />}
       </div>
       {!hasPlan && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.8)',
-              padding: '20px',
-              borderRadius: '8px',
-              pointerEvents: 'auto',
-              textAlign: 'center',
-            }}
-          >
-            <p>You need to subscribe in order to use our services</p>
-          </div>
+        <div className="cta-overlay">
+          <Box className="cta-container">
+            <Box className="leftC" sx={{display:'flex', flexDirection: 'column'}}>
+            <h2 className="header"><Box sx={{borderRadius:'50%', padding:'0.3rem', bgcolor:'#F1E400'}}><DiamondIcon></DiamondIcon></Box>
+            Unlock Full Access</h2>
+            <Box className="description">
+              <p>
+                Subscribe now to access premium tools and strategy insights that will help you elevate your skills and make smarter decisions.
+                By subscribing, you will gain access to:
+              </p>
+              <ul>
+                <li>Exclusive Tools designed to enhance your workflow and maximize productivity.</li>
+                <li>Comprehensive Strategy Insights that offer actionable advice, data-driven recommendations, and best practices.</li>
+                <li>Early Access to new features, updates, and content to stay ahead of the curve.</li>
+                <li>Community Engagement with like-minded individuals, sharing knowledge, tips, and experiences to help each other succeed.</li>
+              </ul>
+              <p>
+                This is your chance to get ahead—transform your approach and unlock your full potential with premium features you won’t find anywhere else!
+              </p>
+            </Box>
+
+            <Box sx={{ display: 'flex', padding: '2rem', justifyContent: 'flex-end', borderTop: '1px solid #f1f1f1', }}>
+                <button className="cta-button">Subscribe Now</button></Box>
+            </Box> {/*Left Column*/}
+            <Box className="rightC"> {/*Right Column*/}
+            <img src="/assets/ads-strategies.svg" alt="Unlock Access" className="cta-image" />
+            </Box>
+          </Box>
+          <button className="close-btn">X</button>
         </div>
       )}
     </div>
