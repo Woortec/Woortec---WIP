@@ -14,20 +14,27 @@
   background-color: #526067;
   color: #f2f4f5;
   border-radius: 10px;
-  padding: 1.1rem;
+  padding: 1.1rem 1.9rem;
   font-weight: 600;
 }
 
-.tableHeaderCell {
-  flex: 1;
-  text-align: center; /* Keeps all other cells centered */
+.tableHeaderCell1 {
+  text-align: left; /* Keeps all other cells centered */
+  width: 50%;
 }
 
-.tableHeaderCell:first-child {
-  flex: 2;
-  text-align: left; /* Now this will work */
+.tableHeaderCell2{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
+.tableHeaderCell{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
 
 .tableRow {
   display: flex;
@@ -41,20 +48,15 @@
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
 }
 
-.tableCell {
+.tableRow2{
   display: flex;
-  flex: 1;
-  justify-content: center; 
-  align-items: center; 
-  text-align: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.tableCell:first-child {
-  flex: 2;
-  display: flex; 
-  justify-content: flex-start; 
-  align-items: center; 
-  padding-right: 0.5rem;
+.tableCell1 {
+  display: flex;
+  width: 50%;
 }
 
 .metricValue {
@@ -71,6 +73,30 @@
 
 .badMetric {
   color: #C70E0E;
+}
+
+.tableMobile{
+  display: none;
+}
+
+.tableCellMobile{
+  display: none;
+}
+
+.tbtemp{
+  display: none;
+}
+
+.tbContent{
+  display: flex;
+  width: 100%;
+}
+
+.tableCell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 @media (max-width: 770px) {
@@ -91,16 +117,70 @@
   .tableHeader {
     display: none; /* Hide table headers on small screens */
   }
-  
-  .tableCell{
-    padding-bottom: 10px;
-    border: 2px solid black;
+
+  .tableRow2{
+    display: flex;
   }
 
-  .tableRow {
+  .tbtemp{
+    width: 50%;
+  }
+
+  .tbContent{
+    width: 50%;
+  }
+
+
+  .tableMobile{
     display: flex;
-    justify-content: space-between; /* Space between cells */
-    background-color: #b05f5f;
+    flex-direction: column;
+    width: 50%;
+  }
+
+  .tableCellMobile{
+    display: flex;
+    width: 100%;
+  }
+
+  .tableCell1 {
+    display: none;
+  }
+
+  .tbtemp{
+    display: grid;
+    flex-direction: column;
+  }
+
+  .tbtemp1{
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-style: 'Poppins', sans-serif;
+    height: 100%;
+    padding: 0.1rem 0;
+    margin-left: 33px;
+  }
+
+  .tbContent{
+    display: grid;
+    flex-direction: column;
+  }
+
+  .tableCell{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    padding: 0.1rem 0;
+  }
+
+  .tableRow{
+    padding: 1rem;
+  }
+
+  .adTableContainer{
+    gap: 0.5rem;
   }
 }
 
