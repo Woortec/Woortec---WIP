@@ -73,7 +73,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
 
       {/* Calendar Picker */}
       <div className={styles.datePickerBox}>
-        <div className={styles.datePickerContainer}>
+        <div className={styles.leftdatePickerContainer}>
           <CalIcon />
           
           {/* Start Date Picker */}
@@ -82,18 +82,20 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
             onChange={(date: Date | null) => setStartDate(date)}
             dateFormat="dd MMM yyyy"
             className={styles.datePickerInput}
+            calendarClassName="left-datepicker-popup"
           />
         </div>
 
         <div className={styles.datePickerSeparator}>↔</div>
 
-        <div className={styles.datePickerContainer}>
+        <div className={styles.rightdatePickerContainer}>
           {/* End Date Picker */}
           <DatePicker
             selected={endDate}
             onChange={(date: Date | null) => setEndDate(date)}
             dateFormat="dd MMM yyyy"
             className={styles.datePickerInput}
+            calendarClassName="right-datepicker-popup"
           />
 
           <button onClick={setTodayAsEndDate}>

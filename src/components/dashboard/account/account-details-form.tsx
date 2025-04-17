@@ -130,42 +130,42 @@ export function AccountDetailsForm(): React.JSX.Element {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Full Name</InputLabel>
-                <OutlinedInput
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  label="Full Name"
-                  name="fullName"
-                />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last Name</InputLabel>
-                <OutlinedInput
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  label="Last Name"
-                  name="lastName"
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button disabled={isSubmitting} type="submit" variant="contained">
-            Save details
-          </Button>
-        </CardActions>
-      </Card>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+  <CardHeader subheader="The information can be edited" title="Profile" />
+  <Divider />
+  <CardContent sx={{ flexGrow: 1 }}>
+    <Grid container spacing={3}>
+      <Grid md={6} xs={12}>
+        <FormControl fullWidth required>
+          <InputLabel>Full Name</InputLabel>
+          <OutlinedInput
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            label="Full Name"
+            name="fullName"
+          />
+        </FormControl>
+      </Grid>
+      <Grid md={6} xs={12}>
+        <FormControl fullWidth required>
+          <InputLabel>Last Name</InputLabel>
+          <OutlinedInput
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            label="Last Name"
+            name="lastName"
+          />
+        </FormControl>
+      </Grid>
+    </Grid>
+  </CardContent>
+  <Divider />
+  <CardActions sx={{ justifyContent: 'flex-end' }}>
+    <Button disabled={isSubmitting} type="submit" variant="contained">
+      Save details
+    </Button>
+  </CardActions>
+</Card>
     </form>
   );
 }

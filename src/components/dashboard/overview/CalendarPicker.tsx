@@ -21,7 +21,7 @@ const DatePickerComponent = () => {
         display: 'flex', 
         height: 59, 
         alignItems: 'center', 
-        padding: '0 8px' 
+        padding: '0 8px'
       }}
       // It’s styled to have a consistent height and vertical alignment.
     >

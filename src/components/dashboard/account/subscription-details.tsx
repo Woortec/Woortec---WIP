@@ -31,6 +31,7 @@ export function CancelSubscription(): React.JSX.Element {
   const [subscriptionId, setSubscriptionId] = React.useState<string | null>(null);
   const [userId, setUserId] = React.useState<number | null>(null);
   const [subscriptionDetails, setSubscriptionDetails] = React.useState<any>(null);
+  const [invoices, setInvoices] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     const fetchUserSubscription = async () => {
@@ -57,6 +58,21 @@ export function CancelSubscription(): React.JSX.Element {
         setSubscriptionId(subscription.subscriptionId);
         setHasActiveSubscription(true);
         setSubscriptionDetails(subscription);
+
+        // Fetch invoices
+        if (subscription.customerId) {
+          try {
+            const { data } = await axios.post('/api/route', {
+              customerId: subscription.customerId,
+            });
+
+            if (data?.invoices) {
+              setInvoices(data.invoices);
+            }
+          } catch (err) {
+            console.error('Error fetching invoices:', err);
+          }
+        }
       }
     };
 
@@ -89,9 +105,9 @@ export function CancelSubscription(): React.JSX.Element {
 
   return (
     <Card>
-      <CardContent>
-        <Stack spacing={2} sx={{ alignItems: 'center' }}>
-          <Avatar src="/assets/sad.svg" sx={{ height: '80px', width: '80px' }} />
+      <CardContent sx={{height:"45vh", display:'flex', alignItems: 'center', justifyContent:'center'}}>
+        <Stack spacing={2} sx={{alignItems: 'center' }}>
+          <Avatar src="/assets/sad.svg" sx={{ height: '80px', width: '80px'}}/>
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
             <Typography variant="h5">Manage Your Subscription</Typography>
             <Typography variant="body2">
@@ -102,17 +118,50 @@ export function CancelSubscription(): React.JSX.Element {
           </Stack>
         </Stack>
       </CardContent>
+
       {hasActiveSubscription && subscriptionDetails && (
-        <CardContent>
-          <Typography variant="h6" sx={{ textAlign: 'center' }}>Subscription Details</Typography>
-          <Stack spacing={1}>
-          <Typography variant="body2"><strong>Plan:</strong> {subscriptionDetails.planid?.plan_name || 'Unknown Plan'}</Typography>
-            <Typography variant="body2"><strong>Start Date:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
-            <Typography variant="body2"><strong>Expiration Date:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : 'Ongoing'}</Typography>
-            <Typography variant="body2"><strong>Next Payment Date:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
-          </Stack>
-        </CardContent>
+        <>
+          <CardContent>
+            <Typography variant="h6" sx={{ textAlign: 'left', marginBottom:'20px' }}>Subscription Details</Typography>
+            <Stack spacing={1}>
+              <Typography variant="body2"><strong>Plan:</strong> {subscriptionDetails.planid?.plan_name || 'Unknown Plan'}</Typography>
+              <Typography variant="body2"><strong>Start Date:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
+              <Typography variant="body2"><strong>Expiration Date:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : 'Ongoing'}</Typography>
+              <Typography variant="body2"><strong>Next Payment Date:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
+            </Stack>
+          </CardContent>
+
+          {invoices.length > 0 && (
+            <CardContent>
+              <Typography variant="h6" sx={{ textAlign: 'left', mt: 2 }}>
+                Invoice History
+              </Typography>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                {invoices.map((invoice) => (
+                  <Stack
+                    key={invoice.id}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography variant="body2">
+                      {new Date(invoice.created * 1000).toLocaleDateString()} — ${invoice.amount_paid / 100} — {invoice.status}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => window.open(invoice.invoice_pdf, '_blank')}
+                    >
+                      View Invoice
+                    </Button>
+                  </Stack>
+                ))}
+              </Stack>
+            </CardContent>
+          )}
+        </>
       )}
+
       <Divider />
       <CardActions>
         {hasActiveSubscription ? (

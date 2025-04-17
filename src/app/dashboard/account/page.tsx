@@ -2,7 +2,9 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
+
 
 import { config } from '@/config';
 import { AccountDetailsForm } from '@/components/dashboard/account/account-details-form';
@@ -13,21 +15,23 @@ export const metadata = { title: `Account | Dashboard | ${config.site.name}` } s
 
 export default function Page(): React.JSX.Element {
   return (
-    <Stack spacing={3}>
-      <div>
-        <Typography variant="h4">Account</Typography>
-      </div>
-      <Grid container spacing={3}>
-        <Grid lg={4} md={6} xs={12}>
-          <AccountInfo />
-        </Grid>
-        <Grid lg={8} md={6} xs={12}>
-          <AccountDetailsForm />
-        </Grid>
-        <Grid lg={4} md={6} xs={12}>
-          <CancelSubscription /> {/* Add CancelSubscription component here */}
-        </Grid>
+    <Stack sx={{padding:'2rem', bgcolor:'white', borderRadius:'10px', height:'100%', minHeight:'92.5vh'}}>
+      <Grid container sx={{width:'100%'}}>
+        <Typography sx={{fontSize:'1.25rem', fontWeight:'600'}}>Account</Typography>
       </Grid>
+
+      <Grid container spacing={2} sx={{ width: '100%', pt: '20px', alignItems: 'stretch' }}>
+  {/* Left Column */}
+  <Grid xs={12} md={6} lg={6} sx={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+    <AccountInfo />
+    <CancelSubscription />
+  </Grid>
+
+  {/* Right Column */}
+  <Grid xs={12} md={6} lg={6} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <AccountDetailsForm />
+  </Grid>
+</Grid>
     </Stack>
   );
 }
