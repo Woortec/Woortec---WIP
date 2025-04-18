@@ -5,6 +5,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
+import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -22,7 +23,7 @@ import axios from 'axios';
 
 const supabase = createClient();
 
-export function CancelSubscription(): React.JSX.Element {
+export function InvoiceHistory(): React.JSX.Element {
   const { user, isLoading } = useUser();
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
@@ -105,74 +106,66 @@ export function CancelSubscription(): React.JSX.Element {
 
   return (
     <Card>
-      <CardContent sx={{display:'flex', alignItems: 'center', justifyContent:'center'}}>
-        <Stack spacing={2} sx={{alignItems: 'center' }}>
-          <Avatar src="/assets/sad.svg" sx={{ height: '80px', width: '80px'}}/>
-          <Stack spacing={1} sx={{ textAlign: 'center' }}>
-            <Typography variant="h5">Manage Your Subscription</Typography>
-            <Typography variant="body2">
-              {hasActiveSubscription
-                ? "If you cancel, you'll lose access to all premium features."
-                : "You do not have an active subscription."}
-            </Typography>
-          </Stack>
-        </Stack>
-      </CardContent>
-
+        <CardHeader title="Invoice History" />
+        <Divider></Divider>
       {hasActiveSubscription && subscriptionDetails && (
         <>
-          <CardContent>
-            <Typography variant="h6" sx={{ textAlign: 'left', marginBottom:'20px' }}>Subscription Details</Typography>
-            <Stack spacing={1}>
-              <Typography variant="body2"><strong>Plan:</strong> {subscriptionDetails.planid?.plan_name || 'Unknown Plan'}</Typography>
-              <Typography variant="body2"><strong>Start Date:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
-              <Typography variant="body2"><strong>Expiration Date:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : 'Ongoing'}</Typography>
-              <Typography variant="body2"><strong>Next Payment Date:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
-            </Stack>
-          </CardContent>
+          {invoices.length > 0 && (
+            <CardContent>
+              <Stack spacing={2} sx={{ mt: 2, mb: 2, }}>
+                {invoices.map((invoice) => (
+                  <Stack
+                    key={invoice.id}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  > 
+                  <Stack>
+                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                        Invoice #
+                    </Typography>
+                    <Typography  sx={{fontSize:'12px'}}>
+                        0000 000
+                    </Typography>
+                  </Stack>
+                  <Stack>
+                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                        Date
+                    </Typography>
+                    <Typography sx={{fontSize:'12px'}}>
+                      {new Date(invoice.created * 1000).toLocaleDateString()}
+                    </Typography>
+                  </Stack>
+                  <Stack>
+                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                        Amount
+                    </Typography>
+                    <Typography sx={{fontSize:'12px'}}>
+                        ${invoice.amount_paid / 100}
+                    </Typography>
+                  </Stack>
+                  <Stack>
+                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                        Status
+                    </Typography>
+                    <Typography sx={{fontSize:'12px'}}>
+                        {invoice.status}
+                    </Typography>
+                  </Stack>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => window.open(invoice.invoice_pdf, '_blank')}
+                    >
+                      View Invoice
+                    </Button>
+                  </Stack>
+                ))}
+              </Stack>
+            </CardContent>
+          )}
         </>
       )}
-
-      <Divider />
-      <CardActions>
-        {hasActiveSubscription ? (
-          <Button
-            fullWidth
-            variant="outlined"
-            color="error"
-            onClick={() => setShowDialog(true)}
-            disabled={!subscriptionId || loading}
-          >
-            Cancel Subscription
-          </Button>
-        ) : (
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={() => router.push('/dashboard/subscription')}
-          >
-            Subscribe Here
-          </Button>
-        )}
-      </CardActions>
-
-      <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-        <DialogTitle>Confirm Cancellation</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to cancel your subscription? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDialog(false)} color="secondary">
-            Close
-          </Button>
-          <Button onClick={handleCancelSubscription} color="error" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Confirm Cancellation'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Card>
   );
 }

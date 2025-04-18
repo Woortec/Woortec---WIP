@@ -157,6 +157,39 @@ export function AccountDetailsForm(): React.JSX.Element {
           />
         </FormControl>
       </Grid>
+      <Grid md={6} xs={12}>
+        <FormControl fullWidth required>
+          <InputLabel>Phone</InputLabel>
+          <OutlinedInput
+            value={""}
+            onChange={(e) => setLastName(e.target.value)}
+            label="Last Name"
+            name="lastName"
+          />
+        </FormControl>
+      </Grid>
+      <Grid md={6} xs={12}>
+        <FormControl fullWidth required>
+          <InputLabel>Email</InputLabel>
+          <OutlinedInput
+            value={""}
+            onChange={(e) => setLastName(e.target.value)}
+            label="Last Name"
+            name="lastName"
+          />
+        </FormControl>
+      </Grid>
+      <Grid sx={{width:'100%'}}>
+        <FormControl fullWidth required>
+          <InputLabel>Location</InputLabel>
+          <OutlinedInput
+            value={""}
+            onChange={(e) => setLastName(e.target.value)}
+            label="Last Name"
+            name="lastName"
+          />
+        </FormControl>
+      </Grid>
     </Grid>
   </CardContent>
   <Divider />
