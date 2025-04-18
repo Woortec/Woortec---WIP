@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import ObjectivePage from '@/components/dashboard/strategy-creation/setup01';
 import StrategyCreationPage from '@/components/dashboard/strategy-creation/setup02';
 import StrategyResultPage from '@/components/dashboard/strategy-creation/setup03';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust the import path as necessary
 import './page.css'; // Import the CSS file for styles
-import {Box, Typography, Button} from '@mui/material';
+import { Box } from '@mui/material';
 import { SketchLogo as DiamondIcon } from '@phosphor-icons/react/dist/ssr/SketchLogo';
+import Subscription from '@/components/dashboard/subscription/subscription';
 
 function App() {
   const [isClient, setIsClient] = useState(false);
@@ -45,7 +46,7 @@ function App() {
             console.error('Error fetching planId:', error);
             setHasPlan(false);
           } else {
-            setHasPlan(!!data?.planId);
+            setHasPlan(!!data?.planId); // Update state based on whether the planId exists
           }
         } else {
           console.error('No active session found');
@@ -55,7 +56,7 @@ function App() {
         console.error('Unexpected error:', error);
         setHasPlan(false);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false once the check is done
       }
     };
 
@@ -70,21 +71,40 @@ function App() {
     <div className="app-container">
       <div className={hasPlan ? '' : 'blurred-content'}>
         <Router>
-          <div className="App">
-            <Routes>
-              <Route path="/dashboard/strategy" element={<ObjectivePage />} />
-              <Route path="/dashboard/strategy/strategycreation" element={<StrategyCreationPage />} />
-              <Route path="/dashboard/strategy/strategyresult" element={<StrategyResultPage />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/dashboard/strategy" element={<ObjectivePage />} />
+            <Route path="/dashboard/strategy/strategycreation" element={<StrategyCreationPage />} />
+            <Route path="/dashboard/strategy/strategyresult" element={<StrategyResultPage />} />
+            <Route path="/dashboard/subscription" element={<Subscription />} />
+          </Routes>
+          {/* Only show the CTA if the user does not have a plan */}
+          {!hasPlan && <SubscriptionRedirect />}
         </Router>
       </div>
-      {!hasPlan && (
-        <div className="cta-overlay">
-          <Box className="cta-container">
-            <Box className="leftC" sx={{display:'flex', flexDirection: 'column'}}>
-            <Box className="header"><Box sx={{borderRadius:'50%', padding:'0.3rem', bgcolor:'#F1E400'}}><DiamondIcon></DiamondIcon></Box>
-            Unlock Full Access</Box>
+    </div>
+  );
+}
+
+function SubscriptionRedirect() {
+  const navigate = useNavigate();
+  const [showCTA, setShowCTA] = useState(true); // State to track whether CTA is shown
+
+  const handleSubscribeClick = () => {
+    setShowCTA(false); // Hide CTA when the button is clicked
+    navigate('/dashboard/subscription'); // Redirect to the subscription page
+  };
+
+  return (
+    showCTA && (
+      <div className="cta-overlay">
+        <Box className="cta-container">
+          <Box className="leftC" sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box className="header">
+              <Box sx={{ borderRadius: '50%', padding: '0.3rem', bgcolor: '#F1E400' }}>
+                <DiamondIcon />
+              </Box>
+              Unlock Full Access
+            </Box>
             <Box className="description">
               <p>
                 Subscribe now to access premium tools and strategy insights that will help you elevate your skills and make smarter decisions.
@@ -101,17 +121,17 @@ function App() {
               </p>
             </Box>
 
-            <Box sx={{ display: 'flex', padding: '2rem', justifyContent: 'flex-end', borderTop: '1px solid #f1f1f1', }}>
-                <button className="cta-button">Subscribe Now</button></Box>
-            </Box> {/*Left Column*/}
-            <Box className="rightC"> {/*Right Column*/}
-            <img src="/assets/ads-strategies.svg" alt="Unlock Access" className="cta-image" />
+            <Box sx={{ display: 'flex', padding: '2rem', justifyContent: 'flex-end', borderTop: '1px solid #f1f1f1' }}>
+              <button className="cta-button" onClick={handleSubscribeClick}>Subscribe Now</button>
             </Box>
+          </Box> {/* Left Column */}
+          <Box className="rightC"> {/* Right Column */}
+            <img src="/assets/ads-strategies.svg" alt="Unlock Access" className="cta-image" />
           </Box>
-          <button className="close-btn">X</button>
-        </div>
-      )}
-    </div>
+        </Box>
+        <button className="close-btn">X</button>
+      </div>
+    )
   );
 }
 
