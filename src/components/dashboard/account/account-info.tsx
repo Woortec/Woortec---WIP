@@ -21,8 +21,8 @@ export function AccountInfo(): React.JSX.Element {
   }
 
   // Fallback values if user or user metadata is undefined
-  const userName = user?.user_metadata?.full_name || user?.email || 'Guest User';
-  const userAvatar = user?.user_metadata?.avatar_url || '/assets/avatar.png';
+  const userName = user?.user_metadata?.full_name || user?.email;
+  const userAvatar = user?.user_metadata?.avatar_url;
 
   return (
     <Card sx={{display:'flex'}}>

@@ -148,7 +148,7 @@ export function InvoiceHistory(): React.JSX.Element {
                       <Typography sx={{ fontSize: '12px', fontWeight: '600' }}>
                         Status
                       </Typography>
-                      <Typography sx={{ fontSize: '12px' }}>
+<Typography sx={{ fontSize: '12px' }}>
   {invoice.status.toUpperCase()} {/* Display invoice status in uppercase */}
 </Typography>
                     </Stack>

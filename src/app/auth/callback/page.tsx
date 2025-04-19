@@ -66,40 +66,43 @@ const Page = () => {
               .select('*')
               .eq('email', email);
 
-              if (!existingUser || existingUser.length === 0) {
-                if (insert) {
-                  const { error: insertError } = await supabase.from('user').insert([
-                    {
-                      email,
-                      provider,
-                      uuid, // Supabase user ID
-                      firstName: fullName,
-                      lastName: fullName,
-                      avatar_url: avatarUrl,
-                    },
-                  ]);
-              
-                  console.log('Inserting new user into database...');
-                  if (!insertError) {
-                    await handleStripeCustomer(email);
-                  }
-                  setInsert(false);
-                }
-              } else {
-                // ✅ Update info every login
-                await supabase
-                  .from('user')
-                  .update({
+            if (!existingUser || existingUser.length === 0) {
+              if (insert) {
+                const { error: insertError } = await supabase.from('user').insert([
+                  {
+                    email,
+                    provider,
+                    uuid, // Supabase user ID
                     firstName: fullName,
                     lastName: fullName,
                     avatar_url: avatarUrl,
-                  })
-                  .eq('email', email);
-              
-                await handleStripeCustomer(email);
-                router.push('/');
+                  },
+                ]);
+
+                console.log('Inserting new user into database...');
+                if (!insertError) {
+                  await handleStripeCustomer(email);
+                }
+                setInsert(false);
               }
-              
+            } else {
+              // ✅ Update only if data is missing
+              const updates: { [key: string]: any } = {};
+
+              if (!existingUser[0].firstName) updates.firstName = fullName;
+              if (!existingUser[0].lastName) updates.lastName = fullName;
+              if (!existingUser[0].avatar_url) updates.avatar_url = avatarUrl;
+
+              if (Object.keys(updates).length > 0) {
+                await supabase
+                  .from('user')
+                  .update(updates)
+                  .eq('email', email);
+              }
+
+              await handleStripeCustomer(email);
+              router.push('/');
+            }
           } else {
             router.push('/');
           }
