@@ -197,7 +197,7 @@ const Subscription = () => {
            }} key={plan.id}>
             <CardContent className="card-content">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h5" component="h2" gutterBottom sx={{ fontFamily: 'Poppins' }}>
+              <Typography variant="h5" component="h2" gutterBottom>
                 {plan.name}
               </Typography>
               {plan.name === "Essential" && (

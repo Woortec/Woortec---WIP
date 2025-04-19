@@ -76,7 +76,6 @@ function StepIcon(props: any) {
               sx={{
                 fontSize: '0.8rem',
                 fontWeight: '600',
-                fontFamily: 'Poppins',
                 color:'#7C9BA5',
                 '@media (max-width: 500px)': {fontSize: '0.6rem'},
               }}

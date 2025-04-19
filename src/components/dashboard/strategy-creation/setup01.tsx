@@ -264,7 +264,7 @@ const ObjectivePage: React.FC = () => {
                 <Box><StepIndicator/></Box>
 
                 <Box className={styles.formContainer}>
-                    <Box sx={{width:'45%', fontFamily:'Poppins', '@media (max-width: 1200px)':{width: '100%'}}}> {/* Left Column */}
+                    <Box sx={{width:'45%', '@media (max-width: 1200px)':{width: '100%'}}}> {/* Left Column */}
                         <Box className={styles.formGroup}>
                             <label htmlFor="objective" className={styles.label}>
                             What is your Objective with this investment?
@@ -290,7 +290,7 @@ const ObjectivePage: React.FC = () => {
                                     )}
                         </Box>
 
-                        <Box className={styles.formGroup} sx={{fontFamily:'Poppins'}}>
+                        <Box className={styles.formGroup}>
                              <label className={styles.label}>
                                 Are you able to answer messages?
                              </label>
@@ -331,7 +331,7 @@ const ObjectivePage: React.FC = () => {
                             )}
                         </Box>
 
-                        <Box className={styles.formGroup} sx={{fontFamily:'Poppins'}}>
+                        <Box className={styles.formGroup}>
                              <label htmlFor="trafficUrl" className={styles.label}>
                                 Where do you want to direct the traffic to?
                              </label>
@@ -355,7 +355,7 @@ const ObjectivePage: React.FC = () => {
            
                     </Box>
 
-                    <Box sx={{width:'45%', fontFamily:'Poppins', '@media (max-width: 1200px)':{width: '100%'}
+                    <Box sx={{width:'45%', '@media (max-width: 1200px)':{width: '100%'}
                     }}> {/* Right Column */}
                         
                          <Box className={styles.formGroup}> 
