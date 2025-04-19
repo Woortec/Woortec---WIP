@@ -17,7 +17,7 @@ const UpdatePreferences: React.FC = () => {
     <div style={{
       maxWidth: '450px',
       margin: '40px auto',
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: 'Poppins',
       textAlign: 'center',
       color: '#333'
     }}>

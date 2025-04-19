@@ -18,6 +18,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   const [aiResponse, setAiResponse] = useState<string>('');
   const [requestingAdvice, setRequestingAdvice] = useState<boolean>(false);
   const [canRequestAdvice, setCanRequestAdvice] = useState<boolean>(true);
+  const creativeIds: Record<string, string> = {}; // adId -> creativeId
+  const creativeImageUrls: Record<string, string | null> = {}; // creativeId -> imageUrl
 
   const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
   const ADVICE_REQUEST_KEY = `lastAdviceRequest_${adId}`;
@@ -140,12 +142,19 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
       {/* Main Content Section: Image and Metrics */}
       <Box className={styles.adSetDetailContent}>
 
-        <Box className={styles.adCreative}>
+      <Box className={styles.adCreative}>
+      {adDetail.imageUrl ? (
         <img
-          src={adDetail.imageUrl || '/path-to-placeholder-image.png'}
-          alt="Ad Creative"
+      src={adDetail.imageUrl}
+      alt="Ad Creative"
+      style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+      onLoad={() => console.log('Ad Creative image loaded:', adDetail.imageUrl)}
         />
-        </Box>
+      ) : (
+        <p>No image available</p>
+      )}
+    </Box>
+
 
       <Box className={styles.budgetContainer}>
 

@@ -22,7 +22,7 @@ const SubscriptionForm: React.FC = () => {
       margin: '0 auto',
       padding: '20px',
       textAlign: 'center',
-      fontFamily: 'Arial, sans-serif',
+      fontFamily: 'Arial',
       color: '#333'
     }}>
       <div style={{

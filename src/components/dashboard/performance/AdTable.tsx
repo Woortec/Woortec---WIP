@@ -26,7 +26,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
 
   return (
     <Box className={styles.adTableContainer}>
-      <Box className={styles.tableHeader} sx ={{ fontFamily: "'Poppins', sans-serif", fontSize: '1.2rem',}}>
+      <Box className={styles.tableHeader} sx ={{ fontFamily: "'Poppins'", fontSize: '1.2rem',}}>
         <Box className={styles.tableHeaderCell1}>AD SET NAMES</Box>
         <Box className={styles.tableHeaderCell2}>
           <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
@@ -36,7 +36,9 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
         </Box>
       </Box>
 
-      {adData.map((ad, index) => (
+      {adData.map((ad, index) => {
+  if (ad.name === 'Unknown Ad') return null;
+  return (
         <React.Fragment key={ad.ad_id}>
           
           <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
@@ -77,7 +79,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
                borderRadius:'10px', 
                 }}>
               <Typography className={`${styles.metricValue} ${ad.cpc <= convertedThresholds.cpc ? styles.goodMetric : styles.badMetric}`}
-                 sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins', sans-serif", 
+                 sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins'", 
                   '@media (max-width: 770px)': {
                     fontSize: '0.8rem', 
                   },
@@ -99,7 +101,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
                  borderRadius:'10px', display:'flex', alignItems:'center',
                }}>
               <Typography className={`${styles.metricValue} ${ad.ctr >= 1.6 ? styles.goodMetric : styles.badMetric}`}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins', sans-serif",
+                sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins'",
                   '@media (max-width: 770px)': {
                     fontSize: '0.8rem',
                   },
@@ -120,7 +122,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
             <Box className={styles.tableCell} sx={{ backgroundColor: ad.impressions / ad.spend <= 350 ? "transparent" : getColor(ad.impressions / ad.spend, 70000, false),
             }}>
               <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins', sans-serif",
+                sx ={{ fontSize: '1.2rem', fontWeight: '600', fontFamily: "'Poppins'",
                   '@media (max-width: 770px)': {
                     fontSize: '0.8rem',
                   },
@@ -145,7 +147,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
               ? "transparent" 
               : calculateSpentColor(ad.spend, expectedSpend), paddingRight:'0' ,borderRadius:'10px', }}>
               <Typography className={`${styles.metricValue} ${ad.spend >= expectedSpend ? styles.goodMetric : styles.badMetric}`}
-                sx ={{ fontSize: '1.2rem', fontFamily: "'Poppins', sans-serif", fontWeight: '600',
+                sx ={{ fontSize: '1.2rem', fontFamily: "'Poppins", fontWeight: '600',
                   '@media (max-width: 770px)': {
                   fontSize: '0.8rem',
                   },
@@ -169,7 +171,8 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
             </Box>
           )}
         </React.Fragment>
-      ))}
+      );
+})}
     </Box>
   );
 };

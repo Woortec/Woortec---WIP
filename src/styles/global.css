@@ -228,7 +228,6 @@ body .ProgressBar_container__s6dVz {
   body .ProgressBar_stepText__r9OXi {
     font:
       600 10px Poppins,
-      sans-serif;
   }
   body .CampaignDetailsForm_question__U7Rej {
     font-size: 14px;
@@ -260,8 +259,7 @@ body .ProgressBar_container__s6dVz {
   body .PhotoUploadForm_submitButton__AuRjg {
     padding: 14px;
     font:
-      500 14px Poppins,
-      sans-serif;
+      500 14px Poppins,;
     width: 100px;
   }
   body .PhotoUploadForm_container__ceigU {
@@ -269,8 +267,7 @@ body .ProgressBar_container__s6dVz {
   }
   body .PhotoUploadForm_description__HkEWA {
     font:
-      500 14px / 22px Montserrat,
-      sans-serif;
+      500 14px / 22px Montserrat,;
   }
   body .CampaignNameForm_container___M008 {
     padding: 30px;
@@ -280,15 +277,13 @@ body .ProgressBar_container__s6dVz {
   }
   .CampaignNameForm_description__tLE0I {
     font:
-      500 14px / 22px Montserrat,
-      sans-serif;
+      500 14px / 22px Montserrat,;
   }
   body .CampaignNameForm_backButton__pUzTm,
   body .CampaignNameForm_submitButton__nQEhG {
     padding: 14px;
     font:
-      500 14px Poppins,
-      sans-serif;
+      500 14px Poppins,;
     width: 100px;
   }
   body .CampaignNameForm_formContent__f0ErY {
@@ -353,8 +348,7 @@ body .ProgressBar_container__s6dVz {
     width: 150px;
     padding: 15px;
     font:
-      500 14px Poppins,
-      sans-serif;
+      500 14px Poppins,     ;
   }
   body .ProgressBar_stepText__r9OXi {
     max-width: 50px;
@@ -377,7 +371,7 @@ body .ProgressBar_container__s6dVz {
     padding: 12px;
     font:
       500 12px Poppins,
-      sans-serif;
+      ;
     width: 80px;
   }
   body .PhotoUploadForm_previewImage__bIXnA {
@@ -392,8 +386,7 @@ body .ProgressBar_container__s6dVz {
   }
   body .CampaignNameForm_infoText__mjeLh {
     font:
-      500 14px Poppins,
-      sans-serif;
+      500 14px Poppins,;
   }
   body .CampaignNameForm_question__3pXMU {
     font-size: 14px;

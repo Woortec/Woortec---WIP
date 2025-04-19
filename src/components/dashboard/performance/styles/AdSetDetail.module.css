@@ -95,13 +95,13 @@
 }
 
 .budgetLabel {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins';
   font-size: 14px;
   color: #777777;
 }
 
 .budgetValue {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins';
   font-size: 18px;
   font-weight: 600;
   color: #1c252a;
@@ -126,7 +126,7 @@
 
 .aiResponseContent {
   font-style: italic;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins';
   font-size: 14px;
   line-height: 1.5;
 }

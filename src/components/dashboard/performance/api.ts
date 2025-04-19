@@ -39,16 +39,14 @@ export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
 export const fetchAdData = async () => {
   const supabase = createClient();
 
-  // Check if data has already been fetched and cached
   if (dataFetched && cachedAdData.length > 0) {
     return { adData: cachedAdData, currency: cachedCurrency };
   }
 
-  // Get user info and access token from Supabase
   const uuid = localStorage.getItem('userid');
   const { data, error } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
-  const accessToken = data?.[0]?.access_token;
-  const adAccountId = data?.[0]?.account_id;
+  const accessToken = data?.[0]?.access_token ?? '';
+  const adAccountId = data?.[0]?.account_id ?? '';
 
   if (!accessToken || !adAccountId) {
     console.error('Access token or ad account ID not found');
@@ -56,43 +54,67 @@ export const fetchAdData = async () => {
   }
 
   try {
-    // Define batch request
     const batchRequest = [
-      { method: 'GET', relative_url: `${adAccountId}?fields=currency` }, // Fetch currency
-      { method: 'GET', relative_url: `${adAccountId}/ads?fields=id,name,status&limit=50` }, // Fetch active ads
-      { method: 'GET', relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50` }, // Fetch insights
+      { method: 'GET', relative_url: `${adAccountId}?fields=currency` },
+      { method: 'GET', relative_url: `${adAccountId}/ads?fields=id,name,status,creative.limit(50)` },
+      { method: 'GET', relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50` },
     ];
 
-    // Execute batch request
     const batchResponse = await axios.post(
       `https://graph.facebook.com/v21.0`,
-      { access_token: accessToken, batch: batchRequest },
+      { access_token: accessToken, batch: batchRequest }
     );
 
-    // Parse batch response
     const accountData = JSON.parse(batchResponse.data[0]?.body);
     const adData = JSON.parse(batchResponse.data[1]?.body);
     const insightsData = JSON.parse(batchResponse.data[2]?.body);
 
-    // Extract currency
     cachedCurrency = accountData?.currency || 'USD';
 
-    // Filter active ads
     const activeAds = adData?.data?.filter((ad: any) => ad.status === 'ACTIVE') || [];
-    const adNames = activeAds.reduce((acc: { [key: string]: string }, ad: any) => {
-      acc[ad.id] = ad.name;
-      return acc;
-    }, {});
 
-    // Process insights data
+    const adNames: { [key: string]: string } = {};
+    const creativeIds: { [key: string]: string } = {};
+    activeAds.forEach((ad: any) => {
+      adNames[ad.id] = ad.name;
+      const creativeId = ad?.creative?.id;
+      if (creativeId) {
+        creativeIds[ad.id] = creativeId;
+      }
+    });
+
+    const creativeIdValues = Object.values(creativeIds);
+    const creativeImageUrls: { [key: string]: string } = {};
+
+    // Fetch all creatives (batched in groups of 20 if necessary)
+    const creativeResponses = await Promise.all(
+      creativeIdValues.map(async (creativeId) => {
+        try {
+          const res = await axios.get(`https://graph.facebook.com/v21.0/${creativeId}?fields=image_url,thumbnail_url`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+    
+          if (res.data?.id) {
+            creativeImageUrls[res.data.id] = res.data.image_url || res.data.thumbnail_url || null;
+          }
+        } catch (err) {
+          console.warn(`Failed to fetch creative for ID ${creativeId}`, err);
+        }
+      })
+    );
+    
+
     const insights = await Promise.all(
       insightsData?.data?.map(async (insight: any) => {
+        const adId = insight.ad_id;
         const clicks = insight.actions?.find((action: any) => action.action_type === 'link_click')?.value || 0;
         const impressions = insight.impressions || 0;
         const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
         const cpc = insight.cpc || 0;
-        const adId = insight.ad_id;
-
+    
+        const creativeId = creativeIds[adId]; // get creativeId for this ad
+        const imageUrl = creativeId ? creativeImageUrls[creativeId] : null; // get imageUrl from creative map
+    
         return {
           ...insight,
           name: adNames[adId] || 'Unknown Ad',
@@ -101,11 +123,12 @@ export const fetchAdData = async () => {
           ctr,
           cpc,
           spend: insight.spend,
+          imageUrl, // 🔥 This is the key
         };
       }) || []
     );
+    
 
-    // Cache data for future requests
     cachedAdData = insights;
     dataFetched = true;
 
@@ -115,6 +138,7 @@ export const fetchAdData = async () => {
     return { adData: [], currency: 'USD' };
   }
 };
+
 
 
 
