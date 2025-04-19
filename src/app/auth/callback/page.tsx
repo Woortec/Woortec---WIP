@@ -59,34 +59,47 @@ const Page = () => {
             const provider = user.app_metadata?.provider;
             const uuid = user.id; // ✅ using Supabase user ID now
             const fullName = user.user_metadata?.full_name;
+            const avatarUrl = user.user_metadata?.avatar_url;
 
             const { data: existingUser } = await supabase
               .from('user')
               .select('*')
               .eq('email', email);
 
-            if (!existingUser || existingUser.length === 0) {
-              if (insert) {
-                const { error: insertError } = await supabase.from('user').insert([
-                  {
-                    email,
-                    provider,
-                    uuid, // ✅ this is now user.id
+              if (!existingUser || existingUser.length === 0) {
+                if (insert) {
+                  const { error: insertError } = await supabase.from('user').insert([
+                    {
+                      email,
+                      provider,
+                      uuid, // Supabase user ID
+                      firstName: fullName,
+                      lastName: fullName,
+                      avatar_url: avatarUrl,
+                    },
+                  ]);
+              
+                  console.log('Inserting new user into database...');
+                  if (!insertError) {
+                    await handleStripeCustomer(email);
+                  }
+                  setInsert(false);
+                }
+              } else {
+                // ✅ Update info every login
+                await supabase
+                  .from('user')
+                  .update({
                     firstName: fullName,
                     lastName: fullName,
-                  },
-                ]);
-
-                console.log('Inserting new user into database...');
-                if (!insertError) {
-                  await handleStripeCustomer(email);
-                }
-                setInsert(false);
+                    avatar_url: avatarUrl,
+                  })
+                  .eq('email', email);
+              
+                await handleStripeCustomer(email);
+                router.push('/');
               }
-            } else {
-              await handleStripeCustomer(email);
-              router.push('/');
-            }
+              
           } else {
             router.push('/');
           }

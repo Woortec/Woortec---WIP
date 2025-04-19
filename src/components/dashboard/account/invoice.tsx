@@ -106,52 +106,52 @@ export function InvoiceHistory(): React.JSX.Element {
 
   return (
     <Card>
-        <CardHeader title="Invoice History" />
-        <Divider></Divider>
+      <CardHeader title="Invoice History" />
+      <Divider></Divider>
       {hasActiveSubscription && subscriptionDetails && (
         <>
           {invoices.length > 0 && (
             <CardContent>
-              <Stack spacing={2} sx={{ mt: 2, mb: 2, }}>
+              <Stack spacing={2} sx={{ mt: 2, mb: 2 }}>
                 {invoices.map((invoice) => (
                   <Stack
                     key={invoice.id}
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
-                  > 
-                  <Stack>
-                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                  >
+                    <Stack>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '600' }}>
                         Invoice #
-                    </Typography>
-                    <Typography  sx={{fontSize:'12px'}}>
-                        0000 000
-                    </Typography>
-                  </Stack>
-                  <Stack>
-                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px' }}>
+                        {invoice.number || 'N/A'} {/* Display the invoice number correctly */}
+                      </Typography>
+                    </Stack>
+                    <Stack>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '600' }}>
                         Date
-                    </Typography>
-                    <Typography sx={{fontSize:'12px'}}>
-                      {new Date(invoice.created * 1000).toLocaleDateString()}
-                    </Typography>
-                  </Stack>
-                  <Stack>
-                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px' }}>
+  {new Date(invoice.date * 1000).toLocaleDateString()}
+</Typography>
+                    </Stack>
+                    <Stack>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '600' }}>
                         Amount
-                    </Typography>
-                    <Typography sx={{fontSize:'12px'}}>
-                        ${invoice.amount_paid / 100}
-                    </Typography>
-                  </Stack>
-                  <Stack>
-                    <Typography sx={{fontSize:'12px', fontWeight:'600'}}>
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px' }}>
+                        ${invoice.amount_paid / 100} {/* Display amount paid */}
+                      </Typography>
+                    </Stack>
+                    <Stack>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '600' }}>
                         Status
-                    </Typography>
-                    <Typography sx={{fontSize:'12px'}}>
-                        {invoice.status}
-                    </Typography>
-                  </Stack>
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px' }}>
+  {invoice.status.toUpperCase()} {/* Display invoice status in uppercase */}
+</Typography>
+                    </Stack>
                     <Button
                       size="small"
                       variant="outlined"
