@@ -18,12 +18,27 @@ const Subscription = () => {
       return;
     }
   
-    const userUuid = localStorage.getItem('userid'); // Retrieve UUID from localStorage
-  
-    if (!userUuid) {
-      console.error('User UUID not found in localStorage');
+    const tokenRaw = localStorage.getItem('sb-uvhvgcrczfdfvoujarga-auth-token');
+
+    if (!tokenRaw) {
+      console.error('Auth token not found in localStorage');
       return;
     }
+    
+    let userUuid;
+    try {
+      const token = JSON.parse(tokenRaw);
+      userUuid = token.user?.id;
+    } catch (err) {
+      console.error('Failed to parse Supabase auth token', err);
+      return;
+    }
+    
+    if (!userUuid) {
+      console.error('User ID not found in Supabase auth token');
+      return;
+    }
+    
   
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
