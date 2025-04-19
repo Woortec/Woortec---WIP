@@ -132,7 +132,7 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
     <Box className={styles.adSetDetailContainer}>
       {/* Header Section */}
       <Box className={styles.adSetDetailHeader}>
-        <Typography variant="h2" sx={{fontFamily: 'Poppins', fontWeight: '600', fontSize: '1.3rem',
+        <Typography variant="h2" sx={{ fontWeight: '600', fontSize: '1.3rem',
         }}>AD SET NAME</Typography>
         <IconButton className={styles.closeButton} onClick={onClose}>
             <CloseIcon />
