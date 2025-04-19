@@ -164,10 +164,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins', color: '#526067',
+              <Typography sx ={{ fontSize: '0.8rem', color: '#526067',
                                 '@media (max-width: 445px)': {fontSize: '0.6rem',},
               }}>BUDGET</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                                 '@media (max-width: 445px)': {fontSize: '0.9rem',},
               }}>${formatValue(adDetail?.cpc)}</Typography>
             </Box> {/* Display CPC */}
@@ -178,10 +178,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '0.8rem',
                                 '@media (max-width: 445px)': {fontSize: '0.6rem',},
               }}>BUDGET</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                                 '@media (max-width: 445px)': {fontSize: '0.9rem',},
               }}>${formatValue(adDetail?.cpc)}</Typography>
             </Box>
@@ -192,10 +192,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
           <Box className={styles.budgetInfo}>
-            <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+            <Typography sx ={{ fontSize: '0.8rem',
                               '@media (max-width: 445px)': {fontSize: '0.6rem',},
             }}>BUDGET</Typography>
-            <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+            <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                               '@media (max-width: 445px)': {fontSize: '0.9rem',},
             }}>${formatValue(adDetail?.cpc)}</Typography>
           </Box>
@@ -208,10 +208,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize: '0.8rem', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '0.8rem',
                                 '@media (max-width: 445px)': {fontSize: '0.6rem',},
               }}>CTR (%)</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                                 '@media (max-width: 445px)': {fontSize: '0.9rem',},
               }}>{calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}</Typography>
             </Box>
@@ -222,10 +222,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img src="/assets/attach_money.svg" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize:'0.8rem',
                 '@media (max-width: 445px)': {fontSize: '0.6rem',},
               }}>IMPRESSIONS</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                                 '@media (max-width: 445px)': {fontSize: '0.9rem',},
               }}>{formatValue(Math.floor(adDetail?.impressions))}</Typography>
             </Box>
@@ -236,10 +236,10 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
             <img className={styles.dollarSign} src="/assets/attach_money.png" alt="Budget Icon"/>
           </Box>
             <Box className={styles.budgetInfo}>
-              <Typography sx ={{ fontSize:'0.8rem', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize:'0.8rem',
                 '@media (max-width: 445px)': {fontSize: '0.6rem',},
               }}>SPEND</Typography>
-              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800', fontFamily: 'Poppins',
+              <Typography sx ={{ fontSize: '1.5rem', fontWeight:'800',
                 '@media (max-width: 445px)': {fontSize: '0.9rem',},
               }}>${formatValue(adDetail?.spend,)}</Typography>
             </Box>
@@ -285,7 +285,7 @@ const formatValue = (value: any, currency: string = '', fallback: string = 'N/A'
 
       <Box className={styles.adDescription}>
         <Typography 
-        sx ={{ fontSize: '100%', fontFamily: 'Poppins'}}>
+        sx ={{ fontSize: '100%',}}>
         Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
         drive results like never before.
         With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place. 
