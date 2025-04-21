@@ -172,9 +172,6 @@ export function SignInForm(): React.JSX.Element {
       }
   
       if (data?.session) {
-        document.cookie = `sb-access-token=${data.session.access_token}; path=/;`;
-        document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/;`;
-  
         // Ensure that we create or check Stripe customer after OAuth sign-in
         await handleStripeCustomer(data.session.user.email);
   
