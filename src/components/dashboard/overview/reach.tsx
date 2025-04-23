@@ -27,6 +27,8 @@ import { House as HomeIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { Button } from 'react-bootstrap';
 import { Bar } from 'react-chartjs-2';
+import styles from './date/style/AdsSpend.module.css';
+import { useMediaQuery } from '@mui/material';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -45,6 +47,9 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
   const [messagesStarted, setMessagesStarted] = useState<number>(0);
 
   const [originalData, setOriginalData] = useState<number[]>([0, 0]); // Store the original values for toggling
+
+  const isLarge = useMediaQuery('(max-width:1760px)');
+
 
   const [chartData, setChartData] = useState({
     labels: ['Clicks', 'Messages Started'],
@@ -179,7 +184,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
 
   return (
-  <Card sx={{height: '77vh', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
+  <Card sx={{height:'100%', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
 <CardHeader
   sx={{ color:'#404D54', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
   title={
@@ -198,7 +203,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
     </Box>
   }
 />
-      <CardContent sx={{height:'100%'}}>
+      <CardContent sx={{display: 'flex', height:'100%'}}>
             <Bar
                       data={chartData}
                       options={{
@@ -212,12 +217,11 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
                         scales: {
                           x: {
                             title: {
-                              display: false,
+                              display: true,
                             },
                           },
                           y: {
                             beginAtZero: true,
-                            max: 3500,
                           },
                         },
                       }}

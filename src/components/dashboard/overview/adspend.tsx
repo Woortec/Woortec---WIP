@@ -57,6 +57,7 @@ const getFormattedDate = (date: Date | null): string => {
 
 export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
   const isMobile = useMediaQuery('(max-width:600px)');
+  const isLarge = useMediaQuery('(max-width:1570px)');
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
@@ -201,7 +202,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   console.log('timeRange:', timeRange);
 
   return (
-    <Card sx={{height: '77vh', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
+    <Card sx={{ height:'100%', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
       <CardHeader sx={{color:'#404D54'}}
         title="Ad Spend"
         action={
@@ -215,7 +216,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           </Button>
         }
       />
-      <CardContent sx={{height:'100%',}}>
+      <CardContent>
         {loading ? (
           <CircularProgress />
         ) : (
@@ -235,7 +236,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
                     display: true, 
                     text: getFormattedDateRange(startDate, endDate),
                     padding: {
-                      top: 50, 
+                    top: 50, 
                     },
                     font: {
                       size: 14,
@@ -258,7 +259,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
                 },
               },
             }}
-            height={350}
+            height={ isLarge ? 200 : 890 }
           />
         )}
       </CardContent>

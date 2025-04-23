@@ -42,7 +42,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           sx={{
             display: 'flex',
             flexDirection: 'column', // Stack elements in a column
-            flex: '1 1 auto', // Fill available space
+
             ml: { lg: 'var(--SideNav-width)' }, // Leave space for SideNav
             width: '100%', // Full width
             paddingTop:'10px',
