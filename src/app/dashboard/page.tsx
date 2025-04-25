@@ -160,7 +160,7 @@ export default function Page(): React.JSX.Element {
           />
         )}
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{height:'100%'}}>
           <Grid item lg={3} md={6} xs={12}>
             <BudgetContainer startDate={startDate} endDate={endDate} />
           </Grid>

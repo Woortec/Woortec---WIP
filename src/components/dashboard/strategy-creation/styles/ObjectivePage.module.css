@@ -99,8 +99,41 @@
     border-radius: 10px;
 }
 
-@media (min-height: 1080px) {
+@media (max-height: 1440px) {
     .container {
         height: 92.5vh;
+    }
+}
+
+@media (max-width: 1920px) {
+    .container {
+        height: 95.5vh;
+    }
+}
+
+@media (max-height: 1080px) {
+    .container {
+        height: 86.5vh;
+    }
+
+    .formContainer {
+        padding: 1.5rem; 
+    }
+
+    .formGroup {
+        margin-bottom: 1rem; 
+    }
+
+}
+
+@media (max-width: 600px) {
+    .container {
+        height: 100%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .container {
+        height: 100%;
     }
 }

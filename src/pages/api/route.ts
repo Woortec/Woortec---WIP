@@ -26,14 +26,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Make sure you are returning all relevant invoice fields
     const formattedInvoices = invoices.data.map(invoice => ({
       id: invoice.id,
-      number: invoice.number,
+      number: invoice.number,  // Correctly pull the invoice number
       status: invoice.status,
       amount_due: invoice.amount_due,
       amount_paid: invoice.amount_paid,
       date: invoice.created,
-      invoice_pdf: invoice.invoice_pdf, // ✅ This is the Stripe-hosted invoice PDF
+      // Add any other relevant fields from the invoice
     }));
-    
 
     return res.status(200).json({ invoices: formattedInvoices });
   } catch (error: any) {

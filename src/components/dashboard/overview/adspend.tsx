@@ -58,6 +58,7 @@ const getFormattedDate = (date: Date | null): string => {
 export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
   const isMobile = useMediaQuery('(max-width:600px)');
   const isLarge = useMediaQuery('(max-width:1570px)');
+  const isHeight = useMediaQuery('(max-height:1080px)');
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
@@ -259,7 +260,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
                 },
               },
             }}
-            height={ isLarge ? 200 : 890 }
+            height={ isLarge ? 200 : isHeight? 540 : 890 }
           />
         )}
       </CardContent>
