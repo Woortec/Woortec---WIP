@@ -203,7 +203,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
     </Box>
   }
 />
-      <CardContent sx={{display: 'flex', height:'100%'}}>
+      <CardContent sx={{height:'100%',}}>
             <Bar
                       data={chartData}
                       options={{

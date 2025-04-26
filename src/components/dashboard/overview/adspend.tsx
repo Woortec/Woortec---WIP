@@ -56,9 +56,32 @@ const getFormattedDate = (date: Date | null): string => {
 };
 
 export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
+  //List of Heights
   const isMobile = useMediaQuery('(max-width:600px)');
   const isLarge = useMediaQuery('(max-width:1570px)');
-  const isHeight = useMediaQuery('(max-height:1080px)');
+
+  const getHeight = () => {
+    const windowHeight = window.innerHeight;
+    if (windowHeight <= 1080) {
+      return 400; // When height is less than or equal to 1080px
+    } else if (windowHeight <= 1050){
+      return 350; // When height is less than or equal to 1080px
+    }
+    return 1080; // Default height
+  };
+
+  const getChartHeight = () => {
+    const windowHeight = window.innerHeight;
+    if (windowHeight <= 1080) {
+      return 130; // When height is less than or equal to 1080px
+    } else if (windowHeight <= 1050){
+      return 110; // When height is less than or equal to 1080px
+    }
+    return 800; // Default height
+  };
+  
+  
+
   const theme = useTheme();
   const [chartData, setChartData] = useState<ChartData>({ labels: [], datasets: [] });
   const [loading, setLoading] = useState(true);
@@ -203,7 +226,8 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   console.log('timeRange:', timeRange);
 
   return (
-    <Card sx={{ height:'100%', borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column'}}>
+    <Card sx={{ height: getHeight(), borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column',
+    }}>
       <CardHeader sx={{color:'#404D54'}}
         title="Ad Spend"
         action={
@@ -217,53 +241,54 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           </Button>
         }
       />
-      <CardContent>
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <Bar
-            data={chartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
+ <CardContent sx={{height:'100%',}}>
+  {loading ? (
+    <CircularProgress />
+  ) : (
+<CardContent>
+  {loading ? (
+    <CircularProgress />
+  ) : (
+    <Box>
+      <Bar
+        data={chartData}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: getFormattedDateRange(startDate, endDate),
+                padding: { top: 50 },
+                font: { size: 14 },
               },
-              scales: {
-                x: {
-                  title: {
-                    display: true, 
-                    text: getFormattedDateRange(startDate, endDate),
-                    padding: {
-                    top: 50, 
-                    },
-                    font: {
-                      size: 14,
-                    },
-                  },
-                  ticks: {
-                    font: {
-                      size: isMobile ? 9 : 14, // Smaller font for mobile
-                    },
-                      // Set rotation to 0 to avoid slanted labels
-                      maxRotation: 0,
-                      minRotation: 0,
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                  },
-                  beginAtZero: true,
-                },
+              ticks: {
+                font: { size: isMobile ? 9 : 14 },
+                maxRotation: 0,
+                minRotation: 0,
               },
-            }}
-            height={ isLarge ? 200 : isHeight? 540 : 890 }
-          />
-        )}
-      </CardContent>
+            },
+            y: {
+              title: { display: true },
+              beginAtZero: true,
+            },
+          },
+        }}
+        height={getChartHeight()}
+      />
+    </Box>
+  )}
+</CardContent>
+
+  )}
+</CardContent>
+
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button sx={{color:'#486A75'}} startIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" color='#486A75' />} size="small">
           Overview

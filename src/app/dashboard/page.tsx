@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Modal from '@mui/material/Modal';
@@ -159,8 +160,14 @@ export default function Page(): React.JSX.Element {
             }}
           />
         )}
-
-        <Grid container spacing={2} sx={{height:'100%'}}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%', border:'2px solid black', 
+        }}
+      >
+        <Grid container spacing={2}>
           <Grid item lg={3} md={6} xs={12}>
             <BudgetContainer startDate={startDate} endDate={endDate} />
           </Grid>
@@ -173,6 +180,7 @@ export default function Page(): React.JSX.Element {
           <Grid item lg={3} md={6} xs={12}>
             <TotalProfitContainer />
           </Grid>
+
           <Grid item lg={12} xs={12}>
             <DatePickerComponent
               startDate={startDate}
@@ -188,6 +196,7 @@ export default function Page(): React.JSX.Element {
             <TotalReach startDate={startDate} endDate={endDate} />
           </Grid>
         </Grid>
+    </Box>
       </DateProvider>
     </>
   );
