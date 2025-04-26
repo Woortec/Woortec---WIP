@@ -1,20 +1,50 @@
 import axios from 'axios';
-
 import { createClient } from '../../../../utils/supabase/client';
 
 let cachedAdData: any[] = [];
 let cachedCurrency: string = 'USD';
-let dataFetched: boolean = false;
+let dataFetched = false;
 let cachedThreadId: string | null = null;
 let cachedRunId: string | null = null;
 let cachedAIResponse: string | null = null;
 
+// — Removed SYSTEM_PROMPT constant so assistant config is used instead
+
+// Format the user’s ad data into a prompt
+function formatAdForPrompt(ad: any): string {
+  const header =
+    `This ad set received ${ad.impressions} impressions, ` +
+    `a ${(ad.ctr * 100).toFixed(2)}% CTR, ` +
+    `$${parseFloat(ad.cpc).toFixed(2)} Budget, and ` +
+    `$${parseFloat(ad.spend).toFixed(2)} spend.`;
+
+  const extras: string[] = [];
+  const postEng = ad.actions?.find((a: any) => a.action_type === 'post_engagement')?.value;
+  if (postEng) extras.push(`Post engagement: ${postEng}`);
+  const linkClicks = ad.actions?.find((a: any) => a.action_type === 'link_click')?.value;
+  if (linkClicks) extras.push(`Link clicks: ${linkClicks}`);
+
+  const convs = ad.actions
+    ? ad.actions
+        .map((a: any) => {
+          const label = a.action_type
+            .replace(/^onsite_conversion\./, '')
+            .replace(/_/g, ' ');
+          return `• ${label}: ${a.value}`;
+        })
+        .join('\n')
+    : '';
+
+  const parts = [header];
+  if (extras.length) parts.push(extras.join('\n'));
+  if (convs) parts.push('Conversions & Engagements:', convs);
+  return parts.join('\n\n');
+}
+
 export const getItemWithExpiry = (key: string) => {
   if (typeof window !== 'undefined') {
     const itemStr = localStorage.getItem(key);
-    if (!itemStr) {
-      return null;
-    }
+    if (!itemStr) return null;
     const item = JSON.parse(itemStr);
     if (Date.now() > item.expiry) {
       localStorage.removeItem(key);
@@ -28,10 +58,7 @@ export const getItemWithExpiry = (key: string) => {
 export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
   if (typeof window !== 'undefined') {
     const now = new Date();
-    const item = {
-      value: value,
-      expiry: now.getTime() + expiry,
-    };
+    const item = { value, expiry: now.getTime() + expiry };
     localStorage.setItem(key, JSON.stringify(item));
   }
 };
@@ -44,7 +71,7 @@ export const fetchAdData = async () => {
   }
 
   const uuid = localStorage.getItem('userid');
-  const { data, error } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
+  const { data } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
   const accessToken = data?.[0]?.access_token ?? '';
   const adAccountId = data?.[0]?.account_id ?? '';
 
@@ -57,7 +84,10 @@ export const fetchAdData = async () => {
     const batchRequest = [
       { method: 'GET', relative_url: `${adAccountId}?fields=currency` },
       { method: 'GET', relative_url: `${adAccountId}/ads?fields=id,name,status,creative.limit(50)` },
-      { method: 'GET', relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50` },
+      {
+        method: 'GET',
+        relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50`,
+      },
     ];
 
     const batchResponse = await axios.post(
@@ -72,49 +102,42 @@ export const fetchAdData = async () => {
     cachedCurrency = accountData?.currency || 'USD';
 
     const activeAds = adData?.data?.filter((ad: any) => ad.status === 'ACTIVE') || [];
+    const adNames: Record<string, string> = {};
+    const creativeIds: Record<string, string> = {};
 
-    const adNames: { [key: string]: string } = {};
-    const creativeIds: { [key: string]: string } = {};
     activeAds.forEach((ad: any) => {
       adNames[ad.id] = ad.name;
       const creativeId = ad?.creative?.id;
-      if (creativeId) {
-        creativeIds[ad.id] = creativeId;
-      }
+      if (creativeId) creativeIds[ad.id] = creativeId;
     });
 
-    const creativeIdValues = Object.values(creativeIds);
-    const creativeImageUrls: { [key: string]: string } = {};
-
-    // Fetch all creatives (batched in groups of 20 if necessary)
-    const creativeResponses = await Promise.all(
-      creativeIdValues.map(async (creativeId) => {
+    const creativeImageUrls: Record<string, string | null> = {};
+    await Promise.all(
+      Object.values(creativeIds).map(async (cid) => {
         try {
-          const res = await axios.get(`https://graph.facebook.com/v21.0/${creativeId}?fields=image_url,thumbnail_url`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-    
+          const res = await axios.get(
+            `https://graph.facebook.com/v21.0/${cid}?fields=image_url,thumbnail_url`,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
           if (res.data?.id) {
             creativeImageUrls[res.data.id] = res.data.image_url || res.data.thumbnail_url || null;
           }
         } catch (err) {
-          console.warn(`Failed to fetch creative for ID ${creativeId}`, err);
+          console.warn(`Failed to fetch creative ${cid}`, err);
         }
       })
     );
-    
 
     const insights = await Promise.all(
       insightsData?.data?.map(async (insight: any) => {
         const adId = insight.ad_id;
-        const clicks = insight.actions?.find((action: any) => action.action_type === 'link_click')?.value || 0;
+        const clicks = insight.actions?.find((act: any) => act.action_type === 'link_click')?.value || 0;
         const impressions = insight.impressions || 0;
         const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
         const cpc = insight.cpc || 0;
-    
-        const creativeId = creativeIds[adId]; // get creativeId for this ad
-        const imageUrl = creativeId ? creativeImageUrls[creativeId] : null; // get imageUrl from creative map
-    
+        const creativeId = creativeIds[adId];
+        const imageUrl = creativeId ? creativeImageUrls[creativeId] : null;
+
         return {
           ...insight,
           name: adNames[adId] || 'Unknown Ad',
@@ -123,15 +146,16 @@ export const fetchAdData = async () => {
           ctr,
           cpc,
           spend: insight.spend,
-          imageUrl, // 🔥 This is the key
+          imageUrl,
+          actions: insight.actions,
+          date_start: insight.date_start,
+          date_stop: insight.date_stop,
         };
       }) || []
     );
-    
 
     cachedAdData = insights;
     dataFetched = true;
-
     return { adData: insights, currency: cachedCurrency };
   } catch (error) {
     console.error('Error fetching ad data:', error);
@@ -139,23 +163,12 @@ export const fetchAdData = async () => {
   }
 };
 
-
-
-
-
-// New API functions to centralize the API calls
-
-const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-const assistantId = process.env.NEXT_PUBLIC_OPENAI_ASSISTANT_ID;
-
-if (!openaiApiKey || !assistantId) {
-throw new Error('OpenAI API Key or Assistant ID is not defined.');
-}
+const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY!;
+const assistantId = process.env.NEXT_PUBLIC_OPENAI_ASSISTANT_ID!;
 
 export const createThread = async (): Promise<string> => {
-if (cachedThreadId) return cachedThreadId!; // Non-null assertion
+  if (cachedThreadId) return cachedThreadId!;
 
-try {
   const response = await axios.post(
     'https://api.openai.com/v1/threads',
     {},
@@ -169,42 +182,39 @@ try {
   );
   cachedThreadId = response.data.id;
   return cachedThreadId!;
-} catch (error: any) {
-  throw new Error('Failed to create thread');
-}
 };
 
-export const addMessageToThread = async (threadId: string, adSetDetail: any): Promise<void> => {
-try {
-  // Sending the data to the assistant, no need to specify the prompt as it's already set up in your OpenAI account
-  await axios.post(
-    `https://api.openai.com/v1/threads/${threadId}/messages`, // Make sure to use the thread ID of your assistant
-    {
-      role: 'user',
-      content: JSON.stringify(adSetDetail), // The assistant will use the predefined prompt and format response
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${openaiApiKey}`,
-        'OpenAI-Beta': 'assistants=v2',
+export const addMessageToThread = async (
+  threadId: string,
+  adSetDetail: any
+): Promise<void> => {
+  try {
+    // Send only the user’s actual ad metrics; assistant’s system settings supply the rest
+    await axios.post(
+      `https://api.openai.com/v1/threads/${threadId}/messages`,
+      {
+        role: 'user',
+        content: formatAdForPrompt(adSetDetail),
       },
-    }
-  );
-} catch (error: any) {
-  throw new Error('Failed to add message to thread');
-}
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${openaiApiKey}`,
+          'OpenAI-Beta': 'assistants=v2',
+        },
+      }
+    );
+  } catch (error: any) {
+    throw new Error('Failed to add message to thread: ' + error.message);
+  }
 };
 
 export const createRun = async (threadId: string): Promise<string> => {
-if (cachedRunId) return cachedRunId!; // Non-null assertion
+  if (cachedRunId) return cachedRunId!;
 
-try {
   const response = await axios.post(
     `https://api.openai.com/v1/threads/${threadId}/runs`,
-    {
-      assistant_id: assistantId,
-    },
+    { assistant_id: assistantId },
     {
       headers: {
         'Content-Type': 'application/json',
@@ -215,69 +225,58 @@ try {
   );
   cachedRunId = response.data.id;
   return cachedRunId!;
-} catch (error: any) {
-  throw new Error('Failed to create run');
-}
 };
 
-export const waitForRunCompletion = async (threadId: string, runId: string): Promise<void> => {
-const checkInterval = 5000; // Check every 5 seconds
-const maxAttempts = 12; // Maximum attempts (1 minute total)
+export const waitForRunCompletion = async (
+  threadId: string,
+  runId: string
+): Promise<void> => {
+  const checkInterval = 5000;
+  const maxAttempts = 12;
 
-for (let attempt = 0; attempt < maxAttempts; attempt++) {
-  try {
-    const response = await axios.get(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const response = await axios.get(
+      `https://api.openai.com/v1/threads/${threadId}/runs/${runId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${openaiApiKey}`,
+          'OpenAI-Beta': 'assistants=v2',
+        },
+      }
+    );
+
+    const status = response.data?.status;
+    if (status === 'completed') return;
+    if (status === 'failed') throw new Error('Run failed');
+    await new Promise((res) => setTimeout(res, checkInterval));
+  }
+
+  throw new Error('Run did not complete within the expected time');
+};
+
+export const getAIResponse = async (threadId: string): Promise<string | null> => {
+  if (cachedAIResponse) return cachedAIResponse!;
+
+  const response = await axios.get(
+    `https://api.openai.com/v1/threads/${threadId}/messages`,
+    {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${openaiApiKey}`,
         'OpenAI-Beta': 'assistants=v2',
       },
-    });
-
-    const status = response.data?.status;
-
-    if (status === 'completed') {
-      return;
-    } else if (status === 'failed') {
-      throw new Error('Run failed');
     }
+  );
 
-    // Wait for the next check
-    await new Promise((resolve) => setTimeout(resolve, checkInterval));
-  } catch (error: any) {
-    throw new Error('Failed to check run status');
-  }
-}
-
-throw new Error('Run did not complete within the expected time');
-};
-
-export const getAIResponse = async (threadId: string): Promise<string | null> => {
-if (cachedAIResponse) return cachedAIResponse!; // Non-null assertion
-
-try {
-  const response = await axios.get(`https://api.openai.com/v1/threads/${threadId}/messages`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${openaiApiKey}`,
-      'OpenAI-Beta': 'assistants=v2',
-    },
-  });
-
-  const messages = response.data?.data;
-
-  // Iterate through the messages to find the first response from the assistant
-  for (const message of messages) {
+  for (const message of response.data?.data || []) {
     if (message.role === 'assistant') {
-      if (message.content && message.content[0].text && message.content[0].text.value) {
-        cachedAIResponse = message.content[0].text.value;
+      const textBlock = message.content?.[0]?.text;
+      if (textBlock?.value) {
+        cachedAIResponse = textBlock.value;
         return cachedAIResponse!;
       }
     }
   }
-
   return null;
-} catch (error: any) {
-  throw new Error('Failed to retrieve AI response');
-}
 };

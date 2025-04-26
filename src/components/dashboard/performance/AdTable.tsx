@@ -29,9 +29,9 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
       <Box className={styles.tableHeader} sx ={{ fontSize: '1.2rem',}}>
         <Box className={styles.tableHeaderCell1}>AD SET NAMES</Box>
         <Box className={styles.tableHeaderCell2}>
-          <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
-          <Box className={styles.tableHeaderCell}>CPC</Box>
-          <Box className={styles.tableHeaderCell}>CTR</Box> 
+          <Box className={styles.tableHeaderCell}>BUDGET</Box>
+          <Box className={styles.tableHeaderCell}>CTR</Box>
+          <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box> 
           <Box className={styles.tableHeaderCell}>SPENT</Box>
         </Box>
       </Box>
