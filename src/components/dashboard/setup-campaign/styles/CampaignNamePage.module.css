@@ -115,12 +115,6 @@
   border: 1px solid red !important;
 }
 
-@media (min-height: 1080px) {
-    .nameContainer {
-        height: 92.5vh;
-    }
-  }
-
 @media (max-width: 1285px) {
     .nameContainer {
         height: 90vh;
@@ -146,5 +140,57 @@
         width: 100%;
         gap: 1.25rem;
         flex-direction: column;
+    }
+  }
+
+  @media (width: 820px) and (height: 1180px) {
+    .nameContainer {
+        height: 100%;
+    }
+  }
+  
+  @media (width: 853px) and (height: 1280px) {
+    .nameContainer {
+        height: 95vh;
+    }
+  }
+  
+  @media (min-height: 800px) {
+    .nameContainer {
+        height: 100%;
+    }
+  }
+  
+  @media (height: 1080px) {
+    .nameContainer {
+        height: 90.5vh;
+    }
+  }
+  
+  @media (min-height: 1081px) and (max-height: 1440px) {
+    .nameContainer {
+        height: 92.5vh;
+    }
+  }
+
+  @media (width: 430px) and (height: 932px) {
+    .nameContainer {
+        height: 100%;
+    }
+  }
+
+  @media (width: 1024px) and (height: 600px) {
+    .nameContainer {
+        height: 100%;
+    }
+  }
+
+  @media (width: 412px) and (height: 914px) {
+    .nameContainer {
+        height: 100%;
+    }
+
+    .secContainer {
+        padding: 1rem 1rem;
     }
   }

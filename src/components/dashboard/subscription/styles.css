@@ -8,9 +8,10 @@ body {
   .container {
     padding-top: 2rem;
     text-align: center;
-    height: 92.5vh;
+    height: 100%;
     background-color: #FFFFFF;
     border-radius: 1rem;
+    width: 100%;
   }
   
   .grid-container {
@@ -75,6 +76,19 @@ body {
     }
   }
 
+  
+  @media (width: 1488px) {
+    .container {
+      height: 89.5vh;
+    }
+  }
+
+  @media (height: 938px) {
+    .container {
+      height: 89.5vh;
+    }
+  }
+
   @media (max-width: 1426px) {
     .card {
       width: 29.5%;
@@ -92,6 +106,12 @@ body {
     .card {
       width: 28%;
       height: 38rem;
+    }
+  }
+
+  @media (min-width: 1020px) and (max-width: 1024px) {
+    .container {
+      height: 92.5vh;
     }
   }
 
@@ -116,9 +136,21 @@ body {
     }
   }
 
-  
   @media (max-height: 900px) {
     .container{
       height: 100%;
     }
   }
+
+  @media (min-width: 1920px) and (max-width: 2560px){
+    .container {
+      height: 92.5vh;
+    }
+  }
+
+  @media (min-width: 1900px) and (max-width: 1920px){
+    .container {
+      height: 90.5vh;
+    }
+  }
+  

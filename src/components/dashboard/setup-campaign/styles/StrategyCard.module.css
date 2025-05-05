@@ -49,7 +49,7 @@
 /* Individual card styles */
 .card {
   width: 30%;
-  padding: 2.5rem;
+  padding: 2rem;
   border: 1px solid transparent;
   border-radius: 15px;
   background-color: #fff;
@@ -113,7 +113,7 @@
   display: flex;
   justify-content: flex-end;
   margin-top: auto;
-  padding-top: 5rem;
+  padding-top: 3%;
   font-family: 'Poppins', sans-serif;
   gap: 1rem;
 }
@@ -121,7 +121,7 @@
 
 .dlButton, .conButton {
   font-size: 0.9rem;
-  padding: 0.5rem 5%;
+  padding: 0.1rem 5%;
   color: #486A75;
   background-color: #ffffff;
   border-radius: 8px;
@@ -133,11 +133,11 @@
   color: #ffffff;
 }
 
-@media (min-height: 1079px) {
+/* @media (width: 412px) and (height: 915px) {
   .strategyContainer {
-      height: 92.5vh;
+    height: 100% !important;
   }
-}
+} */
 
 @media (max-width: 1456px) {
   .strategyContainer {
@@ -167,4 +167,42 @@
     height: 17rem;
   }
 }
+
+@media (height: 938px) {
+  .strategyContainer {
+    height: 89.5vh !important;
+  }
+}
+
+@media (width: 2560px) and (height: 1440px) {
+  .strategyContainer {
+    height: 92.5vh !important;
+  }
+}
+
+@media (width: 1920px) and (height: 1080px) {
+  .strategyContainer {
+    height: 90.5vh !important;
+  }
+}
+
+
+/* @media (height: 844px) {
+  .strategyContainer {
+    height: 100%;
+  }
+}
+
+@media (height: 896px) {
+  .strategyContainer {
+    height: 100%;
+  }
+}
+
+@media (height: 1080px) {
+  .strategyContainer {
+    height: 90.5vh;
+  }
+} */
+
 

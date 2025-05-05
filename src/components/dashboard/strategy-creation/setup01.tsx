@@ -248,6 +248,9 @@ const ObjectivePage: React.FC = () => {
         formData.manageInquiries &&
         (formData.objective !== 'sales' || formData.trafficUrl);
 
+        console.log(window.innerWidth, window.innerHeight);
+
+
     return (
         <Box className={styles.container}>
             <Box>

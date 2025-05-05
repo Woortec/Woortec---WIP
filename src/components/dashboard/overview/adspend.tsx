@@ -20,6 +20,7 @@ import {
   Legend
 } from 'chart.js';
 import { useMediaQuery } from '@mui/material';
+import styles from './date/style/AdsSpend.module.css';
 
 ChartJS.register(
   CategoryScale,
@@ -226,8 +227,8 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   console.log('timeRange:', timeRange);
 
   return (
-    <Card sx={{ height: getHeight(), borderRadius: '20px', backgroundColor:'white', display:'flex', flexDirection: 'column',
-    }}>
+    <Card className={styles.mainContainer} sx={{
+      borderRadius: '20px', backgroundColor:'white', flexDirection: 'column',}}>
       <CardHeader sx={{color:'#404D54'}}
         title="Ad Spend"
         action={
@@ -241,7 +242,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           </Button>
         }
       />
- <CardContent sx={{height:'100%',}}>
+ <CardContent>
   {loading ? (
     <CircularProgress />
   ) : (
@@ -249,7 +250,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
   {loading ? (
     <CircularProgress />
   ) : (
-    <Box>
+    <Box className={styles.Container}>
       <Bar
         data={chartData}
         options={{
@@ -280,7 +281,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
             },
           },
         }}
-        height={getChartHeight()}
+      
       />
     </Box>
   )}

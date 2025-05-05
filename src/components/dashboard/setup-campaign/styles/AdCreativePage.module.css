@@ -207,7 +207,25 @@
     font-size: 1rem;
 }
 
-@media (min-height: 1080px) {
+@media (width:430px) and (height: 844px) {
+    .adCreativeContainer {
+        height: 95vh;
+    }
+  }
+
+  @media (min-height: 800px) {
+    .adCreativeContainer {
+        height: 88vh;
+    }
+  }
+
+@media (height: 1080px) {
+    .adCreativeContainer {
+        height: 90.5vh;
+    }
+  }
+
+@media (min-height: 1081px) and (max-height: 1440px) {
     .adCreativeContainer {
         height: 92.5vh;
     }
@@ -222,7 +240,6 @@
     .imagePreview {
         padding: 2vw 8vw;
         width: 90%;
-        height: 1rem;
+        height: 20rem;
     }
-
   }

@@ -1,6 +1,175 @@
+.mainContainer{
+    height: 100%;
+}
 
-@media (min-height: 801px){
+
+@media (max-height: 1440px){
+    .mainContainer{
+        height: 75dvh;
+    }
+}
+
+@media (max-height: 1344px){
+    .mainContainer{
+        height: 73dvh;
+    }
+}
+
+@media (max-height: 1250px){
+    .mainContainer{
+        height: 71dvh;
+    }
+}
+
+@media (max-height: 1155px){
+    .mainContainer{
+        height: 69dvh;
+    }
+}
+
+@media (max-height: 1085px){
+    .mainContainer{
+        height: 66.5dvh;
+    }
+}
+
+@media (max-height: 1015px){
+    .mainContainer{
+        height: 65.5dvh;
+    }
+}
+
+@media (max-height: 976px){
+    .mainContainer{
+        height: 64vh;
+    }
+}
+
+@media (max-height: 940px){
+    .mainContainer{
+        height: 63dvh;
+    }
+}
+
+@media (max-height: 910px){
+    .mainContainer{
+        height: 62dvh;
+    }
+}
+
+@media (max-height: 882px){
+    .mainContainer{
+        height: 61dvh;
+    }
+}
+
+@media (max-height: 865px){
+    .mainContainer{
+        height: 60dvh;
+    }
+}
+
+@media (max-height: 842px){
+    .mainContainer{
+        height: 59dvh;
+    }
+}
+
+
+@media (max-height: 822px){
+    .mainContainer{
+        height: 58dvh;
+    }
+}
+
+@media (max-height: 800px){
+    .mainContainer{
+        height: 57dvh;
+    }
+}
+
+/*for DATA*/
+@media (max-height: 1440px){
     .Container{
-        height: 100%;
+        height: 55dvh;
+    }
+}
+
+@media (max-height: 1344px){
+    .Container{
+        height: 50dvh;
+    }
+}
+
+@media (max-height: 1250px){
+    .Container{
+        height: 47dvh;
+    }
+}
+
+@media (max-height: 1155px){
+    .Container{
+        height: 45dvh;
+    }
+}
+
+@media (max-height: 1085px){
+    .Container{
+        height: 43dvh;
+    }
+}
+
+@media (max-height: 1015px){
+    .Container{
+        height: 41dvh;
+    }
+}
+
+@media (max-height: 976px){
+    .Container{
+        height: 38dvh;
+    }
+}
+
+@media (max-height: 940px){
+    .Container{
+        height: 36dvh;
+    }
+}
+
+@media (max-height: 910px){
+    .Container{
+        height: 34dvh;
+    }
+}
+
+@media (max-height: 882px){
+    .Container{
+        height: 32dvh;
+    }
+}
+
+@media (max-height: 865px){
+    .Container{
+        height: 30dvh;
+    }
+}
+
+@media (max-height: 842px){
+    .Container{
+        height: 28dvh;
+    }
+}
+
+
+@media (max-height: 822px){
+    .Container{
+        height: 26dvh;
+    }
+}
+
+@media (max-height: 800px){
+    .Container{
+        height: 23dvh;
     }
 }
