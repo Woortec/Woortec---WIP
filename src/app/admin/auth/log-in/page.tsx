@@ -1,78 +1,191 @@
+// app/admin/auth/log-in/page.tsx
 'use client';
-import { useState } from 'react';
-import { supabase } from '../../../../../utils/supabase/admin-browser'
+import React, { useState } from 'react';
+import Image from 'next/image';
+import {
+  Box,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Typography,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const theme    = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [username, setUsername]   = useState('');
+  const [password, setPassword]   = useState('');
+  const [showPassword, setShow]   = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState<string | null>(null);
 
   const handleLogin = async () => {
-    try {
-      const fakeEmail = `${username}@admin.local`;
-      console.log('🔐 Logging in with:', fakeEmail);
+    setLoading(true);
+    setError(null);
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: fakeEmail,
-        password,
-      });
+    const fakeEmail = `${username}@admin.local`;
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: fakeEmail, password }),
+    });
+    const data = await res.json();
+    setLoading(false);
 
-      if (error) {
-        alert(error.message || 'Login failed');
-      } else {
-        location.href = '/admin';
-      }
-    } catch (err) {
-      console.error('❌ Login error:', err);
-      alert('Something went wrong during login.');
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-      const res = await fetch('/api/auth/sign-up', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || 'Signup failed');
-      } else {
-        alert('Signup successful! You can now log in.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong during sign-up.');
+    if (!res.ok) {
+      setError(data.error || 'Login failed');
+    } else {
+      window.location.href = `${window.location.origin}/admin`;
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded shadow w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
-        <input
-          type="text"
-          placeholder="Username"
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundColor: 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: isMobile ? 320 : 380,
+          bgcolor: '#FFFFFF',
+          borderRadius: 3,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+          p: isMobile ? 3 : 5,
+          textAlign: 'center',
+        }}
+      >
+        {/* Logo */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 2,
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              width: isMobile ? 100 : 140,
+              height: isMobile ? 40 : 56,
+            }}
+          >
+            <Image
+              src="/assets/woortec1.svg"
+              alt="Woortec Logo"
+              layout="fill"
+              objectFit="contain"
+              priority
+            />
+          </Box>
+        </Box>
+        <Typography variant="body2" sx={{ color: '#7A7C8C', mb: 3 }}>
+          Admin Panel
+        </Typography>
+
+        <TextField
+          fullWidth
+          variant="filled"
+          label="Username"
+          placeholder="e.g. emilie.smith"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <CheckCircleOutlineIcon
+                  sx={{ color: username ? 'success.main' : '#C1C2C6' }}
+                />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            mb: 2,
+            '& .MuiFilledInput-root': { backgroundColor: '#F0F1F5' },
+            '& .MuiFilledInput-underline:before': { borderBottomColor: '#D1D3D8' },
+            '& .MuiFilledInput-underline:after':  { borderBottomColor: '#00CCA3' },
+            '& .MuiInputLabel-filled': { color: '#7A7C8C' },
+          }}
         />
-        <input
-          type="password"
-          placeholder="Password"
+
+        <TextField
+          fullWidth
+          variant="filled"
+          type={showPassword ? 'text' : 'password'}
+          label="Password"
+          placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 mb-4 w-full"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShow(s => !s)}
+                  edge="end"
+                  sx={{ color: '#00CCA3' }}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          helperText={password.length > 0 ? '' : ' '}
+          sx={{
+            mb: 3,
+            '& .MuiFilledInput-root': { backgroundColor: '#F0F1F5' },
+            '& .MuiFilledInput-underline:before': { borderBottomColor: '#D1D3D8' },
+            '& .MuiFilledInput-underline:after':  { borderBottomColor: '#00CCA3' },
+            '& .MuiInputLabel-filled': { color: '#7A7C8C' },
+            '& .MuiFormHelperText-root': {
+              margin: 0,
+              height: '0.75em',
+            },
+          }}
         />
-        <button onClick={handleLogin} className="bg-black text-white px-4 py-2 w-full">
-          Login
-        </button>
-        <button onClick={handleSignUp} className="bg-gray-800 text-white px-4 py-2 w-full mt-2">
-          Sign Up (Temp)
-        </button>
-      </div>
-    </main>
+
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
+
+        <Button
+          fullWidth
+          variant="contained"
+          size="large"
+          onClick={handleLogin}
+          disabled={loading}
+          sx={{
+            mb: 1,
+            bgcolor: '#00CCA3',
+            color: '#fff',
+            '&:hover': { bgcolor: '#00b28e' },
+          }}
+        >
+          {loading ? 'Signing in…' : 'Sign In'}
+        </Button>
+
+        <Typography
+          variant="caption"
+          display="block"
+          sx={{ color: '#7A7C8C', mt: 1 }}
+        >
+          dev@woortec.com
+        </Typography>
+      </Box>
+    </Box>
   );
 }

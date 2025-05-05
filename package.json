@@ -47,6 +47,7 @@
     "formidable": "^3.5.1",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.1",
     "klaviyo": "^0.0.0",
     "klaviyo-api": "^11.0.0",
     "micro": "^10.0.1",

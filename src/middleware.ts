@@ -18,8 +18,23 @@ export default async function middleware(req: any) {
       return NextResponse.next();
     }
 
-    // 2) ADMIN subdomain → rewrite into your /admin folder
+    // 2) ADMIN subdomain → auth check + rewrite into your /admin folder
     if (subdomain === 'admin') {
+      // Allow public admin routes (login, reset, etc.)
+      const isPublicAdminPath =
+        pathname.startsWith('/admin/auth/log-in') ||
+        pathname.startsWith('/admin/reset-password');
+
+          // if logged in and hitting the root of the admin subdomain → send to dashboard
+  if (user && (pathname === '/' || pathname === '')) {
+    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+  }
+      // Redirect unauthenticated users to admin login
+      if (!user && !isPublicAdminPath) {
+        return NextResponse.redirect(new URL('/admin/auth/log-in', req.url));
+      }
+
+      // Rewrite everything else into /admin/*
       const url = req.nextUrl.clone();
       if (!pathname.startsWith('/admin')) {
         url.pathname = `/admin${pathname}`;

@@ -1,5 +1,13 @@
-// src/app/admin/components/StatCard.tsx
+'use client';
 import React from 'react';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  SxProps,
+  Theme,
+} from '@mui/material';
 
 interface StatCardProps {
   title: string;
@@ -8,11 +16,11 @@ interface StatCardProps {
   accent?: 'indigo' | 'green' | 'teal' | 'yellow';
 }
 
-const accentMap = {
-  indigo: 'border-indigo-500',
-  green:  'border-green-500',
-  teal:   'border-teal-500',
-  yellow: 'border-yellow-500',
+const accentColors: Record<NonNullable<StatCardProps['accent']>, string> = {
+  indigo: '#6366F1',
+  green:  '#10B981',
+  teal:   '#14B8A6',
+  yellow: '#F59E0B',
 };
 
 export function StatCard({
@@ -21,15 +29,34 @@ export function StatCard({
   icon,
   accent = 'indigo',
 }: StatCardProps) {
+  const borderColor = accentColors[accent];
+
+  const sxCard: SxProps<Theme> = {
+    display: 'flex',
+    alignItems: 'center',
+    borderLeft: `4px solid ${borderColor}`,
+    boxShadow: 1,
+    bgcolor: 'background.paper',
+    height: '100%',
+  };
+
   return (
-    <div
-      className={`flex items-center bg-white rounded-lg shadow p-6 border-l-4 ${accentMap[accent]}`}
-    >
-      {icon && <div className="mr-4 text-3xl text-gray-400">{icon}</div>}
-      <div>
-        <h3 className="text-sm font-medium text-gray-500 uppercase">{title}</h3>
-        <p className="mt-1 text-2xl font-semibold text-gray-900">{value}</p>
-      </div>
-    </div>
+    <Card sx={sxCard}>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        {icon && (
+          <Box mr={2} sx={{ fontSize: 36, color: 'text.secondary' }}>
+            {icon}
+          </Box>
+        )}
+        <Box>
+          <Typography variant="overline" display="block" color="text.secondary">
+            {title}
+          </Typography>
+          <Typography variant="h5" component="div">
+            {value}
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
   );
 }
