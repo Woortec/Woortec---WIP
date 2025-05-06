@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Container,
+  Breadcrumbs,
+  Link as MuiLink,
   TextField,
   TableContainer,
   Table,
@@ -16,34 +17,55 @@ import {
   CircularProgress,
   Grid,
   Chip,
+  InputAdornment,
+  Avatar,
+  useTheme,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import NextLink from 'next/link';
+import HomeIcon from '@mui/icons-material/Home';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+// Provider icons
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import EmailIcon from '@mui/icons-material/Email';
 
 interface UserRow {
-  id:           string;
-  email:        string;
-  suspended:    boolean;
+  id: string;
+  email: string;
+  name: string;
+  avatar_url: string;
+  providers: string[];
   subscription: boolean;
-  created_at:   string;
+  suspended: boolean;
+  created_at: string;
+  last_sign_in_at: string;
 }
 
 interface SubRow {
-  userId:   string;      // now a string UUID matching Auth user IDs
+  userId: string;
   isActive: boolean;
 }
 
 export default function UsersPage() {
-  const [users, setUsers]     = useState<UserRow[]>([]);
-  const [search, setSearch]   = useState('');
+  const theme = useTheme();
+  const router = useRouter();
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  // fetch users & subscriptions, then merge subscription flag
   const fetchAll = async () => {
     setLoading(true);
     try {
-      // Fetch users and subscriptions in parallel
       const [uRes, sRes] = await Promise.all([
         fetch(`/api/admin/users?search=${encodeURIComponent(search)}`),
         fetch('/api/admin/subscriptions'),
@@ -51,26 +73,19 @@ export default function UsersPage() {
       if (!uRes.ok || !sRes.ok) {
         throw new Error(`Fetch error: users ${uRes.status}, subs ${sRes.status}`);
       }
-
-      // Decode JSON
       const [usersData, subsData] = await Promise.all([
-        uRes.json() as Promise<Omit<UserRow,'subscription'>[]>,
+        uRes.json() as Promise<UserRow[]>,
         sRes.json() as Promise<SubRow[]>,
       ]);
 
-      // Build a Set of UUIDs with active subscriptions
-      const subMap = new Set(subsData.filter(s => s.isActive).map(s => s.userId));
-
-      // Merge subscription flag into each user
-      const merged: UserRow[] = usersData.map((u) => ({
+      const activeSet = new Set(subsData.filter(s => s.isActive).map(s => s.userId));
+      const merged = usersData.map(u => ({
         ...u,
-        subscription: subMap.has(u.id),
+        subscription: activeSet.has(u.id),
       }));
-
       setUsers(merged);
       setError(null);
-    } catch (err: any) {
-      console.error(err);
+    } catch {
       setError('Failed to load users or subscriptions');
     } finally {
       setLoading(false);
@@ -82,9 +97,8 @@ export default function UsersPage() {
   }, [search]);
 
   const toggleSuspend = async (u: UserRow) => {
-    // optimistic update
     setUsers(prev =>
-      prev.map(x => x.id === u.id ? { ...x, suspended: !u.suspended } : x)
+      prev.map(x => (x.id === u.id ? { ...x, suspended: !u.suspended } : x))
     );
     const res = await fetch('/api/admin/users', {
       method: 'PATCH',
@@ -92,54 +106,113 @@ export default function UsersPage() {
       body: JSON.stringify({ id: u.id, suspended: !u.suspended }),
     });
     if (!res.ok) {
-      // rollback on error
-      setUsers(prev =>
-        prev.map(x => x.id === u.id ? { ...x, suspended: u.suspended } : x)
-      );
-      console.error(await res.json());
+      // rollback on failure
+      setUsers(prev => prev.map(x => (x.id === u.id ? u : x)));
     }
   };
 
+  const renderProviderIcon = (p: string) => {
+    if (p === 'google') return <GoogleIcon fontSize="small" />;
+    if (p === 'facebook') return <FacebookIcon fontSize="small" />;
+    return <EmailIcon fontSize="small" />;
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Grid container justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4">Users</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', width: { xs: '100%', sm: 'auto' } }}>
-          <TextField
-            size="small"
-            placeholder="Search by email…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ endAdornment: <SearchIcon /> }}
-            sx={{ width: { xs: '100%', sm: 240 } }}
-          />
-        </Box>
+    <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 }, py: 4 }}>
+      {/* Breadcrumb */}
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        aria-label="breadcrumb"
+        sx={{ mb: 3 }}
+      >
+        <NextLink href="/admin" passHref>
+          <MuiLink
+            sx={{ display: 'flex', alignItems: 'center' }}
+            underline="hover"
+            color="inherit"
+          >
+            <HomeIcon fontSize="small" sx={{ mr: 0.5 }} /> Dashboard
+          </MuiLink>
+        </NextLink>
+        <Typography color="text.primary">Users</Typography>
+      </Breadcrumbs>
+
+      {/* Header */}
+      <Grid container justifyContent="space-between" alignItems="center" mb={3}>
+        <TextField
+          size="small"
+          placeholder="Search by email…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: { xs: '100%', sm: 300 } }}
+        />
       </Grid>
 
+      {/* Loading / Error */}
       {loading ? (
-        <Box sx={{ textAlign: 'center', py: 10 }}>
+        <Box textAlign="center" py={8}>
           <CircularProgress />
         </Box>
       ) : error ? (
         <Typography color="error">{error}</Typography>
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead sx={{ bgcolor: 'background.paper' }}>
+        <TableContainer
+          component={Paper}
+          elevation={2}
+          sx={{ borderRadius: 2, overflowX: 'auto', width: '100%' }}
+        >
+          <Table sx={{ minWidth: 1000 }}>
+            <TableHead>
               <TableRow>
+                <TableCell width={48} />
+                <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
-                <TableCell>Created</TableCell>
+                <TableCell>Providers</TableCell>
                 <TableCell>Subscription</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Action</TableCell>
+                <TableCell>Last Sign-In</TableCell>
+                <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((u) => (
-                <TableRow key={u.id} hover>
+              {users.map(u => (
+                <TableRow
+                  key={u.id}
+                  hover
+                  selected={u.suspended}
+                  sx={{
+                    '&.Mui-selected, &.Mui-selected:hover': {
+                      backgroundColor: theme.palette.action.selected,
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <IconButton size="small">
+                      <KeyboardArrowDownIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Avatar
+                        src={u.avatar_url}
+                        sx={{ mr: 2, width: 32, height: 32 }}
+                      />
+                      <Typography fontWeight={600}>{u.name}</Typography>
+                    </Box>
+                  </TableCell>
                   <TableCell>{u.email}</TableCell>
                   <TableCell>
-                    {new Date(u.created_at).toLocaleDateString()}
+                    {u.providers.map((p, i) => (
+                      <IconButton key={i} size="small">
+                        {renderProviderIcon(p)}
+                      </IconButton>
+                    ))}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -148,23 +221,28 @@ export default function UsersPage() {
                       color={u.subscription ? 'success' : 'default'}
                     />
                   </TableCell>
-                  <TableCell align="center">
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: u.suspended ? 'error.main' : 'success.main',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {u.suspended ? 'Suspended' : 'Active'}
-                    </Typography>
+                  <TableCell>
+                    {u.last_sign_in_at
+                      ? new Date(u.last_sign_in_at).toLocaleDateString('en-US', {
+                          month: '2-digit',
+                          day: '2-digit',
+                          year: '2-digit',
+                        })
+                      : '—'}
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={() => toggleSuspend(u)}
-                      color={u.suspended ? 'warning' : 'primary'}
-                    >
-                      {u.suspended ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                    <IconButton size="small" onClick={() => toggleSuspend(u)}>
+                      {u.suspended ? (
+                        <ToggleOffIcon fontSize="small" color="warning" />
+                      ) : (
+                        <ToggleOnIcon fontSize="small" color="primary" />
+                      )}
+                    </IconButton>
+                    <IconButton size="small">
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small">
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -173,6 +251,6 @@ export default function UsersPage() {
           </Table>
         </TableContainer>
       )}
-    </Container>
+    </Box>
   );
 }

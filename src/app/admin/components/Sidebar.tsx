@@ -1,5 +1,6 @@
-// src/app/admin/components/Sidebar.tsx
+// app/admin/components/Sidebar.tsx
 'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -11,7 +12,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
+  Avatar,
   Typography,
   Divider,
   Collapse,
@@ -20,10 +21,12 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import MailIcon from '@mui/icons-material/Mail';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -32,23 +35,15 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const drawerWidth = 280;
-const DarkDrawer = styled(Drawer)(() => ({
-  '& .MuiDrawer-paper': {
-    width: drawerWidth,
-    backgroundColor: '#2f3136',
-    color: '#e1e1e6',
-    borderRight: '1px solid #393c42',
-  },
-}));
 
 export default function Sidebar() {
-  const pathname   = usePathname() || '/admin';
-  const theme      = useTheme();
-  const isDesktop  = useMediaQuery(theme.breakpoints.up('sm'));
+  const pathname = usePathname() || '/admin';
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
 
-  const [mobileOpen,  setMobileOpen]  = useState(false);
-  const [openSupport, setOpenSupport] = useState(false);
-  const [loggingOut,  setLoggingOut]  = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMessages, setOpenMessages] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -56,74 +51,134 @@ export default function Sidebar() {
     window.location.href = '/admin/auth/log-in';
   };
 
-  const drawerContent = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Toolbar sx={{ justifyContent: 'center', py: 2 }}>
-        <Typography variant="h6" sx={{ color: '#fff', letterSpacing: 1 }} noWrap>
-          Woortec Admin
+  const groups = [
+    {
+      title: 'NAVIGATION',
+      items: [
+        { text: 'Dashboard', icon: <DashboardIcon />,    path: '/admin' },
+        { text: 'Users',     icon: <PeopleIcon />,      path: '/admin/users' },
+        { text: 'Helpdesk',  icon: <SupportAgentIcon />, path: '/admin/helpdesk' },
+      ],
+    },
+  ];
+
+  const messagesSub = [
+    { text: 'Inbox',         icon: <InboxIcon />,   path: '/admin/messages/inbox' },
+    { text: 'Notifications', icon: <ReceiptIcon />, path: '/admin/messages/notifications' },
+  ];
+
+  const drawer = (
+    <Box display="flex" flexDirection="column" height="100%" px={2} py={3}>
+      {/* LOGO */}
+      <Box textAlign="center" mb={2}>
+        <Box
+          component="img"
+          src="/assets/woortec1.svg"
+          alt="Woortec Logo"
+          sx={{ height: 40, width: 'auto', mx: 'auto' }}
+        />
+      </Box>
+
+      {/* BRAND / PROFILE */}
+      <Box textAlign="center" mb={3}>
+        <Typography variant="h5" color="primary" fontWeight={700}>
+          Woortec <Box component="span" fontWeight={400}>Admin</Box>
         </Typography>
-      </Toolbar>
-      <Divider sx={{ borderColor: '#393c42' }} />
+        <Typography variant="caption" color="text.secondary">
+          v1
+        </Typography>
+      </Box>
 
-      {/* MAIN MENU */}
-      <List sx={{ flexGrow: 1 }}>
-        {[
-          { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
-          { text: 'Users',     icon: <PeopleIcon />,   path: '/admin/users' },
-        ].map(({ text, icon, path }) => (
-          <Link key={text} href={path} passHref>
-            <ListItemButton
-              selected={pathname === path}
-              onClick={() => setMobileOpen(false)}
-              sx={{
-                '&.Mui-selected': {
-                  backgroundColor: theme.palette.action.selected,
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: pathname === path ? '#fff' : '#e1e1e6' }}>
-                {icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={text}
-                primaryTypographyProps={{
-                  fontWeight: pathname === path ? 700 : 400,
-                }}
-              />
-            </ListItemButton>
-          </Link>
-        ))}
-      </List>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          bgcolor: 'background.paper',
+          p: 2,
+          borderRadius: 2,
+          mb: 3,
+        }}
+      >
+        <Avatar
+          src="/avatar.png"
+          alt="Miguel"
+          sx={{ width: 48, height: 48, mr: 2 }}
+        />
+        <Box flexGrow={1}>
+          <Typography fontWeight={600}>Miguel</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Administrator
+          </Typography>
+        </Box>
+        <IconButton size="small">
+          <FilterListIcon />
+        </IconButton>
+      </Box>
 
-      <Divider sx={{ mt: 2, borderColor: '#393c42' }} />
+      {/* MENU GROUPS */}
+      {groups.map(({ title, items }) => (
+        <Box key={title} mb={2}>
+          <Typography
+            variant="overline"
+            display="block"
+            color="text.secondary"
+            mb={1}
+            sx={{ letterSpacing: 1 }}
+          >
+            {title}
+          </Typography>
+          <List disablePadding>
+            {items.map(({ text, icon, path }) => {
+              const selected = pathname === path;
+              return (
+                <Link key={text} href={path} passHref>
+                  <ListItemButton
+                    selected={selected}
+                    onClick={() => setMobileOpen(false)}
+                    sx={{
+                      borderRadius: 1,
+                      mb: 0.5,
+                      '&.Mui-selected': {
+                        bgcolor: alpha(theme.palette.primary.main, 0.15),
+                      },
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: selected ? 'primary.main' : 'text.secondary' }}>
+                      {icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      sx={{ ml: 1 }}
+                      primaryTypographyProps={{
+                        fontWeight: selected ? 600 : 400,
+                        color: selected ? 'primary.main' : 'text.primary',
+                      }}
+                    />
+                  </ListItemButton>
+                </Link>
+              );
+            })}
+          </List>
+        </Box>
+      ))}
 
-      {/* SUPPORT */}
-      <List>
-        <ListItemButton
-          onClick={() => setOpenSupport(o => !o)}
-          sx={{ '&:hover': { backgroundColor: theme.palette.action.hover } }}
-        >
-          <ListItemIcon sx={{ color: '#e1e1e6' }}>
-            <MailIcon />
-          </ListItemIcon>
-          <ListItemText primary="Messages" />
-          {openSupport ? <ExpandLess /> : <ExpandMore />}
+      {/* SPACER */}
+      <Box flexGrow={1} />
+
+      {/* MESSAGES COLLAPSE */}
+      <Divider />
+      <List disablePadding sx={{ mt: 2 }}>
+        <ListItemButton onClick={() => setOpenMessages(o => !o)} sx={{ borderRadius: 1 }}>
+          <ListItemIcon sx={{ color: 'text.secondary' }}><MailIcon /></ListItemIcon>
+          <ListItemText primary="Messages" primaryTypographyProps={{ fontWeight: 500 }} />
+          {openMessages ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
-
-        <Collapse in={openSupport} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {[
-              { text: 'Inbox',         icon: <InboxIcon />,   path: '/admin/messages/inbox' },
-              { text: 'Notifications', icon: <ReceiptIcon />, path: '/admin/messages/notifications' },
-            ].map(({ text, icon, path }) => (
+        <Collapse in={openMessages} timeout="auto" unmountOnExit>
+          <List disablePadding sx={{ pl: 4 }}>
+            {messagesSub.map(({ text, icon, path }) => (
               <Link key={text} href={path} passHref>
-                <ListItemButton
-                  sx={{ pl: 4 }}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <ListItemIcon sx={{ color: '#e1e1e6' }}>
-                    {icon}
-                  </ListItemIcon>
+                <ListItemButton onClick={() => setMobileOpen(false)} sx={{ borderRadius: 1, mb: 0.5 }}>
+                  <ListItemIcon sx={{ color: 'text.secondary' }}>{icon}</ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
               </Link>
@@ -132,26 +187,16 @@ export default function Sidebar() {
         </Collapse>
       </List>
 
-      <Divider sx={{ borderColor: '#393c42', my: 1 }} />
-
       {/* LOGOUT */}
-      <Box sx={{ p: 1 }}>
+      <Box mt={2} pb={2}>
         <Button
           fullWidth
+          variant="outlined"
           startIcon={<ExitToAppIcon />}
           onClick={handleLogout}
           disabled={loggingOut}
-          variant="outlined"
-          sx={{
-            color: '#e1e1e6',
-            borderColor: '#555',
-            '&:hover': { borderColor: '#888' },
-          }}
         >
-          {loggingOut 
-            ? <CircularProgress size={20} color="inherit" />
-            : 'Log Out'
-          }
+          {loggingOut ? <CircularProgress size={20} /> : 'Log Out'}
         </Button>
       </Box>
     </Box>
@@ -159,42 +204,36 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Hamburger for mobile */}
       {!isDesktop && (
-        <Box
+        <IconButton
+          onClick={() => setMobileOpen(true)}
           sx={{
             position: 'fixed',
             top: theme.spacing(1),
             left: theme.spacing(1),
             zIndex: theme.zIndex.drawer + 1,
+            bgcolor: 'background.paper',
           }}
         >
-          <IconButton
-            onClick={() => setMobileOpen(true)}
-            sx={{ color: '#1abc9c' }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Box>
+          <MenuIcon />
+        </IconButton>
       )}
-
-      {/* Drawer */}
-      <DarkDrawer
+      <Drawer
         variant={isDesktop ? 'permanent' : 'temporary'}
-        open={isDesktop ? true : mobileOpen}
+        open={isDesktop || mobileOpen}
         onClose={() => setMobileOpen(false)}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: isDesktop
-            ? { xs: 'none', sm: 'block' }
-            : { xs: 'block', sm: 'none' },
-          '& .MuiBackdrop-root': {
-            backgroundColor: 'rgba(0,0,0,0.6)',
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
           },
         }}
       >
-        {drawerContent}
-      </DarkDrawer>
+        {drawer}
+      </Drawer>
     </>
   );
 }

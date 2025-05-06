@@ -1,3 +1,5 @@
+//src/app/admin/components/StatCard.tsx
+
 'use client';
 import React from 'react';
 import {
