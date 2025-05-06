@@ -6,7 +6,26 @@ import { useRouter } from 'next/navigation';
 import styles from './styles/ObjectivePage.module.css';
 import StepIndicator from './StepIndicator';
 import { createClient } from '../../../../utils/supabase/client';
-import { Box, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import {
+  Box,
+  Typography,
+  Button,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  TextField
+} from '@mui/material';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const ObjectivePage: React.FC = () => {
   const router = useRouter();
@@ -15,7 +34,7 @@ const ObjectivePage: React.FC = () => {
     objective: '',
     budget: '',
     manageInquiries: '',
-    trafficUrl: '',
+    trafficUrl: ''
   });
 
   const [currency, setCurrency] = useState<string>(''); // User's currency
@@ -41,9 +60,10 @@ const ObjectivePage: React.FC = () => {
       if (error) {
         console.error('Error fetching currency from Supabase:', error);
       } else if (data) {
-        setCurrency(data.currency);
-        const rate = await getExchangeRate(data.currency);
-        setExchangeRate(rate);
+        const userCurrency = data.currency;
+        setCurrency(userCurrency);
+        const fetchedExchangeRate = await getExchangeRate(userCurrency);
+        setExchangeRate(fetchedExchangeRate);
       } else {
         console.error('No connected ad account found for the user.');
       }
@@ -52,10 +72,11 @@ const ObjectivePage: React.FC = () => {
     }
   };
 
+  // Fetch the currency and exchange rate on component mount
   useEffect(() => {
     fetchCurrencyAndExchangeRate();
 
-    // Log viewport size only in browser
+    // only log window size on the client
     if (typeof window !== 'undefined') {
       console.log(window.innerWidth, window.innerHeight);
     }
@@ -65,127 +86,156 @@ const ObjectivePage: React.FC = () => {
   const getExchangeRate = async (currency: string): Promise<number> => {
     const apiKey = process.env.NEXT_PUBLIC_EXCHANGERATE_API_KEY;
     const url = `https://v6.exchangerate-api.com/v6/${apiKey}/pair/${currency}/USD`;
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-      return data.conversion_rate ?? 1;
+      if (data && data.conversion_rate) {
+        return data.conversion_rate;
+      } else {
+        console.error('Error fetching exchange rate:', data);
+        return 1;
+      }
     } catch (error) {
       console.error('Error fetching exchange rate:', error);
       return 1;
     }
   };
 
-  const formatCurrency = (amount: number) => amount.toFixed(2);
+  // Function to format currency amounts
+  const formatCurrency = (amount: number): string => {
+    return amount.toFixed(2);
+  };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
     validateField(name, value);
   };
 
-  const validateField = (field: string, value: string) => {
-    const errs = { ...errors };
+  // Validate individual form fields
+  const validateField = (fieldName: string, value: string) => {
+    let fieldErrors = { ...errors };
 
-    switch (field) {
+    switch (fieldName) {
       case 'objective':
-        if (!value) errs.objective = 'Please select an objective.';
-        else delete errs.objective;
+        if (!value) fieldErrors.objective = 'Please select an objective.';
+        else delete fieldErrors.objective;
         break;
       case 'budget':
-        const amt = parseFloat(value);
-        if (isNaN(amt) || amt <= 0) {
-          errs.budget = 'Please enter a valid budget amount.';
+        const budgetInUserCurrency = parseFloat(value);
+        if (isNaN(budgetInUserCurrency) || budgetInUserCurrency <= 0) {
+          fieldErrors.budget = 'Please enter a valid budget amount.';
         } else if (exchangeRate) {
-          const inUsd = amt * exchangeRate;
-          if (inUsd < 180) {
-            const minLocal = 180 / exchangeRate;
-            errs.budget = `The budget must be at least ${formatCurrency(
-              minLocal
-            )} ${currency}.`;
-          } else delete errs.budget;
+          const budgetInUSD = budgetInUserCurrency * exchangeRate;
+          if (budgetInUSD < 180) {
+            const minimumBudgetInUserCurrency = 180 / exchangeRate;
+            fieldErrors.budget = `The budget must be at least ${formatCurrency(minimumBudgetInUserCurrency)} ${currency}.`;
+          } else {
+            delete fieldErrors.budget;
+          }
         }
         break;
       case 'manageInquiries':
-        if (!value) errs.manageInquiries = 'Please select an option.';
-        else delete errs.manageInquiries;
+        if (!value) fieldErrors.manageInquiries = 'Please select an option.';
+        else delete fieldErrors.manageInquiries;
         break;
       case 'trafficUrl':
-        if (formData.objective === 'sales' && !value)
-          errs.trafficUrl = 'Please enter a URL for the sales objective.';
-        else delete errs.trafficUrl;
+        if (formData.objective === 'sales' && !value) {
+          fieldErrors.trafficUrl = 'Please enter a URL for the sales objective.';
+        } else {
+          delete fieldErrors.trafficUrl;
+        }
+        break;
+      default:
         break;
     }
 
-    setErrors(errs);
+    setErrors(fieldErrors);
   };
 
+  // Validate the entire form
   const validateForm = () => {
-    let ok = true;
-    const errs: typeof errors = {};
+    let valid = true;
+    let fieldErrors = { ...errors };
 
     if (!formData.objective) {
-      errs.objective = 'Please select an objective.';
-      ok = false;
-    }
-    const amt = parseFloat(formData.budget);
-    if (isNaN(amt) || amt <= 0) {
-      errs.budget = 'Please enter a valid budget amount.';
-      ok = false;
-    } else if (exchangeRate && amt * exchangeRate < 180) {
-      const minLocal = 180 / exchangeRate;
-      errs.budget = `The budget must be at least ${formatCurrency(
-        minLocal
-      )} ${currency}.`;
-      ok = false;
-    }
-    if (!formData.manageInquiries) {
-      errs.manageInquiries = 'Please select an option.';
-      ok = false;
-    }
-    if (formData.objective === 'sales' && !formData.trafficUrl) {
-      errs.trafficUrl = 'Please enter a URL for the sales objective.';
-      ok = false;
+      fieldErrors.objective = 'Please select an objective.';
+      valid = false;
     }
 
-    setErrors(errs);
-    return ok;
+    const budgetInUserCurrency = parseFloat(formData.budget);
+    if (isNaN(budgetInUserCurrency) || budgetInUserCurrency <= 0) {
+      fieldErrors.budget = 'Please enter a valid budget amount.';
+      valid = false;
+    } else if (exchangeRate) {
+      const budgetInUSD = budgetInUserCurrency * exchangeRate;
+      if (budgetInUSD < 180) {
+        const minimumBudgetInUserCurrency = 180 / exchangeRate;
+        fieldErrors.budget = `The budget must be at least ${formatCurrency(minimumBudgetInUserCurrency)} ${currency}.`;
+        valid = false;
+      }
+    }
+
+    if (!formData.manageInquiries) {
+      fieldErrors.manageInquiries = 'Please select an option.';
+      valid = false;
+    }
+
+    if (formData.objective === 'sales' && !formData.trafficUrl) {
+      fieldErrors.trafficUrl = 'Please enter a URL for the sales objective.';
+      valid = false;
+    }
+
+    setErrors(fieldErrors);
+    return valid;
   };
 
+  // Function to store form data in Supabase
   const storeDataInSupabase = async () => {
     try {
       const supabase = createClient();
       const user_id = localStorage.getItem('userid');
-      if (!user_id) return console.error('User ID not found');
+      if (!user_id) {
+        console.error('User ID not found in localStorage');
+        return;
+      }
 
-      const { error } = await supabase.from('ads_strategy').insert([
-        {
-          user_id,
+      const { data, error } = await supabase
+        .from('ads_strategy') // Use your actual table name
+        .insert([{
+          user_id: user_id,
           objective: formData.objective,
           budget: formData.budget,
           manage_inquiries: formData.manageInquiries,
           traffic_url: formData.trafficUrl,
-        },
-      ]);
+        }]);
+
       if (error) console.error('Error inserting data:', error);
-    } catch (err) {
-      console.error('Unexpected error:', err);
+      else console.log('Data inserted:', data);
+    } catch (error) {
+      console.error('Unexpected error:', error);
     }
   };
 
+  // Handle continue button click
   const handleContinue = async () => {
     if (validateForm()) {
       await storeDataInSupabase();
+      console.log('Navigating to /strategycreation');
       router.push('/dashboard/strategy/strategycreation');
     } else {
-      const firstErr = document.querySelector(`.${styles.errorInput}`);
-      firstErr && (firstErr as HTMLElement).focus();
+      const firstErrorField = document.querySelector(`.${styles.errorInput}`);
+      if (firstErrorField) (firstErrorField as HTMLElement).focus();
     }
   };
 
-  const isFormValid =
-    Object.keys(errors).length === 0 &&
+  // Determine if the form is valid
+  const isFormValid = Object.keys(errors).length === 0 &&
     formData.objective &&
     formData.budget &&
     formData.manageInquiries &&
@@ -198,34 +248,148 @@ const ObjectivePage: React.FC = () => {
           <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
             Strategy Creation
           </Typography>
-          <Typography
-            sx={{
-              fontSize: '1rem',
-              color: '#7a7a7a',
-              marginTop: '0.9rem',
-              textAlign: 'left',
-            }}
-          >
+          <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left' }}>
             Introducing Woortec - the ultimate social media ads product designed to elevate your
             online presence and drive results like never before. With Woortec, you can effortlessly
             create and manage ads across multiple social media platforms, all in one place.
           </Typography>
         </Box>
-        <Box>
-          <StepIndicator />
-        </Box>
+        <Box><StepIndicator /></Box>
 
         <Box className={styles.formContainer}>
-          {/* Left Column */}
           <Box sx={{ width: '45%', '@media (max-width: 1200px)': { width: '100%' } }}>
-            {/* Objective */}
-            {/* ... (same as before) */}
+            {/* Left Column */}
+            <Box className={styles.formGroup}>
+              <label htmlFor="objective" className={styles.label}>
+                What is your Objective with this investment?
+              </label>
+              <select
+                id="objective"
+                name="objective"
+                className={`${styles.select} ${errors.objective ? styles.errorInput : ''}`}
+                value={formData.objective}
+                onChange={handleInputChange}
+                aria-invalid={!!errors.objective}
+                aria-describedby={errors.objective ? 'objective-error' : undefined}
+              >
+                <option value="" disabled>Select the best option</option>
+                <option value="Brand Awareness">Enhance brand visibility and engagement</option>
+                <option value="Sales">Increase website traffic and sales conversions</option>
+                <option value="Lead Generation">Collect prospective customer information via a form</option>
+              </select>
+              {errors.objective && (
+                <div id="objective-error" className={styles.errorMessage}>
+                  {errors.objective}
+                </div>
+              )}
+            </Box>
+
+            <Box className={styles.formGroup}>
+              <label className={styles.label}>
+                Are you able to answer messages?
+              </label>
+              <div className={styles.radioGroup}>
+                <label className={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    id="yes"
+                    name="manageInquiries"
+                    value="yes"
+                    checked={formData.manageInquiries === 'yes'}
+                    onChange={handleInputChange}
+                    className={styles.radioInput}
+                    aria-invalid={!!errors.manageInquiries}
+                    aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
+                  />
+                  Yes
+                </label>
+                <label className={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    id="no"
+                    name="manageInquiries"
+                    value="no"
+                    checked={formData.manageInquiries === 'no'}
+                    onChange={handleInputChange}
+                    className={styles.radioInput}
+                    aria-invalid={!!errors.manageInquiries}
+                    aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
+                  />
+                  No
+                </label>
+              </div>
+              {errors.manageInquiries && (
+                <div id="manageInquiries-error" className={styles.errorMessage}>
+                  {errors.manageInquiries}
+                </div>
+              )}
+            </Box>
+
+            <Box className={styles.formGroup}>
+              <label htmlFor="trafficUrl" className={styles.label}>
+                Where do you want to direct the traffic to?
+              </label>
+              <input
+                type="url"
+                name="trafficUrl"
+                id="trafficUrl"
+                className={`${styles.input} ${errors.trafficUrl ? styles.errorInput : ''}`}
+                placeholder="Please enter a URL"
+                value={formData.trafficUrl}
+                onChange={handleInputChange}
+                aria-invalid={!!
+errors.trafficUrl}
+                aria-describedby={errors.trafficUrl ? 'trafficUrl-error' : undefined}
+              />
+              {errors.trafficUrl && (
+                <div id="trafficUrl-error" className={styles.errorMessage}>
+                  {errors.trafficUrl}
+                </div>
+              )}
+            </Box>
           </Box>
 
-          {/* Right Column */}
           <Box sx={{ width: '45%', '@media (max-width: 1200px)': { width: '100%' } }}>
-            {/* Budget & Description */}
-            {/* ... (same as before) */}
+            {/* Right Column */}
+            <Box className={styles.formGroup}>
+              <label htmlFor="budget" className={styles.label}>
+                What is the budget you are willing to allocate for this campaign?
+              </label>
+              <div className={styles.budgetInputContainer}>
+                <input
+                  type="number"
+                  name="budget"
+                  id="budget"
+                  className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
+                  placeholder="Enter the amount"
+                  value={formData.budget}
+                  onChange={handleInputChange}
+                  aria-invalid={!!errors.budget}
+                  aria-describedby={errors.budget ? 'budget-error' : undefined}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              {errors.budget && (
+                <div id="budget-error" className={styles.errorMessage}>
+                  {errors.budget}
+                </div>
+              )}
+            </Box>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="description" className={styles.label}>
+                Please Describe your audience or upload the buyer persona
+              </label>
+              <div>
+                <textarea
+                  name="description"
+                  id="description"
+                  className={styles.describePersona}
+                  placeholder="Enter a description"
+                />
+              </div>
+            </div>
           </Box>
         </Box>
       </Box>
