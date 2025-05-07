@@ -27,7 +27,7 @@ export default async function middleware(req: any) {
 
           // if logged in and hitting the root of the admin subdomain → send to dashboard
   if (user && (pathname === '/' || pathname === '')) {
-    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+    return NextResponse.redirect(new URL('/admin', req.url));
   }
       // Redirect unauthenticated users to admin login
       if (!user && !isPublicAdminPath) {
