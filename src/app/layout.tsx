@@ -1,9 +1,5 @@
-// src/app/layout.tsx
 'use client'
-// Force every child route to render at runtime (no SSG)
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
 
 import * as React from 'react'
 import Head from 'next/head'
@@ -29,8 +25,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
 
   React.useEffect(() => {
     const params = searchParams?.toString() ?? ''
-    const url = pathname + (params ? `?${params}` : '')
-    pageview(url)
+    pageview(pathname + (params ? `?${params}` : ''))
   }, [pathname, searchParams])
 
   return (
@@ -48,13 +43,12 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}', {
-                page_path: window.location.pathname,
-              });
+              gtag('config', '${GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
             `,
           }}
         />
       </Head>
+
       <html lang="en">
         <body>
           <TourProvider>
