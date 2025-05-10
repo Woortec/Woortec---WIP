@@ -47,7 +47,7 @@ export default async function middleware(req: any) {
     // 3) APP subdomain → just run your auth logic, no rewrites
     if (subdomain === 'app') {
       const protectedPaths = ['/dashboard', '/private', '/settings', '/'];
-      const publicPaths    = ['/auth/log-in', '/auth-sign-up', '/auth/callback', '/auth/reset-password', '/error'];
+      const publicPaths    = ['/auth/log-in', '/auth/sign-up', '/auth/callback', '/auth/reset-password', '/error'];
 
       const isRoot      = pathname === '/';
       const isProtected = protectedPaths.some(p => pathname.startsWith(p));
