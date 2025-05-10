@@ -1,6 +1,3 @@
-
-export const dynamic = 'force-dynamic';
-
 import * as React from 'react';
 import type { Metadata } from 'next';
 import RouterLink from 'next/link';

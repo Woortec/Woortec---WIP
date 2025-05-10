@@ -1,6 +1,9 @@
 // src/app/layout.tsx
-
 'use client'
+// Force every child route to render at runtime (no SSG)
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 
 import * as React from 'react'
 import Head from 'next/head'
@@ -52,7 +55,6 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           }}
         />
       </Head>
-
       <html lang="en">
         <body>
           <TourProvider>
