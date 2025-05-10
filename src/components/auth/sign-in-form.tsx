@@ -18,6 +18,8 @@ import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-mater
 import Cookies from 'js-cookie';
 import Stripe from 'stripe';
 import Box from '@mui/material/Box'; // <-- Missing Box import
+import NextLink from 'next/link';
+import MuiLink from '@mui/material/Link';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
@@ -109,13 +111,10 @@ export function SignInForm(): React.JSX.Element {
       return;
     }
 
-    setIsPending(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  setIsPending(true);
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
       if (error) {
         setErrors((prev) => ({ ...prev, root: error.message }));
@@ -247,9 +246,11 @@ export function SignInForm(): React.JSX.Element {
         Welcome back!</Typography>
       <Typography color="text.secondary" variant="body2">
         Don&apos;t have an account?{' '}
-        <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-          Sign Up
-        </Link>
+<NextLink href={paths.auth.signUp} passHref>
+  <MuiLink underline="hover" variant="subtitle2">
+    Sign Up
+  </MuiLink>
+</NextLink>
       </Typography>
     </Stack>
     <form onSubmit={handleSubmit}>
