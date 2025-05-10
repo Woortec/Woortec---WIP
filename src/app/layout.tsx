@@ -1,9 +1,6 @@
-'use client'
-export const dynamic = 'force-dynamic'
-
 import * as React from 'react'
 import Head from 'next/head'
-import { usePathname, useSearchParams } from 'next/navigation'
+import dynamicImport from 'next/dynamic'
 import type { Viewport } from 'next'
 import { TourProvider } from '@/contexts/TourContext'
 import '@/styles/global.css'
@@ -11,30 +8,27 @@ import '@/styles/global.css'
 import { UserProvider } from '@/contexts/user-context'
 import { LocalizationProvider } from '@/components/core/localization-provider'
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider'
-import { pageview, GA_MEASUREMENT_ID } from '@/lib/gtag'
+
+// force dynamic if you really need it:
+export const dynamic = 'force-dynamic'
 
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport
+
+// dynamically import our client analytics component:
+const Analytics = dynamicImport(() => import('@/components/Analytics'), { ssr: false })
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
-export default function Layout({ children }: LayoutProps): React.JSX.Element {
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  React.useEffect(() => {
-    const params = searchParams?.toString() ?? ''
-    pageview(pathname + (params ? `?${params}` : ''))
-  }, [pathname, searchParams])
-
+export default function Layout({ children }: LayoutProps) {
   return (
-    <>
+    <html lang="en">
       <Head>
-        {/* Global site tag (gtag.js) - Google Analytics */}
+        {/* Global site tag (gtag.js) */}
         <script
           async
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
         />
         <script
           // eslint-disable-next-line react/no-danger
@@ -43,23 +37,24 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { send_page_view: false });
             `,
           }}
         />
       </Head>
-
-      <html lang="en">
-        <body>
-          <TourProvider>
-            <LocalizationProvider>
-              <UserProvider>
-                <ThemeProvider>{children}</ThemeProvider>
-              </UserProvider>
-            </LocalizationProvider>
-          </TourProvider>
-        </body>
-      </html>
-    </>
+      <body>
+        <TourProvider>
+          <LocalizationProvider>
+            <UserProvider>
+              <ThemeProvider>
+                {children}
+                {/* mount our client‐only pageview tracker */}
+                <Analytics />
+              </ThemeProvider>
+            </UserProvider>
+          </LocalizationProvider>
+        </TourProvider>
+      </body>
+    </html>
   )
 }
