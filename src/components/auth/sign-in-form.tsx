@@ -1,14 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import RouterLink from 'next/link';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
-import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -18,8 +17,6 @@ import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-mater
 import Cookies from 'js-cookie';
 import Stripe from 'stripe';
 import Box from '@mui/material/Box'; // <-- Missing Box import
-import NextLink from 'next/link';
-import MuiLink from '@mui/material/Link';
 
 import GTM from '../GTM';
 import { paths } from '@/paths';
@@ -244,14 +241,15 @@ export function SignInForm(): React.JSX.Element {
         sx={{ marginTop: '20px',
         }}>
         Welcome back!</Typography>
-      <Typography color="text.secondary" variant="body2">
-        Don&apos;t have an account?{' '}
-<NextLink href={paths.auth.signUp} passHref>
-  <MuiLink underline="hover" variant="subtitle2">
+     <Typography color="text.secondary" variant="body2">
+  Don’t have an account?{' '}
+  <Link
+    href={paths.auth.signUp}
+    style={{ textDecoration: 'underline', fontWeight: 500 }}
+  >
     Sign Up
-  </MuiLink>
-</NextLink>
-      </Typography>
+  </Link>
+</Typography>
     </Stack>
     <form onSubmit={handleSubmit}>
       <Stack spacing={2}>
@@ -298,9 +296,6 @@ export function SignInForm(): React.JSX.Element {
         </FormControl>
         <div>
   <Box sx={{ textAlign: 'right' }}>
-    <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
-      Forgot password?
-    </Link>
   </Box>
   {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
   {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}
