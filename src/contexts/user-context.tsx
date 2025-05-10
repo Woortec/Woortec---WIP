@@ -3,15 +3,9 @@
 import * as React from 'react';
 import axios from 'axios';
 
-
-
 import type { User } from '@/types/user';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
-
-
-
-
 
 export interface UserContextValue {
   user: User | null;
@@ -21,16 +15,17 @@ export interface UserContextValue {
   isIndustryFilled: boolean;
   checkSession: () => Promise<void>;
   fetchApiData: (uuid: string) => Promise<void>;
-  updateUser: (firstName:string,lastName:string,uuid: string) => Promise<void>;
-  addIndustry: (name: string, dateOfBirth: any, uuid: string) => Promise<void>; // Ensure checkSession is part of the context
+  updateUser: (firstName: string, lastName: string, uuid: string) => Promise<void>;
+  addIndustry: (name: string, dateOfBirth: any, uuid: string) => Promise<void>;
 }
 
 export const UserContext = React.createContext<UserContextValue | undefined>(undefined);
+export const UserConsumer = UserContext.Consumer;
 
-export const userData = () => {
+export const userData = (): UserContextValue => {
   const context = React.useContext(UserContext);
   if (!context) {
-    throw new Error('useTour must be used within a TourProvider');
+    throw new Error('useTour must be used within a UserProvider');
   }
   return context;
 };
@@ -48,139 +43,98 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     isIndustryFilled: boolean;
   }>({
     user: null,
+    userInfo: null,
     error: null,
     isLoading: true,
     isIndustryFilled: false,
-    userInfo: null,
   });
 
-  const fetchApiData = React.useCallback(async (uuid: string): Promise<void> => {
-    setState((prev) => ({ ...prev, apiLoading: true, apiError: null }));
-
+  // Callback: fetch additional API data
+  const fetchApiData = React.useCallback(async (uuid: string) => {
     try {
-      const response = await axios.get(`/api/userInfo?uuid=${uuid}`); // Replace with your API endpoint
-
-      console.log('API response data:', response.data); // Debugging: Check the fetched data in console
-
-      setState((prev) => ({
-        ...prev,
-        userInfo: response.data.userData,
-      }));
-    } catch (error: any) {
-      logger.error('Error fetching API data:', error); // Log the error
-
-      // Determine error message
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch API data';
-
-      setState((prev) => ({
-        ...prev,
-        apiData: null,
-        apiError: errorMessage,
-        apiLoading: false,
-      }));
+      const response = await axios.get(`/api/userInfo?uuid=${uuid}`);
+      console.log('API response data:', response.data);
+      setState((prev) => ({ ...prev, userInfo: response.data.userData }));
+    } catch (err: any) {
+      logger.error('Error fetching API data:', err);
+      // handle error state if needed
     }
   }, []);
 
-  const addIndustry = React.useCallback(async (name: any, dateOfBirth: any, uuid: string): Promise<void> => {
-    setState((prev) => ({ ...prev, apiLoading: true, apiError: null }));
-
+  // Callback: add industry
+  const addIndustry = React.useCallback(async (name: string, dateOfBirth: any, uuid: string) => {
     try {
-      const response = await axios.post(`/api/Industry`, {
-        industryName: name,
-        dateOfBirth: dateOfBirth,
-        uuid: uuid,
-      }); // Replace with your API endpoint
-
-      console.log('API response data:', response.data); // Debugging: Check the fetched data in console
-
-      setState((prev) => ({
-        ...prev,
-      }));
-    } catch (error: any) {
-      logger.error('Error fetching API data:', error); // Log the error
-
-      // Determine error message
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch API data';
-
-      setState((prev) => ({
-        ...prev,
-        apiData: null,
-        apiError: errorMessage,
-        apiLoading: false,
-      }));
+      const response = await axios.post(`/api/Industry`, { industryName: name, dateOfBirth, uuid });
+      console.log('API response data:', response.data);
+    } catch (err: any) {
+      logger.error('Error adding industry:', err);
     }
   }, []);
 
-  const updateUser = React.useCallback(async (firstName: any, lastName: any, uuid: string): Promise<void> => {
-    setState((prev) => ({ ...prev, apiLoading: true, apiError: null }));
-
+  // Callback: update user
+  const updateUser = React.useCallback(async (firstName: string, lastName: string, uuid: string) => {
     try {
-      const response = await axios.post(`/api/userInfo`, {
-        firstName,
-        lastName,
-        uuid,
-      });
-
-      console.log('API response data:', response.data); // Debugging: Check the fetched data in console
-
-      setState((prev) => ({
-        ...prev,
-      }));
-    } catch (error: any) {
-      logger.error('Error fetching API data:', error); // Log the error
-
-      // Determine error message
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch API data';
-
-      setState((prev) => ({
-        ...prev,
-        apiData: null,
-        apiError: errorMessage,
-        apiLoading: false,
-      }));
+      const response = await axios.post(`/api/userInfo`, { firstName, lastName, uuid });
+      console.log('API response data:', response.data);
+    } catch (err: any) {
+      logger.error('Error updating user:', err);
     }
   }, []);
 
-  const checkSession = React.useCallback(async (): Promise<void> => {
+  // Callback: check session / get user
+  const checkSession = React.useCallback(async () => {
     try {
-      const { data, error } = await authClient.getUser(); // Fetch the user session from your authClient
-
-      console.log('Fetched user data:', data); // Debugging: Check the fetched data in console
-
+      const { data, error } = await authClient.getUser();
+      console.log('Fetched user data:', data);
       if (error) {
-        logger.error(error); // Log the error if any
-        setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
-        return;
+        logger.error(error);
+        setState((prev) => ({ ...prev, user: null, error, isLoading: false }));
+      } else {
+        setState((prev) => ({ ...prev, user: data ?? null, error: null, isLoading: false }));
       }
-
-      setState((prev) => ({
-        ...prev,
-        user: data ?? null,
-        error: null,
-        isLoading: false,
-      }));
-    } catch (err) {
-      logger.error(err); // Catch and log any unexpected errors
-      setState((prev) => ({
-        ...prev,
-        user: null,
-        error: 'Something went wrong',
-        isLoading: false,
-      }));
+    } catch (err: any) {
+      logger.error('Error in checkSession:', err);
+      setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
     }
   }, []);
 
+  // Effect: hydrate on mount & subscribe to token changes
   React.useEffect(() => {
-    checkSession().catch((err) => {
-      logger.error('Error in checkSession:', err); // Catch any errors that occur during initial session check
-    });
+    // 1) initial hydration
+    checkSession();
+
+    // 2) listen for localStorage 'custom-auth-token' changes across tabs
+    const storageKey = 'custom-auth-token';
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key !== storageKey) return;
+      if (e.newValue) {
+        // token added or changed
+        checkSession();
+      } else {
+        // token removed
+        setState((prev) => ({ ...prev, user: null }));
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [checkSession]);
 
   return (
-    <UserContext.Provider value={{ ...state, checkSession, fetchApiData, addIndustry, updateUser }}>
+    <UserContext.Provider
+      value={{
+        user: state.user,
+        userInfo: state.userInfo,
+        error: state.error,
+        isLoading: state.isLoading,
+        isIndustryFilled: state.isIndustryFilled,
+        checkSession,
+        fetchApiData,
+        updateUser,
+        addIndustry,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
 }
-
-export const UserConsumer = UserContext.Consumer;

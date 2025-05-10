@@ -79,9 +79,11 @@ export function SignUpForm(): React.JSX.Element {
 
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
+      console.log('SignUpForm.onSubmit fired with', values);
       setIsPending(true);
   
       // Call the UserCheck API to validate the email
+      try {
       const emailCheckResponse = await fetch(`https://api.usercheck.com/email/${values.email}?key=YxppwgkhuJuAyYh489KyPALDXOlldowp`, {
         method: 'GET',
       });
@@ -91,7 +93,6 @@ export function SignUpForm(): React.JSX.Element {
       // Check if the email is disposable
       if (emailCheckData.disposable) {
         setError('email', { message: 'Temporary/disposable email addresses are not allowed' });
-        setIsPending(false);
         return;
       }
   
@@ -103,7 +104,6 @@ export function SignUpForm(): React.JSX.Element {
   
       if (userExists && userExists.length > 0) {
         setIsEmailRegistered(true); // Set flag to display log-in message
-        setIsPending(false);
         return;
       }
   
@@ -121,7 +121,6 @@ export function SignUpForm(): React.JSX.Element {
   
       if (error) {
         setError('root', { type: 'server', message: error.message });
-        setIsPending(false);
         return;
       }
   
@@ -148,8 +147,13 @@ export function SignUpForm(): React.JSX.Element {
       alert('Please verify your email');
   
       // Refresh the auth state
-      await checkSession?.();
-      router.refresh();
+        router.push(paths.auth.signIn);
+      } catch (err) {
+        console.error('SignUpForm.onSubmit error', err);
+        setError('root', { type: 'server', message: 'Something went wrong. Please try again.' });
+      } finally {
+        setIsPending(false);
+      }
     },
     [checkSession, router, setError, supabase]
   );
