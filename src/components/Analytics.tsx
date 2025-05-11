@@ -12,6 +12,13 @@ export default function Analytics() {
   useEffect(() => {
     const params = searchParams?.toString() ?? ''
     const url = pathname + (params ? `?${params}` : '')
+    console.debug('[Analytics] pageview →', url)
+
+    if (typeof window.gtag !== 'function') {
+      console.warn('[Analytics] window.gtag not defined—are your GA scripts loaded?')
+      return
+    }
+
     pageview(url)
   }, [pathname, searchParams])
 

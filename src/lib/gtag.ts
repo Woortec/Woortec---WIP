@@ -16,6 +16,7 @@ export const pageview = (url: string) => {
   if (typeof window === 'undefined' || !window.gtag) return;
   window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: url,
+    debug_mode: window.location.hostname === 'localhost'
   });
 };
 
