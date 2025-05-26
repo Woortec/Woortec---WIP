@@ -1,25 +1,24 @@
-// src/app/layout.tsx
 'use client'
 
 import * as React from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Script from 'next/script'
-// alias this import so it doesn’t clash with our `export const dynamic`
 import NextDynamic from 'next/dynamic'
+import type { Session } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import type { Viewport } from 'next'
-import { TourProvider } from '@/contexts/TourContext'
-import '@/styles/global.css'
 
+import { TourProvider } from '@/contexts/TourContext'
 import { UserProvider } from '@/contexts/user-context'
 import { LocalizationProvider } from '@/components/core/localization-provider'
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider'
+import '@/styles/global.css'
 
-// This tells Next.js “always render this layout client-side”
 export const dynamic = 'force-dynamic'
 
-// mobile viewport meta
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport
 
-// now use our aliased import for the client-only Analytics component
 const Analytics = NextDynamic(() => import('@/components/Analytics'), { ssr: false })
 
 interface LayoutProps {
@@ -27,6 +26,61 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const router = useRouter()
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+
+const supabase = React.useMemo(() => 
+  createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  ), []
+)
+
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession()
+
+      if (!data.session) {
+        // try to refresh session if cookies are still valid
+        await supabase.auth.refreshSession()
+        const refreshed = await supabase.auth.getSession()
+        setSession(refreshed.data.session)
+      } else {
+        setSession(data.session)
+      }
+
+      setLoading(false)
+    }
+
+    checkSession()
+  }, [supabase])
+
+  useEffect(() => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase])
+
+  useEffect(() => {
+    if (!loading && !session) {
+      router.push('/auth/log-in')
+    }
+  }, [loading, session, router])
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <span className="text-muted-foreground text-sm">Checking session...</span>
+      </div>
+    )
+  }
+
   return (
     <html lang="en">
       <head>
@@ -55,7 +109,6 @@ export default function Layout({ children }: LayoutProps) {
             <UserProvider>
               <ThemeProvider>
                 {children}
-                {/* only runs on client, after gtag is ready */}
                 <Analytics />
               </ThemeProvider>
             </UserProvider>
