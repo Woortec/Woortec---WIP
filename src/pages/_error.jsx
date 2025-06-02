@@ -6,16 +6,11 @@ const CustomErrorComponent = (props) => {
 };
 
 CustomErrorComponent.getInitialProps = async (contextData) => {
-  const { err, res } = contextData;
+  // In case this is running in a serverless function, await this in order to give Sentry
+  // time to send the error before the lambda exits
+  await Sentry.captureUnderscoreErrorException(contextData);
 
-  if (err) {
-    await Sentry.captureUnderscoreErrorException(contextData);
-  } else {
-    Sentry.captureMessage(
-      `_error.js called without error object (statusCode: ${res?.statusCode || "unknown"})`
-    );
-  }
-
+  // This will contain the status code of the response
   return Error.getInitialProps(contextData);
 };
 

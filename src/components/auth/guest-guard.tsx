@@ -34,7 +34,6 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
 
             if (currentTime >= expiryTime) {
               logger.debug('[GuestGuard]: Auth token expired, removing it...');
-              window.location.reload()
               localStorage.removeItem('sb-uvhvgcrczfdfvoujarga-auth-token');
             }
           }
@@ -70,7 +69,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     checkPermissions();
   }, [user, error, isLoading, router]);
 
-  if (isChecking) return <div>Loading...</div>;
+  if (isChecking) return null;
 
   if (error) {
     return <Alert severity="error">{error}</Alert>;
