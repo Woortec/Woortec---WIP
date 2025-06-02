@@ -11,7 +11,9 @@ import Typography from '@mui/material/Typography';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import { ChatCenteredText as FeedbackIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
 import Cookies from 'js-cookie';
+import * as Sentry from '@sentry/nextjs';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
@@ -32,24 +34,29 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
     try {
-      // Call the authClient to clear localStorage and handle sign out logic
       await authClient.signOut();
       localStorage.clear();
-
-      // Clear all cookies
       const cookies = document.cookie.split('; ');
       cookies.forEach((cookie) => {
         const cookieName = cookie.split('=')[0];
         Cookies.remove(cookieName);
       });
-
       router.push('/auth/log-in');
       window.location.reload();
     } catch (err) {
       logger.error('Sign out error', err);
     }
   }, [router]);
-  console.log('Thisi is is isd', userInfo);
+
+  const handleFeedback = () => {
+    Sentry.showReportDialog({
+      title: "We’d love your feedback",
+      subtitle: "Tell us what went wrong or how we can improve.",
+      labelComments: "Describe the issue or your thoughts",
+      labelEmail: "Email (optional)",
+    });
+  };
+
   return (
     <Popover
       anchorEl={anchorEl}
@@ -77,6 +84,12 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
             <UserIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
           Profile
+        </MenuItem>
+        <MenuItem onClick={handleFeedback}>
+          <ListItemIcon>
+            <FeedbackIcon fontSize="var(--icon-fontSize-md)" />
+          </ListItemIcon>
+          Give Feedback
         </MenuItem>
         <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
