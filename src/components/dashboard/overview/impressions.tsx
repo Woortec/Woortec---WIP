@@ -15,6 +15,7 @@ import { createClient } from '../../../../utils/supabase/client'; // Adjust path
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export interface TotalImpressionsProps {
   diff?: number;
@@ -24,6 +25,7 @@ export interface TotalImpressionsProps {
 }
 
 export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsProps): React.JSX.Element {
+    const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
@@ -44,7 +46,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
           <Box sx={{width:'100%',}}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack>
-              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">IMPRESSIONS</Typography>
+              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">{t('DashboardCards.impressions')}</Typography>
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
             </Stack>
           </Stack>
@@ -57,7 +59,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
                 </Typography>
               </Stack>
               <Typography color="text.secondary" sx={{fontSize:'0.7rem'}}>
-                Last month
+                {t('DashboardCards.lastMonth')}
               </Typography>
             </Stack>
           ) : null}
@@ -66,7 +68,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
           <Box sx={{width: '35%', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ marginTop: 'auto',}}>
               <Box sx={{ color: '#859096', textAlign:'center'}}>0</Box>
-              <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign:'center' }}>N Clicks</Box>
+              <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign:'center' }}>{t('DashboardCards.clicks')}</Box>
             </Box>
           </Box>
 

@@ -1,0 +1,58 @@
+{
+  "Navbar": {
+    "overview": "Visión general",
+    "adsPerformance": "Rendimiento de anuncios",
+    "adsStrategy": "Estrategia de anuncios",
+    "campaignSetup": "Configuración de campaña",
+    "socialConnections": "Conexiones sociales",
+    "startTour": "Iniciar recorrido"
+  },
+  "DatePicker": {
+    "presets": {
+      "today": "Hoy",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes",
+      "thisYear": "Este año"
+    },
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin",
+    "separator": "a"
+  },
+  "DashboardCards": {
+    "budget": "Presupuesto",
+    "impressions": "Impresiones",
+    "clickThroughRate": "Tasa de clics",
+    "adsRunning": "Anuncios activos",
+    "lastMonth": "Mes pasado",
+    "messages": "Mensajes",
+    "clicks": "Clics"
+  },
+  "DashboardCharts": {
+    "adSpend": "Gasto publicitario",
+    "totalReach": "Alcance total",
+    "overview": "Visión general",
+    "sync": "Sincronizar",
+    "timeframe": {
+      "today": "Hoy",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes",
+      "thisYear": "Este año"
+    },
+    "axis": {
+      "clicks": "Clics",
+      "messagesStarted": "Mensajes iniciados"
+    },
+    "reportBug": "Reportar un error"
+  },
+  "Home": {
+    "welcome": "¡Bienvenido a Woortec!"
+  },
+  "UserPopover": {
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "feedback": "Enviar comentarios",
+    "english": "Inglés",
+    "spanish": "Español",
+    "signout": "Cerrar sesión"
+  }
+}

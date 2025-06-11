@@ -10,8 +10,12 @@ import { TourProvider } from '@/contexts/TourContext'
 import '@/styles/global.css'
 
 import { UserProvider } from '@/contexts/user-context'
+// keep your existing LocalizationProvider
 import { LocalizationProvider } from '@/components/core/localization-provider'
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider'
+
+// NEW: import our LocaleProvider
+import { LocaleProvider } from '@/contexts/LocaleContext'
 
 // This tells Next.js “always render this layout client-side”
 export const dynamic = 'force-dynamic'
@@ -52,13 +56,16 @@ export default function Layout({ children }: LayoutProps) {
       <body>
         <TourProvider>
           <LocalizationProvider>
-            <UserProvider>
-              <ThemeProvider>
-                {children}
-                {/* only runs on client, after gtag is ready */}
-                <Analytics />
-              </ThemeProvider>
-            </UserProvider>
+            {/* NEW: wrap everything in LocaleProvider */}
+            <LocaleProvider>
+              <UserProvider>
+                <ThemeProvider>
+                  {children}
+                  {/* only runs on client, after gtag is ready */}
+                  <Analytics />
+                </ThemeProvider>
+              </UserProvider>
+            </LocaleProvider>
           </LocalizationProvider>
         </TourProvider>
       </body>

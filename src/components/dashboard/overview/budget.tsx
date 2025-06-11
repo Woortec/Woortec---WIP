@@ -18,6 +18,7 @@ import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import { Tooltip } from 'react-bootstrap';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export interface BudgetProps {
   diff?: number;
@@ -27,6 +28,7 @@ export interface BudgetProps {
 }
 
 export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Element {
+  const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
@@ -43,11 +45,10 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
             <IconButton><LikeIcon size="1.2rem" /></IconButton>
             <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
           </Box>
-
         </Box>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Stack>
-              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">BUDGET</Typography>
+              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary"> {t('DashboardCards.budget')}</Typography>
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
             </Stack>
           </Stack>

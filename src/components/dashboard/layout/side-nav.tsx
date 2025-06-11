@@ -1,6 +1,8 @@
+// src/components/SideNav.tsx
 'use client';
 
 import * as React from 'react';
+import { useLocale } from '@/contexts/LocaleContext';
 import RouterLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -12,12 +14,12 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { CaretUpDown as CaretUpDownIcon } from '@phosphor-icons/react/dist/ssr/CaretUpDown';
-import Joyride, { CallBackProps } from 'react-joyride'; // Import Joyride
+import Joyride, { CallBackProps } from 'react-joyride';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
-import { useTour } from '@/contexts/TourContext'; // Import the useTour hook
+import { useTour } from '@/contexts/TourContext';
 
 import { Logo } from '@/components/core/logo';
 
@@ -25,25 +27,23 @@ import { navItems } from './config';
 import { navIcons } from './nav-icons';
 
 export function SideNav(): React.JSX.Element {
-  const pathname = usePathname() ?? ''; // Provide a default empty string if pathname is null
+  const pathname = usePathname() ?? '';
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const { runTour, startTour, stopTour, steps } = useTour(); // Added stopTour function from context
-  const [isMounted, setIsMounted] = React.useState(false); // State to track when the component is mounted
+  const { runTour, startTour, stopTour, steps } = useTour();
+  const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setIsMounted(true); // Mark component as mounted
+    setIsMounted(true);
   }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Handle Joyride callback for when tour steps are reached
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
-
     if (status === 'finished' || status === 'skipped') {
-      stopTour(); // Close the tour if it is finished or skipped
+      stopTour();
     }
   };
 
@@ -56,7 +56,7 @@ export function SideNav(): React.JSX.Element {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        p: 2, // Adjust padding to reduce space
+        p: 2,
       }}
     >
       <Stack spacing={2} sx={{ p: 2, alignItems: 'center' }}>
@@ -85,76 +85,49 @@ export function SideNav(): React.JSX.Element {
           <CaretUpDownIcon />
         </Box>
       </Stack>
+
       <Divider sx={{ borderColor: '#E0E0E0', my: 1 }} />
 
       <Box component="nav" sx={{ flex: '1 1 auto', p: 1 }}>
         {renderNavItems({ pathname, items: navItems })}
 
-              {/* Button to start the Joyride tour */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={startTour} // This triggers the tour globally
-        sx={{ mt: 2, width:'100%' }}
-      >
-        Start Tour
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={startTour}
+          sx={{ mt: 2, width: '100%' }}
+        >
+          {/* Translated via LocaleContext */}
+          {useLocale().t('Navbar.startTour')}
+        </Button>
       </Box>
     </Box>
   );
 
   return (
     <>
-      {/* Joyride component for the tour */}
       {isMounted && (
         <Joyride
           steps={steps}
-          run={runTour} // This checks the global state to run the tour
-          continuous={true}
-          scrollToFirstStep={true}
-          showProgress={true}
-          showSkipButton={false} // Disabled the Skip button
-          styles={{
-            options: {
-              zIndex: 10000, // Ensure the tour stays on top of other UI elements
-            },
-          }}
-          callback={handleJoyrideCallback} // Callback to handle tour events
-          locale={{
-            back: 'Back',
-            next: 'Next',
-            close: 'Close Tour', // This will now appear as the "Close" button
-          }}
-          floaterProps={{
-            disableAnimation: true,
-            hideArrow: true,
-          }}
+          run={runTour}
+          continuous
+          scrollToFirstStep
+          showProgress
+          showSkipButton={false}
+          styles={{ options: { zIndex: 10000 } }}
+          callback={handleJoyrideCallback}
+          locale={{ back: 'Back', next: 'Next', close: 'Close Tour' }}
+          floaterProps={{ disableAnimation: true, hideArrow: true }}
         />
       )}
 
-      {/* <IconButton
-        aria-label="open drawer"
-        onClick={handleDrawerToggle}
-        edge="start"
-        sx={{
-          display: { lg: 'none', xs: 'inline-flex' }, // Show only on small screens
-          position: 'fixed',
-          top: 16,
-          left: 15,
-          zIndex: 1300,
-        }} 
-      >
-        <MenuIcon />
-      </IconButton> */}
-
-      {/* Desktop side nav */}
       <Box
         sx={{
           '--SideNav-background': '#FFFFFF',
           '--SideNav-color': '#333333',
           bgcolor: 'var(--SideNav-background)',
           color: 'var(--SideNav-color)',
-          display: { xs: 'none', lg: 'flex' }, // Hidden on small screens
+          display: { xs: 'none', lg: 'flex' },
           flexDirection: 'column',
           height: '98vh',
           left: 19,
@@ -172,20 +145,14 @@ export function SideNav(): React.JSX.Element {
         {drawerContent}
       </Box>
 
-      {/* Mobile drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile
-        }}
+        ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: 'block', lg: 'none' }, // Hidden on large screens
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: 256,
-          },
+          display: { xs: 'block', lg: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 256 },
         }}
       >
         {drawerContent}
@@ -194,12 +161,16 @@ export function SideNav(): React.JSX.Element {
   );
 }
 
-function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pathname: string }): React.JSX.Element {
-  const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
-    const { key, ...item } = curr;
-
-    acc.push(<NavItem key={key} pathname={pathname} {...item} />);
-
+function renderNavItems({
+  items = [],
+  pathname,
+}: {
+  items?: NavItemConfig[];
+  pathname: string;
+}): React.JSX.Element {
+  const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig) => {
+    const { key: navKey, ...item } = curr;
+    acc.push(<NavItem key={navKey} navKey={navKey} pathname={pathname} {...item} />);
     return acc;
   }, []);
 
@@ -212,23 +183,31 @@ function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pat
 
 interface NavItemProps extends Omit<NavItemConfig, 'items'> {
   pathname: string;
+  navKey: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({
+  disabled,
+  external,
+  href,
+  icon,
+  matcher,
+  pathname,
+  titleKey,
+  navKey,
+}: NavItemProps): React.JSX.Element {
+  const { t } = useLocale();
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
 
-  // Define nav item classes for Joyride steps
-  const navItemClasses: { [key: string]: string } = {
-    Overview: 'overview-step',
-    'Ads Performance': 'ads-performance-step',
-    'Ads Strategies': 'ads-strategies-step',
-    'Campaign Setup': 'campaign-setup-step',
-    'Social Connections': 'social-connections-step',
+  const navItemClasses: Record<string, string> = {
+    overview: 'overview-step',
+    performance: 'ads-performance-step',
+    strategy: 'ads-strategies-step',
+    setupcampaign: 'campaign-setup-step',
+    connection: 'social-connections-step',
   };
-
-  // Make sure title is a valid string before using it as a key
-  const className = typeof title === 'string' ? navItemClasses[title] || '' : '';
+  const className = navItemClasses[navKey] || '';
 
   return (
     <li>
@@ -259,24 +238,24 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
             color: 'var(--NavItem-disabled-color)',
             cursor: 'not-allowed',
           }),
-          ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+          ...(active && {
+            bgcolor: 'var(--NavItem-active-background)',
+            color: 'var(--NavItem-active-color)',
+          }),
         }}
       >
         <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
-          {Icon ? (
+          {Icon && (
             <Icon
               fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
               fontSize="var(--icon-fontSize-md)"
               weight={active ? 'fill' : undefined}
             />
-          ) : null}
+          )}
         </Box>
         <Box sx={{ flex: '1 1 auto' }}>
-          <Typography
-            component="span"
-            sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}
-          >
-            {title}
+          <Typography component="span" sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '40px' }}>
+            {t(titleKey)}
           </Typography>
         </Box>
       </Box>

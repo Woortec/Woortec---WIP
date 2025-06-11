@@ -8,6 +8,7 @@ import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import { useLocale } from '@/contexts/LocaleContext';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -42,6 +43,7 @@ export interface TotalReachProps {
 }
 
 export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.JSX.Element {
+  const { t } = useLocale();
   const [totalReach, setTotalReach] = useState<number>(0);
   const [clicks, setClicks] = useState<number>(0);
   const [messagesStarted, setMessagesStarted] = useState<number>(0);
@@ -52,7 +54,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
 
 
   const [chartData, setChartData] = useState({
-    labels: ['Clicks', 'Messages Started'],
+    labels: [t('DashboardCharts.axis.clicks'), t('DashboardCharts.axis.messagesStarted')],
     datasets: [
       {
         data: [0, 0],
@@ -190,7 +192,7 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
   title={
     <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%' }}>
       <Typography sx={{ width:'100%', fontSize: '1.1rem', color: '#404D54', fontWeight:'500' }}>
-        Total Reach
+        {t('DashboardCharts.totalReach')}
       </Typography>
       <Box sx={{ width:'100%', display: 'flex', gap: '0.3rem', color: '#486A75', justifyContent: 'flex-end'}}>
         <Button><PlusIcon size={17} /></Button>

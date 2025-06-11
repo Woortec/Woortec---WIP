@@ -21,6 +21,8 @@ import {
 } from 'chart.js';
 import { useMediaQuery } from '@mui/material';
 import styles from './date/style/AdsSpend.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
+
 
 ChartJS.register(
   CategoryScale,
@@ -57,6 +59,7 @@ const getFormattedDate = (date: Date | null): string => {
 };
 
 export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.JSX.Element {
+  const { t } = useLocale();
   //List of Heights
   const isMobile = useMediaQuery('(max-width:600px)');
   const isLarge = useMediaQuery('(max-width:1570px)');
@@ -230,7 +233,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
     <Card className={styles.mainContainer} sx={{
       borderRadius: '20px', backgroundColor:'white', flexDirection: 'column',}}>
       <CardHeader sx={{color:'#404D54'}}
-        title="Ad Spend"
+        title={t('DashboardCharts.adSpend')}
         action={
           <Button
             color="inherit"
@@ -238,7 +241,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
             startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
             onClick={() => fetchAdSpendData()}
           >
-            Sync
+            {t('DashboardCharts.sync')}
           </Button>
         }
       />
@@ -292,7 +295,7 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
 
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button sx={{color:'#486A75'}} startIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" color='#486A75' />} size="small">
-          Overview
+          {t('DashboardCharts.overview')}
         </Button>
       </CardActions>
     </Card>

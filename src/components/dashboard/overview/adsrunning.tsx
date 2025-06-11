@@ -15,6 +15,7 @@ import { useDate } from './date/DateContext';
 import type { SxProps } from '@mui/system';
 import { createClient } from '../../../../utils/supabase/client';
 import { makeBatchRequest } from './apiBatchRequest';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export interface TotalAdsProps {
   sx?: SxProps;
@@ -22,6 +23,7 @@ export interface TotalAdsProps {
 }
 
 export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
+  const { t } = useLocale();
   return (
     <Card
       sx={{
@@ -46,7 +48,7 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
 
       <Box>
         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-          ADS RUNNING
+          {t('DashboardCards.adsRunning')}
         </Typography>
         <Typography
           variant="h4"
@@ -66,7 +68,7 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
           ↓ 52.67%
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-          Last month
+         {t('DashboardCards.lastMonth')}
         </Typography>
       </Stack>
     </Card>

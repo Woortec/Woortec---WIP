@@ -4,6 +4,7 @@
 
 import React from 'react';
 import DatePicker from 'react-datepicker';
+import { useLocale } from '@/contexts/LocaleContext';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -12,6 +13,7 @@ import { CalendarToday as CalendarTodayIcon } from '@mui/icons-material';
 
 import { useDate } from './date/DateContext';
 const DatePickerComponent = () => {
+  const { t } = useLocale();
   // Extracting startDate, endDate, and their respective setters from the context.
   const { startDate, endDate, setStartDate, setEndDate } = useDate();
 
@@ -64,7 +66,7 @@ const DatePickerComponent = () => {
             // The displayed date format is set to something readable (e.g., "12 Dec 2023").
           />
 
-          <span style={{ margin: '0 8px', color: 'grey' }}>↔</span>
+          <span style={{ margin: '0 8px', color: 'grey' }}>{t('DatePicker.separator')}</span>
           {/* A visual separator (arrow) between the two date fields. 
               The inline styles handle simple spacing and color. */}
 

@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
 import styles from './date/style/DatePickerComponent.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export interface TotalCostPerMessageProps {
   diff?: number;
@@ -27,6 +28,7 @@ export function TotalCostPerMessage({
   sx,
   value
 }: TotalCostPerMessageProps): React.JSX.Element {
+    const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up'
     ? 'var(--mui-palette-success-main)'
@@ -75,7 +77,7 @@ export function TotalCostPerMessage({
                   }}
                   color="text.secondary"
                 >
-                  CLICK THROUGH RATE
+                  {t('DashboardCards.clickThroughRate')}
                 </Typography>
                 <Typography
                   variant="h4"
@@ -94,7 +96,7 @@ export function TotalCostPerMessage({
                   </Typography>
                 </Stack>
                 <Typography color="text.secondary" variant="caption" sx={{ fontSize: '0.7rem' }}>
-                  Last month
+                  {t('DashboardCards.lastMonth')}
                 </Typography>
               </Stack>
             )}
@@ -104,7 +106,7 @@ export function TotalCostPerMessage({
             <Box sx={{ marginTop: 'auto' }}>
               <Box sx={{ color: '#859096', textAlign: 'center' }}>0</Box>
               <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign: 'center' }}>
-                N Messages
+                {t('DashboardCards.messages')}
               </Box>
             </Box>
           </Box>

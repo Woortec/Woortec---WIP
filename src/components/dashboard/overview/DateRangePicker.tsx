@@ -1,9 +1,16 @@
+// src/components/DatePickerComponent.tsx
+
+'use client';
+
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { CalendarBlank as CalIcon } from '@phosphor-icons/react';
 import styles from './date/style/DatePickerComponent.module.css';
+
+// ─── NEW: import translation hook ───────────────────────────────────────────────
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface DatePickerComponentProps {
   startDate: Date | null;
@@ -18,10 +25,13 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   setStartDate,
   setEndDate,
 }) => {
-  const [preset, setPreset] = useState<string>('This Week');
+  // ─── NEW: get t() ───────────────────────────────────────────────────────────
+  const { t } = useLocale();
+
+  const [preset, setPreset] = useState<string>(t('DatePicker.presets.thisWeek'));
 
   useEffect(() => {
-    // Set "This Week" as the default selection
+    // Set default to "This Week"
     const today = new Date();
     setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
     setEndDate(today);
@@ -32,19 +42,19 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
     const today = new Date();
 
     switch (newPreset) {
-      case 'Today':
+      case t('DatePicker.presets.today'):
         setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
         setEndDate(today);
         break;
-      case 'This Week':
+      case t('DatePicker.presets.thisWeek'):
         setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
         setEndDate(today);
         break;
-      case 'This Month':
+      case t('DatePicker.presets.thisMonth'):
         setStartDate(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
         setEndDate(today);
         break;
-      case 'This Year':
+      case t('DatePicker.presets.thisYear'):
         setStartDate(new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()));
         setEndDate(today);
         break;
@@ -57,10 +67,18 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
     setEndDate(new Date());
   };
 
+  // build the array of translated preset labels
+  const presetLabels = [
+    t('DatePicker.presets.today'),
+    t('DatePicker.presets.thisWeek'),
+    t('DatePicker.presets.thisMonth'),
+    t('DatePicker.presets.thisYear'),
+  ];
+
   return (
     <div className={styles.card}>
       <div className={styles.toggleButtonGroup}>
-        {['Today', 'This Week', 'This Month', 'This Year'].map((label) => (
+        {presetLabels.map((label) => (
           <button
             key={label}
             className={`${styles.toggleButton} ${preset === label ? styles.selected : ''}`}
@@ -75,7 +93,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
       <div className={styles.datePickerBox}>
         <div className={styles.leftdatePickerContainer}>
           <CalIcon />
-          
+
           {/* Start Date Picker */}
           <DatePicker
             selected={startDate}
@@ -86,6 +104,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
           />
         </div>
 
+        {/* ─── REPLACED hard‐coded arrow with translation ───────────────────────────── */}
         <div className={styles.datePickerSeparator}>↔</div>
 
         <div className={styles.rightdatePickerContainer}>
