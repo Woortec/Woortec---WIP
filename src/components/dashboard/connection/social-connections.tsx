@@ -10,6 +10,7 @@ import { createClient } from '../../../../utils/supabase/client';
 import AdAccountSelectionModal from './AdAccountSelectionModal';
 import PageSelectionModal from './PageSelectionModal';
 import styles from './styles/Connect.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 const setItemWithExpiry = (key: string, value: any, ttl: number) => {
   const now = new Date();
@@ -75,6 +76,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   const [selectedAdAccount, setSelectedAdAccount] = useState<{ id: string; name: string; currency: string } | null>(null);
   const [selectedPage, setSelectedPage] = useState<{ id: string; name: string } | null>(null);
   const [isConnected, setIsConnected] = useState(false); // Track if the user is already connected
+  const { t } = useLocale();
 
   const supabase = createClient();
 
@@ -281,34 +283,24 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     await supabase.from('facebookData').delete().eq('user_id', localUserId);
   };
 
-  const renderAdAccounts = () => {
-    if (!selectedAdAccount) return null;
-    return (
-      <div>
-        <p>Ad Account: {selectedAdAccount.name}</p>
-        <p>Currency: {selectedAdAccount.currency}</p>
-      </div>
-    );
-  };
-
   return (
     <Box className={styles.container}>
       <Typography variant="h5" gutterBottom>
-        Connect with your social media accounts
+        {t('SocialConnections.connectTitle')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        Simplify your ad strategy by connecting your accounts effortlessly.
+        {t('SocialConnections.connectSubtitle')}
       </Typography>
 
       <Grid container spacing={3}>
         {/* Facebook Card */}
         <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
+          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8', position: 'relative' }}>
             <FacebookIcon className={styles.cardIcon} />
             <div className={styles.cardContent}>
               <Typography className={styles.title}>Facebook</Typography>
               <Typography className={styles.description}>
-                {isConnected ? 'Connected to Facebook' : 'Connect to Supercharge Your Ads!'}
+                {isConnected ? t('SocialConnections.connectedFacebook') : t('SocialConnections.connectFacebook')}
               </Typography>
             </div>
             {isConnected ? (
@@ -317,7 +309,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 sx={{ backgroundColor: '#00c293', color: 'white' }}
                 onClick={handleDisconnectAdAccount}
               >
-                DISCONNECT
+                {t('SocialConnections.disconnect')}
               </Button>
             ) : (
               <Button
@@ -325,8 +317,72 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
                 sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
                 onClick={handleFacebookLogin}
               >
-                CONNECT
+                {t('SocialConnections.connect')}
               </Button>
+            )}
+            {/* Connected Facebook Account Details */}
+            {isConnected && selectedAdAccount && selectedPage && (
+              <Box sx={{ mt: 2, width: '100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Box sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: '#1877f2',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mr: 1,
+                  }}>
+                    <FacebookIcon sx={{ color: 'white', fontSize: 20 }} />
+                  </Box>
+                  <Typography variant="subtitle1" fontWeight={700}>
+                    {t('SocialConnections.connectedFacebookAccount') || 'Connected Facebook Account'}
+                  </Typography>
+                </Box>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      {t('SocialConnections.adAccountId') || 'Ad Account ID'}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={500}>
+                      {selectedAdAccount.id}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      {t('SocialConnections.adAccountName') || 'Ad Account Name'}
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedAdAccount.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      {t('SocialConnections.currency') || 'Currency'}
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedAdAccount.currency}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      {t('SocialConnections.connectedPage') || 'Connected Page'}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={500}>
+                      {selectedPage.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      {t('SocialConnections.pageId') || 'Page ID'}
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedPage.id}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Box>
             )}
           </Card>
         </Grid>
@@ -338,11 +394,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             <div className={styles.cardContent}>
               <Typography className={styles.title}>Instagram</Typography>
               <Typography className={styles.description}>
-                Connect to Supercharge Your Ads!
+                {t('SocialConnections.connectInstagram')}
               </Typography>
             </div>
             <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
-              COMING SOON
+              {t('SocialConnections.comingSoon')}
             </Button>
           </Card>
         </Grid>
@@ -354,11 +410,11 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             <div className={styles.cardContent}>
               <Typography className={styles.title}>LinkedIn</Typography>
               <Typography className={styles.description}>
-                We need to connect to your account
+                {t('SocialConnections.connectLinkedIn')}
               </Typography>
             </div>
             <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
-              COMING SOON
+              {t('SocialConnections.comingSoon')}
             </Button>
           </Card>
         </Grid>
@@ -366,9 +422,8 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
       {/* Render fetched ad accounts with currency */}
       <Typography variant="body2" sx={{ marginTop: '20px', pb:'9rem' }}>
-      Your connected social accounts (0):
+        {t('SocialConnections.connectedAccounts') + ' ' + (isConnected ? '1' : '0')}
       </Typography>
-      {/* {renderAdAccounts()} */}
 
       {/* New Feature Announcement */}
       <Box sx={{width:'100%', display:'flex', padding:'2rem', border:'1px solid #F2F4F5', gap:'10px',
@@ -386,10 +441,10 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         </Box>
         <Box sx={{display:'flex', flexDirection:'column'}}>
         <Typography sx={{fontWeight:'600'}}>
-          New Feature Around the Corner! 
+          {t('SocialConnections.newFeature')}
         </Typography> 
         <Typography sx={{color:'#859096'}}>
-          Google Ads coming soon - Stay Tuned for More Power.
+          {t('SocialConnections.googleAdsComingSoon')}
         </Typography>
         </Box>
       </Box>

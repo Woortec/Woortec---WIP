@@ -4,6 +4,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import AdDetail from './AdSetDetail';
 import { getColor, formatValue, getComment, getImpressionsComment, calculateSpentColor, calculateSpentComment, convertThresholds, calculateExpectedSpend } from './utils';
 import styles from './styles/AdTable.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface AdTableProps {
   adData: any[];
@@ -15,6 +16,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   const convertedThresholds = convertThresholds(currency);
   const expectedSpend = calculateExpectedSpend(budget, currency);
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
+  const { t } = useLocale();
 
   const handleAdClick = (adId: string) => {
     setSelectedAdId(selectedAdId === adId ? null : adId);
@@ -27,12 +29,12 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   return (
     <Box className={styles.adTableContainer}>
       <Box className={styles.tableHeader} sx ={{ fontSize: '1.2rem',}}>
-        <Box className={styles.tableHeaderCell1}>AD SET NAMES</Box>
+        <Box className={styles.tableHeaderCell1}>{t('DashboardCards.adSetNames') || 'AD SET NAMES'}</Box>
         <Box className={styles.tableHeaderCell2}>
-          <Box className={styles.tableHeaderCell}>IMPRESSIONS</Box>
+          <Box className={styles.tableHeaderCell}>{t('DashboardCards.impressions')}</Box>
           <Box className={styles.tableHeaderCell}>CPC</Box>
           <Box className={styles.tableHeaderCell}>CTR</Box> 
-          <Box className={styles.tableHeaderCell}>SPENT</Box>
+          <Box className={styles.tableHeaderCell}>{t('DashboardCards.spent') || 'SPENT'}</Box>
         </Box>
       </Box>
 
@@ -68,10 +70,10 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
             </Box>
           <Box className={styles.tableRow2}>
             <Box className={styles.tbtemp}>
-              <Box className={styles.tbtemp1}>IMPRESSIONS:</Box>
+              <Box className={styles.tbtemp1}>{t('DashboardCards.impressions')}:</Box>
               <Box className={styles.tbtemp1}>CPC:</Box>
               <Box className={styles.tbtemp1}>CTR:</Box> 
-              <Box className={styles.tbtemp1}>SPENT:</Box>
+              <Box className={styles.tbtemp1}>{t('DashboardCards.spent') || 'SPENT'}:</Box>
             </Box>
           <Box className={styles.tbContent}>
             <Box className={styles.tableCell}>

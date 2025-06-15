@@ -25,7 +25,9 @@
     "adsRunning": "Anuncios activos",
     "lastMonth": "Mes pasado",
     "messages": "Mensajes",
-    "clicks": "Clics"
+    "clicks": "Clics",
+    "adSetNames": "Conjuntos de anuncios",
+    "spent": "Gastado"
   },
   "DashboardCharts": {
     "adSpend": "Gasto publicitario",
@@ -54,5 +56,30 @@
     "english": "Inglés",
     "spanish": "Español",
     "signout": "Cerrar sesión"
+  },
+  "AdSetDetail": {
+    "requestingAdvice": "Solicitando consejo...",
+    "askForExpert": "Pedir consejo de un experto",
+    "best": "Saludos"
+  },
+  "SocialConnections": {
+    "connectTitle": "Conecta tus cuentas de redes sociales",
+    "connectSubtitle": "Simplifica tu estrategia publicitaria conectando tus cuentas fácilmente.",
+    "connectedFacebook": "Conectado a Facebook",
+    "connectFacebook": "¡Conéctate para potenciar tus anuncios!",
+    "disconnect": "Desconectar",
+    "connect": "Conectar",
+    "connectInstagram": "¡Conéctate para potenciar tus anuncios!",
+    "comingSoon": "Próximamente",
+    "connectLinkedIn": "Necesitamos conectar tu cuenta",
+    "connectedAccounts": "Tus cuentas sociales conectadas ({count}):",
+    "newFeature": "¡Nueva función a la vuelta de la esquina!",
+    "googleAdsComingSoon": "Google Ads próximamente - Mantente atento para más potencia.",
+    "connectedFacebookAccount": "Cuenta de Facebook conectada",
+    "adAccountId": "ID de cuenta publicitaria",
+    "adAccountName": "Nombre de la cuenta publicitaria",
+    "currency": "Moneda",
+    "connectedPage": "Página conectada",
+    "pageId": "ID de la página"
   }
 }

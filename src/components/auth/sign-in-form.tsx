@@ -282,9 +282,9 @@ export function SignInForm(): React.JSX.Element {
           </FormControl>
 
           <Box sx={{ textAlign: 'right' }}>
-            <Link component="button" onClick={handleForgotPassword} variant="subtitle2">
+            <Button onClick={handleForgotPassword} variant="text" type="button" sx={{ padding: 0, minWidth: 0, fontSize: '0.875rem' }}>
               Forgot password?
-            </Link>
+            </Button>
           </Box>
           {resetPasswordError && <Alert color="error">{resetPasswordError}</Alert>}
           {resetPasswordSuccess && <Alert color="success">{resetPasswordSuccess}</Alert>}

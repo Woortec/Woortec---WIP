@@ -25,7 +25,9 @@
     "adsRunning": "Ads Running",
     "lastMonth": "Last month",
     "messages": "Messages",
-    "clicks": "Clicks"
+    "clicks": "Clicks",
+    "adSetNames": "Ad Set Names",
+    "spent": "Spent"
   },
   "DashboardCharts": {
     "adSpend": "Ad Spend",
@@ -54,5 +56,30 @@
     "english": "English",
     "spanish": "Español",
     "signout": "Sign out"
+  },
+  "AdSetDetail": {
+    "requestingAdvice": "Requesting Advice...",
+    "askForExpert": "Ask for Expert's Advice",
+    "best": "Best"
+  },
+  "SocialConnections": {
+    "connectTitle": "Connect with your social media accounts",
+    "connectSubtitle": "Simplify your ad strategy by connecting your accounts effortlessly.",
+    "connectedFacebook": "Connected to Facebook",
+    "connectFacebook": "Connect to Supercharge Your Ads!",
+    "disconnect": "Disconnect",
+    "connect": "Connect",
+    "connectInstagram": "Connect to Supercharge Your Ads!",
+    "comingSoon": "Coming Soon",
+    "connectLinkedIn": "We need to connect to your account",
+    "connectedAccounts": "Your connected social accounts ({count}):",
+    "newFeature": "New Feature Around the Corner!",
+    "googleAdsComingSoon": "Google Ads coming soon - Stay Tuned for More Power.",
+    "connectedFacebookAccount": "Connected Facebook Account",
+    "adAccountId": "Ad Account ID",
+    "adAccountName": "Ad Account Name",
+    "currency": "Currency",
+    "connectedPage": "Connected Page",
+    "pageId": "Page ID"
   }
 }

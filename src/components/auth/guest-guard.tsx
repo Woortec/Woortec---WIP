@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
@@ -67,6 +69,16 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     };
 
     checkPermissions();
+
+    // Add storage event listener to re-run checkPermissions if the auth token changes
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'sb-uvhvgcrczfdfvoujarga-auth-token') {
+        setIsChecking(true); // Show loading while re-checking
+        checkPermissions();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [user, error, isLoading, router]);
 
   if (isChecking) return <div>Loading...</div>;

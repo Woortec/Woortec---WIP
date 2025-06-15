@@ -18,6 +18,7 @@ import {
   waitForRunCompletion,
 } from './api';
 import styles from './styles/AdSetDetail.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface AdDetailProps {
   adId: string;
@@ -31,6 +32,7 @@ const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   const supabase = createClient();
   const userId = localStorage.getItem('userid')!;
+  const { t } = useLocale();
 
   const [adDetail, setAdDetail] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -142,7 +144,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
       {/* Header Section */}
       <Box className={styles.adSetDetailHeader}>
         <Typography variant="h2" sx={{ fontWeight: 600, fontSize: '1.3rem' }}>
-          AD SET NAME
+          {t('DashboardCards.adSetNames')}
         </Typography>
         <IconButton className={styles.closeButton} onClick={onClose}>
           <CloseIcon />
@@ -173,7 +175,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img src="/assets/attach_money.svg" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#526067' }}>BUDGET</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#526067' }}>{t('DashboardCards.budget')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   ${formatValue(adDetail?.cpc)}
                 </Typography>
@@ -185,7 +187,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img src="/assets/attach_money.svg" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>BUDGET</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.budget')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   ${formatValue(adDetail?.cpc)}
                 </Typography>
@@ -197,7 +199,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img src="/assets/attach_money.svg" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>BUDGET</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.budget')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   ${formatValue(adDetail?.cpc)}
                 </Typography>
@@ -223,7 +225,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img src="/assets/attach_money.svg" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>IMPRESSIONS</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.impressions')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   {formatValue(Math.floor(adDetail?.impressions))}
                 </Typography>
@@ -235,7 +237,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img className={styles.dollarSign} src="/assets/attach_money.png" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>SPEND</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.spent')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   ${formatValue(adDetail?.spend)}
                 </Typography>
@@ -254,7 +256,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
             onClick={handleRequestAdvice}
             disabled={requestingAdvice}
           >
-            {requestingAdvice ? 'Requesting Advice...' : "Ask for Expert's Advice"}
+            {requestingAdvice ? t('AdSetDetail.requestingAdvice') : t('AdSetDetail.askForExpert')}
           </Button>
         </Box>
       )}
@@ -292,7 +294,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           {/* Sign-off */}
           <Box mt={2}>
             <Typography sx={{ fontStyle: 'italic' }}>
-              Best,<br />
+              {t('AdSetDetail.best')},<br />
               {AGENT_NAME}<br />
               {AGENT_TITLE}
             </Typography>
