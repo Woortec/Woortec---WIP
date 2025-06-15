@@ -26,9 +26,11 @@ import {
   TextField
 } from '@mui/material';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useLocale } from '@/contexts/LocaleContext';
 
 const ObjectivePage: React.FC = () => {
   const router = useRouter();
+  const { t } = useLocale();
 
   const [formData, setFormData] = useState({
     objective: '',
@@ -246,12 +248,10 @@ const ObjectivePage: React.FC = () => {
       <Box>
         <Box>
           <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-            Strategy Creation
+            {t('AdsStrategy.title')}
           </Typography>
           <Typography sx={{ fontSize: '1rem', color: '#7a7a7a', marginTop: '0.9rem', textAlign: 'left' }}>
-            Introducing Woortec - the ultimate social media ads product designed to elevate your
-            online presence and drive results like never before. With Woortec, you can effortlessly
-            create and manage ads across multiple social media platforms, all in one place.
+            {t('AdsStrategy.subtitle')}
           </Typography>
         </Box>
         <Box><StepIndicator /></Box>
@@ -261,7 +261,7 @@ const ObjectivePage: React.FC = () => {
             {/* Left Column */}
             <Box className={styles.formGroup}>
               <label htmlFor="objective" className={styles.label}>
-                What is your Objective with this investment?
+                {t('AdsStrategy.objectiveLabel')}
               </label>
               <select
                 id="objective"
@@ -272,7 +272,7 @@ const ObjectivePage: React.FC = () => {
                 aria-invalid={!!errors.objective}
                 aria-describedby={errors.objective ? 'objective-error' : undefined}
               >
-                <option value="" disabled>Select the best option</option>
+                <option value="" disabled>{t('AdsStrategy.objectivePlaceholder')}</option>
                 <option value="Brand Awareness">Enhance brand visibility and engagement</option>
                 <option value="Sales">Increase website traffic and sales conversions</option>
                 <option value="Lead Generation">Collect prospective customer information via a form</option>
@@ -286,7 +286,7 @@ const ObjectivePage: React.FC = () => {
 
             <Box className={styles.formGroup}>
               <label className={styles.label}>
-                Are you able to answer messages?
+                {t('AdsStrategy.answerMessagesLabel')}
               </label>
               <div className={styles.radioGroup}>
                 <label className={styles.radioLabel}>
@@ -301,7 +301,7 @@ const ObjectivePage: React.FC = () => {
                     aria-invalid={!!errors.manageInquiries}
                     aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
                   />
-                  Yes
+                  {t('AdsStrategy.yes')}
                 </label>
                 <label className={styles.radioLabel}>
                   <input
@@ -315,7 +315,7 @@ const ObjectivePage: React.FC = () => {
                     aria-invalid={!!errors.manageInquiries}
                     aria-describedby={errors.manageInquiries ? 'manageInquiries-error' : undefined}
                   />
-                  No
+                  {t('AdsStrategy.no')}
                 </label>
               </div>
               {errors.manageInquiries && (
@@ -327,18 +327,17 @@ const ObjectivePage: React.FC = () => {
 
             <Box className={styles.formGroup}>
               <label htmlFor="trafficUrl" className={styles.label}>
-                Where do you want to direct the traffic to?
+                {t('AdsStrategy.trafficLabel')}
               </label>
               <input
                 type="url"
                 name="trafficUrl"
                 id="trafficUrl"
                 className={`${styles.input} ${errors.trafficUrl ? styles.errorInput : ''}`}
-                placeholder="Please enter a URL"
+                placeholder={t('AdsStrategy.trafficPlaceholder')}
                 value={formData.trafficUrl}
                 onChange={handleInputChange}
-                aria-invalid={!!
-errors.trafficUrl}
+                aria-invalid={!!errors.trafficUrl}
                 aria-describedby={errors.trafficUrl ? 'trafficUrl-error' : undefined}
               />
               {errors.trafficUrl && (
@@ -353,7 +352,7 @@ errors.trafficUrl}
             {/* Right Column */}
             <Box className={styles.formGroup}>
               <label htmlFor="budget" className={styles.label}>
-                What is the budget you are willing to allocate for this campaign?
+                {t('AdsStrategy.budgetLabel')}
               </label>
               <div className={styles.budgetInputContainer}>
                 <input
@@ -361,7 +360,7 @@ errors.trafficUrl}
                   name="budget"
                   id="budget"
                   className={`${styles.input} ${errors.budget ? styles.errorInput : ''}`}
-                  placeholder="Enter the amount"
+                  placeholder={t('AdsStrategy.budgetPlaceholder')}
                   value={formData.budget}
                   onChange={handleInputChange}
                   aria-invalid={!!errors.budget}
@@ -379,14 +378,14 @@ errors.trafficUrl}
 
             <div className={styles.formGroup}>
               <label htmlFor="description" className={styles.label}>
-                Please Describe your audience or upload the buyer persona
+                {t('AdsStrategy.audienceLabel')}
               </label>
               <div>
                 <textarea
                   name="description"
                   id="description"
                   className={styles.describePersona}
-                  placeholder="Enter a description"
+                  placeholder={t('AdsStrategy.audiencePlaceholder')}
                 />
               </div>
             </div>
@@ -401,7 +400,7 @@ errors.trafficUrl}
           disabled={!isFormValid}
           aria-disabled={!isFormValid}
         >
-          Continue
+          {t('AdsStrategy.continue')}
         </button>
       </div>
     </Box>

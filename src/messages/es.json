@@ -81,5 +81,35 @@
     "currency": "Moneda",
     "connectedPage": "Página conectada",
     "pageId": "ID de la página"
+  },
+  "AdsStrategy": {
+    "title": "Creación de Estrategia",
+    "subtitle": "Presentamos Woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con Woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+    "tabObjective": "Objetivo",
+    "tabStrategyCreation": "Creación de Estrategia",
+    "tabStrategyResult": "Resultado de Estrategia",
+    "objectiveLabel": "¿Cuál es tu objetivo con esta inversión?",
+    "objectivePlaceholder": "Selecciona la mejor opción",
+    "budgetLabel": "¿Cuál es el presupuesto que estás dispuesto a asignar para esta campaña?",
+    "budgetPlaceholder": "Ingresa el monto",
+    "answerMessagesLabel": "¿Puedes responder mensajes?",
+    "yes": "Sí",
+    "no": "No",
+    "trafficLabel": "¿A dónde quieres dirigir el tráfico?",
+    "trafficPlaceholder": "Por favor ingresa una URL",
+    "audienceLabel": "Describe tu audiencia o sube el buyer persona",
+    "audiencePlaceholder": "Ingresa una descripción",
+    "continue": "Continuar"
+  },
+  "CampaignSetup": {
+    "title": "Configuración de campaña",
+    "subtitle": "Presentamos Woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con Woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+    "chooseStrategy": "Elige tu estrategia:",
+    "launchingStrategy": "ESTRATEGIA DE LANZAMIENTO",
+    "launchingStrategyDesc": "Presentamos Woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu marketing.",
+    "lockedStrategy": "(ESTA ESTRATEGIA ESTÁ BLOQUEADA)",
+    "lockedStrategyDesc": "Esta estrategia se desbloqueará una vez que completes la primera estrategia que te dimos.",
+    "delete": "Eliminar",
+    "continue": "Continuar"
   }
 }

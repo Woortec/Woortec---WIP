@@ -5,6 +5,7 @@ import ProgressBar from './ProgressBar'; // Import the progress bar component
 import styles from './styles/StrategyCard.module.css';
 import { styled } from '@mui/material/styles';
 import { Button, Box } from '@mui/material';
+import { useLocale } from '@/contexts/LocaleContext';
 
 
 interface StrategyCardProps {
@@ -13,6 +14,7 @@ interface StrategyCardProps {
 
 const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
   const [currentStep, setCurrentStep] = useState(1); // Track current step
+  const { t } = useLocale();
 
   const handleStrategySelect = () => {
     setCurrentStep(currentStep + 1); // Increment step when selecting a strategy
@@ -21,40 +23,37 @@ const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
 
   return (
     <div className={styles.strategyContainer}>
-      <h1 className={styles.headerLabel}>Campaign Setup</h1>
+      <h1 className={styles.headerLabel}>{t('CampaignSetup.title')}</h1>
         <div className={styles.description}>
-          Introducing woortec - the ultimate social media ads
-          product designed to elevate your online presence and drive results
-          like never before. With woortec, you can effortlessly create and
-          manage ads across multiple social media platforms, all in one place.
+          {t('CampaignSetup.subtitle')}
         </div>
         
       {/* Progress Bar Section */}
       <ProgressBar currentStep={currentStep} /> {/* Progress Bar above cards */}
 
-      <h4 className={styles.headings}>Choose your strategy:</h4>
+      <h4 className={styles.headings}>{t('CampaignSetup.chooseStrategy')}</h4>
 
       {/* Strategy Card Group */}
       <div className={styles.cardGroup}>
         <div className={`${styles.card} ${styles.active}`} onClick={handleStrategySelect}>
           <img src="/images/strategy.svg" alt="Launching Strategy" />
-          <h3 className={styles.cardTitle}>LAUNCHING STRATEGY</h3>
-          <p>Introducing Woortec - the ultimate social media ads product designed to elevate your marketing.</p>
+          <h3 className={styles.cardTitle}>{t('CampaignSetup.launchingStrategy')}</h3>
+          <p>{t('CampaignSetup.launchingStrategyDesc')}</p>
         </div>
         <div className={`${styles.card} ${styles.locked}`}>
           <img src="/images/strategy-locked.svg" alt="Locked Strategy" />
-          <h3 className={styles.cardTitle}>(THIS STRATEGY IS LOCKED)</h3>
-          <p>This strategy will be unlocked once you finish the first strategy that we gave you.</p>
+          <h3 className={styles.cardTitle}>{t('CampaignSetup.lockedStrategy')}</h3>
+          <p>{t('CampaignSetup.lockedStrategyDesc')}</p>
         </div>
         <div className={`${styles.card} ${styles.locked}`}>
           <img src="/images/teamwork.svg" alt="Locked Strategy" />
-          <h3 className={styles.cardTitle}>(THIS STRATEGY IS LOCKED)</h3>
-          <p>This strategy will be unlocked once you finish the first strategy that we gave you.</p>
+          <h3 className={styles.cardTitle}>{t('CampaignSetup.lockedStrategy')}</h3>
+          <p>{t('CampaignSetup.lockedStrategyDesc')}</p>
         </div>
       </div>
       <div className={styles.buttonContainer}>
-        <button className={styles.dlButton}>Delete</button>
-        <button className={styles.conButton}>Continue</button>
+        <button className={styles.dlButton}>{t('CampaignSetup.delete')}</button>
+        <button className={styles.conButton}>{t('CampaignSetup.continue')}</button>
       </div>
     </div>
   );

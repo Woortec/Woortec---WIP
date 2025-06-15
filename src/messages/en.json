@@ -81,5 +81,35 @@
     "currency": "Currency",
     "connectedPage": "Connected Page",
     "pageId": "Page ID"
+  },
+  "AdsStrategy": {
+    "title": "Strategy Creation",
+    "subtitle": "Introducing Woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With Woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.",
+    "tabObjective": "Objective",
+    "tabStrategyCreation": "Strategy Creation",
+    "tabStrategyResult": "Strategy Result",
+    "objectiveLabel": "What is your Objective with this investment?",
+    "objectivePlaceholder": "Select the best option",
+    "budgetLabel": "What is the budget you are willing to allocate for this campaign?",
+    "budgetPlaceholder": "Enter the amount",
+    "answerMessagesLabel": "Are you able to answer messages?",
+    "yes": "Yes",
+    "no": "No",
+    "trafficLabel": "Where do you want to direct the traffic to?",
+    "trafficPlaceholder": "Please enter a URL",
+    "audienceLabel": "Please Describe your audience or upload the buyer persona",
+    "audiencePlaceholder": "Enter a description",
+    "continue": "Continue"
+  },
+  "CampaignSetup": {
+    "title": "Campaign Setup",
+    "subtitle": "Introducing Woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With Woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.",
+    "chooseStrategy": "Choose your strategy:",
+    "launchingStrategy": "LAUNCHING STRATEGY",
+    "launchingStrategyDesc": "Introducing Woortec - the ultimate social media ads product designed to elevate your marketing.",
+    "lockedStrategy": "(THIS STRATEGY IS LOCKED)",
+    "lockedStrategyDesc": "This strategy will be unlocked once you finish the first strategy that we gave you.",
+    "delete": "Delete",
+    "continue": "Continue"
   }
 }
