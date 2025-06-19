@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { firstName, lastName, uuid } = body;
-    const userData = await updateProfileDetails(firstName, lastName, uuid);
+    const { firstName, lastName, uuid, language } = body;
+    const userData = await updateProfileDetails(firstName, lastName, uuid, language);
     return NextResponse.json({ userData }, { status: 200 });
   } catch (error) {
     console.log(error);

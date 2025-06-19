@@ -15,7 +15,7 @@ export interface UserContextValue {
   isIndustryFilled: boolean;
   checkSession: () => Promise<void>;
   fetchApiData: (uuid: string) => Promise<void>;
-  updateUser: (firstName: string, lastName: string, uuid: string) => Promise<void>;
+  updateUser: (firstName: string, lastName: string, uuid: string, language?: string) => Promise<void>;
   addIndustry: (name: string, dateOfBirth: any, uuid: string) => Promise<void>;
 }
 
@@ -72,9 +72,9 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   }, []);
 
   // Callback: update user
-  const updateUser = React.useCallback(async (firstName: string, lastName: string, uuid: string) => {
+  const updateUser = React.useCallback(async (firstName: string, lastName: string, uuid: string, language?: string) => {
     try {
-      const response = await axios.post(`/api/userInfo`, { firstName, lastName, uuid });
+      const response = await axios.post(`/api/userInfo`, { firstName, lastName, uuid, language });
       console.log('API response data:', response.data);
     } catch (err: any) {
       logger.error('Error updating user:', err);

@@ -17,6 +17,10 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import { ChatCenteredText as FeedbackIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText'
 import Cookies from 'js-cookie'
 import * as Sentry from '@sentry/nextjs'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
 
 import { paths } from '@/paths'
 import { authClient } from '@/lib/auth/client'
@@ -35,11 +39,24 @@ export interface UserPopoverProps {
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { checkSession } = useUser()
-  const { userInfo } = userData()
+  const { userInfo, updateUser } = userData()
   const router = useRouter()
-
-  // NEW: locale & translation
   const { locale, setLocale, t } = useLocale()
+  const [showLangDialog, setShowLangDialog] = React.useState(false)
+
+  React.useEffect(() => {
+    if (open && userInfo && !userInfo.language) {
+      setShowLangDialog(true)
+    }
+  }, [open, userInfo])
+
+  const handleLangSelect = async (lang: 'en' | 'es') => {
+    setLocale(lang)
+    if (userInfo?.firstName && userInfo?.lastName && userInfo?.uuid) {
+      await updateUser(userInfo.firstName, userInfo.lastName, userInfo.uuid, lang)
+    }
+    setShowLangDialog(false)
+  }
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
     try {
@@ -59,7 +76,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
 
   const handleFeedback = () => {
     Sentry.showReportDialog({
-      title: "We’d love your feedback",
+      title: "We'd love your feedback",
       subtitle: "Tell us what went wrong or how we can improve.",
       labelComments: "Describe the issue or your thoughts",
       labelEmail: "Email (optional)",
@@ -67,76 +84,91 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
   }
 
   return (
-    <Popover
-      anchorEl={anchorEl}
-      anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-      onClose={onClose}
-      open={open}
-      slotProps={{ paper: { sx: { width: '240px' } } }}
-    >
-      <Box sx={{ p: '16px 20px ' }}>
-        <Typography variant="subtitle1">
-          {userInfo?.firstName + ' ' + userInfo?.lastName}
-        </Typography>
-        <Typography color="text.secondary" variant="body2">
-          {userInfo?.email || 'dev@woortec.com'}
-        </Typography>
-      </Box>
+    <>
+      <Dialog open={showLangDialog}>
+        <DialogTitle>Select your preferred language</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => handleLangSelect('en')}>English</Button>
+          <Button onClick={() => handleLangSelect('es')}>Español</Button>
+        </DialogActions>
+      </Dialog>
+      <Popover
+        anchorEl={anchorEl}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        onClose={onClose}
+        open={open && !showLangDialog}
+        slotProps={{ paper: { sx: { width: '240px' } } }}
+      >
+        <Box sx={{ p: '16px 20px ' }}>
+          <Typography variant="subtitle1">
+            {userInfo?.firstName + ' ' + userInfo?.lastName}
+          </Typography>
+          <Typography color="text.secondary" variant="body2">
+            {userInfo?.email || 'dev@woortec.com'}
+          </Typography>
+        </Box>
 
-      <Divider />
+        <Divider />
 
-      <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
-        <MenuItem component={RouterLink} href={paths.dashboard.settings} onClick={onClose}>
-          <ListItemIcon>
-            <GearSixIcon fontSize="var(--icon-fontSize-md)" />
-          </ListItemIcon>
-          {t('UserPopover.settings')}
-        </MenuItem>
+        <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
+          <MenuItem component={RouterLink} href={paths.dashboard.settings} onClick={onClose}>
+            <ListItemIcon>
+              <GearSixIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            {t('UserPopover.settings')}
+          </MenuItem>
 
-        <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
-          <ListItemIcon>
-            <UserIcon fontSize="var(--icon-fontSize-md)" />
-          </ListItemIcon>
-          {t('UserPopover.profile')}
-        </MenuItem>
+          <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
+            <ListItemIcon>
+              <UserIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            {t('UserPopover.profile')}
+          </MenuItem>
 
-        <MenuItem onClick={handleFeedback}>
-          <ListItemIcon>
-            <FeedbackIcon fontSize="var(--icon-fontSize-md)" />
-          </ListItemIcon>
-          {t('UserPopover.feedback')}
-        </MenuItem>
+          <MenuItem onClick={handleFeedback}>
+            <ListItemIcon>
+              <FeedbackIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            {t('UserPopover.feedback')}
+          </MenuItem>
 
-        {/* ── LANGUAGE SWITCH ── */}
-        <Divider sx={{ my: 1 }} />
+          {/* ── LANGUAGE SWITCH ── */}
+          <Divider sx={{ my: 1 }} />
 
-        <MenuItem
-          onClick={() => {
-            setLocale('en')
-            onClose()
-          }}
-        >
-          🇺🇸 {t('UserPopover.english')}
-        </MenuItem>
+          <MenuItem
+            onClick={async () => {
+              setLocale('en')
+              if (userInfo?.firstName && userInfo?.lastName && userInfo?.uuid) {
+                await updateUser(userInfo.firstName, userInfo.lastName, userInfo.uuid, 'en')
+              }
+              onClose()
+            }}
+          >
+            🇺🇸 {t('UserPopover.english')}
+          </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            setLocale('es')
-            onClose()
-          }}
-        >
-          🇪🇸 {t('UserPopover.spanish')}
-        </MenuItem>
+          <MenuItem
+            onClick={async () => {
+              setLocale('es')
+              if (userInfo?.firstName && userInfo?.lastName && userInfo?.uuid) {
+                await updateUser(userInfo.firstName, userInfo.lastName, userInfo.uuid, 'es')
+              }
+              onClose()
+            }}
+          >
+            🇪🇸 {t('UserPopover.spanish')}
+          </MenuItem>
 
-        <Divider sx={{ my: 1 }} />
+          <Divider sx={{ my: 1 }} />
 
-        <MenuItem onClick={handleSignOut}>
-          <ListItemIcon>
-            <SignOutIcon fontSize="var(--icon-fontSize-md)" />
-          </ListItemIcon>
-          {t('UserPopover.signout')}
-        </MenuItem>
-      </MenuList>
-    </Popover>
+          <MenuItem onClick={handleSignOut}>
+            <ListItemIcon>
+              <SignOutIcon fontSize="var(--icon-fontSize-md)" />
+            </ListItemIcon>
+            {t('UserPopover.signout')}
+          </MenuItem>
+        </MenuList>
+      </Popover>
+    </>
   )
 }

@@ -3,7 +3,7 @@
 
 import * as React from 'react'
 import Script from 'next/script'
-// alias this import so it doesn’t clash with our `export const dynamic`
+// alias this import so it doesn't clash with our `export const dynamic`
 import NextDynamic from 'next/dynamic'
 import type { Viewport } from 'next'
 import { TourProvider } from '@/contexts/TourContext'
@@ -16,8 +16,14 @@ import { ThemeProvider } from '@/components/core/theme-provider/theme-provider'
 
 // NEW: import our LocaleProvider
 import { LocaleProvider } from '@/contexts/LocaleContext'
+import { useUser } from '@/hooks/use-user'
+import { useLocale } from '@/contexts/LocaleContext'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
 
-// This tells Next.js “always render this layout client-side”
+// This tells Next.js "always render this layout client-side"
 export const dynamic = 'force-dynamic'
 
 // mobile viewport meta
@@ -28,6 +34,34 @@ const Analytics = NextDynamic(() => import('@/components/Analytics'), { ssr: fal
 
 interface LayoutProps {
   children: React.ReactNode
+}
+
+function LanguageDialog() {
+  const { userInfo, updateUser } = useUser()
+  const { setLocale } = useLocale()
+  const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    if (userInfo && !userInfo.language) setOpen(true)
+  }, [userInfo])
+
+  const handleLangSelect = async (lang: 'en' | 'es') => {
+    setLocale(lang)
+    if (userInfo?.firstName && userInfo?.lastName && userInfo?.uuid) {
+      await updateUser(userInfo.firstName, userInfo.lastName, userInfo.uuid, lang)
+    }
+    setOpen(false)
+  }
+
+  return (
+    <Dialog open={open}>
+      <DialogTitle>Select your preferred language</DialogTitle>
+      <DialogActions>
+        <Button onClick={() => handleLangSelect('en')}>English</Button>
+        <Button onClick={() => handleLangSelect('es')}>Español</Button>
+      </DialogActions>
+    </Dialog>
+  )
 }
 
 export default function Layout({ children }: LayoutProps) {
@@ -56,12 +90,11 @@ export default function Layout({ children }: LayoutProps) {
       <body>
         <TourProvider>
           <LocalizationProvider>
-            {/* NEW: wrap everything in LocaleProvider */}
             <LocaleProvider>
               <UserProvider>
                 <ThemeProvider>
                   {children}
-                  {/* only runs on client, after gtag is ready */}
+                  <LanguageDialog />
                   <Analytics />
                 </ThemeProvider>
               </UserProvider>
