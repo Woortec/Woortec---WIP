@@ -63,17 +63,35 @@ export const setItemWithExpiry = (key: string, value: any, expiry: number) => {
   }
 };
 
+export const clearAdDataCache = () => {
+  cachedAdData = [];
+  cachedCurrency = 'USD';
+  dataFetched = false;
+  cachedThreadId = null;
+  cachedRunId = null;
+  cachedAIResponse = null;
+  console.log('Ad data cache cleared');
+};
+
 export const fetchAdData = async () => {
   const supabase = createClient();
 
   if (dataFetched && cachedAdData.length > 0) {
+    console.log('Returning cached ad data:', cachedAdData.length, 'items');
     return { adData: cachedAdData, currency: cachedCurrency };
   }
 
   const uuid = localStorage.getItem('userid');
+  console.log('User ID from localStorage:', uuid);
+  
   const { data } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
+  console.log('Facebook data from Supabase:', data);
+  
   const accessToken = data?.[0]?.access_token ?? '';
   const adAccountId = data?.[0]?.account_id ?? '';
+
+  console.log('Access token exists:', !!accessToken);
+  console.log('Ad account ID:', adAccountId);
 
   if (!accessToken || !adAccountId) {
     console.error('Access token or ad account ID not found');
@@ -90,26 +108,46 @@ export const fetchAdData = async () => {
       },
     ];
 
+    console.log('Making batch request to Facebook API...');
     const batchResponse = await axios.post(
       `https://graph.facebook.com/v21.0`,
       { access_token: accessToken, batch: batchRequest }
     );
 
+    console.log('Facebook API response received');
+    console.log('Batch response data:', batchResponse.data);
+
     const accountData = JSON.parse(batchResponse.data[0]?.body);
     const adData = JSON.parse(batchResponse.data[1]?.body);
     const insightsData = JSON.parse(batchResponse.data[2]?.body);
 
+    // Debug: log all ad IDs and names from adData
+    const adDataIds = (adData?.data || []).map((ad: any) => ad.id);
+    const adDataNames = (adData?.data || []).map((ad: any) => ({ id: ad.id, name: ad.name }));
+    console.log('adData IDs:', adDataIds);
+    console.log('adData Names:', adDataNames);
+
+    // Debug: log all ad IDs from insightsData
+    const insightsDataIds = (insightsData?.data || []).map((insight: any) => insight.ad_id);
+    console.log('insightsData IDs:', insightsDataIds);
+
     cachedCurrency = accountData?.currency || 'USD';
 
     const activeAds = adData?.data?.filter((ad: any) => ad.status === 'ACTIVE') || [];
+    console.log('Active ads found:', activeAds.length);
+    
     const adNames: Record<string, string> = {};
-    const creativeIds: Record<string, string> = {};
-
     activeAds.forEach((ad: any) => {
       adNames[ad.id] = ad.name;
+    });
+    console.log('Ad names mapping:', adNames);
+
+    const creativeIds: Record<string, string> = {};
+    activeAds.forEach((ad: any) => {
       const creativeId = ad?.creative?.id;
       if (creativeId) creativeIds[ad.id] = creativeId;
     });
+    console.log('Creative IDs mapping:', creativeIds);
 
     const creativeImageUrls: Record<string, string | null> = {};
     await Promise.all(
@@ -127,6 +165,7 @@ export const fetchAdData = async () => {
         }
       })
     );
+    console.log('Creative image URLs:', creativeImageUrls);
 
     const insights = await Promise.all(
       insightsData?.data?.map(async (insight: any) => {
@@ -138,9 +177,12 @@ export const fetchAdData = async () => {
         const creativeId = creativeIds[adId];
         const imageUrl = creativeId ? creativeImageUrls[creativeId] : null;
 
-        return {
+        // Always use insight.name if present, then adNames, then fallback
+        let adName = insight.name || adNames[adId] || 'Unnamed Ad';
+
+        const processedInsight = {
           ...insight,
-          name: adNames[adId] || 'Unknown Ad',
+          name: adName,
           clicks,
           impressions,
           ctr,
@@ -151,14 +193,23 @@ export const fetchAdData = async () => {
           date_start: insight.date_start,
           date_stop: insight.date_stop,
         };
+
+        console.log(`Processed insight for ad ${adId}:`, processedInsight);
+        return processedInsight;
       }) || []
     );
+
+    console.log('Final processed insights:', insights);
+    console.log('Total insights processed:', insights.length);
 
     cachedAdData = insights;
     dataFetched = true;
     return { adData: insights, currency: cachedCurrency };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching ad data:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
     return { adData: [], currency: 'USD' };
   }
 };

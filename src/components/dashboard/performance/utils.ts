@@ -3,7 +3,17 @@ export const getColor = (value: number, threshold: number, lowerIsBetter: boolea
 };
 
 export const formatValue = (value: number, currency: string, isCurrency: boolean = true) => {
-  return isCurrency ? `${Math.round(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}` : value.toLocaleString();
+  // Debug logging
+  console.log('formatValue called with:', { value, currency, isCurrency });
+  
+  if (value === null || value === undefined || isNaN(value)) {
+    console.log('formatValue: Invalid value, returning 0');
+    return isCurrency ? `0 ${currency}` : '0';
+  }
+  
+  const result = isCurrency ? `${Math.round(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}` : value.toLocaleString();
+  console.log('formatValue result:', result);
+  return result;
 };
 
 export const getComment = (metric: string, value: number, threshold: number, lowerIsBetter: boolean) => {

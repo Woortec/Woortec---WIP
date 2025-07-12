@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Tooltip, IconButton, Typography } from '@mui/material';
+import { Box, Tooltip, IconButton, Typography, CircularProgress } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import AdDetail from './AdSetDetail';
 import { getColor, formatValue, getComment, getImpressionsComment, calculateSpentColor, calculateSpentComment, convertThresholds, calculateExpectedSpend } from './utils';
@@ -18,6 +18,10 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
   const { t } = useLocale();
 
+  // Debug logging
+  console.log('AdTable received adData:', adData);
+  console.log('AdData length:', adData?.length);
+
   const handleAdClick = (adId: string) => {
     setSelectedAdId(selectedAdId === adId ? null : adId);
   };
@@ -25,6 +29,31 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   const handleCloseDetail = () => {
     setSelectedAdId(null);
   };
+
+  // Only require ad and ad_id
+  const validAds = adData?.filter((ad) => ad && ad.ad_id) || [];
+
+  console.log('Valid ads after filtering:', validAds);
+  console.log('Valid ads count:', validAds.length);
+
+  // Show loading state if no data yet
+  if (!adData || adData.length === 0) {
+    return (
+      <Box className={styles.adTableContainer} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading ad data...</Typography>
+      </Box>
+    );
+  }
+
+  // Show empty state if no valid ads
+  if (validAds.length === 0) {
+    return (
+      <Box className={styles.adTableContainer} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <Typography>No valid ad data to display. Please check your Facebook ads configuration.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box className={styles.adTableContainer}>
@@ -38,35 +67,37 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
         </Box>
       </Box>
 
-      {adData.map((ad, index) => {
-  if (ad.name === 'Unknown Ad') return null;
-  return (
-        <React.Fragment key={ad.ad_id}>
-          
-          <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
-            {/*1st Table for mobile*/}
-          <Box className={styles.tableCellMobile}>
-            <Typography sx={{paddingRight:'3rem',fontWeight:'600', 
-              color:'#CCDDE5', fontSize: '1.2rem', '@media (max-width: 770px)': {
-                fontSize: '1rem', paddingBottom:'0.9rem', paddingRight:'1rem',},
-              }}>01</Typography>
-            <Typography sx ={{ fontWeight:'600', fontSize: '1.2rem',
-                          '@media (max-width: 770px)': {
-                            fontSize: '1rem',
-                            paddingBottom:'0.5rem'},
-                textAlign: 'left', }}>{ad.name}</Typography>
+      {validAds.map((ad, index) => {
+        // Debug each ad
+        console.log(`Rendering ad ${index}:`, ad);
+        
+        return (
+          <React.Fragment key={ad.ad_id}>
+            
+            <Box className={styles.tableRow} onClick={() => handleAdClick(ad.ad_id)}>
+              {/*1st Table for mobile*/}
+            <Box className={styles.tableCellMobile}>
+              <Typography sx={{paddingRight:'3rem',fontWeight:'600', 
+                color:'#CCDDE5', fontSize: '1.2rem', '@media (max-width: 770px)': {
+                  fontSize: '1rem', paddingBottom:'0.9rem', paddingRight:'1rem',},
+                }}>{(index + 1).toString().padStart(2, '0')}</Typography>
+              <Typography sx ={{ fontWeight:'600', fontSize: '1.2rem',
+                            '@media (max-width: 770px)': {
+                              fontSize: '1rem',
+                              paddingBottom:'0.5rem'},
+                  textAlign: 'left', }}>{ad.name || 'Unnamed Ad'}</Typography>
             </Box>
 
             <Box className={styles.tableCell1}>
             <Typography sx={{paddingRight:'3rem',fontWeight:'600', 
               color:'#CCDDE5', fontSize: '1.2rem', '@media (max-width: 770px)': {
                 fontSize: '1rem', paddingBottom:'1rem'},
-              }}>01</Typography>
+              }}>{(index + 1).toString().padStart(2, '0')}</Typography>
             <Typography sx ={{ fontWeight:'600', fontSize: '1.2rem',
                           '@media (max-width: 770px)': {
                             fontSize: '1rem',
                             paddingBottom:'1rem'},
-                textAlign: 'left', }}>{ad.name}</Typography>
+                textAlign: 'left', }}>{ad.name || 'Unnamed Ad'}</Typography>
             </Box>
           <Box className={styles.tableRow2}>
             <Box className={styles.tbtemp}>
@@ -174,7 +205,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
           )}
         </React.Fragment>
       );
-})}
+    })}
     </Box>
   );
 };
