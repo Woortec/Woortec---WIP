@@ -20,11 +20,18 @@ const AdsPerformance: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { adData, currency } = await fetchAdData();
-      setAdData(adData);
-      setCurrency(currency);
-      setLoading(false);
-      calculateAdStats(adData);
+      try {
+        setLoading(true);
+        const { adData, currency } = await fetchAdData();
+        
+        setAdData(adData || []);
+        setCurrency(currency || 'USD');
+        calculateAdStats(adData || []);
+      } catch (err) {
+        console.error('Error fetching ad data:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();

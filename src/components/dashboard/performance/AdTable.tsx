@@ -18,10 +18,6 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
   const { t } = useLocale();
 
-  // Debug logging
-  console.log('AdTable received adData:', adData);
-  console.log('AdData length:', adData?.length);
-
   const handleAdClick = (adId: string) => {
     setSelectedAdId(selectedAdId === adId ? null : adId);
   };
@@ -32,9 +28,6 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
 
   // Only require ad and ad_id
   const validAds = adData?.filter((ad) => ad && ad.ad_id) || [];
-
-  console.log('Valid ads after filtering:', validAds);
-  console.log('Valid ads count:', validAds.length);
 
   // Show loading state if no data yet
   if (!adData || adData.length === 0) {
@@ -68,9 +61,6 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
       </Box>
 
       {validAds.map((ad, index) => {
-        // Debug each ad
-        console.log(`Rendering ad ${index}:`, ad);
-        
         return (
           <React.Fragment key={ad.ad_id}>
             
