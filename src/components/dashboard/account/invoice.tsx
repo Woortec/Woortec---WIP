@@ -18,12 +18,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
+import { useLocale } from '@/contexts/LocaleContext';
 import { createClient } from '../../../../utils/supabase/client';
 import axios from 'axios';
 
 const supabase = createClient();
 
 export function InvoiceHistory(): React.JSX.Element {
+  const { t } = useLocale();
   const { user, isLoading } = useUser();
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
@@ -81,13 +83,13 @@ export function InvoiceHistory(): React.JSX.Element {
     try {
       const res = await axios.post('/api/subscription', { subscriptionId });
       if (res.data.success) {
-        alert('Subscription cancelled successfully!');
+        alert(t('Invoice.subscriptionCancelled'));
         setHasActiveSubscription(false);
       } else {
-        alert('Error cancelling subscription.');
+        alert(t('Invoice.errorCancelling'));
       }
     } catch {
-      alert('There was an issue cancelling your subscription.');
+      alert(t('Invoice.issueCancelling'));
     } finally {
       setLoading(false);
       setShowDialog(false);
@@ -95,12 +97,12 @@ export function InvoiceHistory(): React.JSX.Element {
   };
 
   if (isLoading) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t('Invoice.loading')}</Typography>;
   }
 
   return (
     <Card>
-      <CardHeader title="Invoice History" />
+      <CardHeader title={t('Invoice.invoiceHistory')} />
       <Divider />
       {hasActiveSubscription && subscriptionDetails && invoices.length > 0 && (
         <CardContent>
@@ -121,15 +123,15 @@ export function InvoiceHistory(): React.JSX.Element {
               >
                 <Stack>
                   <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>
-                    Invoice #
+                    {t('Invoice.invoiceNumber')}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>
-                    {invoice.number || 'N/A'}
+                    {invoice.number || t('Invoice.notAvailable')}
                   </Typography>
                 </Stack>
                 <Stack>
                   <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>
-                    Date
+                    {t('Invoice.date')}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>
                     {new Date(invoice.date * 1000).toLocaleDateString()}
@@ -137,7 +139,7 @@ export function InvoiceHistory(): React.JSX.Element {
                 </Stack>
                 <Stack>
                   <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>
-                    Amount
+                    {t('Invoice.amount')}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>
                     ${invoice.amount_paid / 100}
@@ -145,7 +147,7 @@ export function InvoiceHistory(): React.JSX.Element {
                 </Stack>
                 <Stack>
                   <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>
-                    Status
+                    {t('Invoice.status')}
                   </Typography>
                   <Typography sx={{ fontSize: '12px' }}>
                     {invoice.status.toUpperCase()}
@@ -156,7 +158,7 @@ export function InvoiceHistory(): React.JSX.Element {
                   variant="outlined"
                   onClick={() => {
                     if (!invoice.invoice_pdf) {
-                      alert('Invoice PDF not available.');
+                      alert(t('Invoice.pdfNotAvailable'));
                       return;
                     }
                     const link = document.createElement('a');
@@ -168,7 +170,7 @@ export function InvoiceHistory(): React.JSX.Element {
                     document.body.removeChild(link);
                   }}
                 >
-                  Download Invoice
+                  {t('Invoice.downloadInvoice')}
                 </Button>
               </Stack>
             ))}
@@ -177,18 +179,18 @@ export function InvoiceHistory(): React.JSX.Element {
       )}
       {/* Dialog for cancellation (imported but not triggered in this snippet) */}
       <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-        <DialogTitle>Cancel Subscription</DialogTitle>
+        <DialogTitle>{t('Invoice.cancelSubscription')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to cancel your subscription?
+            {t('Invoice.confirmCancellation')}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDialog(false)} disabled={loading}>
-            No
+            {t('Invoice.no')}
           </Button>
           <Button onClick={handleCancelSubscription} disabled={loading}>
-            {loading ? <CircularProgress size={20} /> : 'Yes, Cancel'}
+            {loading ? <CircularProgress size={20} /> : t('Invoice.yesCancel')}
           </Button>
         </DialogActions>
       </Dialog>

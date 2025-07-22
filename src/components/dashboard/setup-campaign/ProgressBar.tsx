@@ -12,12 +12,13 @@ import {
 import { styled } from '@mui/material/styles';
 import styles from './styles/ProgressBar.module.css';
 import { fontSize } from '@mui/system';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface ProgressBarProps {
   currentStep: number;
 }
 
-const steps = ['Strategy', 'Images', 'More Information'];
+// Remove the hardcoded steps array - we'll get them from translations
 
 const Connector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -85,6 +86,15 @@ function StepIcon(props: any) {
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
+  const { t } = useLocale();
+  
+  // Get translated steps
+  const steps = [
+    t('CampaignSetup.steps.strategy'),
+    t('CampaignSetup.steps.images'),
+    t('CampaignSetup.steps.moreInformation')
+  ];
+
   return (
     <Box className={styles.container} sx={{ width: '100%', padding: '3rem 0rem',     
       '@media (max-width: 625px)': {padding: '3rem 0rem'},

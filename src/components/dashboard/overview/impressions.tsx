@@ -26,6 +26,10 @@ export interface TotalImpressionsProps {
 
 export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsProps): React.JSX.Element {
     const { t } = useLocale();
+
+  console.log(value);
+  console.log(diff);
+  console.log(trend);
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
@@ -47,7 +51,7 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack>
               <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">{t('DashboardCards.impressions')}</Typography>
-              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value === '' ? 'data not found' : value}</Typography>
             </Stack>
           </Stack>
           {diff ? (
@@ -111,8 +115,9 @@ const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsConta
       if (error) {
         throw new Error('Error fetching data from Supabase.');
       }
-
+      
       const { access_token: accessToken, account_id: adAccountId } = data;
+     
 
       if (!accessToken || !adAccountId) {
         throw new Error('Missing access token or ad account ID');
@@ -129,6 +134,8 @@ const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsConta
           }),
         },
       });
+      console.log(response);
+      
 
       if (!response.data.data || response.data.data.length === 0) {
         throw new Error('No data found for the given ad account ID');
@@ -139,9 +146,13 @@ const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsConta
         0
       );
 
+      console.log(totalImpressions);
+      
       // Format the total impressions with commas as thousands separators
       const formattedImpressions = new Intl.NumberFormat('en-US').format(totalImpressions);
 
+      console.log(formattedImpressions);
+      
       // Fetch the previous total impressions for comparison
       const previousResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {

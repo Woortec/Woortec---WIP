@@ -1,21 +1,21 @@
 import axios from 'axios';
-import { createClient } from '../../../utils/supabase/client'; // Import Supabase client
+import { createClient } from '../../../utils/supabase/client';
 
 export const config = {
   api: {
-    bodyParser: true, // ✅ Keep bodyParser enabled to parse JSON payload
+    bodyParser: true,
   },
 };
 
 export default async function handler(req, res) {
-  console.log('API handler called'); // Debugging log
+  console.log('API handler called');
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { userId, imageUrl, labelOne, labelTwo, campaignName } = req.body; // ✅ Expecting imageFile
+    const { userId, imageUrl, labelOne, labelTwo, campaignName } = req.body;
 
     if (!userId || !imageUrl || !labelOne || !labelTwo || !campaignName) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
     const supabase = createClient();
 
-    // ✅ Fetch Facebook credentials from Supabase
+    // ✅ Fetch Facebook credentials
     const { data: facebookData, error: facebookError } = await supabase
       .from('facebookData')
       .select('access_token, account_id, page_id')
@@ -36,25 +36,31 @@ export default async function handler(req, res) {
 
     const { access_token: accessToken, account_id: adAccountId, page_id: pageId } = facebookData;
 
-    // ✅ Fetch adLink and objective from ads_strategy table
+    // ✅ Fetch ads strategy (no .single())
     const { data: adStrategyData, error: adStrategyError } = await supabase
       .from('ads_strategy')
       .select('traffic_url, objective')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
-    if (adStrategyError || !adStrategyData) {
+    console.log('adStrategyData:', adStrategyData);
+    console.log('adStrategyError:', adStrategyError);
+
+    if (adStrategyError || !adStrategyData || adStrategyData.length === 0) {
       return res.status(500).json({ error: 'Failed to fetch ad link' });
     }
 
-    const adLink = adStrategyData.traffic_url;
-    if (!adLink) {
-      return res.status(400).json({ error: 'Missing adLink in ads_strategy' });
+    // ✅ Pick first valid entry
+    const validStrategy = adStrategyData.find((item) => item.traffic_url) || adStrategyData[0];
+    const adLink = validStrategy.traffic_url;
+    const strategyObjective = validStrategy.objective;
+
+    if (!adLink || !strategyObjective) {
+      return res.status(400).json({ error: 'Missing ad strategy details' });
     }
 
-    // ✅ Set Facebook campaign objective
+    // ✅ Map objective
     let facebookObjective;
-    switch (adStrategyData.objective) {
+    switch (strategyObjective) {
       case 'Brand Awareness':
         facebookObjective = 'OUTCOME_AWARENESS';
         break;
@@ -68,29 +74,22 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid campaign objective' });
     }
 
-    const imagePath = imageUrl; // ✅ Use imageUrl directly, no need for upload
+    // ✅ Generate campaign name
+    const generateName = () => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const oneJan = new Date(year, 0, 1);
+      const dayOfYear = ((now.getTime() - oneJan.getTime()) / 86400000) + 1;
+      const weekNumber = Math.ceil(dayOfYear / 7);
+      const yearLastTwoDigits = year.toString().slice(-2);
+      return `WOORTEC-W${weekNumber}${yearLastTwoDigits}`;
+    };
 
-
-// ✅ Helper function to generate the name with the week of the year and year format
-const generateName = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const oneJan = new Date(year, 0, 1);
-  const dayOfYear = ((now.getTime() - oneJan.getTime()) / 86400000) + 1;
-  const weekNumber = Math.ceil(dayOfYear / 7); // Calculate the week number
-  const yearLastTwoDigits = year.toString().slice(-2);
-  return `WOORTEC-W${weekNumber}${yearLastTwoDigits}`;
-};
-
-// ✅ Use the function in your handler:
-const baseName = generateName();
-const campaignFinalName = `${baseName} ${campaignName}`;
-
-
-
+    const baseName = generateName();
+    const campaignFinalName = `${baseName} ${campaignName}`;
     console.log('Campaign name:', campaignFinalName);
 
-    // ✅ Check if the campaign already exists
+    // ✅ Check if campaign exists
     const existingCampaignsResponse = await axios.get(
       `https://graph.facebook.com/v20.0/${adAccountId}/campaigns`,
       {
@@ -102,14 +101,16 @@ const campaignFinalName = `${baseName} ${campaignName}`;
     );
 
     const existingCampaigns = existingCampaignsResponse.data.data;
-    const campaignExists = existingCampaigns.some((campaign) => campaign.name === campaignFinalName);
+    const campaignExists = existingCampaigns.some(
+      (campaign) => campaign.name === campaignFinalName
+    );
 
     if (campaignExists) {
       console.log('Campaign already exists. Skipping creation.');
       return res.status(200).json({ message: 'Campaign already exists. Skipping creation.' });
     }
 
-    // ✅ Create Campaign
+    // ✅ Create campaign
     const campaignPayload = {
       name: campaignFinalName,
       objective: facebookObjective,
@@ -122,13 +123,13 @@ const campaignFinalName = `${baseName} ${campaignName}`;
       `https://graph.facebook.com/v20.0/${adAccountId}/campaigns`,
       campaignPayload
     );
+
     const campaignId = campaignResponse.data.id;
 
-    // ✅ Create Ad Set
-    const adSetName = `${baseName} ${labelOne}`;
+    // ✅ Create ad set
     const adSetPayload = {
-      name: adSetName,
-      daily_budget: 6000, // ₱60.00 minimum
+      name: `${baseName} ${labelOne}`,
+      daily_budget: 6000,
       currency: 'PHP',
       start_time: new Date().toISOString(),
       end_time: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -151,9 +152,10 @@ const campaignFinalName = `${baseName} ${campaignName}`;
       `https://graph.facebook.com/v20.0/${adAccountId}/adsets`,
       adSetPayload
     );
+
     const adSetId = adSetResponse.data.id;
 
-    // ✅ Create Ad Creative
+    // ✅ Create ad creative
     const adCreativePayload = {
       name: `${campaignFinalName} - Creative`,
       object_story_spec: {
@@ -177,9 +179,10 @@ const campaignFinalName = `${baseName} ${campaignName}`;
       `https://graph.facebook.com/v20.0/${adAccountId}/adcreatives`,
       adCreativePayload
     );
+
     const creativeId = creativeResponse.data.id;
 
-    // ✅ Create Ad
+    // ✅ Create ad
     const adPayload = {
       name: `${baseName} ${labelTwo}`,
       adset_id: adSetId,
@@ -193,9 +196,15 @@ const campaignFinalName = `${baseName} ${campaignName}`;
       adPayload
     );
 
-    res.status(200).json({ message: 'Campaign created successfully!', adResponse: adResponse.data });
+    res.status(200).json({
+      message: 'Campaign created successfully!',
+      adResponse: adResponse.data,
+    });
   } catch (error) {
     console.error('❌ Error creating campaign:', error.response?.data || error.message || error);
-    res.status(500).json({ error: 'Failed to create campaign.', details: error.response?.data || error.message });
+    res.status(500).json({
+      error: 'Failed to create campaign.',
+      details: error.response?.data || error.message,
+    });
   }
 }

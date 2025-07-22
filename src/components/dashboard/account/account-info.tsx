@@ -14,15 +14,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useUser } from '@/hooks/use-user';
 import { createClient } from '../../../../utils/supabase/client';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export function AccountInfo(): React.JSX.Element {
+  const { t } = useLocale();
   const { user, isLoading } = useUser();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
   if (isLoading) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t('AccountInfo.loading')}</Typography>;
   }
 
   const userName = user?.user_metadata?.full_name || user?.email;
@@ -65,7 +67,7 @@ export function AccountInfo(): React.JSX.Element {
         .eq('uuid', user.id);
       if (dbError) throw dbError;
 
-      alert('Profile picture updated!');
+      alert(t('AccountInfo.profilePictureUpdated'));
       window.location.reload();
     } catch (err: any) {
       setError(err.message);
@@ -75,7 +77,11 @@ export function AccountInfo(): React.JSX.Element {
   };
 
   return (
-    <Card
+
+
+    <Stack>
+      <Typography variant="h3" sx={{textAlign:'left', fontSize:'1.5rem', fontWeight:'600', marginBottom:'1rem'}}  >{t('AccountInfo.accountInfo')}</Typography>
+      <Card
       sx={{
         display: 'flex',
         '@media (max-width:770px)': { flexDirection: 'column' },
@@ -92,7 +98,7 @@ export function AccountInfo(): React.JSX.Element {
               component="label"
               disabled={uploading}
             >
-              {uploading ? <CircularProgress size={24} /> : 'Upload picture'}
+              {uploading ? <CircularProgress size={24} /> : t('AccountInfo.uploadPicture')}
               <input
                 type="file"
                 hidden
@@ -125,12 +131,13 @@ export function AccountInfo(): React.JSX.Element {
           </Box>
           <Divider sx={{ pt: '10px' }} />
           <Box sx={{ pt: '10px', textAlign: 'left' }}>
-            <Typography sx={{ padding: '5px 0px' }}>Phone:</Typography>
-            <Typography sx={{ padding: '5px 0px' }}>Email:</Typography>
-            <Typography sx={{ padding: '5px 0px' }}>Location:</Typography>
+            <Typography sx={{ padding: '5px 0px' }}>{t('AccountInfo.phone')}:</Typography>
+            <Typography sx={{ padding: '5px 0px' }}>{t('AccountInfo.email')}:</Typography>
+            <Typography sx={{ padding: '5px 0px' }}>{t('AccountInfo.location')}:</Typography>
           </Box>
         </CardContent>
       </Grid>
     </Card>
+    </Stack>
   );
 }

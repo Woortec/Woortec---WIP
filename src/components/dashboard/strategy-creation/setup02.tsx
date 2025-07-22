@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Use Next.js's router
 import styles from './styles/StrategyCreationPage.module.css';
 import StepIndicator from './StepIndicator';
+import { useLocale } from '@/contexts/LocaleContext';
 
 const StrategyCreationPage: React.FC = () => {
     const [progress, setProgress] = useState(0); // State to track progress
     const [isClient, setIsClient] = useState(false); // State to check if the component is mounted client-side
     const router = isClient ? useRouter() : null; // Use router only on client-side
+    const { t } = useLocale();
 
     useEffect(() => {
         // Ensure code only runs on the client side
@@ -45,9 +47,9 @@ const StrategyCreationPage: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Strategy Creation</h2>
+            <h2 className={styles.title}>{t('CampaignSetup.strategyCreationPage.title')}</h2>
             <p className={styles.description}>
-                Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.
+                {t('CampaignSetup.strategyCreationPage.subtitle')}
             </p>
             <div className={styles.tabContainer}>
                 <StepIndicator />
@@ -55,11 +57,11 @@ const StrategyCreationPage: React.FC = () => {
 
             <div className={styles.loader}>
                 <img src="/images/analyze.svg" alt="Creating strategy" className={styles.image} />
-                <p className={styles.loadingText}>Creating your ads strategy...</p>
+                <p className={styles.loadingText}>{t('CampaignSetup.strategyCreationPage.creatingStrategy')}</p>
                 <div className={styles.progressBar}>
                     <div className={styles.progress} style={{ width: `${progress}%` }}></div>
                 </div>
-                <p className={styles.percentage}>{progress}%</p> {/* Display current progress */}
+                <p className={styles.percentage}>{t('CampaignSetup.strategyCreationPage.percentComplete').replace('{progress}', progress.toString())}</p> {/* Display current progress */}
             </div>
         </div>
     );

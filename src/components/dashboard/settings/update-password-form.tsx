@@ -13,8 +13,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 
 import { createClient } from '../../../../utils/supabase/client';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export function UpdatePasswordForm(): React.JSX.Element {
+  const { t } = useLocale();
   const supabase = createClient();
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
@@ -24,9 +26,9 @@ export function UpdatePasswordForm(): React.JSX.Element {
       console.log('data', data);
       console.log(error);
 
-      alert('password updated successfully');
+      alert(t('UpdatePassword.passwordUpdated'));
     } else {
-      alert('Password and confirm password must be same');
+      alert(t('UpdatePassword.passwordMismatch'));
     }
   };
   return (
@@ -36,26 +38,26 @@ export function UpdatePasswordForm(): React.JSX.Element {
       }}
     >
       <Card>
-        <CardHeader subheader="Update password" title="Password" />
+        <CardHeader subheader={t('UpdatePassword.updatePassword')} title={t('UpdatePassword.password')} />
         <Divider />
         <CardContent>
           <Stack spacing={3} sx={{ maxWidth: 'sm' }}>
             <FormControl fullWidth>
-              <InputLabel>Password</InputLabel>
+              <InputLabel>{t('UpdatePassword.password')}</InputLabel>
               <OutlinedInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                label="Password"
+                label={t('UpdatePassword.password')}
                 name="password"
                 type="password"
               />
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel>Confirm password</InputLabel>
+              <InputLabel>{t('UpdatePassword.confirmPassword')}</InputLabel>
               <OutlinedInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                label="Confirm password"
+                label={t('UpdatePassword.confirmPassword')}
                 name="confirmPassword"
                 type="password"
               />
@@ -70,7 +72,7 @@ export function UpdatePasswordForm(): React.JSX.Element {
             }}
             variant="contained"
           >
-            Update
+            {t('UpdatePassword.update')}
           </Button>
         </CardActions>
       </Card>

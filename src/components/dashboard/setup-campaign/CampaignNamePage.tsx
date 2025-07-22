@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { createClient } from '../../../../utils/supabase/client'; // Import Supabase client
 import ProgressBar from './ProgressBar'; // Import the ProgressBar component
 import styles from './styles/CampaignNamePage.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface CampaignNamePageProps {
   onNext: () => void;
@@ -16,10 +17,11 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
   const [labelTwo, setLabelTwo] = useState<string>('Woortec');
   const [campaignName, setCampaignNameLocal] = useState<string>('Woortec');
   const [loading, setLoading] = useState<boolean>(false); // Added loading state
+  const { t } = useLocale();
 
   const handleNext = async () => {
     if (!labelOne || !labelTwo || !campaignName) {
-      alert('Please fill in all fields.');
+      alert(t('CampaignSetup.campaignNamePage.pleaseFill'));
       return;
     }
 
@@ -42,14 +44,14 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
 
       if (error) {
         console.error('Error saving data to Supabase:', error);
-        alert('Failed to save the data. Please try again.');
+        alert(t('CampaignSetup.campaignNamePage.saveError'));
       } else {
         setCampaignData({ campaignName, labelOne, labelTwo }); // Set the campaign data in the parent component
         onNext(); // Proceed to the next step
       }
     } catch (err) {
       console.error('Unexpected error:', err);
-      alert('An unexpected error occurred. Please try again.');
+      alert(t('CampaignSetup.campaignNamePage.unexpectedError'));
     } finally {
       setLoading(false); // Set loading back to false after saving
     }
@@ -58,49 +60,45 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
   return (
     <div className={styles.nameContainer}>
       <div className={styles.descriptionContainer}>
-              <h2 className={styles.heading}>Campaign Setup: Choose your Campaign Name</h2>
-              <p className={styles.paragraph}>
-              Effortlessly set up your campaign name with Woortec. By default, it will be named "Woortec," 
-              but you can easily add a custom label to reflect your unique branding. Enjoy a straightforward 
-              process that ensures your campaigns are personalized and ready to make an impact.
-              </p>
+        <h2 className={styles.heading}>{t('CampaignSetup.campaignNamePage.title')}</h2>
+        <p className={styles.paragraph}>
+          {t('CampaignSetup.campaignNamePage.subtitle')}
+        </p>
 
-       <div className={styles.secContainer}>       
-        {/* Campaign Name and Labels Form */}
-        <h2>By default, your campaign will be named "Woortec." 
-          Want to personalize it? Add a custom label to tailor the 
-          campaign name to your specific needs and make it stand out</h2>
+        <div className={styles.secContainer}>
+          {/* Campaign Name and Labels Form */}
+          <h2>{t('CampaignSetup.campaignNamePage.formTitle')}</h2>
 
-        <div className={styles.inpContainer}>
-          <div className={styles.inputWrapper}>
-            <label>Label One</label>
-            <input
-              type="text"
-              placeholder="Text"
-              className={styles.input}
-              value={labelOne}
-              onChange={(e) => setLabelOne(e.target.value)}
-            />
-          </div>
+          <div className={styles.inpContainer}>
+            <div className={styles.inputWrapper}>
+              <label>{t('CampaignSetup.campaignNamePage.labelOne')}</label>
+              <input
+                type="text"
+                placeholder={t('CampaignSetup.campaignNamePage.placeholder')}
+                className={styles.input}
+                value={labelOne}
+                onChange={(e) => setLabelOne(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.inputWrapper}>
-            <label>Label Two</label>
-            <input
-              type="text"
-              placeholder="Text"
-              className={styles.input}
-              value={labelTwo}
-              onChange={(e) => setLabelTwo(e.target.value)}
-            />
+            <div className={styles.inputWrapper}>
+              <label>{t('CampaignSetup.campaignNamePage.labelTwo')}</label>
+              <input
+                type="text"
+                placeholder={t('CampaignSetup.campaignNamePage.placeholder')}
+                className={styles.input}
+                value={labelTwo}
+                onChange={(e) => setLabelTwo(e.target.value)}
+              />
+            </div>
           </div>
         </div>
-      </div>
       </div>
       <div className={styles.buttons}>
-          <button className={styles.sendButton} onClick={handleNext} disabled={loading}>
-            Send
-          </button>
-        </div>
+        <button className={styles.sendButton} onClick={handleNext} disabled={loading}>
+          {t('CampaignSetup.campaignNamePage.send')}
+        </button>
+      </div>
     </div>
   );
 };

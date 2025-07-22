@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'; // Use Next.js's usePathname to get current path
 import styles from './styles/StepIndicator.module.css';
 import {Box} from '@mui/material';
+import { useLocale } from '@/contexts/LocaleContext';
 
 
 const StepIndicator: React.FC = () => {
   const [activeStep, setActiveStep] = useState(1); // Track the active step
   const pathname = usePathname(); // Get the current pathname
+  const { t } = useLocale();
 
   const getActiveStep = (path: string) => {
     if (path === "/dashboard/strategy/strategycreation") return 2;
@@ -34,7 +36,7 @@ const StepIndicator: React.FC = () => {
             <img src="/images/objective.svg" alt="Objective Icon" />
           )}
         </Box>
-        <span className={styles.stepLabel}>Objective</span>
+        <span className={styles.stepLabel}>{t('CampaignSetup.stepIndicator.objective')}</span>
       </Box>
       
       <Box className={styles.stepLine}></Box>
@@ -44,7 +46,7 @@ const StepIndicator: React.FC = () => {
         <Box className={styles.stepIcon}>
           <img src="/images/strategy-info.svg" alt="Strategy Creation Icon" />
         </Box>
-        <span className={styles.stepLabel}>Strategy Creation</span>
+        <span className={styles.stepLabel}>{t('CampaignSetup.stepIndicator.strategyCreation')}</span>
       </Box>
       
       <Box className={styles.stepLine}></Box>
@@ -54,7 +56,7 @@ const StepIndicator: React.FC = () => {
         <Box className={styles.stepIcon}>
           <img src="/images/strategy-result.svg" alt="Strategy Result Icon" />
         </Box>
-        <span className={styles.stepLabel}>Strategy Result</span>
+        <span className={styles.stepLabel}>{t('CampaignSetup.stepIndicator.strategyResult')}</span>
       </Box>
     </Box>
   );

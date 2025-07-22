@@ -17,12 +17,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
+import { useLocale } from '@/contexts/LocaleContext';
 import { createClient } from '../../../../utils/supabase/client';
 import axios from 'axios';
 
 const supabase = createClient();
 
 export function CancelSubscription(): React.JSX.Element {
+  const { t } = useLocale();
   const { user, isLoading } = useUser();
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
@@ -86,13 +88,13 @@ export function CancelSubscription(): React.JSX.Element {
     try {
       const response = await axios.post('/api/subscription', { subscriptionId });
       if (response.data.success) {
-        alert('Subscription cancelled successfully!');
+        alert(t('SubscriptionDetails.subscriptionCancelled'));
         setHasActiveSubscription(false);
       } else {
-        alert('Error cancelling subscription.');
+        alert(t('SubscriptionDetails.errorCancelling'));
       }
     } catch (error) {
-      alert('There was an issue cancelling your subscription.');
+      alert(t('SubscriptionDetails.issueCancelling'));
     } finally {
       setLoading(false);
       setShowDialog(false);
@@ -100,7 +102,7 @@ export function CancelSubscription(): React.JSX.Element {
   };
 
   if (isLoading) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t('SubscriptionDetails.loading')}</Typography>;
   }
 
   return (
@@ -109,11 +111,11 @@ export function CancelSubscription(): React.JSX.Element {
         <Stack spacing={2} sx={{alignItems: 'center' }}>
           <Avatar src="/assets/sad.svg" sx={{ height: '80px', width: '80px'}}/>
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
-            <Typography variant="h5">Manage Your Subscription</Typography>
+            <Typography variant="h5">{t('SubscriptionDetails.manageSubscription')}</Typography>
             <Typography variant="body2">
               {hasActiveSubscription
-                ? "If you cancel, you'll lose access to all premium features."
-                : "You do not have an active subscription."}
+                ? t('SubscriptionDetails.cancelWarning')
+                : t('SubscriptionDetails.noActiveSubscription')}
             </Typography>
           </Stack>
         </Stack>
@@ -122,12 +124,12 @@ export function CancelSubscription(): React.JSX.Element {
       {hasActiveSubscription && subscriptionDetails && (
         <>
           <CardContent>
-            <Typography variant="h6" sx={{ textAlign: 'left', marginBottom:'20px' }}>Subscription Details</Typography>
+            <Typography variant="h6" sx={{ textAlign: 'left', marginBottom:'20px' }}>{t('SubscriptionDetails.subscriptionDetails')}</Typography>
             <Stack spacing={1}>
-              <Typography variant="body2"><strong>Plan:</strong> {subscriptionDetails.planid?.plan_name || 'Unknown Plan'}</Typography>
-              <Typography variant="body2"><strong>Start Date:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
-              <Typography variant="body2"><strong>Expiration Date:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : 'Ongoing'}</Typography>
-              <Typography variant="body2"><strong>Next Payment Date:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
+              <Typography variant="body2"><strong>{t('SubscriptionDetails.plan')}:</strong> {subscriptionDetails.planid?.plan_name || t('SubscriptionDetails.unknownPlan')}</Typography>
+              <Typography variant="body2"><strong>{t('SubscriptionDetails.startDate')}:</strong> {new Date(subscriptionDetails.start_date).toLocaleDateString()}</Typography>
+              <Typography variant="body2"><strong>{t('SubscriptionDetails.expirationDate')}:</strong> {subscriptionDetails.end_date ? new Date(subscriptionDetails.end_date).toLocaleDateString() : t('SubscriptionDetails.ongoing')}</Typography>
+              <Typography variant="body2"><strong>{t('SubscriptionDetails.nextPaymentDate')}:</strong> {new Date(new Date(subscriptionDetails.start_date).setMonth(new Date(subscriptionDetails.start_date).getMonth() + 1)).toLocaleDateString()}</Typography>
             </Stack>
           </CardContent>
         </>
@@ -143,7 +145,7 @@ export function CancelSubscription(): React.JSX.Element {
             onClick={() => setShowDialog(true)}
             disabled={!subscriptionId || loading}
           >
-            Cancel Subscription
+            {t('SubscriptionDetails.cancelSubscription')}
           </Button>
         ) : (
           <Button
@@ -152,24 +154,24 @@ export function CancelSubscription(): React.JSX.Element {
             color="primary"
             onClick={() => router.push('/dashboard/subscription')}
           >
-            Subscribe Here
+            {t('SubscriptionDetails.subscribeHere')}
           </Button>
         )}
       </CardActions>
 
       <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-        <DialogTitle>Confirm Cancellation</DialogTitle>
+        <DialogTitle>{t('SubscriptionDetails.confirmCancellation')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to cancel your subscription? This action cannot be undone.
+            {t('SubscriptionDetails.confirmCancellationText')}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDialog(false)} color="secondary">
-            Close
+            {t('SubscriptionDetails.close')}
           </Button>
           <Button onClick={handleCancelSubscription} color="error" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Confirm Cancellation'}
+            {loading ? <CircularProgress size={24} /> : t('SubscriptionDetails.confirmCancellation')}
           </Button>
         </DialogActions>
       </Dialog>

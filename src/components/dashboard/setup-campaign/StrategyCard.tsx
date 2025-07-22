@@ -15,6 +15,7 @@ interface StrategyCardProps {
 const StrategyCard: React.FC<StrategyCardProps> = ({ onNext }) => {
   const [currentStep, setCurrentStep] = useState(1); // Track current step
   const { t } = useLocale();
+console.log(t);
 
   const handleStrategySelect = () => {
     setCurrentStep(currentStep + 1); // Increment step when selecting a strategy

@@ -4,24 +4,32 @@ import React, { useEffect, useState, useRef } from 'react';
 import styles from './styles/StrategyCreationProgress.module.css';
 import axios from 'axios';
 import { createClient } from '../../../../utils/supabase/client'; // Import Supabase client
+import { useLocale } from '@/contexts/LocaleContext';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 interface StrategyCreationProgressProps {
   planOutput: any[];
   imageUrl: string | null; // ✅ Add this line
   campaignData: { campaignName: string; labelOne: string; labelTwo: string } | null;
   onNext: (createdCampaignId: string | null) => void;
+  setCurrentStep: (step: number) => void;
 }
 
 
-const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
+const   StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
   planOutput,
   campaignData,
   onNext,
+  setCurrentStep,
 }) => {
   const [progress, setProgress] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const createCampaignCalled = useRef<boolean>(false);
   const supabase = createClient();
+  const { t } = useLocale();
+  const [error, setError] = useState<string | null>(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,11 +92,20 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
       // ✅ Send data to API
       const response = await axios.post('/api/create-campaign', payload);
 
+      console.log(response);
       const campaignId = response.data?.adResponse?.id;
       if (campaignId) {
         console.log('✅ Campaign created successfully:', campaignId);
         onNext(campaignId); // Move to the next step with campaignId
-      } else {
+      } 
+      else if(response.data.message){
+        console.error('❌ Campaign creation failed:', response.data.message);
+        setError(response.data.message);
+        setOpenSnackbar(true);
+        setLoading(false);
+        return;
+      }
+       else {
         console.error('❌ Campaign creation failed: No campaign ID returned');
         throw new Error('No campaign ID returned');
       }
@@ -101,11 +118,9 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
 
   return (
     <div className={styles.progressContainerWrapper}>
-      <h1 className={styles.headerLabel}>Strategy Creation</h1>
+      <h1 className={styles.headerLabel}>{t('CampaignSetup.strategyCreationProgress.title')}</h1>
       <div className={styles.description}>
-        Introducing woortec - the ultimate social media ads product designed to elevate your online presence and 
-        drive results like never before. With woortec, you can effortlessly create and manage ads across multiple 
-        social media platforms, all in one place. 
+        {t('CampaignSetup.strategyCreationProgress.subtitle')}
       </div>
 
       <center>
@@ -115,13 +130,31 @@ const StrategyCreationProgress: React.FC<StrategyCreationProgressProps> = ({
           className={styles.campaignImage}
         />
       </center>
-      <p>Creating your campaign...</p>
+      <p>{t('CampaignSetup.strategyCreationProgress.creatingCampaign')}</p>
       <div className={styles.progressBar}>
         <div className={styles.progress} style={{ width: `${progress}%` }}></div>
       </div>
-      <p>{progress}%</p>
+      <p>{t('CampaignSetup.strategyCreationProgress.percentComplete').replace('{progress}', progress.toString())}</p>
+      <Snackbar
+        key={error}
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={(_, reason) => {
+          setOpenSnackbar(false);
+          setError(null);
+          if (typeof setCurrentStep === 'function') {
+            setCurrentStep(1);
+          }
+        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MuiAlert elevation={6} variant="filled" severity="error" sx={{ width: '100%' }}>
+          {error}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };
 
 export default StrategyCreationProgress;
+

@@ -7,6 +7,7 @@ import CampaignNamePage from '@/components/dashboard/setup-campaign/CampaignName
 import StrategyConfirmation from '@/components/dashboard/setup-campaign/StrategyConfirmation';
 import StrategyCreationProgress from '@/components/dashboard/setup-campaign/StrategyCreationProgress';
 import { createClient } from '../../../../utils/supabase/client';
+import { useLocale } from '@/contexts/LocaleContext';
 
 const CampaignSetupPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1); // Controls step navigation
@@ -15,6 +16,7 @@ const CampaignSetupPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [campaignId, setCampaignId] = useState<string | null>(null);
   const [imagePath, setImagePath] = useState<string | null>(null); // 🔥 Stores the uploaded image URL
+  const { t } = useLocale();
 
   // Fetch campaign strategy & image from Supabase
   const fetchCampaignData = async () => {
@@ -84,6 +86,7 @@ const CampaignSetupPage: React.FC = () => {
             imageUrl={imagePath} // 🔥 Fetching image from Supabase
             campaignData={campaignData} // ✅ Campaign name & labels
             onNext={handleCampaignCreationSuccess} // Move to the next step
+            setCurrentStep={setCurrentStep}
           />
         )}
         {currentStep === 5 && <StrategyConfirmation campaignId={campaignId} />}

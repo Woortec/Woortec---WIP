@@ -13,44 +13,49 @@ import FormGroup from '@mui/material/FormGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import { useLocale } from '@/contexts/LocaleContext';
 
 export function Notifications(): React.JSX.Element {
+  const { t } = useLocale();
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
       }}
     >
+      <div style={{ marginBottom: '20px', marginTop: '20px' }}>
+        <Typography variant="h4">{t('Notifications.mainTitle')}</Typography>
+      </div>
       <Card>
-        <CardHeader subheader="Manage the notifications" title="Notifications" />
+        <CardHeader subheader={t('Notifications.manageNotifications')} title={t('Notifications.title')} />
         <Divider />
         <CardContent>
           <Grid container spacing={6} wrap="wrap">
             <Grid md={4} sm={6} xs={12}>
               <Stack spacing={1}>
-                <Typography variant="h6">Email</Typography>
+                <Typography variant="h6">{t('Notifications.email')}</Typography>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label="Product updates" />
-                  <FormControlLabel control={<Checkbox />} label="Security updates" />
+                  <FormControlLabel control={<Checkbox defaultChecked />} label={t('Notifications.productUpdates')} />
+                  <FormControlLabel control={<Checkbox />} label={t('Notifications.securityUpdates')} />
                 </FormGroup>
               </Stack>
             </Grid>
             <Grid md={4} sm={6} xs={12}>
               <Stack spacing={1}>
-                <Typography variant="h6">Phone</Typography>
+                <Typography variant="h6">{t('Notifications.phone')}</Typography>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label="Email" />
-                  <FormControlLabel control={<Checkbox />} label="Security updates" />
+                  <FormControlLabel control={<Checkbox defaultChecked />} label={t('Notifications.email')} />
+                  <FormControlLabel control={<Checkbox />} label={t('Notifications.securityUpdates')} />
                 </FormGroup>
               </Stack>
             </Grid>
             <Grid md={4} sm={6} xs={12}>
               <Stack spacing={1}>
-                <Typography variant="h6">Cancellation Reporting</Typography>
+                <Typography variant="h6">{t('Notifications.cancellationReporting')}</Typography>
                 <FormGroup>
-                  <FormControlLabel control={<Checkbox defaultChecked />} label="Send weekly report" />
-                  <FormControlLabel control={<Checkbox />} label="Notify on cancellation events" />
-                  <FormControlLabel control={<Checkbox />} label="Monthly summary" />
+                  <FormControlLabel control={<Checkbox defaultChecked />} label={t('Notifications.sendWeeklyReport')} />
+                  <FormControlLabel control={<Checkbox />} label={t('Notifications.notifyOnCancellation')} />
+                  <FormControlLabel control={<Checkbox />} label={t('Notifications.monthlySummary')} />
                 </FormGroup>
               </Stack>
             </Grid>
@@ -58,7 +63,7 @@ export function Notifications(): React.JSX.Element {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save changes</Button>
+          <Button variant="contained">{t('Notifications.saveChanges')}</Button>
         </CardActions>
       </Card>
     </form>

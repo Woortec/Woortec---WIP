@@ -57,18 +57,11 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           .single();
 
         if (row) {
-          const age = Date.now() - new Date(row.created_at).getTime();
-          if (age < WEEK_IN_MS) {
-            setAiResponse(row.advice);
-            setCanRequestAdvice(false);
-          } else {
-            // expired advice: clean up
-            await supabase
-              .from('ad_advice')
-              .delete()
-              .eq('user_id', userId)
-              .eq('ad_id', adId);
-          }
+          setAiResponse(row.advice);
+          setCanRequestAdvice(false); // Hide button if advice exists
+        } else {
+          setAiResponse('');
+          setCanRequestAdvice(true);
         }
       } catch (err) {
         console.error(err);
@@ -101,10 +94,10 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
       if (error) throw error;
 
       setAiResponse(advice);
-      setCanRequestAdvice(false);
+      setCanRequestAdvice(false); // Hide button after response
     } catch (err) {
       console.error(err);
-      setAiResponse('Failed to generate AI advice. Please try again later.');
+      setAiResponse(t('AdSetDetail.failedToGenerate'));
     } finally {
       setRequestingAdvice(false);
     }
@@ -112,8 +105,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
   // Calculate CTR (Click-Through Rate)
   const calculateCTR = (clicks: number, impressions: number) => {
-    if (!impressions || impressions === 0) return 'N/A';
-    return ((clicks / impressions) * 100).toFixed(2);
+    if (!impressions || impressions === 0) return '0.00%';
+    return `${((clicks / impressions) * 100).toFixed(2)}%`;
   };
 
   // Format numbers, fallback to N/A
@@ -129,7 +122,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
   }
 
   if (!adDetail) {
-    return <Typography>No data available</Typography>;
+    return <Typography>{t('AdSetDetail.noDataAvailable')}</Typography>;
   }
 
   // format today's date like "Apr 25, 2025"
@@ -138,6 +131,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
     day: 'numeric',
     year: 'numeric',
   });
+
+  console.log(adDetail);
 
   return (
     <Box className={styles.adSetDetailContainer}>
@@ -163,7 +158,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               onLoad={() => console.log('Ad Creative image loaded:', adDetail.imageUrl)}
             />
           ) : (
-            <p>No image available</p>
+            <p>{t('AdSetDetail.noImageAvailable')}</p>
           )}
         </Box>
 
@@ -213,7 +208,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
                 <img src="/assets/attach_money.svg" alt="Budget Icon" />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>CTR (%)</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>{t('AdSetDetail.ctrPercent')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
                   {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
                 </Typography>

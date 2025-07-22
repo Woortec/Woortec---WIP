@@ -28,6 +28,9 @@ export interface BudgetProps {
 }
 
 export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Element {
+
+
+
   const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
@@ -35,7 +38,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
   return (
     <Card sx={{ height: '10.7rem', padding:'1rem' }}>
       <Box>
-    
+      
         <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <Avatar sx={{ backgroundColor: '#02B194', height: '2rem', width: '2rem' }}>
             <CurrencyDollarIcon fontSize="1.5rem" style={{ color: 'white' }} />
@@ -49,7 +52,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Stack>
               <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary"> {t('DashboardCards.budget')}</Typography>
-              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value}</Typography>
+              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value === '' ? 'data not found' : value}</Typography>
             </Stack>
           </Stack>
           {diff ? (
@@ -76,6 +79,7 @@ interface BudgetContainerProps {
 }
 
 const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
+
   const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down'; currency: string }>(
     {
       value: '',

@@ -60,7 +60,11 @@
   "AdSetDetail": {
     "requestingAdvice": "Requesting Advice...",
     "askForExpert": "Ask for Expert's Advice",
-    "best": "Best"
+    "best": "Best",
+    "noDataAvailable": "No data available",
+    "noImageAvailable": "No image available",
+    "ctrPercent": "CTR (%)",
+    "failedToGenerate": "Failed to generate AI advice. Please try again later."
   },
   "SocialConnections": {
     "connectTitle": "Connect with your social media accounts",
@@ -110,6 +114,155 @@
     "lockedStrategy": "(THIS STRATEGY IS LOCKED)",
     "lockedStrategyDesc": "This strategy will be unlocked once you finish the first strategy that we gave you.",
     "delete": "Delete",
-    "continue": "Continue"
+    "continue": "Continue",
+    "steps": {
+      "strategy": "Strategy",
+      "images": "Images", 
+      "moreInformation": "More Information"
+    },
+    "adCreative": {
+      "title": "Campaign Setup: Choose your Ad Creatives",
+      "subtitle": "Seamlessly integrate your visual assets with Facebook's Marketing API using Woortec.",
+      "uploadTitle": "Upload your images",
+      "dragText": "Drag your image(s) to start uploading",
+      "orText": "or",
+      "uploadButton": "Upload from your Device",
+      "goBack": "Go Back",
+      "continue": "Continue",
+      "uploading": "Uploading...",
+      "uploadingImage": "Uploading image...",
+      "pleaseUpload": "Please upload an image.",
+      "uploadFailed": "Failed to upload the image. Please try again.",
+      "errorOccurred": "An error occurred. Please try again."
+    },
+          "campaignNamePage": {
+        "title": "Campaign Setup: Choose your Campaign Name",
+        "subtitle": "Effortlessly set up your campaign name with Woortec. By default, it will be named 'Woortec,' but you can easily add a custom label to reflect your unique branding. Enjoy a straightforward process that ensures your campaigns are personalized and ready to make an impact.",
+        "formTitle": "By default, your campaign will be named 'Woortec.' Want to personalize it? Add a custom label to tailor the campaign name to your specific needs and make it stand out.",
+        "labelOne": "Label One",
+        "labelTwo": "Label Two",
+        "placeholder": "Text",
+        "send": "Send",
+        "pleaseFill": "Please fill in all fields.",
+        "saveError": "Failed to save the data. Please try again.",
+        "unexpectedError": "An unexpected error occurred. Please try again."
+      },
+      "strategyCreationProgress": {
+        "title": "Strategy Creation",
+        "subtitle": "Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.",
+        "creatingCampaign": "Creating your campaign...",
+        "percentComplete": "{progress}%"
+      },
+      "stepIndicator": {
+        "objective": "Objective",
+        "strategyCreation": "Strategy Creation",
+        "strategyResult": "Strategy Result"
+      },
+      "strategyCreationPage": {
+        "title": "Strategy Creation",
+        "subtitle": "Introducing woortec - the ultimate social media ads product designed to elevate your online presence and drive results like never before. With woortec, you can effortlessly create and manage ads across multiple social media platforms, all in one place.",
+        "creatingStrategy": "Creating your ads strategy...",
+        "percentComplete": "{progress}%"
+      },
+      "strategyResultPage": {
+        "title": "Personalized Strategy",
+        "levels": "4 Levels",
+        "analysis": "Analysis",
+        "performanceAnalysis": "Performance Analysis",
+        "metaAds": "META ADS",
+        "level": "LEVEL",
+        "startingDay": "Starting Day",
+        "weekPlans": "Week Plans",
+        "investAmount": "Invest Amount",
+        "numberOfAds": "Number of Ads",
+        "toMessages": "To Messages",
+        "toLink": "To Link",
+        "dailyBudgetPerAd": "Daily Budget / Ad",
+        "startOver": "Start Over",
+        "loading": "Loading...",
+        "noData": "No campaign data available."
+      }
+   
+
+
+    },
+      "Notifications": {
+    "mainTitle": "Settings",
+    "title": "Notifications",
+    "manageNotifications": "Manage the notifications",
+    "email": "Email",
+    "phone": "Phone",
+    "cancellationReporting": "Cancellation Reporting",
+    "productUpdates": "Product updates",
+    "securityUpdates": "Security updates",
+    "sendWeeklyReport": "Send weekly report",
+    "notifyOnCancellation": "Notify on cancellation events",
+    "monthlySummary": "Monthly summary",
+    "saveChanges": "Save changes"
+  },
+  "UpdatePassword": {
+    "password": "Password",
+    "updatePassword": "Update password",
+    "confirmPassword": "Confirm password",
+    "update": "Update",
+    "passwordUpdated": "Password updated successfully",
+    "passwordMismatch": "Password and confirm password must be the same"
+  },
+  "AccountInfo": {
+    "loading": "Loading...",
+    "accountInfo": "Account Information",
+    "uploadPicture": "Upload picture",
+    "profilePictureUpdated": "Profile picture updated!",
+    "phone": "Phone",
+    "email": "Email",
+    "location": "Location"
+  },
+  "AccountDetails": {
+    "profile": "Profile",
+    "informationEditable": "The information can be edited",
+    "fullName": "Full Name",
+    "lastName": "Last Name",
+    "saveDetails": "Save details",
+    "profileUpdated": "Profile updated successfully!"
+  },
+  "Invoice": {
+    "loading": "Loading...",
+    "invoiceHistory": "Invoice History",
+    "invoiceNumber": "Invoice #",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "notAvailable": "N/A",
+    "downloadInvoice": "Download Invoice",
+    "pdfNotAvailable": "Invoice PDF not available.",
+    "cancelSubscription": "Cancel Subscription",
+    "confirmCancellation": "Are you sure you want to cancel your subscription?",
+    "no": "No",
+    "yesCancel": "Yes, Cancel",
+    "subscriptionCancelled": "Subscription cancelled successfully!",
+    "errorCancelling": "Error cancelling subscription.",
+    "issueCancelling": "There was an issue cancelling your subscription."
+  },
+  "SubscriptionDetails": {
+    "loading": "Loading...",
+    "manageSubscription": "Manage Your Subscription",
+    "cancelWarning": "If you cancel, you'll lose access to all premium features.",
+    "noActiveSubscription": "You do not have an active subscription.",
+    "subscriptionDetails": "Subscription Details",
+    "plan": "Plan",
+    "unknownPlan": "Unknown Plan",
+    "startDate": "Start Date",
+    "expirationDate": "Expiration Date",
+    "ongoing": "Ongoing",
+    "nextPaymentDate": "Next Payment Date",
+    "cancelSubscription": "Cancel Subscription",
+    "subscribeHere": "Subscribe Here",
+    "confirmCancellation": "Confirm Cancellation",
+    "confirmCancellationText": "Are you sure you want to cancel your subscription? This action cannot be undone.",
+    "close": "Close",
+    "subscriptionCancelled": "Subscription cancelled successfully!",
+    "errorCancelling": "Error cancelling subscription.",
+    "issueCancelling": "There was an issue cancelling your subscription."
+  },
+  "activeAds": "{count} Active ads"
   }
-}
