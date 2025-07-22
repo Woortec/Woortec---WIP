@@ -16,6 +16,7 @@ import type { SxProps } from '@mui/system';
 import { createClient } from '../../../../utils/supabase/client';
 import { makeBatchRequest } from './apiBatchRequest';
 import { useLocale } from '@/contexts/LocaleContext';
+import { CircularProgress } from '@mui/material';
 
 export interface TotalAdsProps {
   sx?: SxProps;
@@ -25,7 +26,7 @@ export interface TotalAdsProps {
 export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
   const { t } = useLocale();
   return (
-    <Card
+ <Card
       sx={{
         height: '10.7rem',
         p: 2,
@@ -78,6 +79,7 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
 const TotalAdsContainer = () => {
   const { startDate, endDate } = useDate();
   const [adsData, setAdsData] = useState('Loading...');
+  const { t } = useLocale();
 
   // Retry helper for rate-limit errors
   const safeBatch = async (params: Parameters<typeof makeBatchRequest>[0]) => {
@@ -129,7 +131,7 @@ const TotalAdsContainer = () => {
         const allAds = adsBody.data || [];
         const activeCount = allAds.filter((ad: any) => ad.effective_status === 'ACTIVE').length;
 
-        setAdsData(`${activeCount} Active ads`);
+        setAdsData(t('activeAds').replace('{count}', activeCount));
       } catch (err) {
         console.error('Error fetching total ads data:', err);
         setAdsData('Error loading ads');
@@ -137,7 +139,7 @@ const TotalAdsContainer = () => {
     };
 
     fetchTotalAds();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, t]);
 
   return <TotalAds value={adsData} />;
 };

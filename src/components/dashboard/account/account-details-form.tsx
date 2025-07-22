@@ -15,6 +15,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { userData } from '@/contexts/user-context';
 import { useUser } from '@/hooks/use-user';
+import { useLocale } from '@/contexts/LocaleContext';
 
 import { createClient } from '../../../../utils/supabase/client';
 
@@ -24,6 +25,7 @@ interface UserMetadata {
 }
 
 export function AccountDetailsForm(): React.JSX.Element {
+  const { t } = useLocale();
   const supabase = createClient();
   const { userInfo, fetchApiData, updateUser } = userData();
   const { user } = useUser(); // Fetch the currently logged-in user from Supabase Auth
@@ -121,7 +123,7 @@ export function AccountDetailsForm(): React.JSX.Element {
       }
 
       setIsSubmitting(false);
-      alert('Profile updated successfully!');
+      alert(t('AccountDetails.profileUpdated'));
     } catch (error) {
       console.error('Error during form submission:', error);
       setIsSubmitting(false);
@@ -131,28 +133,28 @@ export function AccountDetailsForm(): React.JSX.Element {
   return (
     <form onSubmit={handleSubmit}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-  <CardHeader subheader="The information can be edited" title="Profile" />
+  <CardHeader subheader={t('AccountDetails.informationEditable')} title={t('AccountDetails.profile')} />
   <Divider />
   <CardContent sx={{ flexGrow: 1 }}>
     <Grid container spacing={3}>
       <Grid md={6} xs={12}>
         <FormControl fullWidth required>
-          <InputLabel>Full Name</InputLabel>
+          <InputLabel>{t('AccountDetails.fullName')}</InputLabel>
           <OutlinedInput
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            label="Full Name"
+            label={t('AccountDetails.fullName')}
             name="fullName"
           />
         </FormControl>
       </Grid>
       <Grid md={6} xs={12}>
         <FormControl fullWidth required>
-          <InputLabel>Last Name</InputLabel>
+          <InputLabel>{t('AccountDetails.lastName')}</InputLabel>
           <OutlinedInput
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            label="Last Name"
+            label={t('AccountDetails.lastName')}
             name="lastName"
           />
         </FormControl>
@@ -162,7 +164,7 @@ export function AccountDetailsForm(): React.JSX.Element {
   <Divider />
   <CardActions sx={{ justifyContent: 'flex-end' }}>
     <Button disabled={isSubmitting} type="submit" variant="contained">
-      Save details
+      {t('AccountDetails.saveDetails')}
     </Button>
   </CardActions>
 </Card>

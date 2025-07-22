@@ -30,6 +30,10 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
 
   const [preset, setPreset] = useState<string>(t('DatePicker.presets.thisWeek'));
 
+  console.log(startDate);
+  console.log(endDate);
+  
+  
   useEffect(() => {
     // Set default to "This Week"
     const today = new Date();

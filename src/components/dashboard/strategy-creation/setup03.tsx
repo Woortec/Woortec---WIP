@@ -7,6 +7,7 @@ import TableCellBox from './TableCellBox';
 import { Typography, Box, Paper } from '@mui/material';
 import axios from 'axios';
 import { createClient } from '../../../../utils/supabase/client'; // Supabase client
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface WeeklyPlan {
     weekNumber: string;
@@ -215,6 +216,7 @@ const StrategyResultPage: React.FC = () => {
     const [currency, setCurrency] = useState<string>('USD'); // Default currency
     const [conversionRate, setConversionRate] = useState<number>(1); // Default conversion rate
     const [loading, setLoading] = useState<boolean>(true);
+    const { t } = useLocale();
 
     // Fetch campaign details from Supabase
     const fetchCampaignDetails = async () => {
@@ -308,11 +310,11 @@ const StrategyResultPage: React.FC = () => {
         saveData();
     }, [planOutput]); // Triggered once the planOutput is ready
     if (loading) {
-        return <div>Loading...</div>; // Loading state
+        return <div>{t('CampaignSetup.strategyResultPage.loading')}</div>; // Loading state
     }
 
     if (campaignDetails.length === 0) {
-        return <div>No campaign data available.</div>; // Show if there's no data
+        return <div>{t('CampaignSetup.strategyResultPage.noData')}</div>; // Show if there's no data
     }
 
     const handleBackToStart = () => {
@@ -322,18 +324,18 @@ const StrategyResultPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <div className={styles.headContainer}>
-                <h2>Personalized Strategy</h2>
-                <label>4 Levels</label>
+                <h2>{t('CampaignSetup.strategyResultPage.title')}</h2>
+                <label>{t('CampaignSetup.strategyResultPage.levels')}</label>
             </div>
 
             <div className={styles.secondheadContainer}>
-                <div className={styles.firstsecHeader}>Analysis</div>
-                <div className={styles.secondsecHeader}>Performance Analysis</div>
+                <div className={styles.firstsecHeader}>{t('CampaignSetup.strategyResultPage.analysis')}</div>
+                <div className={styles.secondsecHeader}>{t('CampaignSetup.strategyResultPage.performanceAnalysis')}</div>
             </div>
 
             <Box className={styles.tableContainer}>
                 <div className={styles.table}>
-                    <TableCellBox className={styles.metaAds}>META ADS</TableCellBox>
+                    <TableCellBox className={styles.metaAds}>{t('CampaignSetup.strategyResultPage.metaAds')}</TableCellBox>
 
                     {/*For level headers*/}
                     {planOutput.map((level, index) => {
@@ -354,48 +356,48 @@ const StrategyResultPage: React.FC = () => {
                         className={`${styles.levelHeader} ${styles[`levelHeader${levelNumber}`]}`}
                         colSpan={levelNumber === 2 ? 2 : levelNumber === 3 ? 4 : 1} // Apply colSpan to Level 2 and Level 3
                         >
-                        LEVEL {levelNumber.toString().padStart(2, '0')}
+                        {t('CampaignSetup.strategyResultPage.level')} {levelNumber.toString().padStart(2, '0')}
                         </TableCellBox>
                     );
                     })}
 
-                    <TableCellBox className={styles.tableCellBox}>Starting Day</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.startingDay')}</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.startingDay}>
                             {level.startingDay}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>Week Plans</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.weekPlans')}</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.planWeek}>
                             {level.plansWeek}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>Invest Amount ({currency})</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.investAmount')} ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.invest}>
                             {level.investAmount.toFixed(2)} {currency}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>Number of Ads</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.numberOfAds')}</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.numAds}>
                             {level.numberOfAds}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>To Messages</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.toMessages')}</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.toMessages}>
                             {level.toMessages}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>To Link</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.toLink')}</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.toLink}>
                             {level.toLink}
                         </TableCellBox>
                     ))}
-                    <TableCellBox className={styles.tableCellBox}>Daily Budget / Ad ({currency})</TableCellBox>
+                    <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.dailyBudgetPerAd')} ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.dailyBudget}>
                             {level.dailyBudgetPerAd.toFixed(2)} {currency}
@@ -405,7 +407,7 @@ const StrategyResultPage: React.FC = () => {
             </Box>
 
             <button className={styles.continueButton} onClick={handleBackToStart}>
-                Start Over
+                {t('CampaignSetup.strategyResultPage.startOver')}
             </button>
         </div>
     );

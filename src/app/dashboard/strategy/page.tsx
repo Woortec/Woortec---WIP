@@ -7,7 +7,7 @@ import StrategyCreationPage from '@/components/dashboard/strategy-creation/setup
 import StrategyResultPage from '@/components/dashboard/strategy-creation/setup03';
 import { createClient } from '../../../../utils/supabase/client'; // Adjust the import path as necessary
 import './page.css'; // Import the CSS file for styles
-import { Box } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { SketchLogo as DiamondIcon } from '@phosphor-icons/react/dist/ssr/SketchLogo';
 import Subscription from '@/components/dashboard/subscription/subscription';
 
@@ -64,7 +64,12 @@ function App() {
   }, []);
 
   if (!isClient || loading) {
-    return null; // Render nothing on the server side or while loading
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', flexDirection: 'column' }}>
+        <CircularProgress  thickness={2} />
+        <Typography sx={{ marginTop: '1rem' }}>Loading...</Typography>
+      </Box>
+    ); // Render nothing on the server side or while loading
   }
 
   return (

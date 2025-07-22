@@ -55,12 +55,17 @@
     "feedback": "Enviar comentarios",
     "english": "Inglés",
     "spanish": "Español",
-    "signout": "Cerrar sesión"
+    "signout": "Cerrar sesión",
+    "selectLanguage": "Selecciona tu idioma preferido"
   },
   "AdSetDetail": {
     "requestingAdvice": "Solicitando consejo...",
     "askForExpert": "Pedir consejo de un experto",
-    "best": "Saludos"
+    "best": "Saludos",
+    "noDataAvailable": "No hay datos disponibles",
+    "noImageAvailable": "No hay imagen disponible",
+    "ctrPercent": "CTR (%)",
+    "failedToGenerate": "Error al generar consejo de IA. Por favor, inténtalo de nuevo más tarde."
   },
   "SocialConnections": {
     "connectTitle": "Conecta tus cuentas de redes sociales",
@@ -110,6 +115,153 @@
     "lockedStrategy": "(ESTA ESTRATEGIA ESTÁ BLOQUEADA)",
     "lockedStrategyDesc": "Esta estrategia se desbloqueará una vez que completes la primera estrategia que te dimos.",
     "delete": "Eliminar",
-    "continue": "Continuar"
-  }
+    "continue": "Continuar",
+    "steps": {
+      "strategy": "Estrategia",
+      "images": "Imágenes",
+      "moreInformation": "Más Información"
+    },
+    "adCreative": {
+      "title": "Configuración de campaña: Elige tus creativos publicitarios",
+      "subtitle": "Integra perfectamente tus recursos visuales con la API de Marketing de Facebook usando Woortec.",
+      "uploadTitle": "Sube tus imágenes",
+      "dragText": "Arrastra tu(s) imagen(es) para comenzar a subir",
+      "orText": "o",
+      "uploadButton": "Subir desde tu dispositivo",
+      "goBack": "Volver",
+      "continue": "Continuar",
+      "uploading": "Subiendo...",
+      "uploadingImage": "Subiendo imagen...",
+      "pleaseUpload": "Por favor sube una imagen.",
+      "uploadFailed": "Error al subir la imagen. Por favor inténtalo de nuevo.",
+      "errorOccurred": "Ocurrió un error. Por favor inténtalo de nuevo."
+    },
+          "campaignNamePage": {
+        "title": "Configuración de campaña: Elige el nombre de tu campaña",
+        "subtitle": "Configura fácilmente el nombre de tu campaña con Woortec. Por defecto, se llamará 'Woortec', pero puedes añadir una etiqueta personalizada para reflejar tu marca. Disfruta de un proceso sencillo que asegura que tus campañas estén personalizadas y listas para impactar.",
+        "formTitle": "Por defecto, tu campaña se llamará 'Woortec'. ¿Quieres personalizarla? Añade una etiqueta personalizada para adaptar el nombre de la campaña a tus necesidades y haz que destaque.",
+        "labelOne": "Etiqueta Uno",
+        "labelTwo": "Etiqueta Dos",
+        "placeholder": "Texto",
+        "send": "Enviar",
+        "pleaseFill": "Por favor, completa todos los campos.",
+        "saveError": "No se pudo guardar la información. Por favor, inténtalo de nuevo.",
+        "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+      },
+      "strategyCreationProgress": {
+        "title": "Creación de Estrategia",
+        "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+        "creatingCampaign": "Creando tu campaña...",
+        "percentComplete": "{progress}%"
+      },
+      "stepIndicator": {
+        "objective": "Objetivo",
+        "strategyCreation": "Creación de Estrategia",
+        "strategyResult": "Resultado de Estrategia"
+      },
+      "strategyCreationPage": {
+        "title": "Creación de Estrategia",
+        "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+        "creatingStrategy": "Creando tu estrategia publicitaria...",
+        "percentComplete": "{progress}%"
+      },
+      "strategyResultPage": {
+        "title": "Estrategia Personalizada",
+        "levels": "4 Niveles",
+        "analysis": "Análisis",
+        "performanceAnalysis": "Análisis de Rendimiento",
+        "metaAds": "META ADS",
+        "level": "NIVEL",
+        "startingDay": "Día de Inicio",
+        "weekPlans": "Planes Semanales",
+        "investAmount": "Cantidad de Inversión",
+        "numberOfAds": "Número de Anuncios",
+        "toMessages": "A Mensajes",
+        "toLink": "A Enlaces",
+        "dailyBudgetPerAd": "Presupuesto Diario / Anuncio",
+        "startOver": "Comenzar de Nuevo",
+        "loading": "Cargando...",
+        "noData": "No hay datos de campaña disponibles."
+      }
+   
+  },
+  "Notifications": {
+    "mainTitle": "Configuración",
+    "title": "Notificaciones",
+    "manageNotifications": "Gestionar las notificaciones",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "cancellationReporting": "Informes de Cancelación",
+    "productUpdates": "Actualizaciones del producto",
+    "securityUpdates": "Actualizaciones de seguridad",
+    "sendWeeklyReport": "Enviar informe semanal",
+    "notifyOnCancellation": "Notificar eventos de cancelación",
+    "monthlySummary": "Resumen mensual",
+    "saveChanges": "Guardar cambios"
+  },
+  "UpdatePassword": {
+    "password": "Contraseña",
+    "updatePassword": "Actualizar contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "update": "Actualizar",
+    "passwordUpdated": "Contraseña actualizada exitosamente",
+    "passwordMismatch": "La contraseña y la confirmación deben ser iguales"
+  },
+  "AccountInfo": {
+    "loading": "Cargando...",
+    "accountInfo": "Información de la cuenta",
+    "uploadPicture": "Subir imagen",
+    "profilePictureUpdated": "¡Imagen de perfil actualizada!",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "location": "Ubicación"
+  },
+  "AccountDetails": {
+    "profile": "Perfil",
+    "informationEditable": "La información se puede editar",
+    "fullName": "Nombre completo",
+    "lastName": "Apellido",
+    "saveDetails": "Guardar detalles",
+    "profileUpdated": "¡Perfil actualizado exitosamente!"
+  },
+  "Invoice": {
+    "loading": "Cargando...",
+    "invoiceHistory": "Historial de Facturas",
+    "invoiceNumber": "Factura #",
+    "date": "Fecha",
+    "amount": "Monto",
+    "status": "Estado",
+    "notAvailable": "N/A",
+    "downloadInvoice": "Descargar Factura",
+    "pdfNotAvailable": "PDF de factura no disponible.",
+    "cancelSubscription": "Cancelar Suscripción",
+    "confirmCancellation": "¿Estás seguro de que quieres cancelar tu suscripción?",
+    "no": "No",
+    "yesCancel": "Sí, Cancelar",
+    "subscriptionCancelled": "¡Suscripción cancelada exitosamente!",
+    "errorCancelling": "Error al cancelar la suscripción.",
+    "issueCancelling": "Hubo un problema al cancelar tu suscripción."
+  },
+  "SubscriptionDetails": {
+    "loading": "Cargando...",
+    "manageSubscription": "Gestionar tu Suscripción",
+    "cancelWarning": "Si cancelas, perderás acceso a todas las funciones premium.",
+    "noActiveSubscription": "No tienes una suscripción activa.",
+    "subscriptionDetails": "Detalles de Suscripción",
+    "plan": "Plan",
+    "unknownPlan": "Plan Desconocido",
+    "startDate": "Fecha de Inicio",
+    "expirationDate": "Fecha de Vencimiento",
+    "ongoing": "En Curso",
+    "nextPaymentDate": "Próxima Fecha de Pago",
+    "cancelSubscription": "Cancelar Suscripción",
+    "subscribeHere": "Suscribirse Aquí",
+    "confirmCancellation": "Confirmar Cancelación",
+    "confirmCancellationText": "¿Estás seguro de que quieres cancelar tu suscripción? Esta acción no se puede deshacer.",
+    "close": "Cerrar",
+    "subscriptionCancelled": "¡Suscripción cancelada exitosamente!",
+    "errorCancelling": "Error al cancelar la suscripción.",
+    "issueCancelling": "Hubo un problema al cancelar tu suscripción."
+  },
+  "activeAds": "{count} anuncios activos"
 }

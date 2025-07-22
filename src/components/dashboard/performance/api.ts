@@ -4,9 +4,6 @@ import { createClient } from '../../../../utils/supabase/client';
 let cachedAdData: any[] = [];
 let cachedCurrency: string = 'USD';
 let dataFetched = false;
-let cachedThreadId: string | null = null;
-let cachedRunId: string | null = null;
-let cachedAIResponse: string | null = null;
 
 // — Removed SYSTEM_PROMPT constant so assistant config is used instead
 
@@ -67,9 +64,6 @@ export const clearAdDataCache = () => {
   cachedAdData = [];
   cachedCurrency = 'USD';
   dataFetched = false;
-  cachedThreadId = null;
-  cachedRunId = null;
-  cachedAIResponse = null;
   console.log('Ad data cache cleared');
 };
 
@@ -190,8 +184,7 @@ const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY!;
 const assistantId = process.env.NEXT_PUBLIC_OPENAI_ASSISTANT_ID!;
 
 export const createThread = async (): Promise<string> => {
-  if (cachedThreadId) return cachedThreadId!;
-
+  // Always create a new thread, do not use cache
   const response = await axios.post(
     'https://api.openai.com/v1/threads',
     {},
@@ -203,8 +196,7 @@ export const createThread = async (): Promise<string> => {
       },
     }
   );
-  cachedThreadId = response.data.id;
-  return cachedThreadId!;
+  return response.data.id;
 };
 
 export const addMessageToThread = async (
@@ -233,8 +225,7 @@ export const addMessageToThread = async (
 };
 
 export const createRun = async (threadId: string): Promise<string> => {
-  if (cachedRunId) return cachedRunId!;
-
+  // Always create a new run, do not use cache
   const response = await axios.post(
     `https://api.openai.com/v1/threads/${threadId}/runs`,
     { assistant_id: assistantId },
@@ -246,8 +237,7 @@ export const createRun = async (threadId: string): Promise<string> => {
       },
     }
   );
-  cachedRunId = response.data.id;
-  return cachedRunId!;
+  return response.data.id;
 };
 
 export const waitForRunCompletion = async (
@@ -279,8 +269,7 @@ export const waitForRunCompletion = async (
 };
 
 export const getAIResponse = async (threadId: string): Promise<string | null> => {
-  if (cachedAIResponse) return cachedAIResponse!;
-
+  // Always fetch fresh response, do not use cache
   const response = await axios.get(
     `https://api.openai.com/v1/threads/${threadId}/messages`,
     {
@@ -296,8 +285,7 @@ export const getAIResponse = async (threadId: string): Promise<string | null> =>
     if (message.role === 'assistant') {
       const textBlock = message.content?.[0]?.text;
       if (textBlock?.value) {
-        cachedAIResponse = textBlock.value;
-        return cachedAIResponse!;
+        return textBlock.value;
       }
     }
   }

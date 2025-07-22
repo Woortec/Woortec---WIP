@@ -123,7 +123,7 @@ export function SignInForm(): React.JSX.Element {
       }
     } catch (err: any) {
       console.error('Error during sign-in:', err);
-      setErrors((prev) => ({ ...prev, root: 'An unexpected error occurred. Please try again.' }));
+      setErrors((prev) => ({ ...prev, root: err.message }));
       // Track failed login
       event('login_failure', { method: 'email', error: err.message });
       setIsPending(false);

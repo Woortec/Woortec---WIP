@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { createClient } from '../../../../utils/supabase/client';
 import styles from './styles/AdCreativePage.module.css';
+import { useLocale } from '@/contexts/LocaleContext';
 
 interface AdCreativePageProps {
   onNext: (uploadedImageUrl: string) => void;
   onBack: () => void;
 }
 
-
 const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
   const [imageFileLocal, setImageFileLocal] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const { t } = useLocale();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -26,7 +27,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
     const userId = localStorage.getItem("userid");
   
     if (!userId) {
-      alert("User ID is required to upload images.");
+      alert(t('CampaignSetup.adCreative.pleaseUpload'));
       setShowPopup(false);
       return { error: "User ID not found" };
     }
@@ -86,7 +87,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
 
   const handleNext = async () => {
     if (!imageFileLocal) {
-      alert('Please upload an image.');
+      alert(t('CampaignSetup.adCreative.pleaseUpload'));
       return;
     }
   
@@ -95,7 +96,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       const result = await uploadImageToSupabase(imageFileLocal);
   
       if (result?.error) {
-        alert('Failed to upload the image. Please try again.');
+        alert(t('CampaignSetup.adCreative.uploadFailed'));
         return;
       }
   
@@ -105,7 +106,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       }
     } catch (err) {
       console.error('❌ Unexpected error uploading image:', err);
-      alert('An error occurred. Please try again.');
+      alert(t('CampaignSetup.adCreative.errorOccurred'));
     } finally {
       setLoading(false);
     }
@@ -116,18 +117,18 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
     <div className={styles.adCreativeContainer}>
       {showPopup && (
         <div className={styles.popup}>
-          <p>Uploading image...</p>
+          <p>{t('CampaignSetup.adCreative.uploadingImage')}</p>
         </div>
       )}
 
       <div className={styles.descriptionContainer}>
-        <h2 className={styles.heading}>Campaign Setup: Choose your Ad Creatives</h2>
+        <h2 className={styles.heading}>{t('CampaignSetup.adCreative.title')}</h2>
         <p className={styles.paragraph}>
-          Seamlessly integrate your visual assets with Facebook’s Marketing API using Woortec.
+          {t('CampaignSetup.adCreative.subtitle')}
         </p>
       </div>
       <div className={styles.divider}>
-      <h2 className={styles.headingUpload}>Upload your images</h2>
+        <h2 className={styles.headingUpload}>{t('CampaignSetup.adCreative.uploadTitle')}</h2>
       </div>
 
       <div className={styles.uploadContainer}>
@@ -136,10 +137,10 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
             <div className={styles.divimg}>
               <img className={styles.imgLabel} src="/images/photo.svg" alt="Upload" />
             </div>
-            <p>Drag your image(s) to start uploading</p>
-            <span>or</span>
+            <p>{t('CampaignSetup.adCreative.dragText')}</p>
+            <span>{t('CampaignSetup.adCreative.orText')}</span>
             <button className={styles.uploadButton} onClick={() => document.getElementById('file-upload')?.click()}>
-              Upload from your Device
+              {t('CampaignSetup.adCreative.uploadButton')}
             </button>
           </label>
           <input
@@ -163,9 +164,9 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       </div>
 
       <div className={styles.buttons}>
-        <button className={styles.backButton} onClick={onBack}>Go Back</button>
+        <button className={styles.backButton} onClick={onBack}>{t('CampaignSetup.adCreative.goBack')}</button>
         <button className={styles.continueButton} onClick={handleNext} disabled={loading}>
-          {loading ? 'Uploading...' : 'Continue'}
+          {loading ? t('CampaignSetup.adCreative.uploading') : t('CampaignSetup.adCreative.continue')}
         </button>
       </div>
     </div>

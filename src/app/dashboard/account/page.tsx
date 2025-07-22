@@ -17,9 +17,9 @@ export const metadata = { title: `Account | Dashboard | ${config.site.name}` } s
 export default function Page(): React.JSX.Element {
   return (
     <Stack sx={{padding:'2rem', bgcolor:'white', borderRadius:'10px', height:'100%', minHeight:'92.5vh'}}>
-      <Grid container sx={{width:'100%'}}>
+      {/* <Grid container sx={{width:'100%'}}>
         <Typography sx={{fontSize:'1.25rem', fontWeight:'600'}}>Profile</Typography>
-      </Grid>
+      </Grid> */}
 
       <Grid container spacing={2} sx={{ width: '100%', pt: '20px', alignItems: 'stretch' }}>
   {/* Left Column */}

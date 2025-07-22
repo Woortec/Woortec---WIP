@@ -49,15 +49,18 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     isIndustryFilled: false,
   });
 
+  console.log(state.userInfo);
+  
   // Callback: fetch additional API data
   const fetchApiData = React.useCallback(async (uuid: string) => {
+    console.log('🔍 fetchApiData called with uuid:', uuid);
     try {
       const response = await axios.get(`/api/userInfo?uuid=${uuid}`);
-      console.log('API response data:', response.data);
+      console.log('✅ API response:', response.data);
       setState((prev) => ({ ...prev, userInfo: response.data.userData }));
     } catch (err: any) {
+      console.error('❌ API error:', err);
       logger.error('Error fetching API data:', err);
-      // handle error state if needed
     }
   }, []);
 
@@ -85,18 +88,23 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   const checkSession = React.useCallback(async () => {
     try {
       const { data, error } = await authClient.getUser();
-      console.log('Fetched user data:', data);
+      console.log('🔍 User data from auth:', data);
       if (error) {
         logger.error(error);
         setState((prev) => ({ ...prev, user: null, error, isLoading: false }));
       } else {
         setState((prev) => ({ ...prev, user: data ?? null, error: null, isLoading: false }));
+        // Add this line to call fetchApiData
+        if (data?.id) {
+          console.log('🔍 Calling fetchApiData with user ID:', data.id);
+          fetchApiData(data.id);
+        }
       }
     } catch (err: any) {
       logger.error('Error in checkSession:', err);
       setState((prev) => ({ ...prev, user: null, error: 'Something went wrong', isLoading: false }));
     }
-  }, []);
+  }, [fetchApiData]); // Add fetchApiData to dependencies
 
   // Effect: hydrate on mount & subscribe to token changes
   React.useEffect(() => {
@@ -119,6 +127,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, [checkSession]);
+
 
   return (
     <UserContext.Provider

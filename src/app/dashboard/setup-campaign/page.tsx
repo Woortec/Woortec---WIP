@@ -7,7 +7,7 @@ import CampaignNamePage from '@/components/dashboard/setup-campaign/CampaignName
 import StrategyConfirmation from '@/components/dashboard/setup-campaign/StrategyConfirmation';
 import StrategyCreationProgress from '@/components/dashboard/setup-campaign/StrategyCreationProgress';
 import { createClient } from '../../../../utils/supabase/client'; // Supabase client
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import { SketchLogo as DiamondIcon } from '@phosphor-icons/react/dist/ssr/SketchLogo';
 import { useRouter } from 'next/navigation';
 import './page.css'; // Import the CSS file for styles
@@ -16,6 +16,8 @@ const CampaignSetupPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [planOutput, setPlanOutput] = useState<any[]>([]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  console.log(currentStep);
+  
   const [campaignData, setCampaignData] = useState<{
     campaignName: string;
     labelOne: string;
@@ -110,7 +112,12 @@ const CampaignSetupPage: React.FC = () => {
   };
 
   if (loading || planLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', flexDirection: 'column' }}>
+        <CircularProgress  thickness={2} />
+        <Typography sx={{ marginTop: '1rem' }}>Loading...</Typography>
+      </Box>
+    );
   }
 
   return (
@@ -139,6 +146,7 @@ const CampaignSetupPage: React.FC = () => {
             imageUrl={imageUrl}
             campaignData={campaignData}
             onNext={handleCampaignCreationSuccess}
+            setCurrentStep={setCurrentStep}
           />
         )}
         {currentStep === 5 && <StrategyConfirmation campaignId={campaignId} />}

@@ -14,6 +14,7 @@ import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
 import styles from './date/style/DatePickerComponent.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
+import { CircularProgress } from '@mui/material';
 
 export interface TotalCostPerMessageProps {
   diff?: number;
@@ -29,6 +30,10 @@ export function TotalCostPerMessage({
   value
 }: TotalCostPerMessageProps): React.JSX.Element {
     const { t } = useLocale();
+
+  console.log(value);
+  console.log(diff);
+  console.log(trend);
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
   const trendColor = trend === 'up'
     ? 'var(--mui-palette-success-main)'
@@ -61,6 +66,11 @@ export function TotalCostPerMessage({
           </Box>
         </Box>
 
+        {value === "Loading..." ?
+          <div className='flex justify-center items-center h-full mt-9'>
+            <CircularProgress size={26}/>
+          </div>
+        :
         <Box sx={{ display: 'flex' }}>
           <Box sx={{ width: '100%' }}>
             <Stack
@@ -111,6 +121,7 @@ export function TotalCostPerMessage({
             </Box>
           </Box>
         </Box>
+        }
       </Box>
     </Card>
   );
@@ -130,7 +141,7 @@ const TotalCostPerMessageContainer = ({
     diff: number;
     trend: 'up' | 'down';
   }>({
-    value: '',
+    value: 'Loading...',
     diff: 0,
     trend: 'up'
   });
