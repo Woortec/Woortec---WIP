@@ -4,6 +4,7 @@ import { addIndustry } from '../../../lib/industry';
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("TEsting logs")
     const body = await req.json();
     const { industryName, dateOfBirth, uuid } = body;
     const industry = await addIndustry(industryName, dateOfBirth, uuid);
