@@ -1,7 +1,11 @@
+"use client"
+
 import React, { useState } from 'react';
+
+import { useLocale } from '@/contexts/LocaleContext';
+
 import { createClient } from '../../../../utils/supabase/client';
 import styles from './styles/AdCreativePage.module.css';
-import { useLocale } from '@/contexts/LocaleContext';
 
 interface AdCreativePageProps {
   onNext: (uploadedImageUrl: string) => void;
@@ -24,82 +28,90 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
   const uploadImageToSupabase = async (file: File) => {
     setShowPopup(true);
     const supabase = createClient();
-    const userId = localStorage.getItem("userid");
-  
+    const userId = localStorage.getItem('userid');
+
     if (!userId) {
       alert(t('CampaignSetup.adCreative.pleaseUpload'));
       setShowPopup(false);
-      return { error: "User ID not found" };
+      return { error: 'User ID not found' };
     }
-  
+
     // ✅ Generate a unique filename using week number + timestamp
     const generateUniqueFilename = (originalName: string) => {
       const now = new Date();
       const year = now.getFullYear();
       const oneJan = new Date(year, 0, 1);
-      const dayOfYear = ((now.getTime() - oneJan.getTime()) / 86400000) + 1;
+      const dayOfYear = (now.getTime() - oneJan.getTime()) / 86400000 + 1;
       const weekNumber = Math.ceil(dayOfYear / 7);
       const yearLastTwoDigits = year.toString().slice(-2);
       const timestamp = now.getTime();
-      const extension = originalName.split(".").pop();
-      return `W${weekNumber}${yearLastTwoDigits}_${timestamp}.${extension}`;
+      const extension = originalName.split('.').pop();
+      return `${weekNumber}${yearLastTwoDigits}_${timestamp}.${extension}`;
+
     };
-  
+
     const uniqueFilename = generateUniqueFilename(file.name);
     const filePath = `images/${userId}/${uniqueFilename}`;
-  
-    const { error } = await supabase.storage.from("adcreatives").upload(filePath, file);
-  
+
+    const { error } = await supabase.storage.from('adcreatives').upload(filePath, file);
+
     if (error) {
-      console.error("❌ Error uploading image:", error.message);
+      console.error('❌ Error uploading image:', error.message);
       setShowPopup(false);
       return { error };
     }
-  
+
     // ✅ Get public URL
-    const { data } = supabase.storage.from("adcreatives").getPublicUrl(filePath);
+    const { data } = supabase.storage.from('adcreatives').getPublicUrl(filePath);
     if (!data) {
-      console.error("❌ Error fetching public URL");
+      console.error('❌ Error fetching public URL');
       setShowPopup(false);
-      return { error: "Public URL not available" };
+      return { error: 'Public URL not available' };
     }
-  
+
     const imageUrl = data.publicUrl;
-    console.log("✅ Image uploaded successfully:", imageUrl);
-  
+    console.log('✅ Image uploaded successfully:', imageUrl);
+
     // ✅ Store the image URL in the database
-    const { error: dbError } = await supabase
-      .from("facebook_campaign_data")
-      .update({ image_path: imageUrl })
-      .eq("user_id", userId);
-  
+    const { data: upload, error: dbError } = await supabase
+      .from('facebook_campaign_data')
+      .upsert(
+        [
+          {
+            user_id: userId,
+            image_path: imageUrl,
+          },
+        ],
+        { onConflict: ['user_id'] }
+      ) // ensures upsert based on user_id
+      .single();
+    console.log('dbError', dbError);
     if (dbError) {
-      console.error("❌ Error saving image URL to database:", dbError.message);
+      console.error('❌ Error saving image URL to database:', dbError);
       setShowPopup(false);
       return { error: dbError.message };
     }
-  
-    console.log("✅ Image URL saved to database:", imageUrl);
+
+    console.log('✅ Image URL saved to databadsafadsfdsfdsse:', upload);
     setShowPopup(false);
     return { publicUrl: imageUrl };
   };
-  
 
   const handleNext = async () => {
     if (!imageFileLocal) {
       alert(t('CampaignSetup.adCreative.pleaseUpload'));
       return;
     }
-  
+
     setLoading(true);
     try {
       const result = await uploadImageToSupabase(imageFileLocal);
-  
+
       if (result?.error) {
         alert(t('CampaignSetup.adCreative.uploadFailed'));
         return;
       }
-  
+
       const uploadedImageUrl = result?.publicUrl; // Ensure you get the public URL here
       if (uploadedImageUrl) {
         onNext(uploadedImageUrl); // Pass the URL to onNext
@@ -111,7 +123,6 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className={styles.adCreativeContainer}>
@@ -123,9 +134,7 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
 
       <div className={styles.descriptionContainer}>
         <h2 className={styles.heading}>{t('CampaignSetup.adCreative.title')}</h2>
-        <p className={styles.paragraph}>
-          {t('CampaignSetup.adCreative.subtitle')}
-        </p>
+        <p className={styles.paragraph}>{t('CampaignSetup.adCreative.subtitle')}</p>
       </div>
       <div className={styles.divider}>
         <h2 className={styles.headingUpload}>{t('CampaignSetup.adCreative.uploadTitle')}</h2>
@@ -158,13 +167,17 @@ const AdCreativePage: React.FC<AdCreativePageProps> = ({ onNext, onBack }) => {
               <p>{imageFileLocal.name}</p>
               <p>{(imageFileLocal.size / 1024).toFixed(0)} KB</p>
             </div>
-            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>X</button>
+            <button className={styles.removeButton} onClick={() => setImageFileLocal(null)}>
+              X
+            </button>
           </div>
         )}
       </div>
 
       <div className={styles.buttons}>
-        <button className={styles.backButton} onClick={onBack}>{t('CampaignSetup.adCreative.goBack')}</button>
+        <button className={styles.backButton} onClick={onBack}>
+          {t('CampaignSetup.adCreative.goBack')}
+        </button>
         <button className={styles.continueButton} onClick={handleNext} disabled={loading}>
           {loading ? t('CampaignSetup.adCreative.uploading') : t('CampaignSetup.adCreative.continue')}
         </button>

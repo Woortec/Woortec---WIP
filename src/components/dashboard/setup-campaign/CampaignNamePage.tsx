@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+
+import { useLocale } from '@/contexts/LocaleContext';
+
 import { createClient } from '../../../../utils/supabase/client'; // Import Supabase client
 import ProgressBar from './ProgressBar'; // Import the ProgressBar component
 import styles from './styles/CampaignNamePage.module.css';
-import { useLocale } from '@/contexts/LocaleContext';
 
 interface CampaignNamePageProps {
   onNext: () => void;
   onBack: () => void;
-  setCampaignData: React.Dispatch<React.SetStateAction<{ campaignName: string; labelOne: string; labelTwo: string } | null>>; // Add setCampaignData prop
+  setCampaignData: React.Dispatch<
+    React.SetStateAction<{ campaignName: string; labelOne: string; labelTwo: string } | null>
+  >; // Add setCampaignData prop
 }
 
 const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, setCampaignData }) => {
@@ -31,16 +35,17 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
       const supabase = createClient();
       const userId = localStorage.getItem('userid'); // Assuming you have the userId in localStorage
 
-      const { error } = await supabase
-        .from('facebook_campaign_data')
-        .upsert({
+      const { error } = await supabase.from('facebook_campaign_data').upsert(
+        {
           user_id: userId,
           label_one: labelOne,
           label_two: labelTwo,
-          campaign_name: campaignName,
-        }, {
+          campaign_name: labelOne + ' ' + labelTwo,
+        },
+        {
           onConflict: ['user_id'], // Ensure there's only one row per user_id
-        });
+        }
+      );
 
       if (error) {
         console.error('Error saving data to Supabase:', error);
@@ -61,9 +66,7 @@ const CampaignNamePage: React.FC<CampaignNamePageProps> = ({ onNext, onBack, set
     <div className={styles.nameContainer}>
       <div className={styles.descriptionContainer}>
         <h2 className={styles.heading}>{t('CampaignSetup.campaignNamePage.title')}</h2>
-        <p className={styles.paragraph}>
-          {t('CampaignSetup.campaignNamePage.subtitle')}
-        </p>
+        <p className={styles.paragraph}>{t('CampaignSetup.campaignNamePage.subtitle')}</p>
 
         <div className={styles.secContainer}>
           {/* Campaign Name and Labels Form */}
