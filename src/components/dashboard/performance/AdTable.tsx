@@ -10,9 +10,10 @@ interface AdTableProps {
   adData: any[];
   currency: string;
   budget: number;
+  loading?: boolean;
 }
 
-const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
+const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = false }) => {
   const convertedThresholds = convertThresholds(currency);
   const expectedSpend = calculateExpectedSpend(budget, currency);
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
@@ -29,8 +30,8 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   // Only require ad and ad_id
   const validAds = adData?.filter((ad) => ad && ad.ad_id) || [];
 
-  // Show loading state if no data yet
-  if (!adData || adData.length === 0) {
+  // Show loading state if loading is true or no data yet
+  if (loading || !adData || adData.length === 0) {
     return (
       <Box className={styles.adTableContainer} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
         <CircularProgress />
@@ -42,8 +43,10 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget }) => {
   // Show empty state if no valid ads
   if (validAds.length === 0) {
     return (
-      <Box className={styles.adTableContainer} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
-        <Typography>No valid ad data to display. Please check your Facebook ads configuration.</Typography>
+      <Box className={styles.adTableContainer} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px', flexDirection: 'column', textAlign: 'center' }}>
+        <Typography sx={{ mb: 2, fontSize: '1.1rem', fontWeight: '500' }}>
+          No ad data to display
+        </Typography>
       </Box>
     );
   }

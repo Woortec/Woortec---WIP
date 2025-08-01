@@ -45,21 +45,22 @@ export interface TotalReachProps {
 export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.JSX.Element {
   const { t } = useLocale();
   const [totalReach, setTotalReach] = useState<number>(0);
+  const [impressions, setImpressions] = useState<number>(0);
+  const [reach, setReach] = useState<number>(0);
   const [clicks, setClicks] = useState<number>(0);
-  const [messagesStarted, setMessagesStarted] = useState<number>(0);
 
-  const [originalData, setOriginalData] = useState<number[]>([0, 0]); // Store the original values for toggling
+  const [originalData, setOriginalData] = useState<number[]>([0, 0, 0]); // Store the original values for toggling
 
   const isLarge = useMediaQuery('(max-width:1760px)');
 
 
   const [chartData, setChartData] = useState({
-    labels: [t('DashboardCharts.axis.clicks'), t('DashboardCharts.axis.messagesStarted')],
+    labels: [t('DashboardCharts.axis.impressions'), t('DashboardCharts.axis.reach'), t('DashboardCharts.axis.clicks')],
     datasets: [
       {
-        data: [0, 0],
-        backgroundColor: ['#4BC0C0', '#364FC7'],
-        hoverBackgroundColor: ['#4BC0C0', '#364FC7'],
+        data: [0, 0, 0],
+        backgroundColor: ['#4BC0C0', '#364FC7', '#FF6384'],
+        hoverBackgroundColor: ['#4BC0C0', '#364FC7', '#FF6384'],
         borderWidth: 0,
       },
     ],
@@ -95,11 +96,11 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
         throw new Error('Missing ad account ID');
       }
 
-      // Fetch the total reach, clicks, and messages started based on the user's selected date range
+      // Fetch impressions, reach, and clicks based on the user's selected date range
       const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
         params: {
           access_token: accessToken,
-          fields: 'impressions,clicks,actions',
+          fields: 'impressions,reach,clicks',
           time_range: JSON.stringify({
             since: dayjs(startDate).format('YYYY-MM-DD'),
             until: dayjs(endDate).format('YYYY-MM-DD'),
@@ -113,31 +114,25 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
         throw new Error('No data found for the given ad account ID');
       }
 
-      // Process the response to get total impressions, clicks, and messages started
-      const totalReach = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.impressions), 0);
-      const totalClicks = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.clicks), 0);
+      // Process the response to get total impressions, reach, and clicks
+      const totalImpressions = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.impressions || 0), 0);
+      const totalReach = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.reach || 0), 0);
+      const totalClicks = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.clicks || 0), 0);
 
-      const totalMessagesStarted = reachData.reduce((sum: number, dataPoint: any) => {
-        const messageAction = dataPoint.actions?.find(
-          (action: any) => action.action_type === 'onsite_conversion.messaging_conversation_started_7d'
-        );
-        return sum + (messageAction ? parseInt(messageAction.value) : 0);
-      }, 0);
-
-      setTotalReach(totalReach);
+      setImpressions(totalImpressions);
+      setReach(totalReach);
       setClicks(totalClicks);
-      setMessagesStarted(totalMessagesStarted);
 
       // Save original data for toggling visibility
-      setOriginalData([totalClicks, totalMessagesStarted]);
+      setOriginalData([totalImpressions, totalReach, totalClicks]);
 
       setChartData({
-        labels: ['Clicks', 'Messages Started'],
+        labels: [t('DashboardCharts.axis.impressions'), t('DashboardCharts.axis.reach'), t('DashboardCharts.axis.clicks')],
         datasets: [
           {
-            data: [totalClicks, totalMessagesStarted],
-            backgroundColor: ['#486A75', '#E46A6A'],
-            hoverBackgroundColor: ['#4BC0C0', '#CF366C'],
+            data: [totalImpressions, totalReach, totalClicks],
+            backgroundColor: ['#486A75', '#E46A6A', '#4BC0C0'],
+            hoverBackgroundColor: ['#4BC0C0', '#CF366C', '#FF6384'],
             borderWidth: 0,
           },
         ],
@@ -153,12 +148,12 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
     }
   }, [startDate, endDate]);
 
-  // Handle legend click to toggle between showing and hiding "Clicks" or "Messages Started"
+  // Handle legend click to toggle between showing and hiding data
   const handleLegendClick = (event: any, legendItem: any) => {
     const clickedIndex = legendItem.index;
 
     // Clone the current dataset data
-    const newData = [0, 0];
+    const newData = [0, 0, 0];
     newData[clickedIndex] = chartData.datasets[0].data[clickedIndex];
 
     // Toggle between showing and hiding the data for the clicked legend item

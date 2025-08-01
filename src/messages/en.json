@@ -42,7 +42,9 @@
     },
     "axis": {
       "clicks": "Clicks",
-      "messagesStarted": "Messages Started"
+      "messagesStarted": "Messages Started",
+      "impressions": "Impressions",
+      "reach": "Reach"
     },
     "reportBug": "Report a Bug"
   },

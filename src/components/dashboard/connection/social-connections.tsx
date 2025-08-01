@@ -1,16 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Facebook as FacebookIcon } from '@mui/icons-material';
-import { Button, Card, Grid, Stack, Typography, Box } from '@mui/material';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import { SxProps } from '@mui/system';
-import { createClient } from '../../../../utils/supabase/client';
-import AdAccountSelectionModal from './AdAccountSelectionModal';
-import PageSelectionModal from './PageSelectionModal';
-import styles from './styles/Connect.module.css';
+import { Box, Button, Card, CardContent, Typography, Modal, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Facebook as FacebookIcon, Instagram as InstagramIcon, LinkedIn as LinkedInIcon } from '@phosphor-icons/react';
 import { useLocale } from '@/contexts/LocaleContext';
+import { createClient } from '../../../../utils/supabase/client';
+import styles from './styles/Connect.module.css';
 
 const setItemWithExpiry = (key: string, value: any, ttl: number) => {
   const now = new Date();
@@ -23,46 +18,48 @@ const setItemWithExpiry = (key: string, value: any, ttl: number) => {
 
 const getItemWithExpiry = (key: string) => {
   const itemStr = localStorage.getItem(key);
-  if (!itemStr) {
-    return null;
-  }
-  try {
-    const item = JSON.parse(itemStr);
-    const now = new Date();
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return item.value;
-  } catch (error) {
-    console.error('Failed to parse item from localStorage', error);
+  if (!itemStr) return null;
+  const item = JSON.parse(itemStr);
+  const now = new Date();
+  if (now.getTime() > item.expiry) {
     localStorage.removeItem(key);
     return null;
   }
+  return item.value;
 };
 
+// Load Facebook SDK
 const loadFacebookSDK = () => {
   return new Promise<void>((resolve) => {
-    (window as any).fbAsyncInit = function () {
+    if ((window as any).FB) {
+      resolve();
+      return;
+    }
+
+    (window as any).fbAsyncInit = function() {
       (window as any).FB.init({
         appId: '843123844562723',
         cookie: true,
         xfbml: true,
-        version: 'v21.0',
+        version: 'v21.0'
       });
       resolve();
     };
 
-    const script = document.createElement('script');
-    script.src = 'https://connect.facebook.net/en_US/sdk.js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s) as HTMLScriptElement; js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      if (fjs && fjs.parentNode) {
+        fjs.parentNode.insertBefore(js, fjs);
+      }
+    }(document, 'script', 'facebook-jssdk'));
   });
 };
 
 export interface ConnectProps {
-  sx?: SxProps;
+  sx?: any;
 }
 
 export function Connect({ sx }: ConnectProps): React.JSX.Element {
@@ -200,40 +197,28 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   };
 
   const handleAdAccountSelect = (accountId: string) => {
-    const selectedAccount = adAccounts.find((account) => account.id === accountId);
-    if (selectedAccount) {
-      setSelectedAdAccount(selectedAccount);
-
-      // Store in localStorage
-      setItemWithExpiry('fbAdAccountObj', selectedAccount, 24 * 60 * 60 * 1000);
-
-      // Close the ad account modal and open the page selection modal
+    const account = adAccounts.find(acc => acc.id === accountId);
+    if (account) {
+      setSelectedAdAccount(account);
       setModalOpen(false);
-      fetchPages(userId!, accessToken!); // Fetch pages once ad account is selected
       setPageModalOpen(true);
+      fetchPages(userId!, accessToken!);
     }
   };
 
   const handlePageSelect = (pageId: string) => {
-    const selectedPage = pages.find((page) => page.id === pageId);
-    if (selectedPage) {
-      setSelectedPage(selectedPage);
-
-      // Store in localStorage
-      setItemWithExpiry('fbPage', selectedPage, 24 * 60 * 60 * 1000);
-
-      // Close the page modal
+    const page = pages.find(p => p.id === pageId);
+    if (page) {
+      setSelectedPage(page);
       setPageModalOpen(false);
-
-      // Store both the ad account and page data into Supabase after both selections are made
-      if (selectedAdAccount && selectedPage) {
-        storeDataInSupabase({
-          accessToken: accessToken!,
-          userId: userId!,
-          selectedAdAccount: selectedAdAccount,
-          selectedPage: selectedPage,
-        });
-      }
+      
+      // Store the complete data
+      storeDataInSupabase({
+        accessToken: accessToken!,
+        userId: userId!,
+        selectedAdAccount: selectedAdAccount!,
+        selectedPage: page,
+      });
     }
   };
 
@@ -285,184 +270,167 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   return (
     <Box className={styles.container}>
-      <Typography variant="h5" gutterBottom>
-        {t('SocialConnections.connectTitle')}
-      </Typography>
-      <Typography variant="body2" gutterBottom>
-        {t('SocialConnections.connectSubtitle')}
-      </Typography>
+      <Box className={styles.header}>
+        <Typography className={styles.title}>{t('SocialConnections.connectTitle')}</Typography>
+        <Typography className={styles.subtitle}>{t('SocialConnections.connectSubtitle')}</Typography>
+      </Box>
 
-      <Grid container spacing={3}>
-        {/* Facebook Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8', position: 'relative' }}>
-            <FacebookIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>Facebook</Typography>
-              <Typography className={styles.description}>
-                {isConnected ? t('SocialConnections.connectedFacebook') : t('SocialConnections.connectFacebook')}
-              </Typography>
-            </div>
+      <Box className={styles.connectionsGrid}>
+        {/* Facebook Connection */}
+        <Card className={styles.connectionCard}>
+          <CardContent className={styles.cardContent}>
+            <Box className={styles.cardHeader}>
+              <Box className={styles.iconContainer}>
+                <FacebookIcon size={32} color="#1877F2" />
+              </Box>
+              <Box className={styles.cardInfo}>
+                <Typography className={styles.platformName}>Facebook</Typography>
+                <Typography className={styles.platformDescription}>
+                  {isConnected ? t('SocialConnections.connectedFacebook') : t('SocialConnections.connectFacebook')}
+                </Typography>
+              </Box>
+            </Box>
+            
             {isConnected ? (
-              <Button
-                className={styles.button}
-                sx={{ backgroundColor: '#00c293', color: 'white' }}
-                onClick={handleDisconnectAdAccount}
-              >
-                {t('SocialConnections.disconnect')}
-              </Button>
+              <Box className={styles.connectedInfo}>
+                <Typography className={styles.connectedText}>
+                  {t('SocialConnections.connectedFacebookAccount')}
+                </Typography>
+                <Typography className={styles.accountInfo}>
+                  {t('SocialConnections.adAccountId')}: {selectedAdAccount?.id}
+                </Typography>
+                <Typography className={styles.accountInfo}>
+                  {t('SocialConnections.adAccountName')}: {selectedAdAccount?.name}
+                </Typography>
+                <Typography className={styles.accountInfo}>
+                  {t('SocialConnections.currency')}: {selectedAdAccount?.currency}
+                </Typography>
+                <Typography className={styles.accountInfo}>
+                  {t('SocialConnections.connectedPage')}: {selectedPage?.name}
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  color="error" 
+                  onClick={handleDisconnectAdAccount}
+                  className={styles.disconnectButton}
+                >
+                  {t('SocialConnections.disconnect')}
+                </Button>
+              </Box>
             ) : (
-              <Button
-                className={styles.button}
-                sx={{ backgroundColor: '#f0f4f8', color: 'black' }}
+              <Button 
+                variant="contained" 
                 onClick={handleFacebookLogin}
+                disabled={!isSdkLoaded}
+                className={styles.connectButton}
+                startIcon={<FacebookIcon size={20} />}
               >
                 {t('SocialConnections.connect')}
               </Button>
             )}
-            {/* Connected Facebook Account Details */}
-            {isConnected && selectedAdAccount && selectedPage && (
-              <Box sx={{ mt: 2, width: '100%' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Box sx={{
-                    width: 32,
-                    height: 32,
-                    bgcolor: '#1877f2',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mr: 1,
-                  }}>
-                    <FacebookIcon sx={{ color: 'white', fontSize: 20 }} />
-                  </Box>
-                  <Typography variant="subtitle1" fontWeight={700}>
-                    {t('SocialConnections.connectedFacebookAccount') || 'Connected Facebook Account'}
-                  </Typography>
-                </Box>
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {t('SocialConnections.adAccountId') || 'Ad Account ID'}
-                    </Typography>
-                    <Typography variant="body2" fontWeight={500}>
-                      {selectedAdAccount.id}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {t('SocialConnections.adAccountName') || 'Ad Account Name'}
-                    </Typography>
-                    <Typography variant="body2">
-                      {selectedAdAccount.name}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {t('SocialConnections.currency') || 'Currency'}
-                    </Typography>
-                    <Typography variant="body2">
-                      {selectedAdAccount.currency}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {t('SocialConnections.connectedPage') || 'Connected Page'}
-                    </Typography>
-                    <Typography variant="body2" fontWeight={500}>
-                      {selectedPage.name}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {t('SocialConnections.pageId') || 'Page ID'}
-                    </Typography>
-                    <Typography variant="body2">
-                      {selectedPage.id}
-                    </Typography>
-                  </Grid>
-                </Grid>
+          </CardContent>
+        </Card>
+
+        {/* Instagram Connection */}
+        <Card className={styles.connectionCard}>
+          <CardContent className={styles.cardContent}>
+            <Box className={styles.cardHeader}>
+              <Box className={styles.iconContainer}>
+                <InstagramIcon size={32} color="#E4405F" />
               </Box>
-            )}
-          </Card>
-        </Grid>
-
-        {/* Instagram Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
-            <InstagramIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>Instagram</Typography>
-              <Typography className={styles.description}>
-                {t('SocialConnections.connectInstagram')}
-              </Typography>
-            </div>
-            <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
+              <Box className={styles.cardInfo}>
+                <Typography className={styles.platformName}>Instagram</Typography>
+                <Typography className={styles.platformDescription}>
+                  {t('SocialConnections.connectInstagram')}
+                </Typography>
+              </Box>
+            </Box>
+            <Button 
+              variant="contained" 
+              disabled 
+              className={styles.connectButton}
+              startIcon={<InstagramIcon size={20} />}
+            >
               {t('SocialConnections.comingSoon')}
             </Button>
-          </Card>
-        </Grid>
+          </CardContent>
+        </Card>
 
-        {/* LinkedIn Card */}
-        <Grid item xs={12} sm={4}>
-          <Card className={styles.card} sx={{ backgroundColor: '#f0f4f8' }}>
-            <LinkedInIcon className={styles.cardIcon} />
-            <div className={styles.cardContent}>
-              <Typography className={styles.title}>LinkedIn</Typography>
-              <Typography className={styles.description}>
-                {t('SocialConnections.connectLinkedIn')}
-              </Typography>
-            </div>
-            <Button className={styles.button} sx={{ backgroundColor: '#00c293', color: 'white' }}>
+        {/* LinkedIn Connection */}
+        <Card className={styles.connectionCard}>
+          <CardContent className={styles.cardContent}>
+            <Box className={styles.cardHeader}>
+              <Box className={styles.iconContainer}>
+                <LinkedInIcon size={32} color="#0A66C2" />
+              </Box>
+              <Box className={styles.cardInfo}>
+                <Typography className={styles.platformName}>LinkedIn</Typography>
+                <Typography className={styles.platformDescription}>
+                  {t('SocialConnections.connectLinkedIn')}
+                </Typography>
+              </Box>
+            </Box>
+            <Button 
+              variant="contained" 
+              disabled 
+              className={styles.connectButton}
+              startIcon={<LinkedInIcon size={20} />}
+            >
               {t('SocialConnections.comingSoon')}
             </Button>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Render fetched ad accounts with currency */}
-      <Typography variant="body2" sx={{ marginTop: '20px', pb:'9rem' }}>
-        {t('SocialConnections.connectedAccounts') + ' ' + (isConnected ? '1' : '0')}
-      </Typography>
-
-      {/* New Feature Announcement */}
-      <Box sx={{width:'100%', display:'flex', padding:'2rem', border:'1px solid #F2F4F5', gap:'10px',
-            marginTop: 'auto',
-      }}>
-      
-        <Box sx={{display:'flex', justifyContent:'center', alignItems:'center', width:'3rem', height:'3rem', bgcolor: '#F2F4F5',
-          borderRadius:'10px'
-        }}>
-          <img
-             src="/assets/googleads.svg"
-             alt="Google Ads Icon"
-             className={styles.icon}
-            />
-        </Box>
-        <Box sx={{display:'flex', flexDirection:'column'}}>
-        <Typography sx={{fontWeight:'600'}}>
-          {t('SocialConnections.newFeature')}
-        </Typography> 
-        <Typography sx={{color:'#859096'}}>
-          {t('SocialConnections.googleAdsComingSoon')}
-        </Typography>
-        </Box>
+          </CardContent>
+        </Card>
       </Box>
 
-      {/* Modals for ad account and page selection */}
-      <AdAccountSelectionModal
+      {/* Ad Account Selection Modal */}
+      <Modal
         open={modalOpen}
-        adAccounts={adAccounts}
         onClose={() => setModalOpen(false)}
-        onSelect={handleAdAccountSelect}
-      />
+        className={styles.modal}
+      >
+        <Box className={styles.modalContent}>
+          <Typography className={styles.modalTitle}>Select Ad Account</Typography>
+          <FormControl fullWidth className={styles.selectContainer}>
+            <InputLabel>Ad Account</InputLabel>
+            <Select
+              value=""
+              onChange={(e) => handleAdAccountSelect(e.target.value)}
+              displayEmpty
+            >
+              {adAccounts.map((account) => (
+                <MenuItem key={account.id} value={account.id}>
+                  {account.name} ({account.currency})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Modal>
 
-      <PageSelectionModal
+      {/* Page Selection Modal */}
+      <Modal
         open={pageModalOpen}
-        pages={pages}
         onClose={() => setPageModalOpen(false)}
-        onSelect={handlePageSelect}
-      />
+        className={styles.modal}
+      >
+        <Box className={styles.modalContent}>
+          <Typography className={styles.modalTitle}>Select Page</Typography>
+          <FormControl fullWidth className={styles.selectContainer}>
+            <InputLabel>Page</InputLabel>
+            <Select
+              value=""
+              onChange={(e) => handlePageSelect(e.target.value)}
+              displayEmpty
+            >
+              {pages.map((page) => (
+                <MenuItem key={page.id} value={page.id}>
+                  {page.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Modal>
     </Box>
   );
 }

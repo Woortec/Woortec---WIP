@@ -4,10 +4,12 @@ import { createClient } from '../../../../utils/supabase/client';
 let cachedAdData: any[] = [];
 let cachedCurrency: string = 'USD';
 let dataFetched = false;
+let lastFetchTime = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
 // — Removed SYSTEM_PROMPT constant so assistant config is used instead
 
-// Format the user’s ad data into a prompt
+// Format the user's ad data into a prompt
 function formatAdForPrompt(ad: any): string {
   const header =
     `This ad set received ${ad.impressions} impressions, ` +
@@ -64,51 +66,182 @@ export const clearAdDataCache = () => {
   cachedAdData = [];
   cachedCurrency = 'USD';
   dataFetched = false;
+  lastFetchTime = 0;
   console.log('Ad data cache cleared');
+};
+
+// Helper function to get user ID from auth token
+const getUserIdFromAuth = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    // Try to get user ID from the auth token
+    const tokenKey = 'sb-uvhvgcrczfdfvoujarga-auth-token';
+    const storedToken = localStorage.getItem(tokenKey);
+    
+    if (storedToken) {
+      const parsedToken = JSON.parse(storedToken);
+      return parsedToken?.user?.id || null;
+    }
+    
+    // Fallback to custom auth token
+    const customToken = localStorage.getItem('custom-auth-token');
+    if (customToken) {
+      const parsedCustomToken = JSON.parse(customToken);
+      return parsedCustomToken?.user?.id || null;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error parsing auth token:', error);
+    return null;
+  }
+};
+
+// Helper function to make Facebook API calls with retry logic
+const makeFacebookApiCall = async (url: string, params: any, maxRetries = 3): Promise<any> => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await axios.get(url, {
+        params,
+        timeout: 30000
+        // Removed User-Agent header as browsers don't allow it
+      });
+      
+      // Check for Facebook API errors
+      if (response.data.error) {
+        const error = response.data.error;
+        
+        // Handle rate limiting - only retry for actual rate limit errors
+        if (error.code === 80004 || error.code === 4 || error.code === 17) {
+          console.log(`⚠️ Rate limit hit (attempt ${attempt + 1}/${maxRetries}), waiting...`);
+          const waitTime = Math.pow(2, attempt + 1) * 1000; // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          continue;
+        }
+        
+        // For other errors, throw immediately
+        throw new Error(`Facebook API error: ${error.message} (code: ${error.code})`);
+      }
+      
+      return response.data;
+    } catch (error: any) {
+      // Check if it's a rate limit error in the response
+      if (error.response?.data?.error?.code === 80004 || 
+          error.response?.data?.error?.code === 4 || 
+          error.response?.data?.error?.code === 17) {
+        console.log(`⚠️ Rate limit hit (attempt ${attempt + 1}/${maxRetries}), waiting...`);
+        const waitTime = Math.pow(2, attempt + 1) * 1000; // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      // For 400 Bad Request or other errors, don't retry
+      if (error.response?.status === 400) {
+        console.error('❌ Bad Request error:', error.response.data);
+        throw new Error(`Bad Request: ${error.response.data?.error?.message || 'Invalid request'}`);
+      }
+      
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+      
+      console.log(`⚠️ API call failed (attempt ${attempt + 1}/${maxRetries}), retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  
+  throw new Error('Max retries exceeded');
 };
 
 export const fetchAdData = async () => {
   const supabase = createClient();
 
-  if (dataFetched && cachedAdData.length > 0) {
+  // Check if cache is still valid (within 5 minutes)
+  const now = Date.now();
+  if (dataFetched && cachedAdData.length > 0 && (now - lastFetchTime) < CACHE_DURATION) {
     return { adData: cachedAdData, currency: cachedCurrency };
   }
 
-  const uuid = localStorage.getItem('userid');
+  // Reset cache if it's stale
+  if ((now - lastFetchTime) >= CACHE_DURATION) {
+    clearAdDataCache();
+  }
+
+  const uuid = getUserIdFromAuth();
   
+  if (!uuid) {
+    console.error('User ID not found in auth tokens');
+    return { adData: [], currency: 'USD' };
+  }
+
+  console.log('🔍 Fetching ad data for user ID:', uuid);
+
   const { data } = await supabase.from('facebookData').select('*').eq('user_id', uuid);
+  
+  console.log('🔍 Facebook data from Supabase:', data);
   
   const accessToken = data?.[0]?.access_token ?? '';
   const adAccountId = data?.[0]?.account_id ?? '';
 
   if (!accessToken || !adAccountId) {
-    console.error('Access token or ad account ID not found');
+    console.error('❌ Access token or ad account ID not found for user:', uuid);
+    console.log('📊 Available data:', data);
+    // Reset cache on error to prevent infinite loops
+    clearAdDataCache();
     return { adData: [], currency: 'USD' };
   }
 
-  try {
-    const batchRequest = [
-      { method: 'GET', relative_url: `${adAccountId}?fields=currency` },
-      { method: 'GET', relative_url: `${adAccountId}/ads?fields=id,name,status,creative.limit(50)` },
-      {
-        method: 'GET',
-        relative_url: `${adAccountId}/insights?fields=ad_id,impressions,spend,actions,cpc&date_preset=last_7d&level=ad&limit=50`,
-      },
-    ];
+  console.log('✅ Found Facebook credentials - Access Token:', accessToken ? 'Present' : 'Missing', 'Ad Account ID:', adAccountId);
 
-    const batchResponse = await axios.post(
-      `https://graph.facebook.com/v21.0`,
-      { access_token: accessToken, batch: batchRequest }
+  try {
+    // Make individual API calls instead of batch to reduce rate limiting
+    console.log('🔄 Fetching account data...');
+    const accountData = await makeFacebookApiCall(
+      `https://graph.facebook.com/v21.0/${adAccountId}`,
+      { access_token: accessToken, fields: 'currency' }
     );
 
-    const accountData = JSON.parse(batchResponse.data[0]?.body);
-    const adData = JSON.parse(batchResponse.data[1]?.body);
-    const insightsData = JSON.parse(batchResponse.data[2]?.body);
+    console.log('🔄 Fetching ad data...');
+    const adData = await makeFacebookApiCall(
+      `https://graph.facebook.com/v21.0/${adAccountId}/ads`,
+      { 
+        access_token: accessToken, 
+        fields: 'id,name,status,creative.limit(50)',
+        limit: 50
+      }
+    );
+
+    console.log('🔄 Fetching insights data...');
+    const insightsData = await makeFacebookApiCall(
+      `https://graph.facebook.com/v21.0/${adAccountId}/insights`,
+      { 
+        access_token: accessToken, 
+        fields: 'ad_id,impressions,spend,actions,cpc',
+        date_preset: 'last_7d',
+        level: 'ad',
+        limit: 50
+      }
+    );
+
+    console.log('📊 Facebook API responses:');
+    console.log('  - Account data:', accountData);
+    console.log('  - Ad data count:', adData?.data?.length || 0);
+    console.log('  - Insights data count:', insightsData?.data?.length || 0);
 
     cachedCurrency = accountData?.currency || 'USD';
 
     const activeAds = adData?.data?.filter((ad: any) => ad.status === 'ACTIVE') || [];
+    console.log('🎯 Active ads found:', activeAds.length);
     
+    if (activeAds.length === 0) {
+      console.log('⚠️ No active ads found. This could mean:');
+      console.log('  1. No ads are currently running');
+      console.log('  2. Ads are paused or inactive');
+      console.log('  3. The ad account has no ads');
+      console.log('  4. Date range has no data');
+    }
+
     const adNames: Record<string, string> = {};
     activeAds.forEach((ad: any) => {
       adNames[ad.id] = ad.name;
@@ -124,12 +257,15 @@ export const fetchAdData = async () => {
     await Promise.all(
       Object.values(creativeIds).map(async (cid) => {
         try {
-          const res = await axios.get(
-            `https://graph.facebook.com/v21.0/${cid}?fields=image_url,thumbnail_url`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
+          const res = await makeFacebookApiCall(
+            `https://graph.facebook.com/v21.0/${cid}`,
+            { 
+              access_token: accessToken, 
+              fields: 'image_url,thumbnail_url' 
+            }
           );
-          if (res.data?.id) {
-            creativeImageUrls[res.data.id] = res.data.image_url || res.data.thumbnail_url || null;
+          if (res?.id) {
+            creativeImageUrls[res.id] = res.image_url || res.thumbnail_url || null;
           }
         } catch (err) {
           console.warn(`Failed to fetch creative ${cid}`, err);
@@ -170,12 +306,16 @@ export const fetchAdData = async () => {
 
     cachedAdData = insights;
     dataFetched = true;
+    lastFetchTime = now;
+    console.log('✅ Successfully fetched ad data:', insights.length, 'ads');
     return { adData: insights, currency: cachedCurrency };
   } catch (error: any) {
     console.error('Error fetching ad data:', error);
     if (error.response) {
       console.error('Error response:', error.response.data);
     }
+    // Reset cache on error to prevent infinite loops
+    clearAdDataCache();
     return { adData: [], currency: 'USD' };
   }
 };
