@@ -1,6 +1,6 @@
 /* eslint-disable no-console -- Allow */
 
-// NOTE: A tracking system such as Sentry should replace the console
+// NOTE: Console logging for debugging purposes
 
 export const LogLevel = { NONE: 'NONE', ERROR: 'ERROR', WARN: 'WARN', DEBUG: 'DEBUG', ALL: 'ALL' } as const;
 

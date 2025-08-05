@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Card, CardContent, Typography, Modal, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { Facebook as FacebookIcon, Instagram as InstagramIcon, LinkedIn as LinkedInIcon } from '@phosphor-icons/react';
+import { FacebookLogo as FacebookIcon, InstagramLogo as InstagramIcon, LinkedinLogo as LinkedInIcon } from '@phosphor-icons/react';
 import { useLocale } from '@/contexts/LocaleContext';
 import { createClient } from '../../../../utils/supabase/client';
 import styles from './styles/Connect.module.css';

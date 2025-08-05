@@ -6,9 +6,18 @@ const protectedPaths = [ '/dashboard', '/']; // Example protected paths
 export async function middleware(request) {
   const response = NextResponse.next();
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Check if environment variables are available
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('Missing Supabase environment variables. Middleware will not work properly.');
+    return response;
+  }
+
   const supabase = createMiddlewareSupabaseClient({
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl: supabaseUrl,
+    supabaseKey: supabaseKey,
     getRequestCookies: () => {
       const cookieHeader = request.headers.get('cookie');
       const cookies = new Map();

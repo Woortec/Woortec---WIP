@@ -16,7 +16,6 @@ import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut'
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import { ChatCenteredText as FeedbackIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText'
 import Cookies from 'js-cookie'
-import * as Sentry from '@sentry/nextjs'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogActions from '@mui/material/DialogActions'
@@ -75,12 +74,8 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
   }, [router])
 
   const handleFeedback = () => {
-    Sentry.showReportDialog({
-      title: "We'd love your feedback",
-      subtitle: "Tell us what went wrong or how we can improve.",
-      labelComments: "Describe the issue or your thoughts",
-      labelEmail: "Email (optional)",
-    })
+    // Feedback functionality removed - Sentry integration was here
+    console.log('Feedback feature disabled')
   }
 
   return (
