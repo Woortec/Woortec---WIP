@@ -74,8 +74,9 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
   }, [router])
 
   const handleFeedback = () => {
-    // Feedback functionality removed - Sentry integration was here
-    console.log('Feedback feature disabled')
+    // Navigate to settings page where the feedback system is located
+    router.push('/dashboard/settings')
+    onClose()
   }
 
   return (
