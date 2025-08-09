@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import PeopleIcon from '@mui/icons-material/People';
+import RepeatIcon from '@mui/icons-material/Repeat';
+import MouseIcon from '@mui/icons-material/Mouse';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import {
   Box,
   Button,
@@ -167,36 +173,36 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           <Box className={styles.leftBudgetContainer}>
             <Box className={styles.budgetCard}>
               <Box className={styles.iconWrapper} sx={{ backgroundColor: '#02B194' }}>
-                <img src="/assets/attach_money.svg" alt="Budget Icon" />
+                <VisibilityIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#526067' }}>{t('DashboardCards.budget')}</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#526067' }}>{t('DashboardCards.impressions')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  ${formatValue(adDetail?.cpc)}
+                  {formatValue(Math.floor(adDetail?.impressions))}
                 </Typography>
               </Box>
             </Box>
 
             <Box className={styles.budgetCard}>
               <Box className={styles.iconWrapper} sx={{ backgroundColor: '#FFDDA0' }}>
-                <img src="/assets/attach_money.svg" alt="Budget Icon" />
+                <PeopleIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.budget')}</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>Reach</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  ${formatValue(adDetail?.cpc)}
+                  {formatValue(adDetail?.reach || 0)}
                 </Typography>
               </Box>
             </Box>
 
             <Box className={styles.budgetCard}>
               <Box className={styles.iconWrapper} sx={{ backgroundColor: '#D3346E' }}>
-                <img src="/assets/attach_money.svg" alt="Budget Icon" />
+                <RepeatIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </Box>
               <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.budget')}</Typography>
+                <Typography sx={{ fontSize: '0.8rem' }}>Frequency</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  ${formatValue(adDetail?.cpc)}
+                  {formatValue(adDetail?.frequency || 0)}
                 </Typography>
               </Box>
             </Box>
@@ -205,7 +211,19 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
           <Box className={styles.rightBudgetContainer}>
             <Box className={styles.budgetCard}>
               <Box className={styles.iconWrapper} sx={{ backgroundColor: '#E97476' }}>
-                <img src="/assets/attach_money.svg" alt="Budget Icon" />
+                <MouseIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
+              </Box>
+              <Box className={styles.budgetInfo}>
+                <Typography sx={{ fontSize: '0.8rem' }}>Clicks</Typography>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
+                  {formatValue(adDetail?.clicks || 0)}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box className={styles.budgetCard}>
+              <Box className={styles.iconWrapper} sx={{ backgroundColor: '#02B194' }}>
+                <TrendingUpIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </Box>
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>{t('AdSetDetail.ctrPercent')}</Typography>
@@ -217,19 +235,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
             <Box className={styles.budgetCard}>
               <Box className={styles.iconWrapper} sx={{ backgroundColor: '#02B194' }}>
-                <img src="/assets/attach_money.svg" alt="Budget Icon" />
-              </Box>
-              <Box className={styles.budgetInfo}>
-                <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.impressions')}</Typography>
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  {formatValue(Math.floor(adDetail?.impressions))}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box className={styles.budgetCard}>
-              <Box className={styles.iconWrapper} sx={{ backgroundColor: '#02B194' }}>
-                <img className={styles.dollarSign} src="/assets/attach_money.png" alt="Budget Icon" />
+                <AttachMoneyIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </Box>
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.spent')}</Typography>

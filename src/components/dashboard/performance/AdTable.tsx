@@ -60,7 +60,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
           <Box className={styles.tableHeaderCell}>Reach</Box>
           <Box className={styles.tableHeaderCell}>Frequency</Box>
           <Box className={styles.tableHeaderCell}>Clicks</Box>
-          <Box className={styles.tableHeaderCell}>CTR (%)</Box> 
+          <Box className={styles.tableHeaderCell}>CTR</Box> 
           <Box className={styles.tableHeaderCell}>{t('DashboardCards.spent') || 'SPENT'}</Box>
         </Box>
       </Box>
@@ -100,60 +100,75 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
               <Box className={styles.tbtemp1}>Reach:</Box>
               <Box className={styles.tbtemp1}>Frequency:</Box>
               <Box className={styles.tbtemp1}>Clicks:</Box>
-              <Box className={styles.tbtemp1}>CTR (%):</Box> 
+              <Box className={styles.tbtemp1}>CTR:</Box> 
               <Box className={styles.tbtemp1}>{t('DashboardCards.spent') || 'SPENT'}:</Box>
             </Box>
           <Box className={styles.tbContent}>
-            {/* Impressions */}
             <Box className={styles.tableCell}>
-              <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem',
-                  },
+              <Box sx={{ backgroundColor: ad.impressions <= 100 ? "#FFEFEF" : "transparent" ,
+               borderRadius:'10px', 
                 }}>
-                {formatValue(ad.impressions, currency, false)}
+              <Typography className={`${styles.metricValue} ${ad.impressions >= 100 ? styles.goodMetric : styles.badMetric}`}
+                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem', 
+                  },
+                  }}
+              >
+                {formatValue(ad.impressions, currency, false)} {/* Display Impressions */}
               </Typography>
+              </Box>
             </Box>
 
-            {/* Reach */}
             <Box className={styles.tableCell}>
-              <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem',
-                  },
+              <Box sx={{ backgroundColor: (ad.reach || 0) <= 50 ? "#FFEFEF" : "transparent" ,
+               borderRadius:'10px', 
                 }}>
-                {formatValue(ad.reach, currency, false)}
+              <Typography className={`${styles.metricValue} ${(ad.reach || 0) >= 50 ? styles.goodMetric : styles.badMetric}`}
+                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem', 
+                  },
+                  }}
+              >
+                {formatValue(ad.reach || 0, currency, false)} {/* Display Reach */}
               </Typography>
+              </Box>
             </Box>
 
-            {/* Frequency */}
             <Box className={styles.tableCell}>
-              <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem',
-                  },
+              <Box sx={{ backgroundColor: (ad.frequency || 0) >= 3 ? "#FFEFEF" : "transparent" ,
+               borderRadius:'10px', 
                 }}>
-                {ad.frequency ? ad.frequency.toFixed(2) : '0.00'}
+              <Typography className={`${styles.metricValue} ${(ad.frequency || 0) < 3 ? styles.goodMetric : styles.badMetric}`}
+                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem', 
+                  },
+                  }}
+              >
+                {formatValue(ad.frequency || 0, '', false)} {/* Display Frequency */}
               </Typography>
+              </Box>
             </Box>
 
-            {/* Clicks */}
             <Box className={styles.tableCell}>
-              <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem',
-                  },
+              <Box sx={{ backgroundColor: (ad.clicks || 0) <= 1 ? "#FFEFEF" : "transparent" ,
+               borderRadius:'10px', 
                 }}>
-                {formatValue(ad.clicks, currency, false)}
+              <Typography className={`${styles.metricValue} ${(ad.clicks || 0) >= 1 ? styles.goodMetric : styles.badMetric}`}
+                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem', 
+                  },
+                  }}
+              >
+                {formatValue(ad.clicks || 0, '', false)} {/* Display Clicks */}
               </Typography>
+              </Box>
             </Box>
 
-            {/* CTR */}
-            <Box className={styles.tableCell}>
+            <Box className={styles.tableCell}> {/* Display CTR */}
               <Box sx={{ backgroundColor: ad.ctr <= 1.97 ? "#FFEFEF" : ad.ctr > 1.6 ? "transparent" : getColor(ad.ctr, 1.6, false),
                  borderRadius:'10px', display:'flex', alignItems:'center',
                }}>

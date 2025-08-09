@@ -13,8 +13,11 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 function formatAdForPrompt(ad: any): string {
   const header =
     `This ad set received ${ad.impressions} impressions, ` +
-    `a ${(ad.ctr * 100).toFixed(2)}% CTR, ` +
-    `$${parseFloat(ad.cpc).toFixed(2)} Budget, and ` +
+    `reached ${ad.reach || 0} unique people, ` +
+    `with an average frequency of ${ad.frequency || 0}, ` +
+    `generated ${ad.clicks || 0} clicks, ` +
+    `achieved a ${(ad.ctr * 100).toFixed(2)}% CTR, ` +
+    `$${parseFloat(ad.cpc).toFixed(2)} CPC, and ` +
     `$${parseFloat(ad.spend).toFixed(2)} spend.`;
 
   const extras: string[] = [];
@@ -228,6 +231,7 @@ export const fetchAdData = async () => {
     console.log('  - Account data:', accountData);
     console.log('  - Ad data count:', adData?.data?.length || 0);
     console.log('  - Insights data count:', insightsData?.data?.length || 0);
+    console.log('  - Sample insight data:', insightsData?.data?.[0]);
 
     cachedCurrency = accountData?.currency || 'USD';
 
@@ -314,6 +318,7 @@ export const fetchAdData = async () => {
     dataFetched = true;
     lastFetchTime = now;
     console.log('✅ Successfully fetched ad data:', insights.length, 'ads');
+    console.log('📊 Sample processed ad data:', insights[0]);
     return { adData: insights, currency: cachedCurrency };
   } catch (error: any) {
     console.error('Error fetching ad data:', error);
