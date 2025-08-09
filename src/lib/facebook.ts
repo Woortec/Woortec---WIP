@@ -6,7 +6,7 @@ export const fetchFacebookAdData = async (accessToken: string, adAccountId: stri
     const response = await axios.get(url, {
       params: {
         access_token: accessToken,
-        fields: 'impressions,clicks,spend,ctr,cpc,reach',
+        fields: 'impressions,clicks,spend,ctr,cpc,reach,actions',
       },
     });
 

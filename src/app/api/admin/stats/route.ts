@@ -115,12 +115,12 @@ export async function GET() {
       console.error('Failed to list auth users:', authErr)
     }
 
-    const totalUsers   = users.length
+    const totalUsers   = users?.length || 0
     const nowMs        = Date.now()
-    const activeUsers = users.filter(u =>
+    const activeUsers = users?.filter((u: any) =>
       u.last_sign_in_at &&
       new Date(u.last_sign_in_at).getTime() > nowMs - 24 * 60 * 60 * 1000
-    ).length
+    ).length || 0
 
     // 10) Return everything
     return NextResponse.json({

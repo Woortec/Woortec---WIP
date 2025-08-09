@@ -15,7 +15,7 @@ import { Sales } from '@/components/dashboard/overview/adspend';
 import TotalProfitContainer from '@/components/dashboard/overview/adsrunning';
 import TotalAdsContainer from '@/components/dashboard/overview/adsrunning';
 import BudgetContainer from '@/components/dashboard/overview/budget';
-import TotalCostPerMessageContainer from '@/components/dashboard/overview/cpm';
+import CTRContainer from '@/components/dashboard/overview/ctr';
 import { DateProvider } from '@/components/dashboard/overview/date/DateContext';
 import DatePickerComponent from '@/components/dashboard/overview/DateRangePicker';
 import TotalImpressionsContainer from '@/components/dashboard/overview/impressions';
@@ -178,7 +178,7 @@ export default function Page(): React.JSX.Element {
             <TotalImpressionsContainer startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid item lg={3} md={6} xs={12}>
-            <TotalCostPerMessageContainer startDate={startDate} endDate={endDate} />
+            <CTRContainer startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid item lg={3} md={6} xs={12}>
             <TotalProfitContainer />
