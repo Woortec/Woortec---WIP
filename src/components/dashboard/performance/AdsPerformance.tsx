@@ -117,17 +117,26 @@ const AdsPerformance: React.FC = () => {
   };
 
   const calculateAdStats = (adData: any[]) => {
-    let warnings = 0;
-    let successes = 0;
+    let totalImpressions = 0;
+    let totalReach = 0;
+    let totalClicks = 0;
+    let totalSpent = 0;
+    let avgCtr = 0;
+    
     adData.forEach((ad) => {
-      if (ad.ctr < 2) {
-        warnings += 1;
-      } else {
-        successes += 1;
-      }
+      totalImpressions += ad.impressions || 0;
+      totalReach += ad.reach || 0;
+      totalClicks += ad.clicks || 0;
+      totalSpent += parseFloat(ad.spend) || 0;
     });
-    setWarningAds(warnings);
-    setSuccessAds(successes);
+    
+    // Calculate average CTR
+    if (totalImpressions > 0) {
+      avgCtr = (totalClicks / totalImpressions) * 100;
+    }
+    
+    setWarningAds(Math.round(totalImpressions));
+    setSuccessAds(avgCtr);
   };
 
   // Show loading state while waiting for user
@@ -221,23 +230,23 @@ const AdsPerformance: React.FC = () => {
 
           <Box className={styles.summaryItem}>
             <Box className={`${styles.iconWrapper} ${styles.warningIcon}`}>  
-              <img src="/assets/error.svg" alt="Warning Icon"/>
+              <img src="/assets/error.svg" alt="Impressions Icon"/>
             </Box>
             <Box className={styles.summaryContent}>
               <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',
                 '@media (max-width: 675px)': {fontSize: '0.6rem',},
                 '@media (max-width: 440px)': {fontSize: '0.4rem',},
-              }}>{t('DashboardCards.adsRunning')}</Typography>
+              }}>{t('DashboardCards.impressions')}</Typography>
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{warningAds}</Typography>
+              }}>{warningAds.toLocaleString()}</Typography>
             </Box>
           </Box>
           
           <Box className={styles.summaryItem}>
             <Box className={`${styles.iconWrapper} ${styles.successIcon}`}>  
-              <img src="/assets/editor_choice.svg" alt="Success Icon" />
+              <img src="/assets/editor_choice.svg" alt="CTR Icon" />
             </Box>
             <Box className={styles.summaryContent}>
               <Typography className={styles.summaryLabel} sx={{ color: '#526067', fontSize: '0.8rem',
@@ -247,7 +256,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{successAds}</Typography>
+              }}>{successAds.toFixed(2)}%</Typography>
             </Box>
           </Box>
         </Box>

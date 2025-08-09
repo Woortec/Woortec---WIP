@@ -57,8 +57,10 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
         <Box className={styles.tableHeaderCell1}>{t('DashboardCards.adSetNames') || 'AD SET NAMES'}</Box>
         <Box className={styles.tableHeaderCell2}>
           <Box className={styles.tableHeaderCell}>{t('DashboardCards.impressions')}</Box>
-          <Box className={styles.tableHeaderCell}>CPC</Box>
-          <Box className={styles.tableHeaderCell}>CTR</Box> 
+          <Box className={styles.tableHeaderCell}>Reach</Box>
+          <Box className={styles.tableHeaderCell}>Frequency</Box>
+          <Box className={styles.tableHeaderCell}>Clicks</Box>
+          <Box className={styles.tableHeaderCell}>CTR (%)</Box> 
           <Box className={styles.tableHeaderCell}>{t('DashboardCards.spent') || 'SPENT'}</Box>
         </Box>
       </Box>
@@ -95,34 +97,63 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
           <Box className={styles.tableRow2}>
             <Box className={styles.tbtemp}>
               <Box className={styles.tbtemp1}>{t('DashboardCards.impressions')}:</Box>
-              <Box className={styles.tbtemp1}>CPC:</Box>
-              <Box className={styles.tbtemp1}>CTR:</Box> 
+              <Box className={styles.tbtemp1}>Reach:</Box>
+              <Box className={styles.tbtemp1}>Frequency:</Box>
+              <Box className={styles.tbtemp1}>Clicks:</Box>
+              <Box className={styles.tbtemp1}>CTR (%):</Box> 
               <Box className={styles.tbtemp1}>{t('DashboardCards.spent') || 'SPENT'}:</Box>
             </Box>
           <Box className={styles.tbContent}>
+            {/* Impressions */}
             <Box className={styles.tableCell}>
-              <Box sx={{ backgroundColor: ad.cpc >= convertedThresholds.cpc ? "#FFEFEF" : "transparent" ,
-               borderRadius:'10px', 
-                }}>
-              <Typography className={`${styles.metricValue} ${ad.cpc <= convertedThresholds.cpc ? styles.goodMetric : styles.badMetric}`}
-                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
+              <Typography className={styles.metricValue}
+                sx ={{ fontSize: '1.2rem', fontWeight: '600',
                   '@media (max-width: 770px)': {
-                    fontSize: '0.8rem', 
+                    fontSize: '0.8rem',
                   },
-                  }}
-              >
-                {formatValue(ad.cpc, currency)} {/* Display CPC */}
+                }}>
+                {formatValue(ad.impressions, currency, false)}
               </Typography>
-
-              {/* <Tooltip title={getComment('CPC', ad.cpc, convertedThresholds.cpc, true)} arrow>
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip> */}
-              </Box>
             </Box>
 
-            <Box className={styles.tableCell}> {/* Display CTR */}
+            {/* Reach */}
+            <Box className={styles.tableCell}>
+              <Typography className={styles.metricValue}
+                sx ={{ fontSize: '1.2rem', fontWeight: '600',
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem',
+                  },
+                }}>
+                {formatValue(ad.reach, currency, false)}
+              </Typography>
+            </Box>
+
+            {/* Frequency */}
+            <Box className={styles.tableCell}>
+              <Typography className={styles.metricValue}
+                sx ={{ fontSize: '1.2rem', fontWeight: '600',
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem',
+                  },
+                }}>
+                {ad.frequency ? ad.frequency.toFixed(2) : '0.00'}
+              </Typography>
+            </Box>
+
+            {/* Clicks */}
+            <Box className={styles.tableCell}>
+              <Typography className={styles.metricValue}
+                sx ={{ fontSize: '1.2rem', fontWeight: '600',
+                  '@media (max-width: 770px)': {
+                    fontSize: '0.8rem',
+                  },
+                }}>
+                {formatValue(ad.clicks, currency, false)}
+              </Typography>
+            </Box>
+
+            {/* CTR */}
+            <Box className={styles.tableCell}>
               <Box sx={{ backgroundColor: ad.ctr <= 1.97 ? "#FFEFEF" : ad.ctr > 1.6 ? "transparent" : getColor(ad.ctr, 1.6, false),
                  borderRadius:'10px', display:'flex', alignItems:'center',
                }}>
@@ -135,33 +166,6 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                 {ad.ctr.toFixed(2)}%
               </Typography>
               </Box>
-
-              {/* <Tooltip title={getComment('CTR', ad.ctr, 1.6, false)} arrow>
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip> */}
-
-            </Box>
-
-            {/* REACH */}
-            <Box className={styles.tableCell} sx={{ backgroundColor: ad.impressions / ad.spend <= 350 ? "transparent" : getColor(ad.impressions / ad.spend, 70000, false),
-            }}>
-              <Typography className={styles.metricValue}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem',
-                  },
-                }}>
-                {formatValue(ad.impressions, currency, false)}
-              </Typography>
-
-              {/* <Tooltip title={getImpressionsComment(ad.impressions, ad.spend * 700)} arrow>
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip> */}
-
             </Box>
 
             {/* SPENT */}

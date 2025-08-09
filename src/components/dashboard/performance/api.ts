@@ -217,7 +217,7 @@ export const fetchAdData = async () => {
       `https://graph.facebook.com/v21.0/${adAccountId}/insights`,
       { 
         access_token: accessToken, 
-        fields: 'ad_id,impressions,spend,actions,cpc,ctr',
+        fields: 'ad_id,impressions,spend,actions,cpc,ctr,reach,frequency',
         date_preset: 'last_7d',
         level: 'ad',
         limit: 50
@@ -278,6 +278,8 @@ export const fetchAdData = async () => {
         const adId = insight.ad_id;
         const clicks = insight.actions?.find((act: any) => act.action_type === 'link_click')?.value || 0;
         const impressions = insight.impressions || 0;
+        const reach = insight.reach || 0;
+        const frequency = insight.frequency || 0;
         // Use Facebook's provided CTR if available, otherwise calculate it
         const facebookCtr = insight.ctr;
         const ctr = facebookCtr !== undefined ? facebookCtr * 100 : (impressions > 0 ? (clicks / impressions) * 100 : 0);
@@ -293,6 +295,8 @@ export const fetchAdData = async () => {
           name: adName,
           clicks,
           impressions,
+          reach,
+          frequency,
           ctr,
           cpc,
           spend: insight.spend,
