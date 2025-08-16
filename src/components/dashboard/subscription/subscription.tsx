@@ -74,7 +74,7 @@ const Subscription = () => {
     {
       id: isYearly ? 'price_1P90eAHow0UPMFTymffkim7t' : 'price_1P90eAHow0UPMFTyqjjSmILe',
       name: 'Basic',
-      price: isYearly ? '$299.99/year' : '$29.99/month',
+      price: isYearly ? '$24.99/month' : '$29.99/month',
       features: [
         'Daily Reports',
         'Performance Optimization',
@@ -85,7 +85,7 @@ const Subscription = () => {
     {
       id: isYearly ? 'price_1Q008uHow0UPMFTyp6ifXtV3' : 'price_1Q009rHow0UPMFTyyxea5LzG',
       name: 'Essential',
-      price: isYearly ? '$499.98/year' : '$49.98/month',
+      price: isYearly ? '+$16.66/month' : '+$19.99/month',
       features: [
         'Personalized Advertising Roadmap',
         'Objective Definition and Alignment',
@@ -98,7 +98,7 @@ const Subscription = () => {
     {
       id: isYearly ? 'price_1Q00CeHow0UPMFTywnltJFXW' : 'price_1Q00D5How0UPMFTyI3zY6QCr',
       name: 'Advanced',
-      price: isYearly ? '$699.97/year' : '$69.97/month',
+      price: isYearly ? '+$16.66/month' : '+$19.99/month',
       features: [
         'Full-Service Advertising Management',
         'Monthly Performance Reports',

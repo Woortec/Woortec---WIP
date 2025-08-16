@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Tooltip, IconButton, Typography, CircularProgress } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import AdDetail from './AdSetDetail';
-import { getColor, formatValue, getComment, getImpressionsComment, calculateSpentColor, calculateSpentComment, convertThresholds, calculateExpectedSpend } from './utils';
+import { getColor, formatValue } from './utils';
 import styles from './styles/AdTable.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
 
@@ -14,8 +13,7 @@ interface AdTableProps {
 }
 
 const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = false }) => {
-  const convertedThresholds = convertThresholds(currency);
-  const expectedSpend = calculateExpectedSpend(budget, currency);
+  
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
   const { t } = useLocale();
 
@@ -51,6 +49,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
     );
   }
 
+
   return (
     <Box className={styles.adTableContainer}>
       <Box className={styles.tableHeader} sx ={{ fontSize: '1.2rem',}}>
@@ -58,10 +57,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
         <Box className={styles.tableHeaderCell2}>
           <Box className={styles.tableHeaderCell}>{t('DashboardCards.impressions')}</Box>
           <Box className={styles.tableHeaderCell}>Reach</Box>
-          <Box className={styles.tableHeaderCell}>Frequency</Box>
-          <Box className={styles.tableHeaderCell}>Clicks</Box>
-          <Box className={styles.tableHeaderCell}>CTR</Box> 
-          <Box className={styles.tableHeaderCell}>{t('DashboardCards.spent') || 'SPENT'}</Box>
+          <Box className={styles.tableHeaderCell}>CTR</Box>
         </Box>
       </Box>
 
@@ -98,10 +94,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
             <Box className={styles.tbtemp}>
               <Box className={styles.tbtemp1}>{t('DashboardCards.impressions')}:</Box>
               <Box className={styles.tbtemp1}>Reach:</Box>
-              <Box className={styles.tbtemp1}>Frequency:</Box>
-              <Box className={styles.tbtemp1}>Clicks:</Box>
-              <Box className={styles.tbtemp1}>CTR:</Box> 
-              <Box className={styles.tbtemp1}>{t('DashboardCards.spent') || 'SPENT'}:</Box>
+              <Box className={styles.tbtemp1}>CTR:</Box>
             </Box>
           <Box className={styles.tbContent}>
             <Box className={styles.tableCell}>
@@ -136,38 +129,6 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
               </Box>
             </Box>
 
-            <Box className={styles.tableCell}>
-              <Box sx={{ backgroundColor: (ad.frequency || 0) >= 3 ? "#FFEFEF" : "transparent" ,
-               borderRadius:'10px', 
-                }}>
-              <Typography className={`${styles.metricValue} ${(ad.frequency || 0) < 3 ? styles.goodMetric : styles.badMetric}`}
-                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem', 
-                  },
-                  }}
-              >
-                {formatValue(ad.frequency || 0, '', false)} {/* Display Frequency */}
-              </Typography>
-              </Box>
-            </Box>
-
-            <Box className={styles.tableCell}>
-              <Box sx={{ backgroundColor: (ad.clicks || 0) <= 1 ? "#FFEFEF" : "transparent" ,
-               borderRadius:'10px', 
-                }}>
-              <Typography className={`${styles.metricValue} ${(ad.clicks || 0) >= 1 ? styles.goodMetric : styles.badMetric}`}
-                 sx ={{ fontSize: '1.2rem', fontWeight: '600', 
-                  '@media (max-width: 770px)': {
-                    fontSize: '0.8rem', 
-                  },
-                  }}
-              >
-                {formatValue(ad.clicks || 0, '', false)} {/* Display Clicks */}
-              </Typography>
-              </Box>
-            </Box>
-
             <Box className={styles.tableCell}> {/* Display CTR */}
               <Box sx={{ backgroundColor: ad.ctr <= 1.97 ? "#FFEFEF" : ad.ctr > 1.6 ? "transparent" : getColor(ad.ctr, 1.6, false),
                  borderRadius:'10px', display:'flex', alignItems:'center',
@@ -178,41 +139,16 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                     fontSize: '0.8rem',
                   },
                 }}>
-                {ad.ctr.toFixed(2)}%
+                {parseFloat(ad?.ctr || 0).toFixed(2)}%
               </Typography>
               </Box>
             </Box>
-
-            {/* SPENT */}
-            <Box className={`${styles.tableCell} ${styles.tableCellLast}`}>
-              
-              <Box style={{ backgroundColor: ad.spend < expectedSpend * 1 
-              ? "#FFEFEF" 
-              : ad.spend > expectedSpend * 1.3 
-              ? "transparent" 
-              : calculateSpentColor(ad.spend, expectedSpend), paddingRight:'0' ,borderRadius:'10px', }}>
-              <Typography className={`${styles.metricValue} ${ad.spend >= expectedSpend ? styles.goodMetric : styles.badMetric}`}
-                sx ={{ fontSize: '1.2rem', fontWeight: '600',
-                  '@media (max-width: 770px)': {
-                  fontSize: '0.8rem',
-                  },
-                }}>
-                {formatValue(ad.spend, currency)}
-              </Typography>
-              </Box>
-            </Box>
-
-              {/* <Tooltip title={calculateSpentComment(ad.spend, expectedSpend)} arrow>
-                <IconButton>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip> */}
               </Box>
             </Box>
             </Box>
           {selectedAdId === ad.ad_id && (
             <Box className={styles.detailRow}>
-              <AdDetail adId={ad.ad_id} onClose={handleCloseDetail} />
+              <AdDetail adId={ad.ad_id} onClose={handleCloseDetail} currency={currency} />
             </Box>
           )}
         </React.Fragment>

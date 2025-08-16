@@ -23,19 +23,21 @@ import {
   getAIResponse,
   waitForRunCompletion,
 } from './api';
+import { formatValue as formatCurrency } from './utils';
 import styles from './styles/AdSetDetail.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
 
 interface AdDetailProps {
   adId: string;
   onClose: () => void;
+  currency: string;
 }
 
 const AGENT_NAME = 'Sheela';
 const AGENT_TITLE = 'Senior Ads Strategist, Woortec';
 const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
-const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
+const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose, currency }) => {
   const supabase = createClient();
   const userId = localStorage.getItem('userid')!;
   const { t } = useLocale();
@@ -111,6 +113,8 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
 
   // Calculate CTR (Click-Through Rate)
   const calculateCTR = (clicks: number, impressions: number) => {
+
+
     if (!impressions || impressions === 0) return '0.00%';
     return `${((clicks / impressions) * 100).toFixed(2)}%`;
   };
@@ -121,6 +125,14 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
       return fallback;
     }
     return `${parseFloat(value).toFixed(2)} ${currency}`;
+  };
+
+  // Format integer-like metrics (e.g., impressions, reach, clicks) without decimals
+  const formatInteger = (value: any, fallback: string = 'N/A') => {
+    if (value === null || value === undefined || isNaN(parseFloat(value))) {
+      return fallback;
+    }
+    return Math.round(parseFloat(value)).toLocaleString();
   };
 
   if (loading) {
@@ -138,7 +150,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
     year: 'numeric',
   });
 
-  console.log(adDetail);
+  console.log("adasdasdasdad",adDetail);
 
   return (
     <Box className={styles.adSetDetailContainer}>
@@ -178,7 +190,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem', color: '#526067' }}>{t('DashboardCards.impressions')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  {formatValue(Math.floor(adDetail?.impressions))}
+                  {formatInteger(adDetail?.impressions)}
                 </Typography>
               </Box>
             </Box>
@@ -190,7 +202,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>Reach</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  {formatValue(adDetail?.reach || 0)}
+                  {formatInteger(adDetail?.reach || 0)}
                 </Typography>
               </Box>
             </Box>
@@ -216,7 +228,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>Clicks</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  {formatValue(adDetail?.clicks || 0)}
+                  {formatInteger(adDetail?.clicks || 0)}
                 </Typography>
               </Box>
             </Box>
@@ -228,7 +240,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>{t('AdSetDetail.ctrPercent')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  {calculateCTR(adDetail?.clicks || 0, adDetail?.impressions || 0)}
+                  {parseFloat(adDetail?.ctr || 0).toFixed(2)}%
                 </Typography>
               </Box>
             </Box>
@@ -240,7 +252,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose }) => {
               <Box className={styles.budgetInfo}>
                 <Typography sx={{ fontSize: '0.8rem' }}>{t('DashboardCards.spent')}</Typography>
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: '800' }}>
-                  ${formatValue(adDetail?.spend)}
+                  {formatCurrency(adDetail?.spend, currency)}
                 </Typography>
               </Box>
             </Box>

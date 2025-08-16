@@ -6,7 +6,8 @@ export const formatValue = (value: number, currency: string, isCurrency: boolean
   if (value === null || value === undefined || isNaN(value)) {
     return isCurrency ? `0 ${currency}` : '0';
   }
-  
+
+
   return isCurrency ? `${Math.round(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}` : value.toLocaleString();
 };
 

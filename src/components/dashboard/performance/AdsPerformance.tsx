@@ -32,8 +32,9 @@ const AdsPerformance: React.FC = () => {
       const { adData, currency } = await fetchAdData();
       
       console.log('📊 Received ad data:', adData?.length || 0, 'items');
+      console.log("crreuer",currency);
       if (adData?.length > 0) {
-        console.log('📊 Sample ad data structure:', adData[0]);
+        console.log('📊 Sample ad data structure:', adData);
         console.log('📊 Available fields:', Object.keys(adData[0]));
       }
       setAdData(adData || []);

@@ -192,7 +192,7 @@ export const fetchAdData = async () => {
     console.log('📊 Available data:', data);
     // Reset cache on error to prevent infinite loops
     clearAdDataCache();
-    return { adData: [], currency: 'USD' };
+    return { adData: [], currency: data?.[0]?.currency||"USD" };
   }
 
   console.log('✅ Found Facebook credentials - Access Token:', accessToken ? 'Present' : 'Missing', 'Ad Account ID:', adAccountId);
@@ -279,20 +279,24 @@ export const fetchAdData = async () => {
 
     const insights = await Promise.all(
       insightsData?.data?.map(async (insight: any) => {
+
+        console.log("here is the insights",insight)
         const adId = insight.ad_id;
         const clicks = insight.actions?.find((act: any) => act.action_type === 'link_click')?.value || 0;
+        console.log("Manhoooooos",clicks)
         const impressions = insight.impressions || 0;
         const reach = insight.reach || 0;
         const frequency = insight.frequency || 0;
         // Use Facebook's provided CTR if available, otherwise calculate it
-        const facebookCtr = insight.ctr;
-        const ctr = facebookCtr !== undefined ? facebookCtr * 100 : (impressions > 0 ? (clicks / impressions) * 100 : 0);
+        const facebookCtr = ((clicks /insight?.impressions) * 100)||0;
+        const ctr = facebookCtr !== undefined ? facebookCtr : (impressions > 0 ? (clicks / impressions) * 100 : 0);
         const cpc = insight.cpc || 0;
         const creativeId = creativeIds[adId];
         const imageUrl = creativeId ? creativeImageUrls[creativeId] : null;
 
         // Always use insight.name if present, then adNames, then fallback
         let adName = insight.name || adNames[adId] || 'Unnamed Ad';
+
 
         const processedInsight = {
           ...insight,
