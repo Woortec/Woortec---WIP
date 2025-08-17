@@ -16,7 +16,7 @@ function formatAdForPrompt(ad: any): string {
     `reached ${ad.reach || 0} unique people, ` +
     `with an average frequency of ${ad.frequency || 0}, ` +
     `generated ${ad.clicks || 0} clicks, ` +
-    `achieved a ${(ad.ctr * 100).toFixed(2)}% CTR, ` +
+    `achieved a ${parseFloat(ad.ctr).toFixed(2)}% CTR, ` +
     `$${parseFloat(ad.cpc).toFixed(2)} CPC, and ` +
     `$${parseFloat(ad.spend).toFixed(2)} spend.`;
 
