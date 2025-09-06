@@ -13,7 +13,14 @@
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache"
+    "format:check": "prettier --check \"**/*.{js,jsx,mjs,ts,tsx,mdx}\" --cache",
+    "cache:cleanup": "node scripts/cleanup-dashboard-cache.js cleanup",
+    "cache:stats": "node scripts/cleanup-dashboard-cache.js stats",
+    "cron:setup": "node scripts/manage-supabase-cron.js setup",
+    "cron:status": "node scripts/manage-supabase-cron.js status",
+    "cron:test": "node scripts/manage-supabase-cron.js test",
+    "cron:logs": "node scripts/manage-supabase-cron.js logs",
+    "cron:remove": "node scripts/manage-supabase-cron.js remove"
   },
   "dependencies": {
     "@emotion/cache": "11.11.0",

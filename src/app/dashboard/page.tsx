@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -20,6 +20,7 @@ import { DateProvider } from '@/components/dashboard/overview/date/DateContext';
 import DatePickerComponent from '@/components/dashboard/overview/DateRangePicker';
 import TotalImpressionsContainer from '@/components/dashboard/overview/impressions';
 import { TotalReach } from '@/components/dashboard/overview/reach';
+import { DashboardDataProvider } from '@/contexts/DashboardDataContext';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -53,11 +54,39 @@ export default function Page(): React.JSX.Element {
 
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
+  const [timeRange, setTimeRange] = useState<string>('thisWeek');
+
+  // Debug effect to track date changes
+  useEffect(() => {
+    console.log('📅 Dashboard page dates and time range changed:', {
+      startDate: startDate?.toISOString().split('T')[0],
+      endDate: endDate?.toISOString().split('T')[0],
+      timeRange
+    });
+  }, [startDate, endDate, timeRange]);
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   // SuccessModal state
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Memoize the params object to prevent unnecessary re-renders
+  const dashboardParams = useMemo(() => {
+    const startDateStr = startDate ? startDate.toISOString().split('T')[0] : '';
+    const endDateStr = endDate ? endDate.toISOString().split('T')[0] : '';
+    
+    console.log('📅 Dashboard params updated:', {
+      startDate: startDateStr,
+      endDate: endDateStr,
+      timeRange: timeRange
+    });
+    
+    return {
+      startDate: startDateStr,
+      endDate: endDateStr,
+      timeRange: timeRange as 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom'
+    };
+  }, [startDate, endDate, timeRange]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -149,57 +178,61 @@ export default function Page(): React.JSX.Element {
       </Modal>
 
       <DateProvider>
-        {isMounted && (
-          <Joyride
-            steps={steps}
-            run={runTour}
-            continuous
-            showSkipButton
-            showProgress
-            styles={{
-              options: {
-                zIndex: 10000,
-              },
-            }}
-          />
-        )}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-        }}
-      >
-        <Grid container spacing={1.5}>
-          <Grid item lg={3} md={6} xs={12}>
-            <BudgetContainer startDate={startDate} endDate={endDate} />
-          </Grid>
-          <Grid item lg={3} md={6} xs={12}>
-            <TotalImpressionsContainer startDate={startDate} endDate={endDate} />
-          </Grid>
-          <Grid item lg={3} md={6} xs={12}>
-            <CTRContainer startDate={startDate} endDate={endDate} />
-          </Grid>
-          <Grid item lg={3} md={6} xs={12}>
-            <TotalProfitContainer />
-          </Grid>
-
-          <Grid item lg={12} xs={12}>
-            <DatePickerComponent
-              startDate={startDate}
-              endDate={endDate}
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
+        <DashboardDataProvider params={dashboardParams}>
+          {isMounted && (
+            <Joyride
+              steps={steps}
+              run={runTour}
+              continuous
+              showSkipButton
+              showProgress
+              styles={{
+                options: {
+                  zIndex: 10000,
+                },
+              }}
             />
+          )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
+          <Grid container spacing={1.5}>
+            <Grid item lg={3} md={6} xs={12}>
+              <BudgetContainer />
+            </Grid>
+            <Grid item lg={3} md={6} xs={12}>
+              <TotalImpressionsContainer />
+            </Grid>
+            <Grid item lg={3} md={6} xs={12}>
+              <CTRContainer />
+            </Grid>
+            <Grid item lg={3} md={6} xs={12}>
+              <TotalProfitContainer />
+            </Grid>
+
+            <Grid item lg={12} xs={12}>
+              <DatePickerComponent
+                startDate={startDate}
+                endDate={endDate}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                timeRange={timeRange}
+                setTimeRange={setTimeRange}
+              />
+            </Grid>
+            <Grid item lg={8} md={6} xs={12}>
+              <Sales timeRange="custom" startDate={startDate} endDate={endDate} />
+            </Grid>
+            <Grid item lg={4} md={6} xs={12}>
+              <TotalReach startDate={startDate} endDate={endDate} />
+            </Grid>
           </Grid>
-          <Grid item lg={8} md={6} xs={12}>
-            <Sales timeRange="custom" startDate={startDate} endDate={endDate} />
-          </Grid>
-          <Grid item lg={4} md={6} xs={12}>
-            <TotalReach startDate={startDate} endDate={endDate} />
-          </Grid>
-        </Grid>
-    </Box>
+      </Box>
+        </DashboardDataProvider>
       </DateProvider>
     </>
   );

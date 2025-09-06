@@ -7,7 +7,6 @@ import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import axios from 'axios';
 import { useLocale } from '@/contexts/LocaleContext';
 import {
   Chart as ChartJS,
@@ -17,8 +16,7 @@ import {
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { Box, SxProps } from '@mui/material';
-import dayjs from 'dayjs';
-import { createClient } from '../../../../utils/supabase/client'; // Adjust the path to your Supabase client
+import { useReachData } from '@/contexts/DashboardDataContext';
 import InsertChartIcon from '@mui/icons-material/InsertChart'; // Example icon
 import { PlusCircle as PlusIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { MinusCircle as MinusIcon } from '@phosphor-icons/react/dist/ssr/MinusCircle';
@@ -66,87 +64,30 @@ export function TotalReach({ sx, startDate, endDate }: TotalReachProps): React.J
     ],
   });
 
-  const fetchTotalReach = async () => {
-    try {
-      const supabase = createClient();
-      const userId = localStorage.getItem('userid'); // Fetch the userId from localStorage
+  const { data: reachData, loading, error } = useReachData();
 
-      if (!userId) {
-        throw new Error('User ID is missing.');
-      }
-
-      // Fetch access token and ad account ID from Supabase
-      const { data, error } = await supabase
-        .from('facebookData')
-        .select('access_token, account_id')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        throw new Error('Error fetching data from Supabase.');
-      }
-
-      const { access_token: accessToken, account_id: adAccountId } = data;
-
-      if (!accessToken) {
-        throw new Error('Missing access token');
-      }
-
-      if (!adAccountId) {
-        throw new Error('Missing ad account ID');
-      }
-
-      // Fetch impressions, reach, and clicks based on the user's selected date range
-      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'impressions,reach,clicks',
-          time_range: JSON.stringify({
-            since: dayjs(startDate).format('YYYY-MM-DD'),
-            until: dayjs(endDate).format('YYYY-MM-DD'),
-          }),
-        },
-      });
-
-      const reachData = response.data.data;
-
-      if (!reachData || reachData.length === 0) {
-        throw new Error('No data found for the given ad account ID');
-      }
-
-      // Process the response to get total impressions, reach, and clicks
-      const totalImpressions = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.impressions || 0), 0);
-      const totalReach = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.reach || 0), 0);
-      const totalClicks = reachData.reduce((sum: number, dataPoint: any) => sum + parseInt(dataPoint.clicks || 0), 0);
-
-      setImpressions(totalImpressions);
-      setReach(totalReach);
-      setClicks(totalClicks);
+  useEffect(() => {
+    if (reachData) {
+      setImpressions(reachData.impressions);
+      setReach(reachData.reach);
+      setClicks(reachData.clicks);
 
       // Save original data for toggling visibility
-      setOriginalData([totalImpressions, totalReach, totalClicks]);
+      setOriginalData([reachData.impressions, reachData.reach, reachData.clicks]);
 
       setChartData({
         labels: [t('DashboardCharts.axis.impressions'), t('DashboardCharts.axis.reach'), t('DashboardCharts.axis.clicks')],
         datasets: [
           {
-            data: [totalImpressions, totalReach, totalClicks],
+            data: [reachData.impressions, reachData.reach, reachData.clicks],
             backgroundColor: ['#486A75', '#E46A6A', '#4BC0C0'],
             hoverBackgroundColor: ['#4BC0C0', '#CF366C', '#FF6384'],
             borderWidth: 0,
           },
         ],
       });
-    } catch (error) {
-      console.error('Error fetching total reach data:', error);
     }
-  };
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      fetchTotalReach();
-    }
-  }, [startDate, endDate]);
+  }, [reachData, t]);
 
   // Handle legend click to toggle between showing and hiding data
   const handleLegendClick = (event: any, legendItem: any) => {

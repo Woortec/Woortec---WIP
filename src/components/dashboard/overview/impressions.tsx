@@ -9,9 +9,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon, ArrowUp as ArrowUpIcon } from '@phosphor-icons/react';
 import { Target } from '@phosphor-icons/react';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { createClient } from '../../../../utils/supabase/client'; // Adjust path to Supabase client
+import { useImpressionsData } from '@/contexts/DashboardDataContext';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
@@ -82,118 +80,19 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
   );
 }
 
-interface TotalImpressionsContainerProps {
-  startDate: Date | null;
-  endDate: Date | null;
-}
+const TotalImpressionsContainer = () => {
+  const { data: impressionsData, loading, error } = useImpressionsData();
 
-const TotalImpressionsContainer = ({ startDate, endDate }: TotalImpressionsContainerProps) => {
-  const [impressionsData, setImpressionsData] = useState<{ value: string; diff: number; trend: 'up' | 'down' }>(
-    {
-      value: '',
-      diff: 0,
-      trend: 'up',
-    }
-  );
+  if (loading) {
+    return <TotalImpressions value="Loading..." diff={0} trend="up" />;
+  }
 
-  const fetchImpressions = async () => {
-    try {
-      const supabase = createClient();
-      const userId = localStorage.getItem('userid'); // Fetch userId from localStorage
+  // Show fallback data even if there's an error (rate limit handling)
+  if (impressionsData) {
+    return <TotalImpressions {...impressionsData} />;
+  }
 
-      if (!userId) {
-        throw new Error('User ID is missing.');
-      }
-
-      // Fetch access token and ad account ID from Supabase
-      const { data, error } = await supabase
-        .from('facebookData')
-        .select('access_token, account_id')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        throw new Error('Error fetching data from Supabase.');
-      }
-      
-      const { access_token: accessToken, account_id: adAccountId } = data;
-     
-
-      if (!accessToken || !adAccountId) {
-        throw new Error('Missing access token or ad account ID');
-      }
-
-      // Fetch the total impressions for the selected date range
-      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'impressions',
-          time_range: JSON.stringify({
-            since: dayjs(startDate).format('YYYY-MM-DD'),
-            until: dayjs(endDate).format('YYYY-MM-DD'),
-          }),
-        },
-      });
-      console.log(response);
-      
-
-      if (!response.data.data || response.data.data.length === 0) {
-        throw new Error('No data found for the given ad account ID');
-      }
-
-      const totalImpressions = response.data.data.reduce(
-        (acc: number, item: any) => acc + parseInt(item.impressions, 10),
-        0
-      );
-
-      console.log(totalImpressions);
-      
-      // Format the total impressions with commas as thousands separators
-      const formattedImpressions = new Intl.NumberFormat('en-US').format(totalImpressions);
-
-      console.log(formattedImpressions);
-      
-      // Fetch the previous total impressions for comparison
-      const previousResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'impressions',
-          date_preset: 'last_month',
-        },
-      });
-
-      if (!previousResponse.data.data || previousResponse.data.data.length === 0) {
-        throw new Error('No data found for the previous time period');
-      }
-
-      const previousImpressions = previousResponse.data.data.reduce(
-        (acc: number, item: any) => acc + parseInt(item.impressions, 10),
-        0
-      );
-
-      const diff = ((totalImpressions - previousImpressions) / previousImpressions) * 100;
-      const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
-
-      setImpressionsData({
-        value: formattedImpressions,
-        diff: Math.abs(diff),
-        trend: trend,
-      });
-    } catch (error) {
-      console.error('Error fetching impressions data:', error);
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Response data:', error.response.data);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      fetchImpressions();
-    }
-  }, [startDate, endDate]); // Trigger the effect whenever the start or end date changes
-
-  return <TotalImpressions {...impressionsData} />;
+  return <TotalImpressions value="No data available" diff={0} trend="up" />;
 };
 
 export default TotalImpressionsContainer;

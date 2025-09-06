@@ -10,11 +10,9 @@ import { ArrowUDownRight as RunningIcon } from '@phosphor-icons/react';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import axios from 'axios';
 import { useDate } from './date/DateContext';
 import type { SxProps } from '@mui/system';
-import { createClient } from '../../../../utils/supabase/client';
-import { makeBatchRequest } from './apiBatchRequest';
+import { useAdsRunningData } from '@/contexts/DashboardDataContext';
 import { useLocale } from '@/contexts/LocaleContext';
 import { CircularProgress } from '@mui/material';
 
@@ -77,71 +75,18 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
 }
 
 const TotalAdsContainer = () => {
-  const { startDate, endDate } = useDate();
-  const [adsData, setAdsData] = useState('Loading...');
-  const { t } = useLocale();
+  const { data: adsRunningData, loading, error } = useAdsRunningData();
 
-  // Retry helper for rate-limit errors
-  const safeBatch = async (params: Parameters<typeof makeBatchRequest>[0]) => {
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        return await makeBatchRequest(params);
-      } catch (err: any) {
-        const isRateLimit =
-          err.response?.data?.error?.code === 613 ||
-          err.response?.data?.error?.message?.includes('rate limit');
-        if (!isRateLimit) throw err;
-        attempts += 1;
-        await new Promise((r) => setTimeout(r, 1000 * attempts));
-      }
-    }
-    throw new Error('Rate limit exceeded after retries');
-  };
+  if (loading) {
+    return <TotalAds value="Loading..." />;
+  }
 
-  useEffect(() => {
-    const fetchTotalAds = async () => {
-      try {
-        const supabase = createClient();
-        const userId = localStorage.getItem('userid');
-        if (!userId) throw new Error('User ID is missing.');
+  // Show fallback data even if there's an error (rate limit handling)
+  if (adsRunningData) {
+    return <TotalAds value={adsRunningData.value} />;
+  }
 
-        const { data, error } = await supabase
-          .from('facebookData')
-          .select('access_token, account_id')
-          .eq('user_id', userId)
-          .single();
-        if (error || !data) throw new Error('Error fetching credentials.');
-
-        const { access_token: accessToken, account_id: adAccountId } = data;
-        if (!accessToken || !adAccountId) throw new Error('Missing credentials.');
-
-        if (!startDate || !endDate) return;
-
-        // Perform the batch request with retries
-        const batch = await safeBatch({
-          accessToken,
-          adAccountId,
-          startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0],
-        });
-
-        // batch[1] is our ads list
-        const adsBody = JSON.parse(batch[1].body);
-        const allAds = adsBody.data || [];
-        const activeCount = allAds.filter((ad: any) => ad.effective_status === 'ACTIVE').length;
-
-        setAdsData(t('activeAds').replace('{count}', activeCount));
-      } catch (err) {
-        console.error('Error fetching total ads data:', err);
-        setAdsData('Error loading ads');
-      }
-    };
-
-    fetchTotalAds();
-  }, [startDate, endDate, t]);
-
-  return <TotalAds value={adsData} />;
+  return <TotalAds value="No data available" />;
 };
 
 export default TotalAdsContainer;

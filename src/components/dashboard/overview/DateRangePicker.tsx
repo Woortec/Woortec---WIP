@@ -17,6 +17,8 @@ interface DatePickerComponentProps {
   endDate: Date | null;
   setStartDate: Dispatch<SetStateAction<Date | null>>;
   setEndDate: Dispatch<SetStateAction<Date | null>>;
+  timeRange?: string;
+  setTimeRange?: Dispatch<SetStateAction<string>>;
 }
 
 const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
@@ -24,6 +26,8 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   endDate,
   setStartDate,
   setEndDate,
+  timeRange,
+  setTimeRange,
 }) => {
   // ─── NEW: get t() ───────────────────────────────────────────────────────────
   const { t } = useLocale();
@@ -35,35 +39,56 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   
   
   useEffect(() => {
-    // Set default to "This Week"
+    // Set default to "This Week" only on first mount
     const today = new Date();
     setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
     setEndDate(today);
-  }, [setStartDate, setEndDate]);
+    if (setTimeRange) {
+      setTimeRange('thisWeek');
+    }
+  }, []); // Empty dependency array - only run on mount
 
   const handlePresetChange = (newPreset: string) => {
+    console.log('📅 Date picker preset changed to:', newPreset);
     setPreset(newPreset);
     const today = new Date();
 
+    let newStartDate: Date;
+    let newEndDate: Date = today;
+    let newTimeRange: string = 'custom';
+
     switch (newPreset) {
       case t('DatePicker.presets.today'):
-        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
-        setEndDate(today);
+        newStartDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        newTimeRange = 'today';
         break;
       case t('DatePicker.presets.thisWeek'):
-        setStartDate(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7));
-        setEndDate(today);
+        newStartDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+        newTimeRange = 'thisWeek';
         break;
       case t('DatePicker.presets.thisMonth'):
-        setStartDate(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
-        setEndDate(today);
+        newStartDate = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+        newTimeRange = 'thisMonth';
         break;
       case t('DatePicker.presets.thisYear'):
-        setStartDate(new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()));
-        setEndDate(today);
+        newStartDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+        newTimeRange = 'thisYear';
         break;
       default:
-        break;
+        return;
+    }
+
+    console.log('📅 Setting new dates and time range:', {
+      preset: newPreset,
+      startDate: newStartDate.toISOString().split('T')[0],
+      endDate: newEndDate.toISOString().split('T')[0],
+      timeRange: newTimeRange
+    });
+
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    if (setTimeRange) {
+      setTimeRange(newTimeRange);
     }
   };
 

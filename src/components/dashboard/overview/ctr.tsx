@@ -12,9 +12,7 @@ import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useLocale } from '@/contexts/LocaleContext';
-import { createClient } from '../../../../utils/supabase/client';
-import axios from 'axios';
-import dayjs from 'dayjs';
+import { useCTRData } from '@/contexts/DashboardDataContext';
 
 export interface CTRProps {
   diff?: number;
@@ -93,108 +91,19 @@ interface CTRContainerProps {
   endDate: Date | null;
 }
 
-const CTRContainer = ({
-  startDate,
-  endDate
-}: CTRContainerProps) => {
-  const [ctrData, setCtrData] = useState<{
-    value: string;
-    diff: number;
-    trend: 'up' | 'down';
-  }>({
-    value: '',
-    diff: 0,
-    trend: 'up'
-  });
+const CTRContainer = () => {
+  const { data: ctrData, loading, error } = useCTRData();
 
-  const fetchCTR = async () => {
-    try {
-      const supabase = createClient();
-      const userId = localStorage.getItem('userid');
-      if (!userId) throw new Error('User ID is missing.');
+  if (loading) {
+    return <CTR value="Loading..." diff={0} trend="up" />;
+  }
 
-      const { data, error } = await supabase
-        .from('facebookData')
-        .select('access_token, account_id')
-        .eq('user_id', userId)
-        .single();
-      if (error || !data) throw new Error('Error fetching data from Supabase.');
+  // Show fallback data even if there's an error (rate limit handling)
+  if (ctrData) {
+    return <CTR {...ctrData} />;
+  }
 
-      const { access_token: accessToken, account_id: adAccountId } = data;
-      if (!accessToken || !adAccountId) throw new Error('Missing access token or ad account ID');
-
-      // Current period insights
-      const currentRes = await axios.get(
-        `https://graph.facebook.com/v20.0/${adAccountId}/insights`,
-        {
-          params: {
-            access_token: accessToken,
-            fields: 'impressions,clicks,ctr',
-            time_range: JSON.stringify({
-              since: dayjs(startDate).format('YYYY-MM-DD'),
-              until: dayjs(endDate).format('YYYY-MM-DD')
-            }),
-            level: 'ad'
-          }
-        }
-      );
-      
-      // Calculate CTR from current data
-      const currentData = currentRes.data.data[0] || { impressions: 0, clicks: 0, ctr: 0 };
-      let currentCtr = 0;
-      
-      if (currentData.ctr !== undefined && currentData.ctr !== null) {
-        // Use Facebook's provided CTR
-        currentCtr = currentData.ctr * 100;
-      } else if (currentData.impressions > 0 && currentData.clicks > 0) {
-        // Calculate CTR manually if not provided
-        currentCtr = (currentData.clicks / currentData.impressions) * 100;
-      }
-
-      // Previous period insights
-      const prevRes = await axios.get(
-        `https://graph.facebook.com/v20.0/${adAccountId}/insights`,
-        {
-          params: {
-            access_token: accessToken,
-            fields: 'impressions,clicks,ctr',
-            date_preset: 'last_month',
-            level: 'ad'
-          }
-        }
-      );
-      
-      // Calculate CTR from previous data
-      const prevData = prevRes.data.data[0] || { impressions: 0, clicks: 0, ctr: 0 };
-      let prevCtr = 0;
-      
-      if (prevData.ctr !== undefined && prevData.ctr !== null) {
-        // Use Facebook's provided CTR
-        prevCtr = prevData.ctr * 100;
-      } else if (prevData.impressions > 0 && prevData.clicks > 0) {
-        // Calculate CTR manually if not provided
-        prevCtr = (prevData.clicks / prevData.impressions) * 100;
-      }
-
-      const diff = prevCtr > 0
-        ? ((currentCtr - prevCtr) / prevCtr) * 100
-        : 0;
-      const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
-
-      const formatted = `${currentCtr.toFixed(2)}%`;
-
-      setCtrData({ value: formatted, diff: Math.abs(diff), trend });
-    } catch (err) {
-      console.error('Error fetching CTR data:', err);
-      setCtrData({ value: '', diff: 0, trend: 'up' });
-    }
-  };
-
-  useEffect(() => {
-    if (startDate && endDate) fetchCTR();
-  }, [startDate, endDate]);
-
-  return <CTR {...ctrData} />;
+  return <CTR value="No data available" diff={0} trend="up" />;
 };
 
 export default CTRContainer;

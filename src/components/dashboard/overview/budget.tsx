@@ -9,10 +9,8 @@ import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { CurrencyDollar as CurrencyDollarIcon } from '@phosphor-icons/react/dist/ssr/CurrencyDollar';
-import axios from 'axios';
 import type { SxProps } from '@mui/system';
-import dayjs from 'dayjs';
-import { createClient } from '../../../../utils/supabase/client'; // Ensure the correct path to your Supabase client
+import { useBudgetData } from '@/contexts/DashboardDataContext';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
 import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import { Tooltip } from 'react-bootstrap';
@@ -73,118 +71,19 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
   );
 }
 
-interface BudgetContainerProps {
-  startDate: Date | null;
-  endDate: Date | null;
-}
+const BudgetContainer = () => {
+  const { data: budgetData, loading, error } = useBudgetData();
 
-const BudgetContainer = ({ startDate, endDate }: BudgetContainerProps) => {
+  if (loading) {
+    return <Budget value="Loading..." diff={0} trend="up" sx={{ height: '150px' }} />;
+  }
 
-  const [budgetData, setBudgetData] = useState<{ value: string; diff: number; trend: 'up' | 'down'; currency: string }>(
-    {
-      value: '',
-      diff: 0,
-      trend: 'up',
-      currency: 'USD',
-    }
-  );
+  // Show fallback data even if there's an error (rate limit handling)
+  if (budgetData) {
+    return <Budget {...budgetData} sx={{ height: '150px' }} />;
+  }
 
-  const fetchBudget = async () => {
-    try {
-      const supabase = createClient();
-      const userId = localStorage.getItem('userid'); // Assuming you have user ID stored in localStorage
-
-      if (!userId) {
-        throw new Error('User ID is missing.');
-      }
-
-      // Fetch the access token, ad account ID, and page ID from Supabase
-      const { data, error } = await supabase
-        .from('facebookData')
-        .select('access_token, account_id, page_id')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        throw new Error('Error fetching data from Supabase.');
-      }
-
-      const { access_token: accessToken, account_id: adAccountId, page_id: pageId } = data;
-
-      if (!accessToken) {
-        throw new Error('Missing access token from Supabase.');
-      }
-
-      if (!adAccountId) {
-        throw new Error('Missing ad account ID from Supabase.');
-      }
-
-      // Fetch the ad account details to get the currency
-      const accountDetailsResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}`, {
-        params: {
-          access_token: accessToken,
-          fields: 'currency',
-        },
-      });
-
-      const currency = accountDetailsResponse.data.currency;
-
-      // Fetch the spend data for the given date range
-      const response = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'spend',
-          time_range: JSON.stringify({
-            since: dayjs(startDate).format('YYYY-MM-DD'),
-            until: dayjs(endDate).format('YYYY-MM-DD'),
-          }),
-        },
-      });
-
-      if (!response.data.data || response.data.data.length === 0) {
-        throw new Error('No data found for the given time period');
-      }
-
-      const spend = parseFloat(response.data.data.reduce((total: number, item: any) => total + parseFloat(item.spend), 0));
-
-      const previousResponse = await axios.get(`https://graph.facebook.com/v21.0/${adAccountId}/insights`, {
-        params: {
-          access_token: accessToken,
-          fields: 'spend',
-          date_preset: 'last_month',
-        },
-      });
-
-      if (!previousResponse.data.data || previousResponse.data.data.length === 0) {
-        throw new Error('No data found for the previous time period');
-      }
-
-      const previousSpend = parseFloat(previousResponse.data.data[0].spend);
-
-      const diff = ((spend - previousSpend) / previousSpend) * 100;
-      const trend: 'up' | 'down' = diff >= 0 ? 'up' : 'down';
-
-      const formattedValue = new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(spend);
-
-      setBudgetData({
-        value: formattedValue,
-        diff: Math.abs(diff),
-        trend: trend,
-        currency: currency,
-      });
-    } catch (error) {
-      console.error('Error fetching budget data:', error);
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Response data:', error.response.data);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchBudget();
-  }, [startDate, endDate]);
-
-  return <Budget {...budgetData} sx={{ height: '150px' }} />;
+  return <Budget value="No data available" diff={0} trend="up" sx={{ height: '150px' }} />;
 };
 
 export default BudgetContainer;
