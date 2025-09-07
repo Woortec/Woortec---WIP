@@ -38,9 +38,9 @@ export async function GET(request: NextRequest) {
 
     // Fetch dashboard data using centralized service
     const dashboardData = await fetchDashboardData({
-      startDate: start,
-      endDate: end,
-      timeRange: timeRange,
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0],
+      timeRange: timeRange as 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom',
     });
 
     return NextResponse.json({

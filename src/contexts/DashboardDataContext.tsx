@@ -5,14 +5,17 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { fetchDashboardData, clearDashboardCache, DashboardData, DashboardApiParams } from '@/lib/dashboard-api-service';
+import { fetchAdsPerformanceData, clearAdsPerformanceCache, AdsPerformanceData, AdsPerformanceApiParams } from '@/lib/ads-performance-api-service';
 import { getFallbackDashboardData, getRateLimitMessage } from '@/lib/fallback-data-service';
 
 interface DashboardDataContextType {
   data: DashboardData | null;
+  adsPerformanceData: AdsPerformanceData | null;
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
   clearCache: () => void;
+  refetchAdsPerformance: (params?: AdsPerformanceApiParams) => Promise<void>;
 }
 
 const DashboardDataContext = createContext<DashboardDataContextType | undefined>(undefined);
@@ -24,6 +27,7 @@ interface DashboardDataProviderProps {
 
 export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ children, params }) => {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [adsPerformanceData, setAdsPerformanceData] = useState<AdsPerformanceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,8 +65,32 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
 
   const clearCache = useCallback(() => {
     clearDashboardCache();
+    clearAdsPerformanceCache();
     setData(null);
+    setAdsPerformanceData(null);
   }, []);
+
+  const refetchAdsPerformance = useCallback(async (adsParams?: AdsPerformanceApiParams) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('🔄 Fetching ads performance data via context with params:', adsParams);
+      const adsData = await fetchAdsPerformanceData(adsParams || {
+        startDate: params.startDate,
+        endDate: params.endDate,
+        timeRange: params.timeRange
+      });
+      setAdsPerformanceData(adsData);
+      console.log('✅ Ads performance data fetched successfully via context');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch ads performance data';
+      console.error('❌ Error fetching ads performance data via context:', err);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [params]);
 
   useEffect(() => {
     console.log('📅 DashboardDataContext: Params changed, triggering fetch:', params);
@@ -89,10 +117,12 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
 
   const value: DashboardDataContextType = {
     data,
+    adsPerformanceData,
     loading,
     error,
     refetch: fetchData,
     clearCache,
+    refetchAdsPerformance,
   };
 
   return (
@@ -108,6 +138,16 @@ export const useDashboardData = (): DashboardDataContextType => {
     throw new Error('useDashboardData must be used within a DashboardDataProvider');
   }
   return context;
+};
+
+export const useAdsPerformanceData = () => {
+  const { adsPerformanceData, loading, error, refetchAdsPerformance } = useDashboardData();
+  return {
+    data: adsPerformanceData,
+    loading,
+    error,
+    refetch: refetchAdsPerformance,
+  };
 };
 
 // Individual data hooks for backward compatibility

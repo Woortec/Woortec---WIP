@@ -6,63 +6,33 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 
 import AdTable from './AdTable';
-import { fetchAdData, getItemWithExpiry, setItemWithExpiry, clearAdDataCache } from './api';
+import { getItemWithExpiry, setItemWithExpiry } from './utils';
 import BudgetInput from './BudgetInput';
 import styles from './styles/AdsPerformance.module.css';
 import { useUser } from '@/hooks/use-user';
+import { useAdsPerformanceData } from '@/contexts/DashboardDataContext';
 
 const AdsPerformance: React.FC = () => {
-  const [adData, setAdData] = useState<any[]>([]);
-  const [currency, setCurrency] = useState<string>('USD');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [budget, setBudget] = useState<number>(() => getItemWithExpiry('budget') ?? 200);
   const [warningAds, setWarningAds] = useState<number>(0);
   const [successAds, setSuccessAds] = useState<number>(0);
   const { locale, setLocale, t } = useLocale();
   const { user } = useUser();
+  const { data: adsPerformanceData, loading, error, refetch } = useAdsPerformanceData();
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      console.log('🔄 Starting to fetch ad data...');
-      console.log('👤 Current user:', user?.id);
-      
-      const { adData, currency } = await fetchAdData();
-      
-      console.log('📊 Received ad data:', adData?.length || 0, 'items');
-      console.log("crreuer",currency);
-      if (adData?.length > 0) {
-        console.log('📊 Sample ad data structure:', adData);
-        console.log('📊 Available fields:', Object.keys(adData[0]));
-      }
-      setAdData(adData || []);
-      setCurrency(currency || 'USD');
-      calculateAdStats(adData || []);
-      
-      // If we get an empty array but no error, that's a valid state
-      if (adData?.length === 0) {
-        console.log('ℹ️ No ad data found - this is a valid state');
-      }
-    } catch (err) {
-      console.error('❌ Error fetching ad data:', err);
-      setError('Failed to load ad data. Please try again.');
-      setAdData([]);
-    } finally {
-      setLoading(false);
-      console.log('✅ Finished fetching ad data');
+  // Calculate ad stats when data changes
+  useEffect(() => {
+    if (adsPerformanceData?.ads) {
+      calculateAdStats(adsPerformanceData.ads);
     }
-  };
+  }, [adsPerformanceData]);
 
   const handleRetry = () => {
-    clearAdDataCache(); // Clear cache before retrying
-    fetchData();
+    refetch();
   };
 
   const handleRefresh = () => {
-    clearAdDataCache(); // Clear cache before refreshing
-    fetchData();
+    refetch();
   };
 
   // Check if user has connected Facebook account
@@ -97,21 +67,19 @@ const AdsPerformance: React.FC = () => {
     checkFacebookConnection();
   }, [user?.id]);
 
+  // Fetch ads performance data when component mounts
   useEffect(() => {
-    // Only fetch data if we have a user and Facebook connection
     if (user?.id && hasFacebookConnection === true) {
-      console.log('👤 User available and Facebook connected, fetching ad data for:', user.id);
-      fetchData();
+      console.log('👤 User available and Facebook connected, fetching ads performance data for:', user.id);
+      refetch();
     } else if (user?.id && hasFacebookConnection === false) {
       console.log('⏳ User available but Facebook not connected');
-      setLoading(false);
     } else if (user?.id && hasFacebookConnection === null) {
       console.log('⏳ Checking Facebook connection...');
     } else {
       console.log('⏳ Waiting for user to be available...');
-      setLoading(false);
     }
-  }, [user?.id, hasFacebookConnection]);
+  }, [user?.id, hasFacebookConnection, refetch]);
 
   useEffect(() => {
     setItemWithExpiry('budget', budget, 24 * 60 * 60 * 1000);
@@ -236,7 +204,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{warningAds}</Typography>
+              }}>{adsPerformanceData?.activeAds || 0}</Typography>
             </Box>
           </Box>
           
@@ -252,7 +220,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{successAds}</Typography>
+              }}>{adsPerformanceData?.averageCtr?.toFixed(2) || '0.00'}%</Typography>
             </Box>
           </Box>
         </Box>
@@ -279,7 +247,12 @@ const AdsPerformance: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      <AdTable adData={adData} currency={currency} budget={budget} loading={loading} />
+      <AdTable 
+        adData={adsPerformanceData?.ads || []} 
+        currency={adsPerformanceData?.currency || 'USD'} 
+        budget={budget} 
+        loading={loading} 
+      />
     </Box>
   );
 };

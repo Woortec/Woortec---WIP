@@ -1,85 +1,57 @@
-export const getColor = (value: number, threshold: number, lowerIsBetter: boolean) => {
-  return lowerIsBetter ? (value <= threshold ? 'lightgreen' : 'lightcoral') : (value >= threshold ? 'lightgreen' : 'lightcoral');
-};
+// Utility functions for ads performance component
 
-export const formatValue = (value: number, currency: string, isCurrency: boolean = true) => {
-  if (value === null || value === undefined || isNaN(value)) {
-    return isCurrency ? `0 ${currency}` : '0';
+/**
+ * Get item from localStorage with expiry
+ */
+export function getItemWithExpiry(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) {
+    return null;
   }
-
-
-  return isCurrency ? `${Math.round(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}` : value.toLocaleString();
-};
-
-export const getComment = (metric: string, value: number, threshold: number, lowerIsBetter: boolean) => {
-  const aboveThreshold = lowerIsBetter ? value > threshold : value < threshold;
-
-  switch (metric) {
-    case 'CPC':
-      return aboveThreshold
-        ? 'Your CPC is higher than the average. Consider optimizing your ad content to reduce costs when updating your strategy.'
-        : 'Great job! Your CPC is below the average, indicating efficient ad spend.';
-    
-    case 'CTR':
-      return aboveThreshold
-        ? 'Your CTR is higher than expected. Continue using engaging content to sustain this level of performance.'
-        : 'Low CTR detected. Ensure your creatives are aligned to connect with your target audience.';
-    
-    case 'REACH':
-      return aboveThreshold
-        ? 'Your reach is performing well above the benchmark, ensuring your ads are seen by a wide audience.'
-        : 'Your reach is below the expected level. Consider adjusting your budget or targeting for better results.';
-    
-    case 'SPENT':
-      return aboveThreshold
-        ? 'Your spending aligns with our recommendations, showing robust campaign funding.'
-        : 'Your spending is lower than it should be for the selected time frame. Adjust your budget accordingly.';
-    
-    default:
-      return '';
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date();
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch (error) {
+    console.error('Error parsing item from localStorage', error);
+    return null;
   }
-};
+}
 
-export const getImpressionsComment = (impressions: number, expectedImpressions: number) => {
-  return impressions >= expectedImpressions
-    ? 'Your impressions are performing well above the benchmark, ensuring your ads are seen by a broad audience.'
-    : 'Your impressions are below the expected level. Consider increasing your investment or refining your audience targeting.';
-};
+/**
+ * Set item in localStorage with expiry
+ */
+export function setItemWithExpiry(key: string, value: string, expiry: number): void {
+  if (typeof window === 'undefined') return;
+  
+  const now = new Date();
+  const item = { value, expiry: now.getTime() + expiry };
+  localStorage.setItem(key, JSON.stringify(item));
+}
 
-export const calculateSpentColor = (spend: number, expectedSpend: number) => {
-  return spend >= expectedSpend ? 'lightgreen' : 'lightcoral';
-};
+/**
+ * Format numbers with currency, fallback to N/A
+ */
+export function formatValue(value: any, currency: string = '', fallback: string = 'N/A'): string {
+  if (value === null || value === undefined || isNaN(parseFloat(value))) {
+    return fallback;
+  }
+  return `${parseFloat(value).toFixed(2)} ${currency}`.trim();
+}
 
-export const calculateSpentComment = (spend: number, expectedSpend: number) => {
-  return spend >= expectedSpend
-    ? 'Your spending aligns with our recommendations, showing robust campaign funding.'
-    : 'Your spending is less than advised. Adjust your budget for better results.';
-};
-
-const conversionRates: { [key: string]: number } = {
-  USD: 1,
-  PHP: 50,
-  EUR: 0.85,
-  GBP: 0.75
-};
-
-const thresholds = {
-  ctr: 1.6, // New threshold for CTR
-  cpc: 0.09, // CPC threshold
-  impressions: 700, // Reach (impressions per $ invested)
-  spend: 50 // Expected spend threshold
-};
-
-export const convertThresholds = (currency: string) => {
-  const rate = conversionRates[currency] || 1;
-  return {
-    ctr: thresholds.ctr,
-    cpc: thresholds.cpc * rate,
-    impressions: thresholds.impressions,
-    spend: thresholds.spend * rate
-  };
-};
-
-export const calculateExpectedSpend = (budget: number, currency: string) => {
-  return budget;
-};
+/**
+ * Get color based on value comparison
+ */
+export function getColor(value: number, threshold: number, isHigherBetter: boolean = true): string {
+  if (isHigherBetter) {
+    return value >= threshold ? '#E8F5E8' : '#FFEFEF';
+  } else {
+    return value <= threshold ? '#E8F5E8' : '#FFEFEF';
+  }
+}

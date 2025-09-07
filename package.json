@@ -20,7 +20,12 @@
     "cron:status": "node scripts/manage-supabase-cron.js status",
     "cron:test": "node scripts/manage-supabase-cron.js test",
     "cron:logs": "node scripts/manage-supabase-cron.js logs",
-    "cron:remove": "node scripts/manage-supabase-cron.js remove"
+    "cron:remove": "node scripts/manage-supabase-cron.js remove",
+    "ads-cache:setup": "node scripts/manage-ads-performance-cache.js setup",
+    "ads-cache:status": "node scripts/manage-ads-performance-cache.js status",
+    "ads-cache:test": "node scripts/manage-ads-performance-cache.js test",
+    "ads-cache:logs": "node scripts/manage-ads-performance-cache.js logs",
+    "ads-cache:remove": "node scripts/manage-ads-performance-cache.js remove"
   },
   "dependencies": {
     "@emotion/cache": "11.11.0",
