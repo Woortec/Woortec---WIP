@@ -9,10 +9,11 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon, ArrowUp as ArrowUpIcon } from '@phosphor-icons/react';
 import { Target } from '@phosphor-icons/react';
-import { useImpressionsData } from '@/contexts/DashboardDataContext';
+import { useImpressionsData, useReachData } from '@/contexts/DashboardDataContext';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import { useLocale } from '@/contexts/LocaleContext';
 
 export interface TotalImpressionsProps {
@@ -21,9 +22,10 @@ export interface TotalImpressionsProps {
   sx?: SxProps;
   value: string;
   timeRange?: string;
+  clicks?: number;
 }
 
-export function TotalImpressions({ diff, trend, sx, value, timeRange }: TotalImpressionsProps): React.JSX.Element {
+export function TotalImpressions({ diff, trend, sx, value, timeRange, clicks }: TotalImpressionsProps): React.JSX.Element {
     const { t } = useLocale();
 
   console.log(value);
@@ -40,8 +42,9 @@ export function TotalImpressions({ diff, trend, sx, value, timeRange }: TotalImp
               <Target fontSize="1.5rem" style={{ color: 'white' }} />
             </Avatar>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '2.3rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '4.5rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
                <IconButton><LikeIcon size="1.2rem" /></IconButton>
+               <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
              </Box>
           </Box>
 
@@ -65,7 +68,7 @@ export function TotalImpressions({ diff, trend, sx, value, timeRange }: TotalImp
 
           <Box sx={{width: '35%', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ marginTop: 'auto',}}>
-              <Box sx={{ color: '#859096', textAlign:'center'}}>0</Box>
+              <Box sx={{ color: '#859096', textAlign:'center'}}>{clicks || 0}</Box>
               <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign:'center' }}>{t('DashboardCards.clicks')}</Box>
             </Box>
           </Box>
@@ -82,17 +85,18 @@ interface TotalImpressionsContainerProps {
 
 const TotalImpressionsContainer = ({ timeRange }: TotalImpressionsContainerProps) => {
   const { data: impressionsData, loading, error } = useImpressionsData();
+  const { data: reachData } = useReachData();
 
   if (loading) {
-    return <TotalImpressions value="Loading..." diff={0} trend="up" timeRange={timeRange} />;
+    return <TotalImpressions value="Loading..." diff={0} trend="up" timeRange={timeRange} clicks={0} />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (impressionsData) {
-    return <TotalImpressions {...impressionsData} timeRange={timeRange} />;
+    return <TotalImpressions {...impressionsData} timeRange={timeRange} clicks={reachData?.clicks} />;
   }
 
-  return <TotalImpressions value="No data available" diff={0} trend="up" timeRange={timeRange} />;
+  return <TotalImpressions value="No data available" diff={0} trend="up" timeRange={timeRange} clicks={0} />;
 };
 
 export default TotalImpressionsContainer;

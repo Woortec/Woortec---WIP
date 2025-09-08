@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ArrowUDownRight as RunningIcon } from '@phosphor-icons/react';
 import { ThumbsUp as LikeIcon } from '@phosphor-icons/react';
+import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useDate } from './date/DateContext';
@@ -44,6 +45,9 @@ export function TotalAds({ value, sx, timeRange, diff, trend }: TotalAdsProps): 
         <Box sx={{ display: 'flex', gap: 1, bgcolor: '#F2F4F5', borderRadius: 2, p: 0.5 }}>
           <IconButton size="small">
             <LikeIcon size={18} />
+          </IconButton>
+          <IconButton size="small" sx={{ transform: 'scaleX(-1)' }}>
+            <DislikeIcon size={18} />
           </IconButton>
         </Box>
       </Box>

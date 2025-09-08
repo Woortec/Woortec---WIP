@@ -12,7 +12,7 @@ import { ThumbsDown as DislikeIcon } from '@phosphor-icons/react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import { useLocale } from '@/contexts/LocaleContext';
-import { useCTRData } from '@/contexts/DashboardDataContext';
+import { useCTRData, useReachData } from '@/contexts/DashboardDataContext';
 
 export interface CTRProps {
   diff?: number;
@@ -20,6 +20,7 @@ export interface CTRProps {
   sx?: any;
   value: string;
   timeRange?: string;
+  clicks?: number;
 }
 
 export function CTR({
@@ -27,7 +28,8 @@ export function CTR({
   trend,
   sx,
   value,
-  timeRange
+  timeRange,
+  clicks
 }: CTRProps): React.JSX.Element {
   const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
@@ -71,7 +73,7 @@ export function CTR({
 
           <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ marginTop: 'auto' }}>
-              <Box sx={{ color: '#859096', textAlign: 'center' }}>0</Box>
+              <Box sx={{ color: '#859096', textAlign: 'center' }}>{clicks || 0}</Box>
               <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign: 'center' }}>
                 {t('DashboardCards.clicks')}
               </Box>
@@ -89,17 +91,18 @@ interface CTRContainerProps {
 
 const CTRContainer = ({ timeRange }: CTRContainerProps) => {
   const { data: ctrData, loading, error } = useCTRData();
+  const { data: reachData } = useReachData();
 
   if (loading) {
-    return <CTR value="Loading..." diff={0} trend="up" timeRange={timeRange} />;
+    return <CTR value="Loading..." diff={0} trend="up" timeRange={timeRange} clicks={0} />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (ctrData) {
-    return <CTR {...ctrData} timeRange={timeRange} />;
+    return <CTR {...ctrData} timeRange={timeRange} clicks={reachData?.clicks} />;
   }
 
-  return <CTR value="No data available" diff={0} trend="up" timeRange={timeRange} />;
+  return <CTR value="No data available" diff={0} trend="up" timeRange={timeRange} clicks={0} />;
 };
 
 export default CTRContainer;
