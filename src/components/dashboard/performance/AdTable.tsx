@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import AdDetail from './AdSetDetail';
-import { getColor, formatValue } from './utils';
+import { getColor, formatValue, formatMetric } from './utils';
 import styles from './styles/AdTable.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
 
@@ -108,7 +108,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                   },
                   }}
               >
-                {formatValue(ad.impressions, currency, 'N/A')} {/* Display Impressions */}
+                {formatMetric(ad.impressions, 'N/A')} {/* Display Impressions */}
               </Typography>
               </Box>
             </Box>
@@ -124,7 +124,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                   },
                   }}
               >
-                {formatValue(ad.reach || 0, currency, 'N/A')} {/* Display Reach */}
+                {formatMetric(ad.reach || 0, 'N/A')} {/* Display Reach */}
               </Typography>
               </Box>
             </Box>

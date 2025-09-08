@@ -93,7 +93,7 @@ export function TotalCostPerMessage({
                   variant="h4"
                   sx={{ paddingBottom: '0.7rem', fontSize: '1.5rem', fontWeight: '600' }}
                 >
-                  {value}
+                  {value}%
                 </Typography>
               </Stack>
             </Stack>

@@ -289,19 +289,44 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose, currency }) => {
 
           {/* Advice Content */}
           <Box className={styles.aiResponseContent}>
-            {aiResponse.split('\n').map((line, index) => (
-              <Typography key={index} component="div" sx={{ mb: 1 }}>
-                {line.match(/^\d+\./) ? (
-                  <strong>{line}</strong>
-                ) : line.startsWith('- ') ? (
-                  <ul style={{ marginLeft: '20px', listStyleType: 'disc' }}>
-                    <li>{line.substring(2)}</li>
-                  </ul>
-                ) : (
-                  line
-                )}
-              </Typography>
-            ))}
+            {(() => {
+              // Filter out the "Ad Performance Data" section and only show the advice
+              const lines = aiResponse.split('\n');
+              const filteredLines: string[] = [];
+              let skipDataSection = false;
+              
+              for (const line of lines) {
+                // Start skipping when we hit "Ad Performance Data:"
+                if (line.includes('Ad Performance Data:')) {
+                  skipDataSection = true;
+                  continue;
+                }
+                
+                // Stop skipping when we hit a line that looks like advice (not a metric)
+                if (skipDataSection && !line.startsWith('- ') && !line.includes(':') && line.trim() !== '') {
+                  skipDataSection = false;
+                }
+                
+                // Only include lines that are not part of the data section
+                if (!skipDataSection) {
+                  filteredLines.push(line);
+                }
+              }
+              
+              return filteredLines.map((line, index) => (
+                <Typography key={index} component="div" sx={{ mb: 1 }}>
+                  {line.match(/^\d+\./) ? (
+                    <strong>{line}</strong>
+                  ) : line.startsWith('- ') ? (
+                    <ul style={{ marginLeft: '20px', listStyleType: 'disc' }}>
+                      <li>{line.substring(2)}</li>
+                    </ul>
+                  ) : (
+                    line
+                  )}
+                </Typography>
+              ));
+            })()}
           </Box>
 
           {/* Sign-off */}

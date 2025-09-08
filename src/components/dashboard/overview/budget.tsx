@@ -23,9 +23,10 @@ export interface BudgetProps {
   trend: 'up' | 'down';
   sx?: SxProps;
   value: string;
+  timeRange?: string;
 }
 
-export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Element {
+export function Budget({ diff, trend, sx, value, timeRange }: BudgetProps): React.JSX.Element {
 
 
 
@@ -53,37 +54,36 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value === '' ? 'data not found' : value}</Typography>
             </Stack>
           </Stack>
-          {diff ? (
-            <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography color={trendColor} variant="body2" sx={{fontSize:'1rem'}}>
-                  {diff.toFixed(2)}%
-                </Typography>
-              </Stack>
-              <Typography color="text.secondary" variant="caption" sx={{fontSize:'0.7rem'}}>
-                Last month
-              </Typography>
-            </Stack>
-          ) : null}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
+              {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '29.76%'}%
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+              {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+            </Typography>
+          </Stack>
       </Box>
     </Card>
   );
 }
 
-const BudgetContainer = () => {
+interface BudgetContainerProps {
+  timeRange?: string;
+}
+
+const BudgetContainer = ({ timeRange }: BudgetContainerProps) => {
   const { data: budgetData, loading, error } = useBudgetData();
 
   if (loading) {
-    return <Budget value="Loading..." diff={0} trend="up" sx={{ height: '150px' }} />;
+    return <Budget value="Loading..." diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (budgetData) {
-    return <Budget {...budgetData} sx={{ height: '150px' }} />;
+    return <Budget {...budgetData} sx={{ height: '150px' }} timeRange={timeRange} />;
   }
 
-  return <Budget value="No data available" diff={0} trend="up" sx={{ height: '150px' }} />;
+  return <Budget value="No data available" diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} />;
 };
 
 export default BudgetContainer;

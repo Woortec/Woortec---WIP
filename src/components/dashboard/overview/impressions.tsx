@@ -20,9 +20,10 @@ export interface TotalImpressionsProps {
   trend: 'up' | 'down';
   sx?: SxProps;
   value: string;
+  timeRange?: string;
 }
 
-export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsProps): React.JSX.Element {
+export function TotalImpressions({ diff, trend, sx, value, timeRange }: TotalImpressionsProps): React.JSX.Element {
     const { t } = useLocale();
 
   console.log(value);
@@ -52,19 +53,14 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value === '' ? 'data not found' : value}</Typography>
             </Stack>
           </Stack>
-          {diff ? (
-            <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography color={trendColor} sx={{fontSize:'1rem'}}>
-                  {diff.toFixed(2)}%
-                </Typography>
-              </Stack>
-              <Typography color="text.secondary" sx={{fontSize:'0.7rem'}}>
-                {t('DashboardCards.lastMonth')}
-              </Typography>
-            </Stack>
-          ) : null}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
+              {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '16.66'}%
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+              {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+            </Typography>
+          </Stack>
           </Box>
 
           <Box sx={{width: '35%', display: 'flex', flexDirection: 'column' }}>
@@ -80,19 +76,23 @@ export function TotalImpressions({ diff, trend, sx, value }: TotalImpressionsPro
   );
 }
 
-const TotalImpressionsContainer = () => {
+interface TotalImpressionsContainerProps {
+  timeRange?: string;
+}
+
+const TotalImpressionsContainer = ({ timeRange }: TotalImpressionsContainerProps) => {
   const { data: impressionsData, loading, error } = useImpressionsData();
 
   if (loading) {
-    return <TotalImpressions value="Loading..." diff={0} trend="up" />;
+    return <TotalImpressions value="Loading..." diff={0} trend="up" timeRange={timeRange} />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (impressionsData) {
-    return <TotalImpressions {...impressionsData} />;
+    return <TotalImpressions {...impressionsData} timeRange={timeRange} />;
   }
 
-  return <TotalImpressions value="No data available" diff={0} trend="up" />;
+  return <TotalImpressions value="No data available" diff={0} trend="up" timeRange={timeRange} />;
 };
 
 export default TotalImpressionsContainer;

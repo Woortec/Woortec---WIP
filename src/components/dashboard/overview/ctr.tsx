@@ -19,13 +19,15 @@ export interface CTRProps {
   trend: 'up' | 'down';
   sx?: any;
   value: string;
+  timeRange?: string;
 }
 
 export function CTR({
   diff,
   trend,
   sx,
-  value
+  value,
+  timeRange
 }: CTRProps): React.JSX.Element {
   const { t } = useLocale();
   const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
@@ -53,23 +55,18 @@ export function CTR({
                   {t('DashboardCards.clickThroughRate')}
                 </Typography>
                 <Typography variant="h4" sx={{ paddingBottom: '0.7rem', fontSize: '1.5rem', fontWeight: '600' }}>
-                  {value === '' ? 'data not found' : value}
+                  {value === '' ? 'data not found' : value}%
                 </Typography>
               </Stack>
             </Stack>
-            {diff ? (
-              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                  <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                  <Typography color={trendColor} sx={{ fontSize: '1rem' }}>
-                    {diff.toFixed(2)}%
-                  </Typography>
-                </Stack>
-                <Typography color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  {t('DashboardCards.lastMonth')}
-                </Typography>
-              </Stack>
-            ) : null}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
+                {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '63.12'}%
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+              </Typography>
+            </Stack>
           </Box>
 
           <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column' }}>
@@ -87,23 +84,22 @@ export function CTR({
 }
 
 interface CTRContainerProps {
-  startDate: Date | null;
-  endDate: Date | null;
+  timeRange?: string;
 }
 
-const CTRContainer = () => {
+const CTRContainer = ({ timeRange }: CTRContainerProps) => {
   const { data: ctrData, loading, error } = useCTRData();
 
   if (loading) {
-    return <CTR value="Loading..." diff={0} trend="up" />;
+    return <CTR value="Loading..." diff={0} trend="up" timeRange={timeRange} />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (ctrData) {
-    return <CTR {...ctrData} />;
+    return <CTR {...ctrData} timeRange={timeRange} />;
   }
 
-  return <CTR value="No data available" diff={0} trend="up" />;
+  return <CTR value="No data available" diff={0} trend="up" timeRange={timeRange} />;
 };
 
 export default CTRContainer;

@@ -202,16 +202,16 @@ export default function Page(): React.JSX.Element {
         >
           <Grid container spacing={1.5}>
             <Grid item lg={3} md={6} xs={12}>
-              <BudgetContainer />
+              <BudgetContainer timeRange={timeRange} />
             </Grid>
             <Grid item lg={3} md={6} xs={12}>
-              <TotalImpressionsContainer />
+              <TotalImpressionsContainer timeRange={timeRange} />
             </Grid>
             <Grid item lg={3} md={6} xs={12}>
-              <CTRContainer />
+              <CTRContainer timeRange={timeRange} />
             </Grid>
             <Grid item lg={3} md={6} xs={12}>
-              <TotalProfitContainer />
+              <TotalProfitContainer timeRange={timeRange} />
             </Grid>
 
             <Grid item lg={12} xs={12}>

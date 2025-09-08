@@ -46,6 +46,16 @@ export function formatValue(value: any, currency: string = '', fallback: string 
 }
 
 /**
+ * Format numbers without currency (for metrics like impressions, reach), fallback to N/A
+ */
+export function formatMetric(value: any, fallback: string = 'N/A'): string {
+  if (value === null || value === undefined || isNaN(parseFloat(value))) {
+    return fallback;
+  }
+  return Math.round(parseFloat(value)).toLocaleString();
+}
+
+/**
  * Get color based on value comparison
  */
 export function getColor(value: number, threshold: number, isHigherBetter: boolean = true): string {

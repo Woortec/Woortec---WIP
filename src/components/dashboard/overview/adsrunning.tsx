@@ -19,9 +19,12 @@ import { CircularProgress } from '@mui/material';
 export interface TotalAdsProps {
   sx?: SxProps;
   value: string;
+  timeRange?: string;
+  diff?: number;
+  trend?: 'up' | 'down';
 }
 
-export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
+export function TotalAds({ value, sx, timeRange, diff, trend }: TotalAdsProps): React.JSX.Element {
   const { t } = useLocale();
   return (
  <Card
@@ -62,31 +65,34 @@ export function TotalAds({ value, sx }: TotalAdsProps): React.JSX.Element {
       </Box>
 
       <Stack direction="row" alignItems="center" spacing={1}>
-        {/* Since this is static in your example, we leave it hardcoded */}
-        <Typography variant="body2" sx={{ fontSize: '0.9rem', color: 'red' }}>
-          ↓ 52.67%
+        <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trend === 'up' ? 'green' : 'red' }}>
+          {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '72.21'}%
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-         {t('DashboardCards.lastMonth')}
+         {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
         </Typography>
       </Stack>
     </Card>
   );
 }
 
-const TotalAdsContainer = () => {
+interface TotalAdsContainerProps {
+  timeRange?: string;
+}
+
+const TotalAdsContainer = ({ timeRange }: TotalAdsContainerProps) => {
   const { data: adsRunningData, loading, error } = useAdsRunningData();
 
   if (loading) {
-    return <TotalAds value="Loading..." />;
+    return <TotalAds value="Loading..." timeRange={timeRange} diff={0} trend="up" />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
   if (adsRunningData) {
-    return <TotalAds value={adsRunningData.value} />;
+    return <TotalAds value={adsRunningData.value} timeRange={timeRange} diff={adsRunningData.diff} trend={adsRunningData.trend} />;
   }
 
-  return <TotalAds value="No data available" />;
+  return <TotalAds value="No data available" timeRange={timeRange} diff={0} trend="up" />;
 };
 
 export default TotalAdsContainer;

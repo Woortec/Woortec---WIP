@@ -102,7 +102,18 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
 
   useEffect(() => {
     if (adSpendData) {
-      setChartData(adSpendData);
+      console.log('Ad Spend Chart Data:', adSpendData);
+      // Ensure the chart data has the correct styling
+      const updatedChartData = {
+        ...adSpendData,
+        datasets: adSpendData.datasets.map(dataset => ({
+          ...dataset,
+          borderWidth: 0,
+          backgroundColor: '#486A75',
+          borderColor: '#486A75',
+        }))
+      };
+      setChartData(updatedChartData);
     }
   }, [adSpendData]);
 
@@ -145,6 +156,11 @@ export function Sales({ sx, startDate, endDate, timeRange }: SalesProps): React.
           plugins: {
             legend: {
               display: false,
+            },
+          },
+          elements: {
+            bar: {
+              borderWidth: 0,
             },
           },
           scales: {
