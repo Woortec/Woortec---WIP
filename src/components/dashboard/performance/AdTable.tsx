@@ -108,7 +108,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                   },
                   }}
               >
-                {formatValue(ad.impressions, currency, false)} {/* Display Impressions */}
+                {formatValue(ad.impressions, currency, 'N/A')} {/* Display Impressions */}
               </Typography>
               </Box>
             </Box>
@@ -124,7 +124,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                   },
                   }}
               >
-                {formatValue(ad.reach || 0, currency, false)} {/* Display Reach */}
+                {formatValue(ad.reach || 0, currency, 'N/A')} {/* Display Reach */}
               </Typography>
               </Box>
             </Box>

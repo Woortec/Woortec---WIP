@@ -13,7 +13,10 @@ import { useUser } from '@/hooks/use-user';
 import { useAdsPerformanceData } from '@/contexts/DashboardDataContext';
 
 const AdsPerformance: React.FC = () => {
-  const [budget, setBudget] = useState<number>(() => getItemWithExpiry('budget') ?? 200);
+  const [budget, setBudget] = useState<number>(() => {
+    const budgetValue = getItemWithExpiry('budget');
+    return budgetValue ? parseFloat(budgetValue) : 200;
+  });
   const [warningAds, setWarningAds] = useState<number>(0);
   const [successAds, setSuccessAds] = useState<number>(0);
   const { locale, setLocale, t } = useLocale();
@@ -82,7 +85,7 @@ const AdsPerformance: React.FC = () => {
   }, [user?.id, hasFacebookConnection, refetch]);
 
   useEffect(() => {
-    setItemWithExpiry('budget', budget, 24 * 60 * 60 * 1000);
+    setItemWithExpiry('budget', budget.toString(), 24 * 60 * 60 * 1000);
   }, [budget]);
 
   const handleBudgetChange = (newBudget: number) => {

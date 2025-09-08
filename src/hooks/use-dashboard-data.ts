@@ -52,9 +52,9 @@ export const useDashboardData = (params: DashboardApiParams): UseDashboardDataRe
 // Individual data hooks for backward compatibility
 export const useBudgetData = (startDate: Date | null, endDate: Date | null) => {
   const { data, loading, error, refetch } = useDashboardData({
-    startDate,
-    endDate,
-    timeRange: 'week',
+    startDate: startDate?.toISOString() || '',
+    endDate: endDate?.toISOString() || '',
+    timeRange: 'thisWeek',
   });
 
   return {
@@ -67,9 +67,9 @@ export const useBudgetData = (startDate: Date | null, endDate: Date | null) => {
 
 export const useImpressionsData = (startDate: Date | null, endDate: Date | null) => {
   const { data, loading, error, refetch } = useDashboardData({
-    startDate,
-    endDate,
-    timeRange: 'week',
+    startDate: startDate?.toISOString() || '',
+    endDate: endDate?.toISOString() || '',
+    timeRange: 'thisWeek',
   });
 
   return {
@@ -82,9 +82,9 @@ export const useImpressionsData = (startDate: Date | null, endDate: Date | null)
 
 export const useReachData = (startDate: Date | null, endDate: Date | null) => {
   const { data, loading, error, refetch } = useDashboardData({
-    startDate,
-    endDate,
-    timeRange: 'week',
+    startDate: startDate?.toISOString() || '',
+    endDate: endDate?.toISOString() || '',
+    timeRange: 'thisWeek',
   });
 
   return {
@@ -95,10 +95,10 @@ export const useReachData = (startDate: Date | null, endDate: Date | null) => {
   };
 };
 
-export const useAdSpendData = (startDate: Date | null, endDate: Date | null, timeRange: string) => {
+export const useAdSpendData = (startDate: Date | null, endDate: Date | null, timeRange: 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom') => {
   const { data, loading, error, refetch } = useDashboardData({
-    startDate,
-    endDate,
+    startDate: startDate?.toISOString() || '',
+    endDate: endDate?.toISOString() || '',
     timeRange,
   });
 
@@ -112,9 +112,9 @@ export const useAdSpendData = (startDate: Date | null, endDate: Date | null, tim
 
 export const useAdsRunningData = (startDate: Date | null, endDate: Date | null) => {
   const { data, loading, error, refetch } = useDashboardData({
-    startDate,
-    endDate,
-    timeRange: 'week',
+    startDate: startDate?.toISOString() || '',
+    endDate: endDate?.toISOString() || '',
+    timeRange: 'thisWeek',
   });
 
   return {
