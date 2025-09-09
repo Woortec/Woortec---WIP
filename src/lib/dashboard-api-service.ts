@@ -185,6 +185,35 @@ export function clearDashboardCache(): void {
 }
 
 /**
+ * Clear Supabase cache for a specific user and ad account
+ */
+export async function clearSupabaseCacheForUser(userId: string, adAccountId?: string): Promise<void> {
+  try {
+    console.log('🧹 Clearing Supabase cache for user:', userId, adAccountId ? `ad account: ${adAccountId}` : 'all accounts');
+    
+    let query = supabase
+      .from('dashboard_cache')
+      .delete()
+      .eq('user_id', userId);
+    
+    // If adAccountId is provided, filter by it; otherwise clear all for user
+    if (adAccountId) {
+      query = query.eq('ad_account_id', adAccountId);
+    }
+    
+    const { error } = await query;
+    
+    if (error) {
+      console.warn('⚠️ Error clearing Supabase cache:', error.message);
+    } else {
+      console.log('✅ Supabase cache cleared for user', adAccountId ? `and ad account ${adAccountId}` : '(all accounts)');
+    }
+  } catch (error) {
+    console.warn('⚠️ Error clearing Supabase cache:', error);
+  }
+}
+
+/**
  * Get API call count for debugging
  */
 export function getApiCallCount(): number {
@@ -290,6 +319,10 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
     }
 
     const { access_token: facebook_access_token, account_id: adAccountId, currency: accountCurrency } = facebookData;
+    
+    // Debug currency detection
+    console.log('🔍 Facebook data currency:', accountCurrency);
+    console.log('🔍 Full Facebook data:', facebookData);
 
     // Check Supabase cache first
     const { data: cachedData, isFresh } = await getCachedData(
@@ -519,7 +552,7 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
         value: safeCurrentSpend.toFixed(2),
         diff: Math.abs(spendDiff),
         trend: spendDiff >= 0 ? 'up' : 'down',
-        currency: accountCurrency || 'EUR', // Use actual currency from Facebook data
+        currency: accountCurrency && accountCurrency !== 'PHP' ? accountCurrency : 'EUR', // Use actual currency from Facebook data, fallback to EUR
       },
       impressions: {
         value: safeCurrentImpressions.toLocaleString(),

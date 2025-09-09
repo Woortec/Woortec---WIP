@@ -97,6 +97,24 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
     fetchData();
   }, [fetchData]);
 
+  // Listen for ad account changes to trigger refetch
+  useEffect(() => {
+    const handleAdAccountChange = (event: CustomEvent) => {
+      console.log('🔄 Ad account changed event received:', event.detail);
+      console.log('🔄 Triggering dashboard data refetch due to ad account change');
+      
+      // Refetch both dashboard data and ads performance data
+      fetchData();
+      refetchAdsPerformance();
+    };
+
+    window.addEventListener('adAccountChanged', handleAdAccountChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('adAccountChanged', handleAdAccountChange as EventListener);
+    };
+  }, [fetchData, refetchAdsPerformance]);
+
   // Debug effect to track params changes
   useEffect(() => {
     console.log('📅 DashboardDataContext: Params updated:', params);

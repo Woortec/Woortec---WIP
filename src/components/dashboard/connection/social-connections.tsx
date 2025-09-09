@@ -251,6 +251,29 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     } else {
       console.log('Data inserted into Supabase successfully:', data);
       setIsConnected(true);
+      
+      // Clear dashboard cache when switching ad accounts to ensure fresh data
+      try {
+        const { clearDashboardCache, clearSupabaseCacheForUser } = await import('../../../lib/dashboard-api-service');
+        clearDashboardCache();
+        if (localUserId) {
+          await clearSupabaseCacheForUser(localUserId, selectedAdAccount.id);
+        }
+        console.log('🧹 Dashboard cache cleared after ad account switch');
+        
+        // Trigger dashboard data refetch by dispatching custom event
+        const adAccountChangeEvent = new CustomEvent('adAccountChanged', {
+          detail: {
+            adAccountId: selectedAdAccount.id,
+            currency: selectedAdAccount.currency,
+            userId: localUserId
+          }
+        });
+        window.dispatchEvent(adAccountChangeEvent);
+        console.log('🔄 Dispatched adAccountChanged event to trigger dashboard refetch');
+      } catch (cacheError) {
+        console.warn('⚠️ Could not clear dashboard cache:', cacheError);
+      }
     }
   };
 
@@ -263,9 +286,34 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
     setUserId(null);
     setIsConnected(false);
 
-    // Optionally delete the data from Supabase
+    // Delete the data from Supabase
     const localUserId = localStorage.getItem('userid');
     await supabase.from('facebookData').delete().eq('user_id', localUserId);
+    
+    // Clear dashboard cache when disconnecting ad account
+    try {
+      const { clearDashboardCache, clearSupabaseCacheForUser } = await import('../../../lib/dashboard-api-service');
+      clearDashboardCache();
+      // Clear all cache entries for this user since they're disconnecting
+      if (localUserId) {
+        await clearSupabaseCacheForUser(localUserId);
+      }
+      console.log('🧹 Dashboard cache cleared after ad account disconnect');
+      
+      // Trigger dashboard data refetch by dispatching custom event
+      const adAccountDisconnectEvent = new CustomEvent('adAccountChanged', {
+        detail: {
+          adAccountId: null,
+          currency: null,
+          userId: localUserId,
+          disconnected: true
+        }
+      });
+      window.dispatchEvent(adAccountDisconnectEvent);
+      console.log('🔄 Dispatched adAccountChanged event for disconnect to trigger dashboard refetch');
+    } catch (cacheError) {
+      console.warn('⚠️ Could not clear dashboard cache:', cacheError);
+    }
   };
 
   return (

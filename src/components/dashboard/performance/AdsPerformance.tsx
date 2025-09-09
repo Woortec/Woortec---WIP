@@ -70,6 +70,46 @@ const AdsPerformance: React.FC = () => {
     checkFacebookConnection();
   }, [user?.id]);
 
+  // Listen for ad account changes to recheck Facebook connection
+  useEffect(() => {
+    const handleAdAccountChange = (event: CustomEvent) => {
+      console.log('🔄 Ad account changed event received in AdsPerformance:', event.detail);
+      if (user?.id) {
+        // Recheck Facebook connection status after ad account change
+        const checkFacebookConnection = async () => {
+          try {
+            const { createClient } = await import('../../../../utils/supabase/client');
+            const supabase = createClient();
+            const { data, error } = await supabase
+              .from('facebookData')
+              .select('access_token, account_id')
+              .eq('user_id', user.id)
+              .single();
+            
+            if (error && error.code !== 'PGRST116') {
+              console.error('Error checking Facebook connection after ad account change:', error);
+            }
+            
+            const hasConnection = !!(data?.access_token && data?.account_id);
+            setHasFacebookConnection(hasConnection);
+            console.log('🔗 Facebook connection status after ad account change:', hasConnection);
+          } catch (err) {
+            console.error('Error checking Facebook connection after ad account change:', err);
+            setHasFacebookConnection(false);
+          }
+        };
+        
+        checkFacebookConnection();
+      }
+    };
+
+    window.addEventListener('adAccountChanged', handleAdAccountChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('adAccountChanged', handleAdAccountChange as EventListener);
+    };
+  }, [user?.id]);
+
   // Fetch ads performance data when component mounts
   useEffect(() => {
     if (user?.id && hasFacebookConnection === true) {
