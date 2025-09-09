@@ -231,7 +231,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>${budget}</Typography>
+              }}>${Math.round(budget).toLocaleString()}</Typography>
             </Box>
           </Box>
 
@@ -247,7 +247,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{adsPerformanceData?.activeAds || 0}</Typography>
+              }}>{(adsPerformanceData?.activeAds || 0).toLocaleString()}</Typography>
             </Box>
           </Box>
           
@@ -263,7 +263,7 @@ const AdsPerformance: React.FC = () => {
               <Typography className={styles.summaryValue} sx={{ fontWeight:'600', fontSize: '1.9rem',
                 '@media (max-width: 675px)': {fontSize: '1.2rem',},
                 '@media (max-width: 440px)': {fontSize: '1.1rem',},
-              }}>{adsPerformanceData?.averageCtr?.toFixed(2) || '0.00'}%</Typography>
+              }}>{Math.round(adsPerformanceData?.averageCtr || 0)}%</Typography>
             </Box>
           </Box>
         </Box>

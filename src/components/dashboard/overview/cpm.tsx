@@ -102,7 +102,7 @@ export function TotalCostPerMessage({
                 <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                   <TrendIcon color={trendColor} />
                   <Typography color={trendColor} variant="body2" sx={{ fontSize: '0.9rem' }}>
-                    {diff.toFixed(2)}%
+                    {Math.round(diff)}%
                   </Typography>
                 </Stack>
                 <Typography color="text.secondary" variant="caption" sx={{ fontSize: '0.7rem' }}>

@@ -70,7 +70,7 @@ export function TotalAds({ value, sx, timeRange, diff, trend }: TotalAdsProps): 
 
       <Stack direction="row" alignItems="center" spacing={1}>
         <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trend === 'up' ? 'green' : 'red' }}>
-          {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '72.21'}%
+          {trend === 'up' ? '↑' : '↓'} {diff ? Math.round(diff) : '72'}%
         </Typography>
         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
          {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}

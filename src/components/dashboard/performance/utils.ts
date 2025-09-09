@@ -42,7 +42,7 @@ export function formatValue(value: any, currency: string = '', fallback: string 
   if (value === null || value === undefined || isNaN(parseFloat(value))) {
     return fallback;
   }
-  return `${parseFloat(value).toFixed(2)} ${currency}`.trim();
+  return `${Math.round(parseFloat(value)).toLocaleString()} ${currency}`.trim();
 }
 
 /**

@@ -139,7 +139,7 @@ const AdTable: React.FC<AdTableProps> = ({ adData, currency, budget, loading = f
                     fontSize: '0.8rem',
                   },
                 }}>
-                {parseFloat(ad?.ctr || 0).toFixed(2)}%
+                {Math.round(parseFloat(ad?.ctr || 0))}%
               </Typography>
               </Box>
             </Box>

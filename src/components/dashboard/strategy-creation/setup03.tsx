@@ -182,9 +182,9 @@ async function calculatePlan(
             dailyBudgetPerAd = dailyBudgetPerAdInUSD / conversionRate;
         }
 
-        // Round up investAmount and dailyBudgetPerAd to two decimal places
-        investAmount = Math.ceil(investAmount * 100) / 100;
-        dailyBudgetPerAd = Math.ceil(dailyBudgetPerAd * 100) / 100;
+        // Round investAmount and dailyBudgetPerAd to whole numbers
+        investAmount = Math.round(investAmount);
+        dailyBudgetPerAd = Math.round(dailyBudgetPerAd);
 
         // Apply the minimum daily budget per ad after conversion
         if (dailyBudgetPerAd < 1) {
@@ -196,9 +196,9 @@ async function calculatePlan(
             startingDay,
             plansWeek: `W${i + 1}`,
             investPercentage,
-            investAmount: +investAmount.toFixed(2),
+            investAmount: investAmount,
             numberOfAds: numberOfAds,
-            dailyBudgetPerAd: +dailyBudgetPerAd.toFixed(2),
+            dailyBudgetPerAd: dailyBudgetPerAd,
             calculatedIncrease: 0,
             toMessages: toMessages,
             toLink: toLink,
@@ -376,7 +376,7 @@ const StrategyResultPage: React.FC = () => {
                     <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.investAmount')} ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.invest}>
-                            {level.investAmount.toFixed(2)} {currency}
+                            {Math.round(level.investAmount).toLocaleString()} {currency}
                         </TableCellBox>
                     ))}
                     <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.numberOfAds')}</TableCellBox>
@@ -400,7 +400,7 @@ const StrategyResultPage: React.FC = () => {
                     <TableCellBox className={styles.tableCellBox}>{t('CampaignSetup.strategyResultPage.dailyBudgetPerAd')} ({currency})</TableCellBox>
                     {planOutput.map((level, index) => (
                         <TableCellBox key={index} className={styles.dailyBudget}>
-                            {level.dailyBudgetPerAd.toFixed(2)} {currency}
+                            {Math.round(level.dailyBudgetPerAd).toLocaleString()} {currency}
                         </TableCellBox>
                     ))}
                 </div>

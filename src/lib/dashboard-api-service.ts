@@ -185,6 +185,30 @@ export function clearDashboardCache(): void {
 }
 
 /**
+ * Force clear all caches and refresh data
+ */
+export async function forceRefreshDashboardData(): Promise<void> {
+  console.log('🔄 Force refreshing dashboard data...');
+  clearDashboardCache();
+  
+  // Get current user and clear Supabase cache
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (user && !userError) {
+    const { data: facebookData } = await supabase
+      .from('facebookData')
+      .select('account_id')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (facebookData?.account_id) {
+      await clearSupabaseCacheForUser(user.id, facebookData.account_id);
+    }
+  }
+  
+  console.log('✅ Dashboard cache force cleared');
+}
+
+/**
  * Clear Supabase cache for a specific user and ad account
  */
 export async function clearSupabaseCacheForUser(userId: string, adAccountId?: string): Promise<void> {
@@ -318,13 +342,34 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
       throw new Error('Facebook integration not configured');
     }
 
-    const { access_token: facebook_access_token, account_id: adAccountId, currency: accountCurrency } = facebookData;
+    const { access_token: facebook_access_token, account_id: adAccountId, currency: storedCurrency } = facebookData;
+    
+    // Fetch current currency from Facebook API to ensure accuracy
+    let accountCurrency = storedCurrency;
+    try {
+      const currencyResponse = await axios.get(
+        `https://graph.facebook.com/v21.0/${adAccountId}`,
+        { params: { access_token: facebook_access_token, fields: 'currency' } }
+      );
+      accountCurrency = currencyResponse.data.currency || storedCurrency;
+      console.log('🔍 Current Facebook API currency:', accountCurrency);
+      
+      // If currency has changed, clear the cache BEFORE checking it
+      if (accountCurrency !== storedCurrency) {
+        console.log('🔄 Currency changed from', storedCurrency, 'to', accountCurrency, '- clearing cache');
+        await clearSupabaseCacheForUser(user.id, adAccountId);
+        // Also clear in-memory cache
+        cachedDashboardData.clear();
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not fetch currency from Facebook API, using stored currency:', storedCurrency);
+    }
     
     // Debug currency detection
-    console.log('🔍 Facebook data currency:', accountCurrency);
-    console.log('🔍 Full Facebook data:', facebookData);
+    console.log('🔍 Stored currency:', storedCurrency);
+    console.log('🔍 Final currency used:', accountCurrency);
 
-    // Check Supabase cache first
+    // Check Supabase cache first (only if currency hasn't changed)
     const { data: cachedData, isFresh } = await getCachedData(
       user.id,
       adAccountId,
@@ -333,9 +378,9 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
       params.timeRange
     );
 
-    // If we have fresh cached data, use it
-    if (cachedData && isFresh) {
-      console.log('✅ Using fresh Supabase cached data');
+    // If we have fresh cached data AND the currency matches, use it
+    if (cachedData && isFresh && cachedData.budget?.currency === accountCurrency) {
+      console.log('✅ Using fresh Supabase cached data with matching currency:', accountCurrency);
       
       // Also store in in-memory cache for faster access
       const cacheKey = `${params.startDate}-${params.endDate}-${params.timeRange}`;
@@ -346,6 +391,8 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
       console.log('💾 Stored Supabase data in in-memory cache with key:', cacheKey);
       
       return cachedData;
+    } else if (cachedData && isFresh && cachedData.budget?.currency !== accountCurrency) {
+      console.log('⚠️ Cached data currency mismatch:', cachedData.budget?.currency, 'vs', accountCurrency, '- fetching fresh data');
     }
 
     // If cache is stale or doesn't exist, fetch from Facebook
@@ -547,12 +594,13 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
     const ctrDiff = safePreviousCTR > 0 ? ((safeCurrentCTR - safePreviousCTR) / safePreviousCTR) * 100 : 0;
 
     // Build dashboard data
+    console.log('🔍 Building dashboard data with currency:', accountCurrency);
     const dashboardData: DashboardData = {
       budget: {
-        value: safeCurrentSpend.toFixed(2),
+        value: Math.round(safeCurrentSpend).toLocaleString(),
         diff: Math.abs(spendDiff),
         trend: spendDiff >= 0 ? 'up' : 'down',
-        currency: accountCurrency && accountCurrency !== 'PHP' ? accountCurrency : 'EUR', // Use actual currency from Facebook data, fallback to EUR
+        currency: accountCurrency || 'USD', // Use actual currency from Facebook data, fallback to USD
       },
       impressions: {
         value: safeCurrentImpressions.toLocaleString(),

@@ -58,7 +58,7 @@ export function TotalImpressions({ diff, trend, sx, value, timeRange, clicks }: 
           </Stack>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
-              {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '16.66'}%
+              {trend === 'up' ? '↑' : '↓'} {diff ? Math.round(diff) : '17'}%
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
               {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
