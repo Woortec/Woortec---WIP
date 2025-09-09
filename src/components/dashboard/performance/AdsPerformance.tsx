@@ -135,7 +135,7 @@ const AdsPerformance: React.FC = () => {
             px: 3,
             py: 1.5
           }}
-          onClick={() => window.location.href = '/dashboard/social-connections'}
+          onClick={() => window.location.href = '/dashboard/connection'}
         >
           Connect Facebook Account
         </Button>
