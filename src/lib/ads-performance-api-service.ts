@@ -466,7 +466,7 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
 
   const adsPerformanceData: AdsPerformanceData = {
     ads: processedAds,
-    currency: accountData.currency || currency || 'USD',
+    currency: accountData.currency || currency,
     activeAds: activeAdsCount,
     averageCtr: averageCtr
   };

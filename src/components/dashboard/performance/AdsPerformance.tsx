@@ -292,7 +292,7 @@ const AdsPerformance: React.FC = () => {
       </Box>
       <AdTable 
         adData={adsPerformanceData?.ads || []} 
-        currency={adsPerformanceData?.currency || 'USD'} 
+        currency={adsPerformanceData?.currency || ''} 
         budget={budget} 
         loading={loading} 
       />

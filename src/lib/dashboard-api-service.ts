@@ -600,7 +600,7 @@ async function performFetch(params: DashboardApiParams): Promise<DashboardData> 
         value: Math.round(safeCurrentSpend).toLocaleString(),
         diff: Math.abs(spendDiff),
         trend: spendDiff >= 0 ? 'up' : 'down',
-        currency: accountCurrency || 'USD', // Use actual currency from Facebook data, fallback to USD
+        currency: accountCurrency, // Use actual currency from Facebook data
       },
       impressions: {
         value: safeCurrentImpressions.toLocaleString(),
