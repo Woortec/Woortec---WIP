@@ -53,7 +53,7 @@ export function Budget({ diff, trend, sx, value, timeRange, currency }: BudgetPr
             <Stack>
               <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary"> {t('DashboardCards.budget')}</Typography>
               <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>
-                {value === '' ? 'data not found' : `${value} ${currency || 'USD'}`}
+                {value === '' ? 'data not found' : `${value} ${currency || ''}`}
               </Typography>
             </Stack>
           </Stack>
@@ -78,7 +78,7 @@ const BudgetContainer = ({ timeRange }: BudgetContainerProps) => {
   const { data: budgetData, loading, error } = useBudgetData();
 
   if (loading) {
-    return <Budget value="Loading..." diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} currency="USD" />;
+    return <Budget value="Loading..." diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} currency="" />;
   }
 
   // Show fallback data even if there's an error (rate limit handling)
@@ -86,7 +86,7 @@ const BudgetContainer = ({ timeRange }: BudgetContainerProps) => {
     return <Budget {...budgetData} sx={{ height: '150px' }} timeRange={timeRange} currency={budgetData.currency} />;
   }
 
-  return <Budget value="No data available" diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} currency="USD" />;
+  return <Budget value="No data available" diff={0} trend="up" sx={{ height: '150px' }} timeRange={timeRange} currency="" />;
 };
 
 export default BudgetContainer;
