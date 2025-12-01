@@ -229,13 +229,9 @@ export async function fetchAdsPerformanceData(params: AdsPerformanceApiParams): 
     throw new Error(`Rate limit cooldown active. Please wait ${remainingTime} more minutes.`);
   }
 
-  // Check in-memory cache first
-  if (isAdsPerformanceCacheValid(params.startDate, params.endDate, params.timeRange)) {
-    const cacheKey = `${params.startDate}-${params.endDate}-${params.timeRange}`;
-    const cachedEntry = cachedAdsPerformanceData.get(cacheKey);
-    console.log('✅ Using in-memory cached ads performance data for:', cacheKey);
-    return cachedEntry!.data;
-  }
+  // Skip cache - always fetch fresh data to ensure we get high-quality images
+  // (Cache might contain old data with thumbnail URLs)
+  console.log('🔄 Skipping cache - fetching fresh data for high-quality images');
 
   // Singleton pattern to prevent multiple simultaneous fetches
   if (isFetching && fetchPromise) {
@@ -285,28 +281,9 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
 
   console.log('🔑 Using ad account:', adAccountId);
 
-  // Check Supabase cache first
-  const { data: cachedData, isFresh } = await getCachedAdsPerformanceData(
-    user.id,
-    adAccountId,
-    params.startDate,
-    params.endDate,
-    params.timeRange
-  );
-
-  // If we have fresh cached data, use it
-  if (cachedData && isFresh) {
-    console.log('✅ Using fresh Supabase cached ads performance data');
-    
-    // Also store in in-memory cache for faster access
-    const cacheKey = `${params.startDate}-${params.endDate}-${params.timeRange}`;
-    cachedAdsPerformanceData.set(cacheKey, {
-      data: cachedData,
-      timestamp: Date.now()
-    });
-    
-    return cachedData;
-  }
+  // Skip Supabase cache - always fetch fresh data to ensure high-quality images
+  // (Cache might contain old data with thumbnail URLs or missing image URLs)
+  console.log('🔄 Skipping Supabase cache - fetching fresh data for high-quality images');
 
   // Create batch requests for Facebook API
   const batchRequests = [
@@ -315,10 +292,10 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
       method: 'GET',
       relative_url: `${adAccountId}?fields=currency`
     },
-    // Ads list with basic info
+    // Ads list with basic info - request creative with all image fields
     {
       method: 'GET', 
-      relative_url: `${adAccountId}/ads?fields=id,name,status,creative.limit(50)&limit=1000`
+      relative_url: `${adAccountId}/ads?fields=id,name,status,creative{id,name,image_url,thumbnail_url,object_story_spec{link_data{image_hash,picture},photo_data{image_hash,url},video_data{video_id}},asset_feed_spec{images{url},videos{thumbnail_url}},effective_object_story_id}&limit=1000`
     },
     // Insights data for the date range
     {
@@ -394,41 +371,21 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
     adNames[ad.id] = ad.name;
   });
 
-  // Create creative IDs lookup
-  const creativeIds: Record<string, string> = {};
+  // Create creative lookup - store full creative objects, not just IDs
+  const creatives: Record<string, any> = {};
   adsData.data?.forEach((ad: any) => {
-    const creativeId = ad?.creative?.id;
-    if (creativeId) creativeIds[ad.id] = creativeId;
-  });
-
-  // Fetch creative images
-  const creativeImageUrls: Record<string, string | null> = {};
-  const creativePromises = Object.values(creativeIds).map(async (creativeId) => {
-    try {
-      const creativeResponse = await makeFacebookApiCall(
-        `https://graph.facebook.com/v21.0/${creativeId}`,
-        { 
-          access_token, 
-          // Try to fetch the highest quality image available
-          // image_url is usually the full creative, picture is often a larger version than thumbnail_url
-          fields: 'image_url,thumbnail_url,object_story_spec{link_data{picture}}' 
-        }
-      );
-      if (creativeResponse?.id) {
-        const hdImageUrl =
-          creativeResponse.image_url ||
-          creativeResponse?.object_story_spec?.link_data?.picture ||
-          creativeResponse.thumbnail_url ||
-          null;
-
-        creativeImageUrls[creativeResponse.id] = hdImageUrl;
-      }
-    } catch (err) {
-      console.warn(`Failed to fetch creative ${creativeId}`, err);
+    // Handle both creative object and creative.data[0] (if creative is paginated)
+    let creative = ad?.creative;
+    if (!creative && ad?.creative?.data && Array.isArray(ad.creative.data) && ad.creative.data.length > 0) {
+      creative = ad.creative.data[0];
+    }
+    if (creative?.id) {
+      // Store the full creative object with all fields
+      creatives[ad.id] = creative;
     }
   });
 
-  await Promise.all(creativePromises);
+  // Don't fetch missing creatives or images here - only fetch when ad is clicked
 
   // Process insights data
   const processedAds = insightsData.data?.map((insight: any) => {
@@ -443,8 +400,10 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
     const ctr = facebookCtr !== undefined ? facebookCtr : (impressions > 0 ? (clicks / impressions) * 100 : 0);
     
     const cpc = insight.cpc || 0;
-    const creativeId = creativeIds[adId];
-    const imageUrl = creativeId ? creativeImageUrls[creativeId] : null;
+    // Store the full creative object (not just ID) so we can use it later
+    const creative = creatives[adId] || null;
+    // Don't set imageUrl here - will be fetched on-demand when ad is clicked
+    const imageUrl = undefined;
     
     // Use insight.name if present, then adNames, then fallback
     let adName = insight.name || adNames[adId] || 'Unnamed Ad';
@@ -462,7 +421,7 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
       reach: parseFloat(reach) || 0,
       frequency: parseFloat(frequency) || 0,
       actions: insight.actions || [],
-      creative: { id: creativeId },
+      creative: creative || null, // Store full creative object with all fields
       imageUrl
     };
   }) || [];
@@ -507,6 +466,39 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
 }
 
 /**
+ * Clear Supabase ads performance cache for specific parameters
+ */
+async function clearSupabaseAdsPerformanceCache(
+  userId: string,
+  adAccountId: string,
+  startDate: string,
+  endDate: string,
+  timeRange: string
+): Promise<void> {
+  try {
+    console.log('🧹 Clearing Supabase ads performance cache for:', { userId, adAccountId, startDate, endDate, timeRange });
+    
+    // Delete the specific cache entry
+    const { error } = await supabase
+      .from('ads_performance_cache')
+      .delete()
+      .eq('user_id', userId)
+      .eq('ad_account_id', adAccountId)
+      .eq('start_date', startDate)
+      .eq('end_date', endDate)
+      .eq('time_range', timeRange);
+    
+    if (error) {
+      console.warn('⚠️ Error clearing Supabase ads performance cache:', error.message);
+    } else {
+      console.log('✅ Supabase ads performance cache cleared');
+    }
+  } catch (error) {
+    console.warn('⚠️ Error clearing Supabase ads performance cache:', error);
+  }
+}
+
+/**
  * Clear ads performance cache
  */
 export function clearAdsPerformanceCache(): void {
@@ -531,4 +523,125 @@ export function getLastAdsPerformanceFetchTime(): number {
   });
   
   return latestTime;
+}
+
+/**
+ * Fetch image URL from a creative object (on-demand, when ad is clicked)
+ * Uses the creative object that was already fetched with all fields
+ */
+export async function fetchAdImage(creative: any): Promise<string | null> {
+  if (!creative || !creative.id) {
+    return null;
+  }
+
+  try {
+    // Get authenticated user and access token for image_hash resolution
+    const user = await getAuthenticatedUser();
+    const { data: facebookData, error: facebookError } = await supabase
+      .from('facebookData')
+      .select('access_token')
+      .eq('user_id', user.id)
+      .single();
+
+    if (facebookError || !facebookData?.access_token) {
+      return null;
+    }
+
+    const { access_token } = facebookData;
+
+    // Priority 1: Direct HD image_url if present
+    if (creative.image_url) {
+      return creative.image_url;
+    }
+
+    // Priority 2: Dynamic/catalog assets
+    const assetImg = creative.asset_feed_spec?.images?.[0]?.url;
+    if (assetImg) {
+      return assetImg;
+    }
+
+    // Priority 3: Link ads - try image_hash first (highest quality)
+    const linkData = creative.object_story_spec?.link_data;
+    if (linkData?.image_hash) {
+      try {
+        const imageResponse = await makeFacebookApiCall(
+          `https://graph.facebook.com/v21.0/${linkData.image_hash}`,
+          { 
+            access_token, 
+            fields: 'url' 
+          }
+        );
+        if (imageResponse?.url) {
+          return imageResponse.url;
+        }
+      } catch (err) {
+        // Continue to next option
+      }
+    }
+    
+    // Priority 4: Link ads - picture field
+    if (linkData?.picture) {
+      return linkData.picture;
+    }
+
+    // Priority 5: Photo ads - try image_hash first
+    const photoData = creative.object_story_spec?.photo_data;
+    if (photoData?.image_hash) {
+      try {
+        const imageResponse = await makeFacebookApiCall(
+          `https://graph.facebook.com/v21.0/${photoData.image_hash}`,
+          { 
+            access_token, 
+            fields: 'url' 
+          }
+        );
+        if (imageResponse?.url) {
+          return imageResponse.url;
+        }
+      } catch (err) {
+        // Continue to next option
+      }
+    }
+    
+    // Priority 6: Photo ads - url field
+    if (photoData?.url) {
+      return photoData.url;
+    }
+
+    // Priority 7: Page post ads – image is on the post, not the creative
+    // This is critical - many ads store HD images on the post, not the creative
+    if (creative.effective_object_story_id) {
+      try {
+        const postResponse = await makeFacebookApiCall(
+          `https://graph.facebook.com/v21.0/${creative.effective_object_story_id}`,
+          { 
+            access_token, 
+            fields: 'full_picture,attachments{media{image{src}}}' 
+          }
+        );
+        
+        const postImg = postResponse?.full_picture || postResponse?.attachments?.data?.[0]?.media?.image?.src;
+        if (postImg) {
+          return postImg;
+        }
+      } catch (err: any) {
+        // Check if it's a permission error
+        if (err?.response?.data?.error?.code === 10 || 
+            err?.response?.data?.error?.message?.includes('pages_read_engagement')) {
+          // Permission missing - user needs to reconnect with pages_read_engagement
+          // For now, continue to fallback (thumbnail_url)
+        }
+        // Continue to fallback for other errors too
+      }
+    }
+
+    // Priority 8: Fallback to thumbnail_url only if nothing else available (blurred, low quality)
+    if (creative.thumbnail_url) {
+      return creative.thumbnail_url;
+    }
+
+    return null;
+  } catch (err) {
+    return null;
+  }
 }

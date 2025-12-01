@@ -23,6 +23,7 @@ import {
   getAIResponse,
   waitForRunCompletion,
 } from './api';
+import { fetchAdImage } from '@/lib/ads-performance-api-service';
 import { formatValue as formatCurrency } from './utils';
 import styles from './styles/AdSetDetail.module.css';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -44,17 +45,25 @@ const getHdImageUrl = (url: string | null | undefined): string | null => {
   try {
     const parsed = new URL(url);
 
-    // Only touch Facebook CDN / image proxy URLs
-    if (!parsed.hostname.includes('fbcdn.net') && !parsed.pathname.includes('safe_image.php')) {
-      return url;
+    // Handle Facebook CDN / image proxy URLs
+    if (parsed.hostname.includes('fbcdn.net') || parsed.pathname.includes('safe_image.php')) {
+      // Common Graph image query params – increase target size for better quality
+      parsed.searchParams.set('width', '1200');
+      parsed.searchParams.set('height', '1200');
+      parsed.searchParams.set('quality', '100');
+      return parsed.toString();
     }
 
-    // Common Graph image query params – increase target size
-    parsed.searchParams.set('width', '800');
-    parsed.searchParams.set('height', '800');
-    parsed.searchParams.set('quality', '100');
+    // Handle other Facebook/Meta image URLs
+    if (parsed.hostname.includes('facebook.com') || parsed.hostname.includes('fb.com') || parsed.hostname.includes('meta.com')) {
+      parsed.searchParams.set('width', '1200');
+      parsed.searchParams.set('height', '1200');
+      parsed.searchParams.set('quality', '100');
+      return parsed.toString();
+    }
 
-    return parsed.toString();
+    // For other URLs, return as-is (might be external CDN or already high quality)
+    return url;
   } catch {
     // If URL parsing fails, just fall back to original URL
     return url;
@@ -77,16 +86,33 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose, currency }) => {
       try {
         // 1) fetch ad metrics
         const { adData } = await fetchAdData();
+        console.log('🔍 AdSetDetail - Fetched adData:', adData.length, 'ads');
         const detail = adData.find((ad: any) => ad.ad_id === adId);
+        console.log('🔍 AdSetDetail - Found detail for adId:', adId, detail ? 'Found' : 'Not found');
+        
+        if (detail) {
+          // 2) Fetch image on-demand using the creative object (only when ad is clicked)
+          if (!detail.imageUrl && detail.creative) {
+            const imageUrl = await fetchAdImage(detail.creative);
+            if (imageUrl) {
+              detail.imageUrl = imageUrl;
+            }
+          }
+        }
         setAdDetail(detail ?? null);
 
         // 2) load persisted advice
-        const { data: row } = await supabase
+        const { data: row, error } = await supabase
           .from('ad_advice')
           .select('advice, created_at')
           .eq('user_id', userId)
           .eq('ad_id', adId)
-          .single();
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116 is "not found" which is expected when no advice exists
+          console.error('Error loading ad advice:', error);
+        }
 
         if (row) {
           setAiResponse(row.advice);

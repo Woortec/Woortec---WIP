@@ -130,7 +130,7 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
             exchangeLongLivedToken(shortLivedToken, userId);
           }
         },
-        { scope: 'ads_read, pages_show_list' }
+        { scope: 'ads_read, pages_show_list, pages_read_engagement' }
       );
     }
   };

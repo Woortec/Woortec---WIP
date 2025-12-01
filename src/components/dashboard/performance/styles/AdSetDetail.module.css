@@ -35,16 +35,20 @@
 
 .adCreative {
   display: flex;
-  flex: 0 0 260px; /* give the image a bit more dedicated space */
+  flex: 0 0 380px; /* give the image a bit more dedicated space */
   align-items: center;
 }
 
 .adCreative img {
   width: 100%;
-  max-width: 300px; /* slightly larger thumbnail */
+  max-width: 400px; /* slightly larger thumbnail */
   height: auto;
-  max-height: 300px;
+  max-height: 400px;
   object-fit: contain;
+  image-rendering: high-quality;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: auto;
+  -ms-interpolation-mode: bicubic;
 }
 
 .budgetContainer {
@@ -160,7 +164,7 @@
 
   .adCreative img {
     max-width: 100%;
-    max-height: 260px;
+    max-height: 350px;
   }
   
   .budgetContainer {
