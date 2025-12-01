@@ -409,11 +409,19 @@ async function performAdsPerformanceFetch(params: AdsPerformanceApiParams): Prom
         `https://graph.facebook.com/v21.0/${creativeId}`,
         { 
           access_token, 
-          fields: 'image_url,thumbnail_url' 
+          // Try to fetch the highest quality image available
+          // image_url is usually the full creative, picture is often a larger version than thumbnail_url
+          fields: 'image_url,thumbnail_url,object_story_spec{link_data{picture}}' 
         }
       );
       if (creativeResponse?.id) {
-        creativeImageUrls[creativeResponse.id] = creativeResponse.image_url || creativeResponse.thumbnail_url || null;
+        const hdImageUrl =
+          creativeResponse.image_url ||
+          creativeResponse?.object_story_spec?.link_data?.picture ||
+          creativeResponse.thumbnail_url ||
+          null;
+
+        creativeImageUrls[creativeResponse.id] = hdImageUrl;
       }
     } catch (err) {
       console.warn(`Failed to fetch creative ${creativeId}`, err);

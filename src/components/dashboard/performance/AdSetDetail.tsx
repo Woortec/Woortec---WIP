@@ -37,6 +37,30 @@ const AGENT_NAME = 'Sheela';
 const AGENT_TITLE = 'Senior Ads Strategist, Woortec';
 const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
+// Try to request a higher-quality version of Facebook images by tweaking URL params
+const getHdImageUrl = (url: string | null | undefined): string | null => {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+
+    // Only touch Facebook CDN / image proxy URLs
+    if (!parsed.hostname.includes('fbcdn.net') && !parsed.pathname.includes('safe_image.php')) {
+      return url;
+    }
+
+    // Common Graph image query params – increase target size
+    parsed.searchParams.set('width', '800');
+    parsed.searchParams.set('height', '800');
+    parsed.searchParams.set('quality', '100');
+
+    return parsed.toString();
+  } catch {
+    // If URL parsing fails, just fall back to original URL
+    return url;
+  }
+};
+
 const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose, currency }) => {
   const supabase = createClient();
   const userId = localStorage.getItem('userid')!;
@@ -170,7 +194,7 @@ const AdDetail: React.FC<AdDetailProps> = ({ adId, onClose, currency }) => {
         <Box className={styles.adCreative}>
           {adDetail.imageUrl ? (
             <img
-              src={adDetail.imageUrl}
+              src={getHdImageUrl(adDetail.imageUrl) || adDetail.imageUrl}
               alt="Ad Creative"
               style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
               onLoad={() => console.log('Ad Creative image loaded:', adDetail.imageUrl)}
