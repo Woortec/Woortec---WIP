@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, Typography, Modal, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { FacebookLogo as FacebookIcon, InstagramLogo as InstagramIcon, LinkedinLogo as LinkedInIcon } from '@phosphor-icons/react';
+import { Box, Button, Card, CardContent, Typography, Modal, IconButton, Chip, CircularProgress } from '@mui/material';
+import { FacebookLogo as FacebookIcon, InstagramLogo as InstagramIcon, LinkedinLogo as LinkedInIcon, X as CloseIcon, CheckCircle as CheckIcon } from '@phosphor-icons/react';
 import GoogleIcon from '@/components/core/GoogleIcon';
 import { useLocale } from '@/contexts/LocaleContext';
 import { createClient } from '../../../../utils/supabase/client';
@@ -652,84 +652,186 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
         </Card>
       </Box>
 
-      {/* Ad Account Selection Modal */}
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        className={styles.modal}
-      >
-        <Box className={styles.modalContent}>
-          <Typography className={styles.modalTitle}>Select Ad Account</Typography>
-          <FormControl fullWidth className={styles.selectContainer}>
-            <InputLabel>Ad Account</InputLabel>
-            <Select
-              value=""
-              onChange={(e) => handleAdAccountSelect(e.target.value)}
-              displayEmpty
-            >
+      {/* ── Facebook Ad Account Selection Modal ─────────────────────── */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <Box sx={modalOverlaySx}>
+          <Box sx={modalBoxSx}>
+            {/* Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Box>
+                <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: '#1a1a2e' }}>Select Ad Account</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mt: 0.5 }}>Choose the Facebook ad account to connect</Typography>
+              </Box>
+              <IconButton onClick={() => setModalOpen(false)} sx={closeButtonSx}>
+                <CloseIcon size={18} />
+              </IconButton>
+            </Box>
+            {/* Account Cards */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: '60vh', overflowY: 'auto', pr: 0.5 }}>
               {adAccounts.map((account) => (
-                <MenuItem key={account.id} value={account.id}>
-                  {account.name} ({account.currency})
-                </MenuItem>
+                <Box
+                  key={account.id}
+                  onClick={() => handleAdAccountSelect(account.id)}
+                  sx={accountCardSx}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ width: 40, height: 40, borderRadius: '10px', background: 'linear-gradient(135deg, #1877F2 0%, #0d5abf 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <FacebookIcon size={22} color="#fff" />
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ fontWeight: 600, color: '#1a1a2e', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{account.name}</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mt: 0.2 }}>ID: {account.id}</Typography>
+                    </Box>
+                    <Chip label={account.currency} size="small" sx={{ background: '#e8f5e9', color: '#2e7d32', fontWeight: 600, fontSize: '0.72rem', height: 24 }} />
+                  </Box>
+                </Box>
               ))}
-            </Select>
-          </FormControl>
+            </Box>
+          </Box>
         </Box>
       </Modal>
 
-      {/* Page Selection Modal */}
-      <Modal
-        open={pageModalOpen}
-        onClose={() => setPageModalOpen(false)}
-        className={styles.modal}
-      >
-        <Box className={styles.modalContent}>
-          <Typography className={styles.modalTitle}>Select Page</Typography>
-          <FormControl fullWidth className={styles.selectContainer}>
-            <InputLabel>Page</InputLabel>
-            <Select
-              value=""
-              onChange={(e) => handlePageSelect(e.target.value)}
-              displayEmpty
-            >
+      {/* ── Facebook Page Selection Modal ──────────────────────────────── */}
+      <Modal open={pageModalOpen} onClose={() => setPageModalOpen(false)}>
+        <Box sx={modalOverlaySx}>
+          <Box sx={modalBoxSx}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Box>
+                <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: '#1a1a2e' }}>Select Facebook Page</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mt: 0.5 }}>Choose the page to link to your ad account</Typography>
+              </Box>
+              <IconButton onClick={() => setPageModalOpen(false)} sx={closeButtonSx}>
+                <CloseIcon size={18} />
+              </IconButton>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: '60vh', overflowY: 'auto', pr: 0.5 }}>
               {pages.map((page) => (
-                <MenuItem key={page.id} value={page.id}>
-                  {page.name}
-                </MenuItem>
+                <Box
+                  key={page.id}
+                  onClick={() => handlePageSelect(page.id)}
+                  sx={accountCardSx}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ width: 40, height: 40, borderRadius: '10px', background: 'linear-gradient(135deg, #1877F2 0%, #0d5abf 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <FacebookIcon size={22} color="#fff" />
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography sx={{ fontWeight: 600, color: '#1a1a2e', fontSize: '0.9rem' }}>{page.name}</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mt: 0.2 }}>Page ID: {page.id}</Typography>
+                    </Box>
+                  </Box>
+                </Box>
               ))}
-            </Select>
-          </FormControl>
+            </Box>
+          </Box>
         </Box>
       </Modal>
 
-      {/* Google Ads Account Selection Modal */}
-      <Modal
-        open={googleAdsModalOpen}
-        onClose={() => setGoogleAdsModalOpen(false)}
-        className={styles.modal}
-      >
-        <Box className={styles.modalContent}>
-          <Typography className={styles.modalTitle}>Select Google Ads Account</Typography>
-          <FormControl fullWidth className={styles.selectContainer}>
-            <InputLabel>Google Ads Account</InputLabel>
-            <Select
-              value=""
-              onChange={(e) => handleGoogleAdsAccountSelect(e.target.value as string)}
-              displayEmpty
-            >
+      {/* ── Google Ads Account Selection Modal ────────────────────────── */}
+      <Modal open={googleAdsModalOpen} onClose={() => setGoogleAdsModalOpen(false)}>
+        <Box sx={modalOverlaySx}>
+          <Box sx={modalBoxSx}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Box>
+                <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: '#1a1a2e' }}>Select Google Ads Account</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mt: 0.5 }}>Choose the account to connect to your dashboard</Typography>
+              </Box>
+              <IconButton onClick={() => setGoogleAdsModalOpen(false)} sx={closeButtonSx}>
+                <CloseIcon size={18} />
+              </IconButton>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxHeight: '60vh', overflowY: 'auto', pr: 0.5 }}>
               {googleAdsAccounts.length === 0 ? (
-                <MenuItem value="" disabled>Loading accounts...</MenuItem>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 5, gap: 2 }}>
+                  <CircularProgress size={32} sx={{ color: '#4285F4' }} />
+                  <Typography sx={{ color: '#6b7280', fontSize: '0.85rem' }}>Loading your accounts…</Typography>
+                </Box>
               ) : (
                 googleAdsAccounts.map((account) => (
-                  <MenuItem key={account.id} value={account.id}>
-                    {account.name} ({account.currency}) {account.isManager ? '- Manager Account' : ''}
-                  </MenuItem>
+                  <Box
+                    key={account.id}
+                    onClick={() => handleGoogleAdsAccountSelect(account.id)}
+                    sx={accountCardSx}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      {/* Google coloured dot-ring icon */}
+                      <Box sx={{ width: 40, height: 40, borderRadius: '10px', background: '#f8f9ff', border: '1.5px solid #e8eaff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24">
+                          <path d="M21.35 11.1H12v2.9h5.35c-.25 1.39-.97 2.57-2.05 3.38v2.77h3.32c1.95-1.8 3.08-4.45 3.08-7.56 0-.63-.07-1.24-.2-1.84z" fill="#4285F4" />
+                          <path d="M12 22c2.7 0 4.95-.9 6.6-2.43l-3.32-2.77c-.92.62-2.08.99-3.28.99-2.52 0-4.65-1.7-5.41-4.04H3.2v2.53C4.88 19.48 8.17 22 12 22z" fill="#34A853" />
+                          <path d="M6.59 13.75c-.21-.63-.33-1.3-.33-2s.12-1.37.33-2.01V7.21H3.2C2.44 8.84 2 10.66 2 12.75s.44 3.91 1.2 5.54l3.39-2.54z" fill="#FBBC05" />
+                          <path d="M12 4.75c1.4 0 2.65.48 3.64 1.41l2.7-2.7C16.95 1.99 14.7 1 12 1 8.17 1 4.88 3.52 3.2 7.21l3.39 2.54c.76-2.34 2.89-4.04 5.41-4.04z" fill="#EA4335" />
+                        </svg>
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                          <Typography sx={{ fontWeight: 600, color: '#1a1a2e', fontSize: '0.9rem' }}>{account.name}</Typography>
+                          {account.isManager && (
+                            <Chip label="Manager" size="small" sx={{ background: '#fef3c7', color: '#92400e', fontWeight: 600, fontSize: '0.68rem', height: 20 }} />
+                          )}
+                        </Box>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mt: 0.2 }}>ID: {account.id}</Typography>
+                      </Box>
+                      <Chip label={account.currency} size="small" sx={{ background: '#e8f5e9', color: '#2e7d32', fontWeight: 600, fontSize: '0.72rem', height: 24, flexShrink: 0 }} />
+                    </Box>
+                  </Box>
                 ))
               )}
-            </Select>
-          </FormControl>
+            </Box>
+          </Box>
         </Box>
       </Modal>
     </Box>
   );
 }
+
+// ── Shared modal styles ──────────────────────────────────────────────────────
+const modalOverlaySx = {
+  position: 'fixed' as const,
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backdropFilter: 'blur(6px)',
+  backgroundColor: 'rgba(15, 15, 30, 0.45)',
+  zIndex: 1300,
+  p: 2,
+};
+
+const modalBoxSx = {
+  background: '#ffffff',
+  borderRadius: '20px',
+  boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.10)',
+  p: '2rem',
+  width: '100%',
+  maxWidth: 480,
+  outline: 'none',
+};
+
+const accountCardSx = {
+  p: '14px 16px',
+  borderRadius: '12px',
+  border: '1.5px solid #e8eaed',
+  background: '#fafbff',
+  cursor: 'pointer',
+  transition: 'all 0.18s ease',
+  '&:hover': {
+    borderColor: '#4285F4',
+    background: '#f0f4ff',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 16px rgba(66,133,244,0.13)',
+  },
+  '&:active': {
+    transform: 'translateY(0)',
+  },
+};
+
+const closeButtonSx = {
+  width: 34,
+  height: 34,
+  borderRadius: '8px',
+  background: '#f3f4f6',
+  color: '#6b7280',
+  flexShrink: 0,
+  '&:hover': { background: '#e5e7eb', color: '#1a1a2e' },
+};
