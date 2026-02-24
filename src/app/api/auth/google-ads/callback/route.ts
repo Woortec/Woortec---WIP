@@ -9,6 +9,10 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_ADS_REDIRECT_URI
 );
 
+// Derive the app base URL from the redirect URI env var so redirects work on both local and production
+const redirectUri = process.env.GOOGLE_ADS_REDIRECT_URI || 'http://localhost:3000/api/auth/google-ads/callback';
+const appBaseUrl = redirectUri.replace('/api/auth/google-ads/callback', '');
+
 export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
@@ -19,13 +23,13 @@ export async function GET(request: NextRequest) {
         // Handle user denial
         if (error === 'access_denied') {
             return NextResponse.redirect(
-                new URL('http://app.localhost:3000/dashboard/connection?error=access_denied')
+                new URL(`${appBaseUrl}/dashboard/connection?error=access_denied`)
             );
         }
 
         if (!code || !state) {
             return NextResponse.redirect(
-                new URL('http://app.localhost:3000/dashboard/connection?error=invalid_request')
+                new URL(`${appBaseUrl}/dashboard/connection?error=invalid_request`)
             );
         }
 
@@ -38,7 +42,7 @@ export async function GET(request: NextRequest) {
 
         if (!tokens.access_token || !tokens.refresh_token) {
             return NextResponse.redirect(
-                new URL('http://app.localhost:3000/dashboard/connection?error=token_exchange_failed')
+                new URL(`${appBaseUrl}/dashboard/connection?error=token_exchange_failed`)
             );
         }
 
@@ -98,7 +102,7 @@ export async function GET(request: NextRequest) {
             if (updateError) {
                 console.error('❌ Error updating Google Ads data:', updateError);
                 return NextResponse.redirect(
-                    new URL('http://app.localhost:3000/dashboard/connection?error=database_error')
+                    new URL(`${appBaseUrl}/dashboard/connection?error=database_error`)
                 );
             }
             console.log('✅ Google Ads data updated successfully');
@@ -112,7 +116,7 @@ export async function GET(request: NextRequest) {
                 console.error('❌ Error inserting Google Ads data:', insertError);
                 console.error('❌ Data attempted to insert:', googleAdsData);
                 return NextResponse.redirect(
-                    new URL('http://app.localhost:3000/dashboard/connection?error=database_error')
+                    new URL(`${appBaseUrl}/dashboard/connection?error=database_error`)
                 );
             }
             console.log('✅ Google Ads data inserted successfully');
@@ -120,12 +124,12 @@ export async function GET(request: NextRequest) {
 
         // Redirect back to connections page with success
         return NextResponse.redirect(
-            new URL('http://app.localhost:3000/dashboard/connection?success=google_ads_connected')
+            new URL(`${appBaseUrl}/dashboard/connection?success=google_ads_connected`)
         );
     } catch (error) {
         console.error('Error in Google Ads OAuth callback:', error);
         return NextResponse.redirect(
-            new URL('http://app.localhost:3000/dashboard/connection?error=callback_failed')
+            new URL(`${appBaseUrl}/dashboard/connection?error=callback_failed`)
         );
     }
 }
