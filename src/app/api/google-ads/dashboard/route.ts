@@ -82,14 +82,16 @@ export async function POST(request: NextRequest) {
         // 3. Fetch Data from Google Ads API
         const customerId = googleAdsData.customer_id.replace(/-/g, '');
         const query = `
-      SELECT 
-        metrics.impressions,
-        metrics.clicks,
-        metrics.ctr,
-        metrics.cost_micros,
-        campaign.status
-      FROM campaign
-      WHERE segments.date BETWEEN '${startDate}' AND '${endDate}'
+        SELECT 
+          metrics.impressions,
+          metrics.clicks,
+          metrics.ctr,
+          metrics.cost_micros,
+          campaign.status,
+          segments.date
+        FROM campaign
+        WHERE segments.date BETWEEN '${startDate}' AND '${endDate}'
+        ORDER BY segments.date ASC
     `;
 
         // Verify developer token (security: don't log full token)
@@ -156,8 +158,24 @@ export async function POST(request: NextRequest) {
                     impressions: { value: '0', diff: 0, trend: 'up' },
                     clicks: { value: '0', diff: 0, trend: 'up' },
                     ctr: { value: '0.00%', diff: 0, trend: 'up' },
-                    reach: { value: '0', diff: 0, trend: 'up' },
-                    adSpend: { value: '0.00', diff: 0, trend: 'up', currency: 'USD' },
+                    // reach shape must match { impressions, reach, clicks }
+                    reach: { impressions: 0, reach: 0, clicks: 0 },
+                    // adSpend shape must match { labels, datasets } for the Bar chart
+                    adSpend: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Ad Spend',
+                                data: [],
+                                borderColor: '#486A75',
+                                backgroundColor: '#486A75',
+                                fill: true,
+                                barThickness: 20,
+                                borderWidth: 0,
+                                borderRadius: 4,
+                            },
+                        ],
+                    },
                     adsRunning: { value: '0', diff: 0, trend: 'up' }
                 });
             }
@@ -173,21 +191,39 @@ export async function POST(request: NextRequest) {
         let totalCost = 0;
         let activeCampaigns = 0;
 
+        // Per-day data for adSpend chart
+        const dailySpend: Record<string, number> = {};
+
         if (data.results) {
             data.results.forEach((result: any) => {
-                totalImpressions += parseInt(result.metrics?.impressions || '0');
-                totalClicks += parseInt(result.metrics?.clicks || '0');
-                totalCost += parseInt(result.metrics?.costMicros || '0');
+                const imp = parseInt(result.metrics?.impressions || '0');
+                const clk = parseInt(result.metrics?.clicks || '0');
+                const cost = parseInt(result.metrics?.costMicros || '0');
+                const date = result.segments?.date as string | undefined;
+
+                totalImpressions += imp;
+                totalClicks += clk;
+                totalCost += cost;
+
                 if (result.campaign?.status === 'ENABLED') {
                     activeCampaigns++;
+                }
+
+                // Accumulate daily spend
+                if (date) {
+                    const label = new Date(date).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+                    dailySpend[label] = (dailySpend[label] || 0) + cost / 1_000_000;
                 }
             });
         }
 
-        const costInDollars = totalCost / 1000000;
+        const costInDollars = totalCost / 1_000_000;
         const ctr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
 
-        // 5. Return formatted data matching Dashboard structure
+        const adSpendLabels = Object.keys(dailySpend);
+        const adSpendValues = Object.values(dailySpend).map(v => parseFloat(v.toFixed(2)));
+
+        // 5. Return formatted data — shapes must match what the frontend chart components expect
         const dashboardData = {
             budget: {
                 value: costInDollars.toFixed(2),
@@ -210,16 +246,27 @@ export async function POST(request: NextRequest) {
                 diff: 0,
                 trend: 'up',
             },
+            // reach shape: { impressions, reach, clicks } — matches what TotalReach chart consumes
             reach: {
-                value: totalImpressions.toLocaleString(), // Approx for reach
-                diff: 0,
-                trend: 'up',
+                impressions: totalImpressions,
+                reach: totalImpressions, // Google doesn't expose unique reach; use impressions as approximation
+                clicks: totalClicks,
             },
+            // adSpend shape: { labels, datasets } — matches what Sales (Ad Spend) Bar chart consumes
             adSpend: {
-                value: costInDollars.toFixed(2),
-                diff: 0,
-                trend: 'up',
-                currency: 'USD',
+                labels: adSpendLabels,
+                datasets: [
+                    {
+                        label: 'Ad Spend',
+                        data: adSpendValues,
+                        borderColor: '#486A75',
+                        backgroundColor: '#486A75',
+                        fill: true,
+                        barThickness: 20,
+                        borderWidth: 0,
+                        borderRadius: 4,
+                    },
+                ],
             },
             adsRunning: {
                 value: activeCampaigns.toString(),
