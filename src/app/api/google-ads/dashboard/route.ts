@@ -80,6 +80,8 @@ export async function POST(request: NextRequest) {
         }
 
         // 3. Fetch Data from Google Ads API
+        // Read the account currency stored during OAuth connection (e.g. 'EUR', 'USD')
+        const accountCurrency: string = googleAdsData.customer_currency || 'USD';
         const customerId = googleAdsData.customer_id.replace(/-/g, '');
         const query = `
         SELECT 
@@ -154,7 +156,7 @@ export async function POST(request: NextRequest) {
             if (response.status === 403 && errorText.includes('DEVELOPER_TOKEN_NOT_APPROVED')) {
                 console.warn('⚠️ Developer token not approved for production. Returning mock/empty data.');
                 return NextResponse.json({
-                    budget: { value: '0.00', diff: 0, trend: 'up', currency: 'USD' },
+                    budget: { value: '0.00', diff: 0, trend: 'up', currency: accountCurrency },
                     impressions: { value: '0', diff: 0, trend: 'up' },
                     clicks: { value: '0', diff: 0, trend: 'up' },
                     ctr: { value: '0.00%', diff: 0, trend: 'up' },
@@ -229,7 +231,7 @@ export async function POST(request: NextRequest) {
                 value: costInDollars.toFixed(2),
                 diff: 0,
                 trend: 'up',
-                currency: 'USD',
+                currency: accountCurrency,
             },
             impressions: {
                 value: totalImpressions.toLocaleString(),
