@@ -86,6 +86,24 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
 
   const supabase = createClient();
 
+  // Ensure userid is always in localStorage, even if user navigated directly to this page
+  // without going through the main dashboard first.
+  useEffect(() => {
+    const resolveUserId = async () => {
+      const existing = localStorage.getItem('userid');
+      if (existing) return; // Already set — nothing to do
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        localStorage.setItem('userid', session.user.id);
+        console.log('✅ userid resolved from Supabase session and saved to localStorage');
+      } else {
+        console.warn('⚠️ No active Supabase session found on connection page');
+      }
+    };
+    resolveUserId();
+  }, []);
+
   // Initialize Facebook SDK and state
   useEffect(() => {
     loadFacebookSDK().then(() => {
@@ -96,7 +114,13 @@ export function Connect({ sx }: ConnectProps): React.JSX.Element {
   }, []);
 
   const checkUserConnection = async () => {
-    const localUserId = localStorage.getItem('userid');
+    // Use localStorage first; fall back to Supabase session to avoid race conditions
+    let localUserId = localStorage.getItem('userid');
+    if (!localUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      localUserId = session?.user?.id ?? null;
+      if (localUserId) localStorage.setItem('userid', localUserId);
+    }
     if (!localUserId) return;
 
     // Check Supabase if user is already connected to Facebook
