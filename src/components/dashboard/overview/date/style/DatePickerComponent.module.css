@@ -13,7 +13,8 @@
   display: flex;
   padding: 0.3rem;
   border-radius: 15px;
-  width: 66.5%;
+  width: auto;
+  flex: 1;
   background-color: #ffffff;
   gap: 0.3rem;
   justify-content: space-between;
@@ -88,6 +89,13 @@
 
 .datePickerSeparator {
   color: grey;
+  padding: 0 0.5rem;
+}
+
+.sourceSwitcherWrapper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
   padding: 0 0.5rem;
 }
 

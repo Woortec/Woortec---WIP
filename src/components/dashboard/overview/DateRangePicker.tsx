@@ -11,6 +11,7 @@ import styles from './date/style/DatePickerComponent.module.css';
 
 // ─── NEW: import translation hook ───────────────────────────────────────────────
 import { useLocale } from '@/contexts/LocaleContext';
+import SourceSwitcher from './SourceSwitcher';
 
 interface DatePickerComponentProps {
   startDate: Date | null;
@@ -19,6 +20,8 @@ interface DatePickerComponentProps {
   setEndDate: Dispatch<SetStateAction<Date | null>>;
   timeRange?: string;
   setTimeRange?: Dispatch<SetStateAction<string>>;
+  dataSource?: 'facebook' | 'google';
+  onSourceChange?: (source: 'facebook' | 'google') => void;
 }
 
 const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
@@ -28,6 +31,8 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   setEndDate,
   timeRange,
   setTimeRange,
+  dataSource,
+  onSourceChange,
 }) => {
   // ─── NEW: get t() ───────────────────────────────────────────────────────────
   const { t } = useLocale();
@@ -36,8 +41,8 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
 
   console.log(startDate);
   console.log(endDate);
-  
-  
+
+
   useEffect(() => {
     // Set default to "This Week" only on first mount
     const today = new Date();
@@ -118,6 +123,13 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
         ))}
       </div>
 
+      {/* Source Switcher in the middle */}
+      {dataSource && onSourceChange && (
+        <div className={styles.sourceSwitcherWrapper}>
+          <SourceSwitcher source={dataSource} onSourceChange={onSourceChange} />
+        </div>
+      )}
+
       {/* Calendar Picker */}
       <div className={styles.datePickerBox}>
         <div className={styles.leftdatePickerContainer}>
@@ -133,7 +145,6 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
           />
         </div>
 
-        {/* ─── REPLACED hard‐coded arrow with translation ───────────────────────────── */}
         <div className={styles.datePickerSeparator}>↔</div>
 
         <div className={styles.rightdatePickerContainer}>

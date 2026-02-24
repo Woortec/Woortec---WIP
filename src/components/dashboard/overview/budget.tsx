@@ -36,10 +36,10 @@ export function Budget({ diff, trend, sx, value, timeRange, currency }: BudgetPr
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={{ height: '10.7rem', padding:'1rem' }}>
+    <Card sx={{ height: '10.7rem', padding: '1rem' }}>
       <Box>
-      
-        <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <Avatar sx={{ backgroundColor: '#02B194', height: '2rem', width: '2rem' }}>
             <CurrencyDollarIcon fontSize="1.5rem" style={{ color: 'white' }} />
           </Avatar>
@@ -49,22 +49,22 @@ export function Budget({ diff, trend, sx, value, timeRange, currency }: BudgetPr
             <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
           </Box>
         </Box>
-          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
-            <Stack>
-              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary"> {t('DashboardCards.budget')}</Typography>
-              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>
-                {value === '' ? 'data not found' : `${value} ${currency || ''}`}
-              </Typography>
-            </Stack>
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
-              {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '29.76%'}%
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+        <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <Stack>
+            <Typography sx={{ paddingTop: '0.7rem', fontSize: '0.7rem' }} color="text.secondary"> {t('DashboardCards.budget')}</Typography>
+            <Typography variant="h4" sx={{ paddingBottom: '0.7rem', fontSize: '1.5rem', fontWeight: '600' }}>
+              {value === '' ? 'data not found' : `${value} ${currency || ''}`}
             </Typography>
           </Stack>
+        </Stack>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
+            {trend === 'up' ? '↑' : '↓'} {diff ? diff.toFixed(2) : '29.76%'}%
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+            {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+          </Typography>
+        </Stack>
       </Box>
     </Card>
   );

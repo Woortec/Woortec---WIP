@@ -26,7 +26,7 @@ export interface TotalImpressionsProps {
 }
 
 export function TotalImpressions({ diff, trend, sx, value, timeRange, clicks }: TotalImpressionsProps): React.JSX.Element {
-    const { t } = useLocale();
+  const { t } = useLocale();
 
   console.log(value);
   console.log(diff);
@@ -35,41 +35,41 @@ export function TotalImpressions({ diff, trend, sx, value, timeRange, clicks }: 
   const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
 
   return (
-    <Card sx={{ height: '10.7rem',}}>
-      <Box sx={{padding:'1rem'}}>
-         <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <Avatar sx={{ backgroundColor: '#E86A6D', height: '2rem', width: '2rem'}}>
-              <Target fontSize="1.5rem" style={{ color: 'white' }} />
-            </Avatar>
+    <Card sx={{ height: '10.7rem', }}>
+      <Box sx={{ padding: '1rem' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <Avatar sx={{ backgroundColor: '#E86A6D', height: '2rem', width: '2rem' }}>
+            <Target fontSize="1.5rem" style={{ color: 'white' }} />
+          </Avatar>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '4.5rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
-               <IconButton><LikeIcon size="1.2rem" /></IconButton>
-               <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
-             </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '4.5rem', bgcolor: '#F2F4F5', borderRadius: '20px' }}>
+            <IconButton><LikeIcon size="1.2rem" /></IconButton>
+            <IconButton sx={{ transform: 'scaleX(-1)' }}><DislikeIcon size="1.2rem" /></IconButton>
           </Box>
+        </Box>
 
-        <Box sx={{display:'flex',}}>
-          <Box sx={{width:'100%',}}>
-          <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
-            <Stack>
-              <Typography sx={{paddingTop:'0.7rem', fontSize:'0.7rem'}} color="text.secondary">{t('DashboardCards.impressions')}</Typography>
-              <Typography variant="h4" sx={{paddingBottom:'0.7rem', fontSize:'1.5rem', fontWeight:'600'}}>{value === '' ? 'data not found' : value}</Typography>
+        <Box sx={{ display: 'flex', }}>
+          <Box sx={{ width: '100%', }}>
+            <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
+              <Stack>
+                <Typography sx={{ paddingTop: '0.7rem', fontSize: '0.7rem' }} color="text.secondary">{t('DashboardCards.impressions')}</Typography>
+                <Typography variant="h4" sx={{ paddingBottom: '0.7rem', fontSize: '1.5rem', fontWeight: '600' }}>{value === '' ? 'data not found' : value}</Typography>
+              </Stack>
             </Stack>
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
-              {trend === 'up' ? '↑' : '↓'} {diff ? Math.round(diff) : '17'}%
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
-            </Typography>
-          </Stack>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="body2" sx={{ fontSize: '0.9rem', color: trendColor }}>
+                {trend === 'up' ? '↑' : '↓'} {diff ? Math.round(diff) : '17'}%
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                {timeRange === 'thisYear' ? 'Last year' : t('DashboardCards.lastMonth')}
+              </Typography>
+            </Stack>
           </Box>
 
-          <Box sx={{width: '35%', display: 'flex', flexDirection: 'column' }}>
-            <Box sx={{ marginTop: 'auto',}}>
-              <Box sx={{ color: '#859096', textAlign:'center'}}>{clicks || 0}</Box>
-              <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign:'center' }}>{t('DashboardCards.clicks')}</Box>
+          <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ marginTop: 'auto', }}>
+              <Box sx={{ color: '#859096', textAlign: 'center' }}>{clicks || 0}</Box>
+              <Box sx={{ color: '#859096', fontSize: '0.5rem', textAlign: 'center' }}>{t('DashboardCards.clicks')}</Box>
             </Box>
           </Box>
 

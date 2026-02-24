@@ -79,6 +79,7 @@
     "connectInstagram": "¡Conéctate para potenciar tus anuncios!",
     "comingSoon": "Próximamente",
     "connectLinkedIn": "Necesitamos conectar tu cuenta",
+    "connectGoogleAds": "¡Conéctate para potenciar tus anuncios!",
     "connectedAccounts": "Tus cuentas sociales conectadas ({count}):",
     "newFeature": "¡Nueva función a la vuelta de la esquina!",
     "googleAdsComingSoon": "Google Ads próximamente - Mantente atento para más potencia.",
@@ -138,54 +139,53 @@
       "uploadFailed": "Error al subir la imagen. Por favor inténtalo de nuevo.",
       "errorOccurred": "Ocurrió un error. Por favor inténtalo de nuevo."
     },
-          "campaignNamePage": {
-        "title": "Configuración de campaña: Elige el nombre de tu campaña",
-        "subtitle": "Configura fácilmente el nombre de tu campaña con Woortec. Por defecto, se llamará 'Woortec', pero puedes añadir una etiqueta personalizada para reflejar tu marca. Disfruta de un proceso sencillo que asegura que tus campañas estén personalizadas y listas para impactar.",
-        "formTitle": "Por defecto, tu campaña se llamará 'Woortec'. ¿Quieres personalizarla? Añade una etiqueta personalizada para adaptar el nombre de la campaña a tus necesidades y haz que destaque.",
-        "labelOne": "Etiqueta Uno",
-        "labelTwo": "Etiqueta Dos",
-        "placeholder": "Texto",
-        "send": "Enviar",
-        "pleaseFill": "Por favor, completa todos los campos.",
-        "saveError": "No se pudo guardar la información. Por favor, inténtalo de nuevo.",
-        "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-      },
-      "strategyCreationProgress": {
-        "title": "Creación de Estrategia",
-        "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
-        "creatingCampaign": "Creando tu campaña...",
-        "percentComplete": "{progress}%"
-      },
-      "stepIndicator": {
-        "objective": "Objetivo",
-        "strategyCreation": "Creación de Estrategia",
-        "strategyResult": "Resultado de Estrategia"
-      },
-      "strategyCreationPage": {
-        "title": "Creación de Estrategia",
-        "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
-        "creatingStrategy": "Creando tu estrategia publicitaria...",
-        "percentComplete": "{progress}%"
-      },
-      "strategyResultPage": {
-        "title": "Estrategia Personalizada",
-        "levels": "4 Niveles",
-        "analysis": "Análisis",
-        "performanceAnalysis": "Análisis de Rendimiento",
-        "metaAds": "META ADS",
-        "level": "NIVEL",
-        "startingDay": "Día de Inicio",
-        "weekPlans": "Planes Semanales",
-        "investAmount": "Cantidad de Inversión",
-        "numberOfAds": "Número de Anuncios",
-        "toMessages": "A Mensajes",
-        "toLink": "A Enlaces",
-        "dailyBudgetPerAd": "Presupuesto Diario / Anuncio",
-        "startOver": "Comenzar de Nuevo",
-        "loading": "Cargando...",
-        "noData": "No hay datos de campaña disponibles."
-      }
-   
+    "campaignNamePage": {
+      "title": "Configuración de campaña: Elige el nombre de tu campaña",
+      "subtitle": "Configura fácilmente el nombre de tu campaña con Woortec. Por defecto, se llamará 'Woortec', pero puedes añadir una etiqueta personalizada para reflejar tu marca. Disfruta de un proceso sencillo que asegura que tus campañas estén personalizadas y listas para impactar.",
+      "formTitle": "Por defecto, tu campaña se llamará 'Woortec'. ¿Quieres personalizarla? Añade una etiqueta personalizada para adaptar el nombre de la campaña a tus necesidades y haz que destaque.",
+      "labelOne": "Etiqueta Uno",
+      "labelTwo": "Etiqueta Dos",
+      "placeholder": "Texto",
+      "send": "Enviar",
+      "pleaseFill": "Por favor, completa todos los campos.",
+      "saveError": "No se pudo guardar la información. Por favor, inténtalo de nuevo.",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+    },
+    "strategyCreationProgress": {
+      "title": "Creación de Estrategia",
+      "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+      "creatingCampaign": "Creando tu campaña...",
+      "percentComplete": "{progress}%"
+    },
+    "stepIndicator": {
+      "objective": "Objetivo",
+      "strategyCreation": "Creación de Estrategia",
+      "strategyResult": "Resultado de Estrategia"
+    },
+    "strategyCreationPage": {
+      "title": "Creación de Estrategia",
+      "subtitle": "Presentamos woortec: el producto definitivo de anuncios en redes sociales diseñado para elevar tu presencia online y obtener resultados como nunca antes. Con woortec, puedes crear y gestionar anuncios en múltiples plataformas sociales de forma sencilla, todo en un solo lugar.",
+      "creatingStrategy": "Creando tu estrategia publicitaria...",
+      "percentComplete": "{progress}%"
+    },
+    "strategyResultPage": {
+      "title": "Estrategia Personalizada",
+      "levels": "4 Niveles",
+      "analysis": "Análisis",
+      "performanceAnalysis": "Análisis de Rendimiento",
+      "metaAds": "META ADS",
+      "level": "NIVEL",
+      "startingDay": "Día de Inicio",
+      "weekPlans": "Planes Semanales",
+      "investAmount": "Cantidad de Inversión",
+      "numberOfAds": "Número de Anuncios",
+      "toMessages": "A Mensajes",
+      "toLink": "A Enlaces",
+      "dailyBudgetPerAd": "Presupuesto Diario / Anuncio",
+      "startOver": "Comenzar de Nuevo",
+      "loading": "Cargando...",
+      "noData": "No hay datos de campaña disponibles."
+    }
   },
   "Notifications": {
     "mainTitle": "Configuración",

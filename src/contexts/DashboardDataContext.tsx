@@ -23,9 +23,11 @@ const DashboardDataContext = createContext<DashboardDataContextType | undefined>
 interface DashboardDataProviderProps {
   children: ReactNode;
   params: DashboardApiParams;
+  dataSource?: 'facebook' | 'google';
 }
 
-export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ children, params }) => {
+export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ children, params, dataSource = 'facebook' }) => {
+  console.log('📊 DashboardDataProvider initialized with source:', dataSource);
   const [data, setData] = useState<DashboardData | null>(null);
   const [adsPerformanceData, setAdsPerformanceData] = useState<AdsPerformanceData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,17 +40,59 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
       return;
     }
 
+    setLoading(true);
+    setData(null); // Clear stale data immediately to prevent confusion
+    setError(null);
+
+    // Check if Google Ads is selected
+    if (dataSource === 'google') {
+      console.log('📊 Google Ads data source selected');
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Import and use Google Ads API service
+        const { fetchGoogleAdsDashboardData } = await import('@/lib/google-ads-api-service');
+        const googleAdsData = await fetchGoogleAdsDashboardData({
+          startDate: params.startDate,
+          endDate: params.endDate,
+          timeRange: params.timeRange,
+        });
+
+        setData(googleAdsData as any); // Type assertion since structures are compatible
+        console.log('✅ Google Ads data fetched successfully');
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch Google Ads data';
+        console.error('❌ Error fetching Google Ads data:', err);
+        setError(errorMessage);
+
+        // Show placeholder data on error
+        setData({
+          budget: { value: 'Error', diff: 0, trend: 'up' as const, currency: 'USD' },
+          impressions: { value: 'N/A', diff: 0, trend: 'up' as const },
+          ctr: { value: 'N/A', diff: 0, trend: 'up' as const },
+          reach: { value: 'N/A', diff: 0, trend: 'up' as const },
+          adSpend: { value: 'N/A', diff: 0, trend: 'up' as const, currency: 'USD' },
+          adsRunning: { value: 'N/A', diff: 0, trend: 'up' as const },
+        } as any);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Fetch Facebook Ads data
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('🔄 Fetching dashboard data via context with params:', params);
+
+      console.log('🔄 Fetching Facebook Ads dashboard data via context with params:', params);
       const dashboardData = await fetchDashboardData(params);
       setData(dashboardData);
       console.log('✅ Dashboard data fetched successfully via context');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch dashboard data';
-      
+
       // Check if it's a rate limit error
       if (errorMessage.includes('Rate limit') || errorMessage.includes('too many calls')) {
         console.log('⚠️ Rate limit detected, using fallback data');
@@ -61,7 +105,7 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
     } finally {
       setLoading(false);
     }
-  }, [params.startDate, params.endDate, params.timeRange]);
+  }, [params.startDate, params.endDate, params.timeRange, dataSource]);
 
   const clearCache = useCallback(() => {
     clearDashboardCache();
@@ -74,7 +118,7 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('🔄 Fetching ads performance data via context with params:', adsParams);
       const adsData = await fetchAdsPerformanceData(adsParams || {
         startDate: params.startDate,
@@ -102,14 +146,14 @@ export const DashboardDataProvider: React.FC<DashboardDataProviderProps> = ({ ch
     const handleAdAccountChange = (event: CustomEvent) => {
       console.log('🔄 Ad account changed event received:', event.detail);
       console.log('🔄 Triggering dashboard data refetch due to ad account change');
-      
+
       // Refetch both dashboard data and ads performance data
       fetchData();
       refetchAdsPerformance();
     };
 
     window.addEventListener('adAccountChanged', handleAdAccountChange as EventListener);
-    
+
     return () => {
       window.removeEventListener('adAccountChanged', handleAdAccountChange as EventListener);
     };
