@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
 
 const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_ADS_CLIENT_ID,
@@ -49,15 +48,9 @@ export async function GET(request: NextRequest) {
         // Set credentials to make API calls
         oauth2Client.setCredentials(tokens);
 
-        // Fetch Google Ads customer accounts
+        // Fetch Google Ads customer accounts (non-blocking — we save tokens regardless)
         const customerAccounts = await fetchGoogleAdsAccounts(tokens.access_token);
         console.log('📊 Customer accounts fetched:', customerAccounts);
-
-        if (!customerAccounts || customerAccounts.length === 0) {
-            return NextResponse.redirect(
-                new URL('http://app.localhost:3000/dashboard/connection?error=no_accounts_found')
-            );
-        }
 
         // Store tokens and account info in Supabase (using service role to bypass RLS)
         const supabase = createClient(
@@ -81,16 +74,22 @@ export async function GET(request: NextRequest) {
         // tokens.expiry_date is an absolute timestamp (ms since epoch)
         const tokenExpiry = tokens.expiry_date ? new Date(tokens.expiry_date) : new Date(Date.now() + 3600 * 1000);
 
+        // Use first found account if available, otherwise save tokens only (user will select account in UI)
+        const firstAccount = customerAccounts && customerAccounts.length > 0 ? customerAccounts[0] : null;
+
         const googleAdsData = {
             user_id: userId,
             access_token: tokens.access_token,
             refresh_token: tokens.refresh_token,
             token_expiry: tokenExpiry.toISOString(),
-            customer_id: customerAccounts[0].id,
-            customer_name: customerAccounts[0].name,
-            customer_currency: customerAccounts[0].currency || 'USD',
+            customer_id: firstAccount?.id ?? null,
+            customer_name: firstAccount?.name ?? null,
+            customer_currency: firstAccount?.currency ?? null,
             updated_at: new Date().toISOString(),
         };
+
+        // Flag to tell the UI whether accounts were found
+        const noAccountsFound = !firstAccount;
 
         if (existingData) {
             // Update existing record
@@ -122,10 +121,11 @@ export async function GET(request: NextRequest) {
             console.log('✅ Google Ads data inserted successfully');
         }
 
-        // Redirect back to connections page with success
-        return NextResponse.redirect(
-            new URL(`${appBaseUrl}/dashboard/connection?success=google_ads_connected`)
-        );
+        // Redirect back to connections page with success (or warning if no accounts found)
+        const successUrl = noAccountsFound
+            ? `${appBaseUrl}/dashboard/connection?success=google_ads_connected&warning=no_accounts`
+            : `${appBaseUrl}/dashboard/connection?success=google_ads_connected`;
+        return NextResponse.redirect(new URL(successUrl));
     } catch (error) {
         console.error('Error in Google Ads OAuth callback:', error);
         return NextResponse.redirect(
@@ -139,8 +139,7 @@ async function fetchGoogleAdsAccounts(accessToken: string) {
         console.log('🔍 Fetching accessible customers for the authenticated user...');
 
         const devToken = process.env.NEXT_PUBLIC_GOOGLE_ADS_DEVELOPER_TOKEN || process.env.GOOGLE_ADS_DEVELOPER_TOKEN || '';
-
-        fs.appendFileSync('google-ads-debug.log', `[${new Date().toISOString()}] Attempting listsAccessibleCustomers with devToken length: ${devToken.length}\n`);
+        console.log('🔑 Using devToken length:', devToken.length);
 
         // 1. Get the list of accessible customer IDs for this user
         const listRes = await fetch(
@@ -157,14 +156,12 @@ async function fetchGoogleAdsAccounts(accessToken: string) {
 
         if (!listRes.ok) {
             const errorText = await listRes.text();
-            fs.appendFileSync('google-ads-debug.log', `[${new Date().toISOString()}] ❌ Failed listRes: ${listRes.status} - ${errorText}\n`);
-            console.error('❌ Failed to list accessible customers:', errorText);
+            console.error(`❌ Failed to list accessible customers (${listRes.status}):`, errorText);
             return null;
         }
 
         const listData = await listRes.json();
-        fs.appendFileSync('google-ads-debug.log', `[${new Date().toISOString()}] ✅ listData: ${JSON.stringify(listData)}\n`);
-        console.log('📊 Accessible customers list:', listData);
+        console.log('📊 Accessible customers list:', JSON.stringify(listData));
 
         if (!listData.resourceNames || listData.resourceNames.length === 0) {
             console.log('⚠️ No accessible Google Ads accounts found for this user.');
